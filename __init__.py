@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.3 2010-01-29 12:04:24 ivan Exp $ $Date: 2010-01-29 12:04:24 $
+$Id: __init__.py,v 1.4 2010-01-29 12:09:35 ivan Exp $ $Date: 2010-01-29 12:09:35 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -520,13 +520,13 @@ def processURI(uri, outputFormat, form={}) :
 		else :
 			space_preserve = True
 
-		options = Options(warnings=warnings,
-						  space_preserve=space_preserve,
-						  transformers=transformers,
-						  xhtml = xhtml,
-						  lax = lax)
-
-		return _process(input, uri, outputFormat, options)
+		#options = Options(warnings=warnings,
+		#				  space_preserve=space_preserve,
+		#				  transformers=transformers,
+		#				  xhtml = xhtml,
+		#				  lax = lax)
+		#
+		#return _process(input, uri, outputFormat, options)
 	except :
 		(type,value,traceback) = sys.exc_info()
 
@@ -552,6 +552,17 @@ def processURI(uri, outputFormat, form={}) :
 			raise RDFaError("Exception traceback:%s\nvalue: %s" % (traceback,value))
 		else :
 			return create_exception_graph("%s" % value, uri, outputFormat)
+
+	options = Options(warnings=warnings,
+					  space_preserve=space_preserve,
+					  transformers=transformers,
+					  xhtml = xhtml,
+					  lax = lax)
+
+	return _process(input, uri, outputFormat, options)
+
+
+
 
 def processFile(input, outputFormat="xml", options = None, base="", rdfOutput = False) :
 	"""The standard processing of an RDFa file.
