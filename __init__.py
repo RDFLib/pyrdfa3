@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.8 2010-01-29 12:34:30 ivan Exp $ $Date: 2010-01-29 12:34:30 $
+$Id: __init__.py,v 1.9 2010-01-29 12:36:50 ivan Exp $ $Date: 2010-01-29 12:36:50 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -537,7 +537,7 @@ def processURI(uri, outputFormat, form={}) :
 				print "<dt>Text input:</dt><dd>%s</dd>" % cgi.escape(form["text"].value).replace('\n','<br/>')
 			else :
 				print "<dt>URI received:</dt><dd><code>'%s'</code></dd>" % cgi.escape(uri)
-			print "<dt>Format:</dt><dd> %s</dd>" % format
+			print "<dt>Format:</dt><dd> %s</dd>" % outputFormat
 			if "warnings" in form : print "<dt>Warnings:</dt><dd> %s</dd>" % form["warnings"].value
 			if "space-preserve" in form : print "<dt>Space preserve:</dt><dd> %s</dd>" % form["space-preserve"].value
 			if "parser" in form : print "<dt>Parser strict or lax:</dt><dd> %s</dd>" % form["parser"].value
