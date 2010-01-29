@@ -28,8 +28,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.2 2010-01-29 10:58:47 ivan Exp $
-$Date: 2010-01-29 10:58:47 $
+$Id: State.py,v 1.3 2010-01-29 12:42:59 ivan Exp $
+$Date: 2010-01-29 12:42:59 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -381,7 +381,7 @@ class ExecutionContext :
 		assert val != ""
 		# fall back on good old traditional URI-s.
 		# To be on the safe side, let us use the Python libraries
-		if self.parsedBase.scheme == "" :
+		if self.parsedBase[0] == "" :
 			# base is, in fact, a local file name
 			# The following call is just to be sure that some pathological cases when
 			# the ':' _does_ appear in the URI but not in a scheme position is taken
