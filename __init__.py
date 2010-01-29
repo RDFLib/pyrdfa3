@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.6 2010-01-29 12:28:53 ivan Exp $ $Date: 2010-01-29 12:28:53 $
+$Id: __init__.py,v 1.7 2010-01-29 12:32:56 ivan Exp $ $Date: 2010-01-29 12:32:56 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -326,7 +326,6 @@ def _process_DOM(dom, base, outputFormat, options, local=False) :
 	retval = graph.serialize(format=outputFormat)
 	return retval
 
-
 def _process(input, base, outputFormat, options, local=False) :
 	"""Core processing. The XML input is parsed, the transformers ("pre-processing") is done
 	on the DOM tree, the state is initialized, and the "real" RDFa parsing is done. Finally,
@@ -529,7 +528,7 @@ def processURI(uri, outputFormat, form={}) :
 			print "</head><body>"
 			print "<h1>Error in distilling RDFa</h1>"
 			print "<pre>"
-			traceback.print_tb(traceback)
+			traceback.print_exc(file=sys.stdout)
 			print "</pre>"
 			print "<pre>%s</pre>" % value
 			print "<h1>Information received</h1>"
