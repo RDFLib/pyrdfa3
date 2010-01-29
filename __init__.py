@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.5 2010-01-29 12:26:48 ivan Exp $ $Date: 2010-01-29 12:26:48 $
+$Id: __init__.py,v 1.6 2010-01-29 12:28:53 ivan Exp $ $Date: 2010-01-29 12:28:53 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -318,40 +318,12 @@ def _process_DOM(dom, base, outputFormat, options, local=False) :
 	# is used by the recursion
 	subject = URIRef(state.base)
 
-	# parse the whole thing recursively and fill the graph
-	if local :
-		parse_one_node(html, graph, subject, state,[])
-		if options.comment_graph.graph != None :
-			# Add the content of the comment graph to the output
-			graph.bind("dist",DIST_NS)
-			for t in options.comment_graph.graph : graph.add(t)
-		retval = graph.serialize(format=outputFormat)
-	else :
-		# This is when the code is run as part of a Web CGI service. The
-		# difference lies in the way exceptions are handled: they should reraised as RDFError instead blindly reporting on the
-		# terminal
-		try :
-			# this is a recursive procedure through the full DOM Tree
-			parse_one_node(html, graph, subject, state,[])
-		except :
-			# error in the input...
-			(type,value,traceback) = sys.exc_info()
-			msg = 'Error in RDFa content: "%s"' % value
-			raise RDFaError, msg
-
-		# serialize the graph and return the result
-		retval = None
-		try :
-			if options.comment_graph.graph != None :
-				# Add the content of the comment graph to the output
-				graph.bind("dist",DIST_NS)
-				for t in options.comment_graph.graph : graph.add(t)
-			retval = graph.serialize(format=outputFormat)
-		except :
-			# XML Parsing error in the input
-			(type,value,traceback) = sys.exc_info()
-			msg = 'Error in graph serialization: "%s"' % value
-			raise RDFaError, msg
+	parse_one_node(html, graph, subject, state,[])
+	if options.comment_graph.graph != None :
+		# Add the content of the comment graph to the output
+		graph.bind("dist",DIST_NS)
+		for t in options.comment_graph.graph : graph.add(t)
+	retval = graph.serialize(format=outputFormat)
 	return retval
 
 
