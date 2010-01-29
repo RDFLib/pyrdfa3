@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.7 2010-01-29 12:32:56 ivan Exp $ $Date: 2010-01-29 12:32:56 $
+$Id: __init__.py,v 1.8 2010-01-29 12:34:30 ivan Exp $ $Date: 2010-01-29 12:34:30 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -519,7 +519,7 @@ def processURI(uri, outputFormat, form={}) :
 		forceRDFOutput = "forceRDFOutput" in form.keys()
 
 		if (not forceRDFOutput) and htmlOutput :
-			import traceback
+			import traceback, cgi
 			print 'Content-type: text/html; charset=utf-8'
 			print
 			print "<html>"
