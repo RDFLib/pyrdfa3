@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.1 2010-01-18 13:42:06 ivan Exp $ $Date: 2010-01-18 13:42:06 $
+$Id: __init__.py,v 1.2 2010-01-29 11:56:41 ivan Exp $ $Date: 2010-01-29 11:56:41 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -524,8 +524,7 @@ def processURI(uri, outputFormat, form={}) :
 						  space_preserve=space_preserve,
 						  transformers=transformers,
 						  xhtml = xhtml,
-						  lax = lax,
-						  next_rdfa_version = next_version)
+						  lax = lax)
 
 		return _process(input, uri, outputFormat, options)
 	except :
