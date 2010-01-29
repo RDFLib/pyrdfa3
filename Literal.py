@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.1 2010-01-18 13:42:06 ivan Exp $
-$Date: 2010-01-18 13:42:06 $
+$Id: Literal.py,v 1.2 2010-01-29 10:58:46 ivan Exp $
+$Date: 2010-01-29 10:58:46 $
 """
 
 import re
@@ -130,7 +130,7 @@ def generate_literal(node, graph, subject, state) :
 	retval = True
 	
 	# Get the Property URI-s
-	props = state.get_resources(node.getAttribute("property"), prop=True)
+	props = state.getURI("property")
 
 	# Get, if exists, the value of @datatype
 	datatype = ''
@@ -139,7 +139,7 @@ def generate_literal(node, graph, subject, state) :
 		dtset = True
 		dt = node.getAttribute("datatype")
 		if dt != "" :
-			datatype = state.get_resource(dt)
+			datatype = state.getURI("datatype")
 
 	if state.lang != None :
 		lang = state.lang

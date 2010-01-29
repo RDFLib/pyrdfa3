@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.1 2010-01-18 13:42:06 ivan Exp $
-$Date: 2010-01-18 13:42:06 $
+$Id: Parse.py,v 1.2 2010-01-29 10:58:47 ivan Exp $
+$Date: 2010-01-29 10:58:47 $
 """
 
 import sys
@@ -58,23 +58,6 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	@return: whether the caller has to complete it's parent's incomplete triples
 	@rtype: Boolean
 	"""
-	def _get_URI_list_for_attr(attr) :
-		"""Get a series of resources encoded via CURIE-s for an attribute on a specific node.
-		@param attr: the name of the attribute
-		@return: a list of RDFLib URIRef instances
-		"""
-		if not node.hasAttribute(attr) :
-			return []
-		else :
-			return state.getURI(attr, node.getAttribute(attr))
-			
-	def _get_URI_for_attr(attr) :
-		"""Get a URI for an attribute.
-		@param attr: the name of the attribute
-		@return: a list of RDFLib URIRef instances
-		"""
-		return state.getURI(attr, node.getAttribute(attr)) 
-
 
 	# Update the state. This means, for example, the possible local settings of
 	# namespaces and lang
@@ -112,9 +95,9 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 
 		# set first the subject
 		if node.hasAttribute("about") :
-			current_subject = _get_URI_for_attr("about")
+			current_subject = state.getURI("about")
 		elif node.hasAttribute("src") :
-			current_subject = _get_URI_for_attr("src")
+			current_subject = state.getURI("src")
 		elif node.hasAttribute("typeof") :
 			current_subject = BNode()
 			
@@ -125,20 +108,20 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 
 		# set the object resource
 		if node.hasAttribute("resource") :
-			current_object = _get_URI_for_attr("resource")
+			current_object = state.getURI("resource")
 		elif node.hasAttribute("href") :
-			current_object = _get_URI_for_attr("href")
+			current_object = state.getURI("href")
 	else :
 		# in this case all the various 'resource' setting attributes
 		# behave identically, though they also have their own priority
 		if node.hasAttribute("about") :
-			current_subject = _get_URI_for_attr("about")
+			current_subject = state.getURI("about")
 		elif node.hasAttribute("src") :
-			current_subject = _get_URI_for_attr("src")
+			current_subject = state.getURI("src")
 		elif node.hasAttribute("resource") :
-			current_subject = _get_URI_for_attr("resource")
+			current_subject = state.getURI("resource")
 		elif node.hasAttribute("href") :
-			current_subject = _get_URI_for_attr("href")
+			current_subject = state.getURI("href")
 		elif node.hasAttribute("typeof") :
 			current_subject = BNode()
 
@@ -154,20 +137,20 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 
 	# ---------------------------------------------------------------------
 	# The possible typeof indicates a number of type statements on the newSubject
-	for defined_type in _get_URI_list_for_attr("typeof") :
+	for defined_type in state.getURI("typeof") :
 		graph.add((current_subject,type,defined_type))
 
 	# ---------------------------------------------------------------------
 	# In case of @rel/@rev, either triples or incomplete triples are generated
 	# the (possible) incomplete triples are collected, to be forwarded to the children
 	incomplete_triples  = []
-	for prop in _get_URI_list_for_attr("rel") :
+	for prop in state.getURI("rel") :
 		theTriple = (current_subject,prop,current_object)
 		if current_object != None :
 			graph.add(theTriple)
 		else :
 			incomplete_triples.append(theTriple)
-	for prop in _get_URI_list_for_attr("rev") :
+	for prop in state.getURI("rev") :
 		theTriple = (current_object,prop,current_subject)
 		if current_object != None :
 			graph.add(theTriple)

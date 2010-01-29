@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.1 2010-01-18 13:42:06 ivan Exp $ $Date: 2010-01-18 13:42:06 $
+$Id: Options.py,v 1.2 2010-01-29 10:58:47 ivan Exp $ $Date: 2010-01-29 10:58:47 $
 """
 
 import sys
@@ -26,8 +26,6 @@ from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from rdflib.Namespace	import Namespace
 from rdflib.RDFS		import comment as rdfs_comment
-
-from pyRdfa import rdfa_current_version
 
 DIST_URI = "http://www.w3.org/2007/08/pyRdfa/distiller"
 DIST_NS  = DIST_URI + '#'
@@ -163,7 +161,8 @@ class Options :
 		self.comment_graph  	= CommentGraph(warnings) 
 		self.warnings			= warnings
 		self.lax				= lax
-		self.rdfa_version = rdfa_current_version
+		from pyRdfa import rdfa_current_version
+		self.rdfa_version 		= rdfa_current_version
 
 		if xhtml	: self.host_language = XHTML_RDFA
 		else		: self.host_language = GENERIC_XML
