@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.4 2010-01-29 12:09:35 ivan Exp $ $Date: 2010-01-29 12:09:35 $
+$Id: __init__.py,v 1.5 2010-01-29 12:26:48 ivan Exp $ $Date: 2010-01-29 12:26:48 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -520,13 +520,13 @@ def processURI(uri, outputFormat, form={}) :
 		else :
 			space_preserve = True
 
-		#options = Options(warnings=warnings,
-		#				  space_preserve=space_preserve,
-		#				  transformers=transformers,
-		#				  xhtml = xhtml,
-		#				  lax = lax)
-		#
-		#return _process(input, uri, outputFormat, options)
+		options = Options(warnings=warnings,
+						  space_preserve=space_preserve,
+						  transformers=transformers,
+						  xhtml = xhtml,
+						  lax = lax)
+		
+		return _process(input, uri, outputFormat, options)
 	except :
 		(type,value,traceback) = sys.exc_info()
 
@@ -548,21 +548,34 @@ def processURI(uri, outputFormat, form={}) :
 		forceRDFOutput = "forceRDFOutput" in form.keys()
 
 		if (not forceRDFOutput) and htmlOutput :
-			# re-raise the exception and let the caller deal with it...
-			raise RDFaError("Exception traceback:%s\nvalue: %s" % (traceback,value))
+			import traceback
+			print 'Content-type: text/html; charset=utf-8'
+			print
+			print "<html>"
+			print "<head>"
+			print "<title>Error in RDFa processing</title>"
+			print "</head><body>"
+			print "<h1>Error in distilling RDFa</h1>"
+			print "<pre>"
+			traceback.print_tb(traceback)
+			print "</pre>"
+			print "<pre>%s</pre>" % value
+			print "<h1>Information received</h1>"
+			print "<dl>"
+			if "text" in form and form["text"].value != None and len(form["text"].value.strip()) != 0 :
+				print "<dt>Text input:</dt><dd>%s</dd>" % cgi.escape(form["text"].value).replace('\n','<br/>')
+			else :
+				print "<dt>URI received:</dt><dd><code>'%s'</code></dd>" % cgi.escape(uri)
+			print "<dt>Format:</dt><dd> %s</dd>" % format
+			if "warnings" in form : print "<dt>Warnings:</dt><dd> %s</dd>" % form["warnings"].value
+			if "space-preserve" in form : print "<dt>Space preserve:</dt><dd> %s</dd>" % form["space-preserve"].value
+			if "parser" in form : print "<dt>Parser strict or lax:</dt><dd> %s</dd>" % form["parser"].value
+			if "host" in form : print "<dt>Host language:</dt><dd> %s</dd>" % form["host"].value
+			print "</dl>"
+			print "</body>"
+			print "</html>"
 		else :
 			return create_exception_graph("%s" % value, uri, outputFormat)
-
-	options = Options(warnings=warnings,
-					  space_preserve=space_preserve,
-					  transformers=transformers,
-					  xhtml = xhtml,
-					  lax = lax)
-
-	return _process(input, uri, outputFormat, options)
-
-
-
 
 def processFile(input, outputFormat="xml", options = None, base="", rdfOutput = False) :
 	"""The standard processing of an RDFa file.
