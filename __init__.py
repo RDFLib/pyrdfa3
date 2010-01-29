@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.2 2010-01-29 11:56:41 ivan Exp $ $Date: 2010-01-29 11:56:41 $
+$Id: __init__.py,v 1.3 2010-01-29 12:04:24 ivan Exp $ $Date: 2010-01-29 12:04:24 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -549,7 +549,7 @@ def processURI(uri, outputFormat, form={}) :
 
 		if (not forceRDFOutput) and htmlOutput :
 			# re-raise the exception and let the caller deal with it...
-			raise RDFaError("%s" % value)
+			raise RDFaError("Exception traceback:%s\nvalue: %s" % (traceback,value))
 		else :
 			return create_exception_graph("%s" % value, uri, outputFormat)
 
