@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Utilities to be used by the various transformers.
+Various Utilities
 
+@summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
@@ -10,11 +11,33 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.1 2010-01-18 13:42:38 ivan Exp $
-$Date: 2010-01-18 13:42:38 $
+$Id: State.py,v 1.3 2010/01/29 12:42:59 ivan Exp $
+$Date: 2010/01/29 12:42:59 $
 """
-
+import urllib
 from rdflib.RDF import RDFNS  as ns_rdf
+
+#### Quote URI-s
+# 'safe' characters for the URI quoting, ie, characters that can safely stay as they are. Other 
+# special characters are converted to their %.. equivalents for namespace prefixes
+_unquotedChars = ':/\?=#~'
+_warnChars     = [' ','\n','\r','\t']
+def quote_URI(uri, options) :
+	"""
+	'quote' a URI, ie, exchange special characters for their '%..' equivalents. Some of the characters
+	may stay as they are (listed in L{_unquotedChars}. If one of the characters listed in L{_warnChars} 
+	is also in the uri, an extra warning is also generated.
+	@param uri: URI
+	@param options: 
+	@type options: L{Options<pyRdfa.Options>}
+	"""
+	suri = uri.strip()
+	for c in _warnChars :
+		if suri.find(c) != -1 :
+			if options != None :
+				options.comment_graph.add_warning('Unusual character in uri:%s; possible error?' % suri)
+			break
+	return urllib.quote(suri,_unquotedChars)
 
 def traverse_tree(node, func) :
 	"""Traverse the whole element tree, and perform the function C{func} on all the elements.
@@ -48,7 +71,6 @@ def rdf_prefix(html) :
 
 	# if it has not been set, the system will set it for 'rdf'...
 	return 'rdf'
-
 
 def dump(node) :
 	"""
