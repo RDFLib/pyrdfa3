@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.2 2010-01-29 10:58:47 ivan Exp $ $Date: 2010-01-29 10:58:47 $
+$Id: Options.py,v 1.3 2010-02-19 12:26:14 ivan Exp $ $Date: 2010-02-19 12:26:14 $
 """
 
 import sys
@@ -163,9 +163,13 @@ class Options :
 		self.lax				= lax
 		from pyRdfa import rdfa_current_version
 		self.rdfa_version 		= rdfa_current_version
-
-		if xhtml	: self.host_language = XHTML_RDFA
-		else		: self.host_language = GENERIC_XML
+		
+		if lax 		:
+			self.host_language = HTML5_RDFA
+		elif xhtml	:
+			self.host_language = XHTML_RDFA
+		else		:
+			self.host_language = GENERIC_XML
 		
 	def __str__(self) :
 		retval = """Current options:

@@ -16,20 +16,15 @@ The execution context object is also used to turn relative URI-s and CURIES into
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
-@var XHTML_PREFIX: prefix for the XHTML vocabulary namespace
-@var XHTML_URI: URI prefix of the XHTML vocabulary
 @var RDFa_PROFILE: the official RDFa profile URI
 @var RDFa_VERSION: the official version string of RDFa
-@var usual_protocols: list of "usual" protocols (used to generate warnings when CURIES are not protected)
-@var _predefined_rel: list of predefined C{@rev} and C{@rel} values that should be mapped onto the XHTML vocabulary URI-s.
-@var _predefined_property: list of predefined C{@property} values that should be mapped onto the XHTML vocabulary URI-s. (At present, this list is empty, but this has been an ongoing question in the group, so the I{mechanism} of checking is still there.)
 @var __bnodes: dictionary of blank node names to real blank node
 @var __empty_bnode: I{The} Bnode to be associated with the CURIE of the form "C{_:}".
 """
 
 """
-$Id: State.py,v 1.3 2010-01-29 12:42:59 ivan Exp $
-$Date: 2010-01-29 12:42:59 $
+$Id: State.py,v 1.4 2010-02-19 12:26:14 ivan Exp $
+$Date: 2010-02-19 12:26:14 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -40,38 +35,29 @@ from rdflib.URIRef		import URIRef
 from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from pyRdfa.Options		import Options, GENERIC_XML, XHTML_RDFA, HTML5_RDFA
+from pyRdfa.Utils 		import quote_URI
+from pyRdfa.Vocab		import Vocab, VOCABTERM
 
 debug = True
-
-_XSD_NS = Namespace(u'http://www.w3.org/2001/XMLSchema#')
 
 import re
 import random
 import urlparse
+import urllib
 
-_WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. Note that in the case of HTML5, the DOCTYPE setting may not work..."
+
+_WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. "
 
 RDFa_PROFILE    = "http://www.w3.org/1999/xhtml/vocab"
 RDFa_VERSION    = "XHTML+RDFa 1.0"
 RDFa_PublicID   = "-//W3C//DTD XHTML+RDFa 1.0//EN"
 RDFa_SystemID   = "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"
 
-usual_protocols = ["http", "https", "mailto", "ftp", "urn", "gopher", "tel", "ldap", "doi",
-				   "news", "file", "hdl", "imap", "mms" "nntp", "prospero", "rsync", "rtsp",
-				   "rtspu", "sftp", "shttp", "sip", "sips", "snews", "svn", "svn+ssh", "tag", "telnet", "wais"]
-
-####Predefined @rel/@rev/@property values
-# predefined values for the @rel and @rev values. These are considered to be part of a specific
-# namespace, defined by the RDFa document.
-# At the moment, there are no predefined @property values, but the code is there in case
-# some will be defined
-XHTML_PREFIX = "xhv"
-XHTML_URI    = "http://www.w3.org/1999/xhtml/vocab#"
-
-_predefined_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
-					'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next',
-					'p3pv1', 'prev', 'role', 'section', 'subsection', 'start', 'license',
-					'up', 'last', 'stylesheet', 'first', 'top']
+#: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
+usual_schemes = ["doi", "file", "ftp", "gopher", "hdl", "http", "https", "imap", "ldap",
+				 "mailto", "mms", "news", "nntp", "prospero", "rsync", "rtsp", "rtspu", "sftp",
+				 "shttp", "sip", "sips", "snews", "svn", "svn+ssh", "telnet", "tel", "urn", "wais"
+				]
 
 #### Managing blank nodes for CURIE-s
 __bnodes = {}
@@ -91,31 +77,7 @@ def _get_bnode_from_Curie(var) :
 	else :
 		retval = BNode()
 		__bnodes[var] = retval
-		return retval
-
-#### Quote URI-s
-import urllib
-# 'safe' characters for the URI quoting, ie, characters that can safely stay as they are. Other 
-# special characters are converted to their %.. equivalents for namespace prefixes
-_unquotedChars = ':/\?=#~'
-_warnChars     = [' ','\n','\r','\t']
-def _quote(uri,options) :
-	"""
-	'quote' a URI, ie, exchange special characters for their '%..' equivalents. Some of the characters
-	may stay as they are (listed in L{_unquotedChars}. If one of the characters listed in L{_warnChars} 
-	is also in the uri, an extra warning is also generated.
-	@param uri: URI
-	@param options: 
-	@type options: L{Options<pyRdfa.Options>}
-	"""
-	suri = uri.strip()
-	for c in _warnChars :
-		if suri.find(c) != -1 :
-			if options != None :
-				options.comment_graph.add_warning('Unusual character in uri:%s; possible error?' % suri)
-			break
-	return urllib.quote(suri,_unquotedChars)
-	
+		return retval	
 
 #### Core Class definition
 class ExecutionContext :
@@ -128,16 +90,14 @@ class ExecutionContext :
 	@ivar base: the 'base' URI
 	@ivar defaultNS: default namespace
 	@ivar lang: language tag (possibly None)
-	@ivar ns: dictionary of namespaces
-	@type ns: dictionary, each value is an RDFLib Namespace object
-	@ivar vocab: dictionary of predefined terms 'a.k.a.' keywords; initialized to the default XHTML terms
-	@type vocab: dictionary, each value is a tuple of an RDFLib object and a list of allowed attributes
+	@ivar vocab: vocabulary management class instance
+	@type vocan: L{Vocab.Vocab}
 	@ivar node: the node to which this state belongs
 	@type node: DOM node instance
 	"""
 
 	#: list of attributes that allow for lists of values and should be treated as such	
-	_list = [ "vocab", "rel", "rev", "property", "typeof" ]
+	_list = [ VOCABTERM, "rel", "rev", "property", "typeof" ]
 	#: mapping table from attribute name to the exact method to retrieve the URI(s). Note that this is a class variable that is initialized by the first instance
 	_resource_type = {}
 	#	"href"		:	ExecutionContext._pureURI,
@@ -166,7 +126,7 @@ class ExecutionContext :
 		base inherited from the upper layers. The 
 		current XHTML+RDFa syntax does not allow the usage of C{@xml:base}, but SVG1.2 does, so this is
 		necessary for SVG (and other possible XML dialects that accept C{@xml:base})
-		@keyword options: invocation option
+		@keyword options: invocation options, and references to warning graphs
 		@type options: L{Options<pyRdfa.Options>}
 		"""
 		# This additional class initialization that must be done run time, otherwise import errors show up
@@ -174,7 +134,7 @@ class ExecutionContext :
 			ExecutionContext._resource_type = {
 				"href"		:	ExecutionContext._pureURI,
 				"src"		:	ExecutionContext._pureURI,
-				"vocab"		:	ExecutionContext._pureURI,
+				VOCABTERM	:	ExecutionContext._pureURI,
 			
 				"about"		:	ExecutionContext._CURIE_with_base,
 				"resource"	:	ExecutionContext._CURIE_with_base,
@@ -200,7 +160,6 @@ class ExecutionContext :
 		if inherited_state :
 			self.base		= inherited_state.base
 			self.options	= inherited_state.options
-			self.vocab		= inherited_state.vocab
 			# for generic XML versions the xml:base attribute should be handled
 			if self.options.host_language == GENERIC_XML and node.hasAttribute("xml:base") :
 				self.base = node.getAttribute("xml:base")
@@ -221,17 +180,11 @@ class ExecutionContext :
 			else :
 				self.options = options
 
-			# get the vocab list set up, and put the default XHTML elements onto it:
-			self.vocab = {}
-			if self.options.host_language != GENERIC_XML :
-				relrev = ["rel","rev"]
-				for key in _predefined_rel : self.vocab[key] = (URIRef(XHTML_URI+key),relrev)
-
 			# xml:base is not part of XHTML+RDFa, but it is a valid setting for, say, SVG1.2
 			if self.options.host_language == GENERIC_XML and node.hasAttribute("xml:base") :
 				self.base = node.getAttribute("xml:base")		
 
-			self.options.comment_graph.set_base_URI(URIRef(_quote(base,self.options)))
+			self.options.comment_graph.set_base_URI(URIRef(quote_URI(base, self.options)))
 
 			# check the the presence of the @profile and or @version attribute for the RDFa profile...
 			# This whole branch is, however, irrelevant if the host language is a generic XML one (eg, SVG)
@@ -260,8 +213,13 @@ class ExecutionContext :
 							else :
 								self.options.comment_graph.add_info(_WARNING_VERSION)
 								
+		#-----------------------------------------------------------------
 		# this will be used repeatedly, better store it once and for all...
 		self.parsedBase = urlparse.urlsplit(self.base)
+
+		#-----------------------------------------------------------------
+		# generate and store the local vocab class instance
+		self.vocab = Vocab(self, graph, inherited_state)
 
 		#-----------------------------------------------------------------
 		# Settling the language tags
@@ -280,95 +238,27 @@ class ExecutionContext :
 			
 		if node.hasAttribute("xml:lang") and node.hasAttribute("lang") and node.getAttribute("lang") != node.getAttribute("xml:lang") :
 			self.options.comment_graph.add_info("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (node.getAttribute("xml:lang"),node.getAttribute("lang")))			
-
-		#-----------------------------------------------------------------
-		# Handling namespaces
-		# First get the local xmlns declarations/namespaces stuff.
-		dict = {}
-		for i in range(0,node.attributes.length) :
-			attr = node.attributes.item(i)
-			if attr.name.find('xmlns:') == 0 :	
-				# yep, there is a namespace setting
-				key = attr.localName
-				if key != "" : # exclude the top level xmlns setting...
-					if key == "_" :
-						if warning: self.options.comment_graph.add_error("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed" )
-					elif key.find(':') != -1 :
-						if warning: self.options.comment_graph.add_error("The character ':' is not valid in a CURIE Prefix" )
-					else :					
-						# quote the URI, ie, convert special characters into %.. This is
-						# true, for example, for spaces
-						uri = _quote(attr.value,self.options)
-						# 1. create a new Namespace entry
-						ns = Namespace(uri)
-						# 2. 'bind' it in the current graph to
-						# get a nicer output
-						graph.bind(key,uri)
-						# 3. Add an entry to the dictionary
-						dict[key] = ns
-
-		# See if anything has been collected at all.
-		# If not, the namespaces of the incoming state is
-		# taken over
-		self.ns = {}
-		if len(dict) == 0 and inherited_state :
-			self.ns = inherited_state.ns
-		else :
-			if inherited_state :
-				self.ns.update(inherited_state.ns)
-				# copying the newly found namespace, possibly overwriting
-				# incoming values
-				self.ns.update(dict)
-			else :
-				self.ns = dict
-
-		# see if the xhtml core vocabulary has been set
-		self.xhtml_prefix = None
-		for key in self.ns.keys() :
-			if XHTML_URI == str(self.ns[key]) :
-				self.xhtml_prefix = key
-				break
-		if self.xhtml_prefix == None :
-			if XHTML_PREFIX not in self.ns :
-				self.ns[XHTML_PREFIX] = Namespace(XHTML_URI)
-				self.xhtml_prefix = XHTML_PREFIX
-			else :
-				# the most disagreeable thing, the user has used
-				# the prefix for something else...
-				self.xhtml_prefix = XHTML_PREFIX + '_' + ("%d" % random.randint(1,1000))
-				self.ns[self.xhtml_prefix] = Namespace(XHTML_URI)
-			graph.bind(self.xhtml_prefix, XHTML_URI)
-
-		# extra tricks for unusual usages...
-		# if the 'rdf' prefix is not used, it is artificially added...
-		# Hm, this is illegal, so it is commented out...
-		#if "rdf" not in self.ns :
-		#	self.ns["rdf"] = ns_rdf
-		#if "rdfs" not in self.ns :
-		#	self.ns["rdfs"] = ns_rdfs
 			
-		# Final touch: setting the default namespace...
+		#-----------------------------------------------------------------
+		# Set the default namespace. Used when generating XML Literals
 		if node.hasAttribute("xmlns") :
 			self.defaultNS = node.getAttribute("xmlns")
 		elif inherited_state and inherited_state.defaultNS != None :
 			self.defaultNS = inherited_state.defaultNS
 		else :
 			self.defaultNS = None
-				
-	# ------------------------------ new setup ----------------------------
-	def _keyword_to_URI(self, attr, keyword) :
-		"""A keyword to URI mapping, where keyword is a simple string and the corresponding
-		URI is defined via the @vocab mechanism. Returns None if keyword is not defined
-		@param keyword: string
-		@param attr: attribute name
-		@type attr: string
-		@return: an RDFLib URIRef instance (or None)
+
+	def _check_create_URIRef(self, uri) :
 		"""
-		if keyword in self.vocab :
-			uri, attrs = self.vocab[keyword]
-			if attrs == [] or attr in attrs :
-				return uri
-		return None
+		Mini helping function: it checks whether a uri is using a usual scheme before a URIRef is created. In case
+		there is something unusual, a warning is generated (though the URIRef is created nevertheless)
+		@param uri: (absolute) URI string
+		@return: an RDFLib URIRef instance
+		"""
+		val = uri.strip()
+		if urlparse.urlsplit(val)[0] not in usual_schemes :
+			self.options.comment_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
+		return URIRef(val)
 
 	def _pureURI(self, attr, val) :
 		"""Returns a URI for a 'pure' URI (ie, no CURIE). The value should not be emtpy at this point.
@@ -386,16 +276,26 @@ class ExecutionContext :
 			# The following call is just to be sure that some pathological cases when
 			# the ':' _does_ appear in the URI but not in a scheme position is taken
 			# care of properly...
-			key = urlparse.urlsplit(val).scheme
+			key = urlparse.urlsplit(val)[0]
 			if key == "" :
 				# relative URI, to be combined with local file name:
 				return URIRef(self.base + val.strip())
 			else :
 				# base should be forgotten
-				return URIRef(val.strip())
+				return self._check_create_URIRef(val)
 		else :
-			# trust the python library...
-			return URIRef(urlparse.urljoin(self.base,val))
+			# Trust the python library...
+			# Well, not quite:-) there is what is, in my view, a bug in the urljoin; in some cases it
+			# swallows the '#' or '?' character at the end. This is, clearly, a problem with
+			# Semantic Web URI-s
+			joined = urlparse.urljoin(self.base, val)
+			try :
+				if val[-1] != joined[-1] :
+					return self._check_create_URIRef(joined + val[-1])
+				else :
+					return self._check_create_URIRef(joined)
+			except :
+				return self._check_create_URIRef(joined)
 
 	def _pureURI_with_base(self, attr, val) :
 		"""Returns a URI for a 'pure' URI (ie, no CURIE). An error is added to the graph is Safe CURIE is
@@ -457,13 +357,13 @@ class ExecutionContext :
 			# However, RDF does not allow blank nodes in predicate position,
 			# better check
 			if attr in ["property", "rel", "rev"] :
-				comment_graph.add_error("Blank node CURIE cannot be used in property position: %s" % val)
+				self.options.comment_graph.add_error("Blank node CURIE cannot be used in property position: %s" % val)
 				return None
 			else :
 				return _get_bnode_from_Curie(val[2:])
 				
 		# See if this is a predefined vocabulary term
-		keywordURI = self._keyword_to_URI(attr, val.lower())
+		keywordURI = self.vocab.keyword_to_URI(attr, val.lower())
 		if keywordURI != None :
 			# bingo...
 			return keywordURI
@@ -476,7 +376,7 @@ class ExecutionContext :
 			# Note here that the rule for relative URIs is to preceed the name with '/' or something similar
 			# hence the reliance on alphanumeric character...
 			if val[0].isalpha() :
-				return self._keyword_to_URI(attr, val.lower())
+				return self.vocab.keyword_to_URI(attr, val.lower())
 			else :
 				key   = ""
 				lname = val
@@ -485,18 +385,16 @@ class ExecutionContext :
 			lname = val.split(":", 1)[1]
 			if key == "" :
 				# This is the ":blabla" case
-				key = self.xhtml_prefix
+				key = self.vocab.xhtml_prefix
 				
 		# By now we know that
 		#   - this is not a predefined keyword 
 		#   - this is not a blank node
-		# Consequently, it is either a well defined CURIE, or an absolute or relative URI
-		if key in self.ns :
-			# yep, we have a CURIE here!
-			if lname == "" :
-				return URIRef(str(self.ns[key]))
-			else :
-				return self.ns[key][lname]
+		# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
+		retval = self.vocab.CURIE_to_URI(key, lname)
+		if retval :
+			# yep, we got a real URI
+			return retval
 		elif safe_curie :
 			# Oops. The author used a safe curie but the value was not
 			# interpreted as such. This should not be the case if a safe curie was used, ie,
@@ -526,7 +424,11 @@ class ExecutionContext :
 		
 		# This may raise an exception if the attr has no key. This, actually,
 		# should not happen if the code is correct, so I leave this in for debugging purposes
-		func = ExecutionContext._resource_type[attr]
+		try :
+			func = ExecutionContext._resource_type[attr]
+		except :
+			# Actually, this should not happen...
+			func = ExecutionContext._pureURI
 		
 		if attr in ExecutionContext._list :
 			# Allows for a list

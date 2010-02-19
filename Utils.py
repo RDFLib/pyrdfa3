@@ -17,11 +17,11 @@ $Date: 2010/01/29 12:42:59 $
 import urllib
 from rdflib.RDF import RDFNS  as ns_rdf
 
-#### Quote URI-s
 # 'safe' characters for the URI quoting, ie, characters that can safely stay as they are. Other 
 # special characters are converted to their %.. equivalents for namespace prefixes
 _unquotedChars = ':/\?=#~'
 _warnChars     = [' ','\n','\r','\t']
+
 def quote_URI(uri, options) :
 	"""
 	'quote' a URI, ie, exchange special characters for their '%..' equivalents. Some of the characters
@@ -37,7 +37,7 @@ def quote_URI(uri, options) :
 			if options != None :
 				options.comment_graph.add_warning('Unusual character in uri:%s; possible error?' % suri)
 			break
-	return urllib.quote(suri,_unquotedChars)
+	return urllib.quote(suri, _unquotedChars)
 
 def traverse_tree(node, func) :
 	"""Traverse the whole element tree, and perform the function C{func} on all the elements.

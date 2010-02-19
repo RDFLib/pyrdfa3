@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.2 2010-01-29 10:58:46 ivan Exp $
-$Date: 2010-01-29 10:58:46 $
+$Id: Literal.py,v 1.3 2010-02-19 12:26:14 ivan Exp $
+$Date: 2010-02-19 12:26:14 $
 """
 
 import re
@@ -21,8 +21,6 @@ from rdflib.Literal		import Literal
 from rdflib.RDF			import RDFNS  as ns_rdf
 from rdflib.RDF     	import XMLLiteral
 from rdflib.Namespace	import Namespace
-
-_XSD_NS = Namespace(u'http://www.w3.org/2001/XMLSchema#')
 
 def __putBackEntities(str) :
 	"""Put 'back' entities for the '&','<', and '>' characters, to produce kosher XML string.
