@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.10 2010-02-19 12:26:15 ivan Exp $ $Date: 2010-02-19 12:26:15 $
+$Id: __init__.py,v 1.11 2010-02-19 12:34:49 ivan Exp $ $Date: 2010-02-19 12:34:49 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -145,7 +145,6 @@ from rdflib.RDFS		import RDFSNS as ns_rdfs
 from pyRdfa.State				import ExecutionContext
 from pyRdfa.Parse				import parse_one_node
 from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR, GENERIC_XML, XHTML_RDFA, HTML5_RDFA
-from pyRdfa.transform.utils		import dump
 from pyRdfa.transform.HeadAbout	import head_about_transform
 
 import xml.dom.minidom
