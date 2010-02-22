@@ -54,24 +54,19 @@ _XSD_NS = Namespace(u'http://www.w3.org/2001/XMLSchema#')
 
 #: list of namespaces that are considered as default, ie, the user should not be forced to declare:
 default_namespaces = {
+	"xsd"		: "http://www.w3.org/2001/XMLSchema#",
+	"rdf"		: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+	"rdfs"		: "http://www.w3.org/2000/01/rdf-schema#",
+	"dc"		: "http://purl.org/dc/terms/",
 	"foaf"		: "http://xmlns.com/foaf/0.1/",
+	"vcard"		: "http://www.w3.org/2001/vcard-rdf/3.0#",
+	"geo"		: "http://www.w3.org/2003/01/geo/wgs84_pos#",
+	"g"			: "http://rdf.data-vocabulary.org/#",
+	"sioc"		: "http://rdfs.org/sioc/ns#",
+	"owl"		: "http://www.w3.org/2002/07/owl#",
+	"ical"		: "http://www.w3.org/2002/12/cal/icaltzd#",
+	"openid"	: "http://xmlns.openid.net/auth#"
 }
-#default_namespaces = {
-#	"xsd"		: "http://www.w3.org/2001/XMLSchema#",
-#	"rdf"		: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-#	"rdfs"		: "http://www.w3.org/2000/01/rdf-schema#",
-#	"dc"		: "http://purl.org/dc/terms/",
-#	"foaf"		: "http://xmlns.com/foaf/0.1/",
-#	"vcard"		: "http://www.w3.org/2001/vcard-rdf/3.0#",
-#	"geo"		: "http://www.w3.org/2003/01/geo/wgs84_pos#",
-#	"g"			: "http://rdf.data-vocabulary.org/#",
-#	"sioc"		: "http://rdfs.org/sioc/ns#",
-#	"owl"		: "http://www.w3.org/2002/07/owl#",
-#	"ical"		: "http://www.w3.org/2002/12/cal/icaltzd#",
-#	"openid"	: "http://xmlns.openid.net/auth#"
-#}
-
-
 
 VOCABTERM = "vocab"
 
@@ -82,7 +77,26 @@ ns_rdfa_vocab = Namespace("http://www.w3.org/2010/vocabs/rdfa#")
 # several times. Ie, some sort of a caching mechanism is necessary.
 
 class VocabularyRead :
+	"""
+	Wrapper around the "recursive" access to vocabulary files. The main job of this task to retrieve
+	keyword and namespace definitions by accessing an RDFa file stored in a URI as given by the
+	values of the @vocab attribute values. Each vocab class has one instance of this class.
+	
+	There is a caching mechanism to ensure that the same vocabulary file is read only once.
+	@ivar keywords: collection of all keyword mappings
+	@type keywords: dictionary
+	@ivar ns: namespace mapping
+	@type ns: dictionary
+	@cvar vocab_cache: cache, maps a URI on a (keywords,ns) tuple
+	@type vocab_cache: dictionary
+	"""
+	vocab_cache = {}
+	
 	def __init__(self, state) :
+		"""
+		@param state: the state behind this keyword mapping
+		@type state: L{State.ExecutionContext}
+		"""
 		self.state = state
 		from pyRdfa import pyRdfa
 		options = Options(warnings = False,
@@ -91,18 +105,19 @@ class VocabularyRead :
 						  xhtml = (state.options.host_language == XHTML_RDFA),
 						  lax = state.options.lax)
 		options.host_language = state.options.host_language
-		self.processor = pyRdfa(options)
+		# this is the (recursive) RDFa processor:
+		processor = pyRdfa(options)
+
 		self.keywords  = {}
 		self.ns        = {}
-		self._get_graphs()
-		
-	def _get_graphs(self) :
-		if not self.state.node.hasAttribute(VOCABTERM) :
-			return []
-		else :
-			vocabs = self.state.getURI(VOCABTERM)
-			for vocab in vocabs :
-				graph = self.processor.graph_from_source(vocab)
+		# see what the @vocab gives us...
+		for vocab in self.state.getURI(VOCABTERM) :
+			# check the cache...
+			if vocab in VocabularyRead.vocab_cache :
+				(self.keywords, self.ns) = VocabularyRead.vocab_cache[vocab]
+			else :
+				# this vocab value has not been seen yet...
+				graph = processor.graph_from_source(vocab)
 				for (uri,keyword) in graph.subject_objects(ns_rdfa_vocab["term"]) :
 					if isinstance(keyword, Literal) :
 						self.keywords[str(keyword)] = (URIRef(uri),[])
@@ -113,13 +128,32 @@ class VocabularyRead :
 						self.ns[str(prefix)] = Namespace(uri)
 					else :
 						self.state.options.comment_graph.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, vocab, uri))
+				# store the cache value, avoid re-reading again...
+				VocabularyRead.vocab_cache[vocab] = (self.keywords, self.ns)
 
 class Vocab :
+	"""
+	Wrapper around vocabulary management, ie, mapping a keyword (a term) to a URI, as well as a CURIE to a URI (typical
+	examples for keyword are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
+	"state", defined in State.py
+	@ivar state: State to which this instance belongs
+	@type state: L{State.ExecutionContext}
+	@ivar graph: The RDF Graph under generation
+	@type graph: rdflib.Graph
+	@ivar keywords: mapping from keywords to URI-s
+	@type keywords: dictionary
+	@ivar ns: namespace declarations, ie, mapping from prefixes to URIs
+	@type ns: dictionary
+	@ivar xhtml_prefix: prefix used for the XHTML namespace
+	"""
 	def __init__(self, state, graph, inherited_state) :
 		"""Initialize the vocab bound to a specific state. 
 		@param state: the state to which this vocab instance belongs to
+		@type state: L{State.ExecutionContext}
 		@param graph: the RDF graph being worked on
+		@type graph: rdflib.Graph
 		@param inherited_state: the state inherited by the current state. 'None' if this is the top level state.
+		@type inherited_state: L{State.ExecutionContext}
 		"""
 		self.state	= state
 		self.graph	= graph
