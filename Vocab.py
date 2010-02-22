@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.3 2010/01/29 12:42:59 ivan Exp $
-$Date: 2010/01/29 12:42:59 $
+$Id:$
+$Date: $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
