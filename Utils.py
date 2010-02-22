@@ -11,8 +11,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id:$
-$Date: $
+$Id: __init__.py,v 1.11 2010/02/19 12:34:49 ivan Exp $ $Date: 2010/02/19 12:34:49 $
 """
 import urllib
 from rdflib.RDF import RDFNS  as ns_rdf
