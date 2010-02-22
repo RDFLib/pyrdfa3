@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id:$
-$Date:$
+$id:$
+$date:$
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
