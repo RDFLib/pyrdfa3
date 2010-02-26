@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.12 2010-02-26 12:55:25 ivan Exp $ $Date: 2010-02-26 12:55:25 $
+$Id: __init__.py,v 1.13 2010-02-26 12:58:34 ivan Exp $ $Date: 2010-02-26 12:58:34 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -170,7 +170,7 @@ class RDFaError(Exception) :
 
 #########################################################################################################
 # Handling URIs
-class _MyURLopener() :
+class _MyURLopener :
 	"""A wrapper around the urllib2 method to open a resource. Beyond accessing the data itself, the class
 	sets a number of instance variable that might be relevant for processing.
 	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml.
