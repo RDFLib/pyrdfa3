@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.11 2010-02-19 12:34:49 ivan Exp $ $Date: 2010-02-19 12:34:49 $
+$Id: __init__.py,v 1.12 2010-02-26 12:55:25 ivan Exp $ $Date: 2010-02-26 12:55:25 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -148,7 +148,7 @@ from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR, GE
 from pyRdfa.transform.HeadAbout	import head_about_transform
 
 import xml.dom.minidom
-import urlparse, urllib
+import urlparse, urllib, urllib2
 
 
 debug = True
@@ -170,23 +170,35 @@ class RDFaError(Exception) :
 
 #########################################################################################################
 # Handling URIs
-class _MyURLopener(urllib.FancyURLopener) :
-	"""This class raises an exception if an authentication is required to access a specific URI; for the time being,
-	I have not found a proper way of handling that case for a CGI script... For all other features (eg, redirection), it
-	relies on the superclass, ie, the official Python distribution class.
-
-	Also, the class sets an accept header to the outgoing request, namely text/html and application/xhtml+xml
+class _MyURLopener() :
+	"""A wrapper around the urllib2 method to open a resource. Beyond accessing the data itself, the class
+	sets a number of instance variable that might be relevant for processing.
+	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml.
+	
+	@ivar data : the real data, ie, a file-like object
+	@ivar headers : the return headers as sent back by the server
+	@ivar content_type : the 'CONTENT_TYPE' header or, if not set by the server, the empty string
+	@ivar location : the real location of the data (ie, after possible redirection and content negotiation)
 	"""
-	def __init__(self) :
-		urllib.FancyURLopener.__init__(self)
-		self.addheader('Accept','text/html, application/xhtml+xml')
-
-	def prompt_user_passwd(self, host, realm) :
-		"""This is the method to be provided for the superclass in case authentication is required. At the moment, it
-		simply raises an RDFError exception.
-		@raise RDFaError: for authentication requests.
-		"""
-		raise RDFaError,'unfortunately, the distiller cannot handle URI authentication'
+	CONTENT_LOCATION	= 'Content-Location'
+	CONTENT_TYPE		= 'Content-Type'
+	def __init__(self, name) :
+		try :
+			req = urllib2.Request(url=name, headers = {'Accept' : 'text/html, application/xhtml+xml'})
+			self.data		= urllib2.urlopen(req)
+			self.headers	= self.data.info()
+			
+			if _MyURLopener.CONTENT_TYPE in self.headers :
+				self.content_type = self.headers[_MyURLopener.CONTENT_TYPE]
+			else :
+				self.content_type = ""
+			
+			if _MyURLopener.CONTENT_LOCATION in self.headers :
+				self.location = urlparse.urljoin(self.data.geturl(),self.headers[_MyURLopener.CONTENT_LOCATION])
+			else :
+				self.location = name
+		except Exception, msg :
+			raise RDFaError,' %s' % msg
 	
 #########################################################################################################
 class pyRdfa :
@@ -207,13 +219,14 @@ class pyRdfa :
 			self.options = Options()
 		else :
 			self.options = options
-		self.base    = base
+		self.base    	  = base
+		self.content_type = ""
+		
 		self.xml_serializer_registered		= False
 		self.turtle_serializer_registered	= False
 		self.xml_serializer_name			= "my-rdfxml"
 		self.turtle_serializer_name			= "my-turtle"
 		
-	
 	def _get_input(self, name) :
 		"""
 		Trying to guess whether "name" is a URI, a string; it then tries to open these as such accordingly,
@@ -227,14 +240,15 @@ class pyRdfa :
 			# check if this is a URI, ie, if there is a valid 'scheme' part
 			# otherwise it is considered to be a simple file
 			if urlparse.urlparse(name)[0] != "" :
-				retval = _MyURLopener().open(name)
+				url_request 	  = _MyURLopener(name)
+				self.base 		  = url_request.location
+				self.content_type = url_request.content_type
+				return url_request.data
 			else :
-				retval = file(name)
-			self.base = name
-			return retval
+				self.base = name
+				return file(name)
 		else :
 			return name
-		
 		
 	def _register_XML_serializer(self) :
 		"""The default XML Serializer of RDFlib is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer>} is
