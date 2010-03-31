@@ -11,10 +11,92 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.11 2010/02/19 12:34:49 ivan Exp $ $Date: 2010/02/19 12:34:49 $
+$Id:$
+$Date:$
 """
 import urllib
 from rdflib.RDF import RDFNS  as ns_rdf
+import urlparse, urllib2
+import httpheader
+
+
+# Some common media types, better have them at one place to avoid misstyping...
+RDFXML_MT 	= 'application/rdf+xml'
+TURTLE_MT 	= 'text/turtle'
+HTML_MT		= 'text/html'
+XHTML_MT	= 'application/xhtml+xml'
+SVG_MT		= 'application/svg+xml'
+XML_MT		= 'application/xml'
+NT_MT		= 'text/plain'
+
+# mapping suffixes to media types...
+RDFXML = 'application/rdf+xml'
+TURTLE = 'text/turtle'
+_preferred_suffixes = {
+	"rdf"	: RDFXML_MT,
+	"ttl"	: TURTLE_MT,
+	"n3"	: TURTLE_MT,
+	"owl"	: RDFXML_MT,
+	"html"	: HTML_MT,
+	"xhtml"	: XHTML_MT,
+	"svg"	: SVG_MT,
+	"xml"	: XML_MT,
+	"nt"	: NT_MT
+}
+
+#########################################################################################################
+# Handling URIs
+class URIOpener :
+	"""A wrapper around the urllib2 method to open a resource. Beyond accessing the data itself, the class
+	sets a number of instance variable that might be relevant for processing.
+	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml.
+	
+	@ivar data : the real data, ie, a file-like object
+	@ivar headers : the return headers as sent back by the server
+	@ivar content_type : the 'CONTENT_TYPE' header or, if not set by the server, the empty string
+	@ivar location : the real location of the data (ie, after possible redirection and content negotiation)
+	"""
+	CONTENT_LOCATION	= 'Content-Location'
+	CONTENT_TYPE		= 'Content-Type'
+	def __init__(self, name, additional_headers = {}) :
+		"""
+		@param name: URL to be opened
+		@keyword additional_headers: additional HTTP request headers to be added to the call
+		"""
+		try :
+			req = urllib2.Request(url=name)
+
+			for key in additional_headers :
+				req.add_header(key, additional_headers[key])
+			if 'Accept' not in additional_headers :
+				req.add_header('Accept', 'text/html, application/xhtml+xml')
+				
+			self.data		= urllib2.urlopen(req)
+			self.headers	= self.data.info()
+			
+			if URIOpener.CONTENT_TYPE in self.headers :
+				# The call below will remove the possible media type parameters, like charset settings
+				self.content_type = httpheader.content_type(self.headers[URIOpener.CONTENT_TYPE]).media_type
+			else :
+				# check if the suffix can be used for the content type; this may be important
+				# for file:// type URI or if the server is not properly set up to return the right
+				# mime type
+				self.content_type = ""
+				for suffix in _preferred_suffixes.keys() :
+					if name.endswith(suffix) :
+						self.content_type = _preferred_suffixes[suffix]
+						break
+			
+			if URIOpener.CONTENT_LOCATION in self.headers :
+				self.location = urlparse.urljoin(self.data.geturl(),self.headers[URIOpener.CONTENT_LOCATION])
+			else :
+				self.location = name
+		except Exception, msg :
+			from pyRdfa import RDFaError
+			raise RDFaError,' %s' % msg
+
+
+#########################################################################################################
 
 # 'safe' characters for the URI quoting, ie, characters that can safely stay as they are. Other 
 # special characters are converted to their %.. equivalents for namespace prefixes

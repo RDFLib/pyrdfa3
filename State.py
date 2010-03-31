@@ -23,8 +23,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.4 2010-02-19 12:26:14 ivan Exp $
-$Date: 2010-02-19 12:26:14 $
+$Id: State.py,v 1.5 2010-03-31 15:29:41 ivan Exp $
+$Date: 2010-03-31 15:29:41 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -36,7 +36,7 @@ from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from pyRdfa.Options		import Options, GENERIC_XML, XHTML_RDFA, HTML5_RDFA
 from pyRdfa.Utils 		import quote_URI
-from pyRdfa.Vocab		import Vocab, VOCABTERM
+from pyRdfa.Vocab		import Vocab
 
 debug = True
 
@@ -86,7 +86,7 @@ class ExecutionContext :
 	URI references for RDFLib.
 	
 	@ivar options: reference to the overall options
-	@type ivar: L{Options.Options}
+	@type options: L{Options.Options}
 	@ivar base: the 'base' URI
 	@ivar defaultNS: default namespace
 	@ivar lang: language tag (possibly None)
@@ -97,7 +97,7 @@ class ExecutionContext :
 	"""
 
 	#: list of attributes that allow for lists of values and should be treated as such	
-	_list = [ VOCABTERM, "rel", "rev", "property", "typeof" ]
+	_list = [ "profile", "rel", "rev", "property", "typeof" ]
 	#: mapping table from attribute name to the exact method to retrieve the URI(s). Note that this is a class variable that is initialized by the first instance
 	_resource_type = {}
 	#	"href"		:	ExecutionContext._pureURI,
@@ -134,7 +134,8 @@ class ExecutionContext :
 			ExecutionContext._resource_type = {
 				"href"		:	ExecutionContext._pureURI,
 				"src"		:	ExecutionContext._pureURI,
-				VOCABTERM	:	ExecutionContext._pureURI,
+				"profile"	:	ExecutionContext._pureURI,
+				"vocab"	    :   ExecutionContext._pureURI,
 			
 				"about"		:	ExecutionContext._CURIE_with_base,
 				"resource"	:	ExecutionContext._CURIE_with_base,
@@ -342,7 +343,7 @@ class ExecutionContext :
 		if val[0] == '[' :
 			# safe curies became almost optional, mainly for backward compatibility reasons
 			# Note however, that if a safe curie is asked for, a pure URI is not acceptable.
-			# Checked below, and that is why the safe_curie flag is necessary
+			# Is checked below, and that is why the safe_curie flag is necessary
 			if val[-1] != ']' :
 				# that is certainly forbidden: an incomplete safe curie
 				self.options.comment_graph.add_error("Illegal CURIE: %s" % val)
@@ -361,16 +362,10 @@ class ExecutionContext :
 				return None
 			else :
 				return _get_bnode_from_Curie(val[2:])
-				
-		# See if this is a predefined vocabulary term
-		keywordURI = self.vocab.keyword_to_URI(attr, val.lower())
-		if keywordURI != None :
-			# bingo...
-			return keywordURI
 		
 		if val.find(":") == -1 :
 			# this is not of a key:lname format. A possibility is that this is simply
-			# a keyword defined via a @vocab mechanism (explicitly or implicitly)
+			# a keyword defined via a @vocab/@profile mechanism (explicitly or implicitly)
 			# This means that the string starts with a proper alphanumeric character...
 			#
 			# Note here that the rule for relative URIs is to preceed the name with '/' or something similar

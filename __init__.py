@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.13 2010-02-26 12:58:34 ivan Exp $ $Date: 2010-02-26 12:58:34 $
+$Id: __init__.py,v 1.14 2010-03-31 15:29:41 ivan Exp $ $Date: 2010-03-31 15:29:41 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -146,9 +146,10 @@ from pyRdfa.State				import ExecutionContext
 from pyRdfa.Parse				import parse_one_node
 from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR, GENERIC_XML, XHTML_RDFA, HTML5_RDFA
 from pyRdfa.transform.HeadAbout	import head_about_transform
+from pyRdfa.Utils				import URIOpener
 
 import xml.dom.minidom
-import urlparse, urllib, urllib2
+import urlparse
 
 
 debug = True
@@ -168,37 +169,6 @@ class RDFaError(Exception) :
 	Exception class."""
 	pass
 
-#########################################################################################################
-# Handling URIs
-class _MyURLopener :
-	"""A wrapper around the urllib2 method to open a resource. Beyond accessing the data itself, the class
-	sets a number of instance variable that might be relevant for processing.
-	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml.
-	
-	@ivar data : the real data, ie, a file-like object
-	@ivar headers : the return headers as sent back by the server
-	@ivar content_type : the 'CONTENT_TYPE' header or, if not set by the server, the empty string
-	@ivar location : the real location of the data (ie, after possible redirection and content negotiation)
-	"""
-	CONTENT_LOCATION	= 'Content-Location'
-	CONTENT_TYPE		= 'Content-Type'
-	def __init__(self, name) :
-		try :
-			req = urllib2.Request(url=name, headers = {'Accept' : 'text/html, application/xhtml+xml'})
-			self.data		= urllib2.urlopen(req)
-			self.headers	= self.data.info()
-			
-			if _MyURLopener.CONTENT_TYPE in self.headers :
-				self.content_type = self.headers[_MyURLopener.CONTENT_TYPE]
-			else :
-				self.content_type = ""
-			
-			if _MyURLopener.CONTENT_LOCATION in self.headers :
-				self.location = urlparse.urljoin(self.data.geturl(),self.headers[_MyURLopener.CONTENT_LOCATION])
-			else :
-				self.location = name
-		except Exception, msg :
-			raise RDFaError,' %s' % msg
 	
 #########################################################################################################
 class pyRdfa :
@@ -240,7 +210,7 @@ class pyRdfa :
 			# check if this is a URI, ie, if there is a valid 'scheme' part
 			# otherwise it is considered to be a simple file
 			if urlparse.urlparse(name)[0] != "" :
-				url_request 	  = _MyURLopener(name)
+				url_request 	  = URIOpener(name)
 				self.base 		  = url_request.location
 				self.content_type = url_request.content_type
 				return url_request.data
@@ -271,7 +241,8 @@ class pyRdfa :
 			self.turtle_serialzier_registered = True
 
 	def _register_serializers(self, outputFormat) :
-		"""If necessary, register the serializer for a specific name. Frontend to L{_register_XML_serializer} and L{_register_Turtle_serializer}.
+		"""If necessary, register the serializer for a specific name. Frontend to
+		L{_register_XML_serializer} and L{_register_Turtle_serializer}.
 		@param outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml" and "pretty-xml", as well as "turtle" and "n3" are synonyms.
 		@return: the final output format name
 		"""
@@ -462,8 +433,6 @@ def processURI(uri, outputFormat, form={}) :
 	  - C{extras-dc=[true|false]}: implement the Dublin Core dialect to include DC statements from the header. See L{transform.DublinCore} for further details.
 	  - C{extras-openid=[true|false]}: interpret the 'openid' references in the header. See L{transform.OpenID} for further details.
 	  - C{extras-li=[true|false]}: 'ol' and 'ul' elements are possibly transformed to generate collections or containers. See L{transform.ContainersCollections} for further details.
-	  - C{extras-prefix=[true|false]}: the @prefix attribute can be used as a replacement for the xmlns handling. See L{transform.Prefix} for details.
-	  - C{extras-var=[true|false]}: the @var-XXX pattern can also be used for the RDFa attribute (eg, C{@var-resource}). See L{transform.Prefix} for details.
 	 - C{parser=[strict|lax]}: use the "strict" mode, ie, only strict XML input is accepted, or try with the HTML5 parser, too. Default is C{lax}.
 	 - C{host=[xhtml|xml]}: the underlying host language is XHTML or XML (e.g., SVG1.2). In the xml case the C{xml:base} attribute as well as the built-in C{metadata} is properly interpreted. Default is C{xhtml}. Note that the C{svg} value can also be used as an alias to C{xml}.
 	 - C{rdfa11=[true|false]}: implement those features that the RDFa group has already accepted as part of the next release of RDFa but is not yet final
@@ -511,8 +480,9 @@ def processURI(uri, outputFormat, form={}) :
 		from pyRdfa.transform.OpenID                	import OpenID_transform
 		from pyRdfa.transform.DublinCore            	import DC_transform
 		from pyRdfa.transform.ContainersCollections		import decorate_li_s
-		from pyRdfa.transform.Prefix				 	import set_prefixes, handle_vars
-		transformers = [decorate_li_s, OpenID_transform, DC_transform, meta_transform, handle_vars, set_prefixes]
+		# from pyRdfa.transform.Prefix				 	import set_prefixes, handle_vars
+		# transformers = [decorate_li_s, OpenID_transform, DC_transform, meta_transform, handle_vars, set_prefixes]
+		transformers = [decorate_li_s, OpenID_transform, DC_transform, meta_transform]
 	else :
 		if "extra-meta" in form.keys() and form.getfirst("extra-meta").lower() == "true" :
 			from pyRdfa.transform.MetaName import meta_transform
@@ -526,12 +496,12 @@ def processURI(uri, outputFormat, form={}) :
 		if "extra-li" in form.keys() and form.getfirst("extra-li").lower() == "true" :
 			from pyRdfa.transform.ContainersCollections import decorate_li_s
 			transformers.append(decorate_li_s)
-		if "extra-prefix" in form.keys() and form.getfirst("extra-prefix").lower() == "true" :
-			from pyRdfa.transform.Prefix import set_prefixes
-			transformers.append(set_prefixes)
-		if "extra-vars" in form.keys() and form.getfirst("extra-vars").lower() == "true" :
-			from pyRdfa.transform.Prefix import handle_vars
-			transformers.append(handle_vars)
+		#if "extra-prefix" in form.keys() and form.getfirst("extra-prefix").lower() == "true" :
+		#	from pyRdfa.transform.Prefix import set_prefixes
+		#	transformers.append(set_prefixes)
+		#if "extra-vars" in form.keys() and form.getfirst("extra-vars").lower() == "true" :
+		#	from pyRdfa.transform.Prefix import handle_vars
+		#	transformers.append(handle_vars)
 
 	if "warnings" in form.keys() and form.getfirst("warnings").lower() == "true" :
 		warnings = True

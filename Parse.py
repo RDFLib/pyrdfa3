@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.2 2010-01-29 10:58:47 ivan Exp $
-$Date: 2010-01-29 10:58:47 $
+$Id: Parse.py,v 1.3 2010-03-31 15:29:41 ivan Exp $
+$Date: 2010-03-31 15:29:41 $
 """
 
 import sys
@@ -80,7 +80,6 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		for n in node.childNodes :
 			if n.nodeType == node.ELEMENT_NODE : parse_one_node(n, graph, parent_object, state, parent_incomplete_triples)
 		return
-
 
 	#-----------------------------------------------------------------
 	# The goal is to establish the subject and object for local processing
