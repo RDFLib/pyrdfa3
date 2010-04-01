@@ -71,7 +71,7 @@ default_namespaces = {
 }
 
 #: the namespace used in vocabulary management
-ns_rdfa_profile = Namespace("http://www.w3.org/2010/vocabs/rdfa#")
+ns_rdfa_profile = Namespace("http://www.w3.org/ns/rdfa#")
 
 # This is a necessary optimization: we should avoid reading in the same vocabulary definition
 # several times. Ie, some sort of a caching mechanism is necessary.
