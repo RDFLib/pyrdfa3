@@ -23,8 +23,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.5 2010-03-31 15:29:41 ivan Exp $
-$Date: 2010-03-31 15:29:41 $
+$Id: State.py,v 1.6 2010-04-01 08:32:06 ivan Exp $
+$Date: 2010-04-01 08:32:06 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -365,13 +365,13 @@ class ExecutionContext :
 		
 		if val.find(":") == -1 :
 			# this is not of a key:lname format. A possibility is that this is simply
-			# a keyword defined via a @vocab/@profile mechanism (explicitly or implicitly)
+			# a term defined via a @vocab/@profile mechanism (explicitly or implicitly)
 			# This means that the string starts with a proper alphanumeric character...
 			#
 			# Note here that the rule for relative URIs is to preceed the name with '/' or something similar
 			# hence the reliance on alphanumeric character...
 			if val[0].isalpha() :
-				return self.vocab.keyword_to_URI(attr, val.lower())
+				return self.vocab.term_to_URI(attr, val.lower())
 			else :
 				key   = ""
 				lname = val
@@ -383,7 +383,7 @@ class ExecutionContext :
 				key = self.vocab.xhtml_prefix
 				
 		# By now we know that
-		#   - this is not a predefined keyword 
+		#   - this is not a predefined term 
 		#   - this is not a blank node
 		# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
 		retval = self.vocab.CURIE_to_URI(key, lname)
