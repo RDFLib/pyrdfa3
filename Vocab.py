@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Management of vocabularies, keywords, etc.
+Management of vocabularies, terms, etc.
 
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -79,17 +79,17 @@ ns_rdfa_profile = Namespace("http://www.w3.org/ns/rdfa#")
 class ProfileRead :
 	"""
 	Wrapper around the "recursive" access to profile files. The main job of this task to retrieve
-	keyword and namespace definitions by accessing an RDFa file stored in a URI as given by the
+	term and namespace definitions by accessing an RDFa file stored in a URI as given by the
 	values of the @profile attribute values. Each vocab class has one instance of this class.
 	
 	The main reason to put this into a separate class is to localize a caching mechanism, that
 	ensures that the same vocabulary file is read only once.
 	
-	@ivar keywords: collection of all keyword mappings
-	@type keywords: dictionary
+	@ivar terms: collection of all term mappings
+	@type terms: dictionary
 	@ivar ns: namespace mapping
 	@type ns: dictionary
-	@cvar profile_cache: cache, maps a URI on a (keywords,ns) tuple
+	@cvar profile_cache: cache, maps a URI on a (terms,ns) tuple
 	@type profile_cache: dictionary
 	"""
 	profile_cache = {}
@@ -97,7 +97,7 @@ class ProfileRead :
 	
 	def __init__(self, state) :
 		"""
-		@param state: the state behind this keyword mapping
+		@param state: the state behind this term mapping
 		@type state: L{State.ExecutionContext}
 		"""
 		self.state = state
@@ -111,7 +111,7 @@ class ProfileRead :
 		# this is the (recursive) RDFa processor:
 		self.Rdfa_processor = pyRdfa(options)
 
-		self.keywords  = {}
+		self.terms  = {}
 		self.ns        = {}
 		
 		# see what the @vocab gives us...
@@ -125,33 +125,33 @@ class ProfileRead :
 				ProfileRead.profile_stack.append(prof)			
 			# check the cache...
 			if prof in ProfileRead.profile_cache :
-				(self.keywords, self.ns) = ProfileRead.profile_cache[prof]
+				(self.terms, self.ns) = ProfileRead.profile_cache[prof]
 			else :
 				# this vocab value has not been seen yet...
 				graph = self._get_graph(prof)
 				if graph == None : continue
 				
 				for (subj,uri) in graph.subject_objects(ns_rdfa_profile["uri"]) :
-					# subj is, usually, a bnode, and is used as a subject for either a keyword
+					# subj is, usually, a bnode, and is used as a subject for either a term
 					# or a prefix setting
 					# extra check is done to see whether there are more than one settings
 					# rdflib works with iterators and I need the whole set here to make the checks:-(
-					keyword_list = [k for k in graph.objects(subj, ns_rdfa_profile["keyword"])]
+					term_list = [k for k in graph.objects(subj, ns_rdfa_profile["term"])]
 					prefix_list  = [k for k in graph.objects(subj, ns_rdfa_profile["prefix"])]
-					if len(keyword_list) > 0 and len(prefix_list) > 0 :
-						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for keyword and prefix mapping in <%s>" % (uri,prof))
-					elif len(keyword_list) > 1 :
-						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for several keyword mappings in <%s>" % (uri,prof))
+					if len(term_list) > 0 and len(prefix_list) > 0 :
+						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof))
+					elif len(term_list) > 1 :
+						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for several term mappings in <%s>" % (uri,prof))
 					elif len(prefix_list) > 1 :
 						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for several prefix mappings in <%s>" % (uri,prof))
 					else :
 						# everything seems to be o.k., though a check for literals is still to be done
-						if len(keyword_list) > 0 :
-							keyword = keyword_list[0]
-							if isinstance(keyword, Literal) :
-								self.keywords[str(keyword)] = (URIRef(uri),[])
+						if len(term_list) > 0 :
+							term = term_list[0]
+							if isinstance(term, Literal) :
+								self.terms[str(term)] = (URIRef(uri),[])
 							else :
-								self.state.options.comment_graph.add_warning("Non literal keyword <%s> defined in <%s> for <%s>; ignored" % (keyword, prof, uri))
+								self.state.options.comment_graph.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri))
 						if len(prefix_list) > 0 :
 							prefix = prefix_list[0]
 							if isinstance(prefix, Literal) :
@@ -159,7 +159,7 @@ class ProfileRead :
 							else :
 								self.state.options.comment_graph.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, prof, uri))
 				# store the cache value, avoid re-reading again...
-				ProfileRead.profile_cache[prof] = (self.keywords, self.ns)
+				ProfileRead.profile_cache[prof] = (self.terms, self.ns)
 			# Remove infinite anti-recursion measure
 			ProfileRead.profile_stack.pop()
 			
@@ -220,15 +220,15 @@ class ProfileRead :
 
 class Vocab :
 	"""
-	Wrapper around vocabulary management, ie, mapping a keyword (a term) to a URI, as well as a CURIE to a URI (typical
-	examples for keyword are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
+	Wrapper around vocabulary management, ie, mapping a term (a term) to a URI, as well as a CURIE to a URI (typical
+	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
 	"state", defined in State.py
 	@ivar state: State to which this instance belongs
 	@type state: L{State.ExecutionContext}
 	@ivar graph: The RDF Graph under generation
 	@type graph: rdflib.Graph
-	@ivar keywords: mapping from keywords to URI-s
-	@type keywords: dictionary
+	@ivar terms: mapping from terms to URI-s
+	@type terms: dictionary
 	@ivar ns: namespace declarations, ie, mapping from prefixes to URIs
 	@type ns: dictionary
 	@ivar xhtml_prefix: prefix used for the XHTML namespace
@@ -246,42 +246,42 @@ class Vocab :
 		self.graph	= graph
 		
 		# --------------------------------------------------------------------------------
-		# Set the default keyword URI
+		# Set the default term URI
 		def_kw_uri = self.state.getURI("vocab")
 		if inherited_state == None :
 			# Note that this may result in storing None, which is fine
-			self.default_keyword_uri = def_kw_uri
+			self.default_term_uri = def_kw_uri
 		else :
 			if def_kw_uri != None :
-				self.default_keyword_uri = def_kw_uri
+				self.default_term_uri = def_kw_uri
 			else :
-				self.default_keyword_uri = inherited_state.vocab.default_keyword_uri
+				self.default_term_uri = inherited_state.vocab.default_term_uri
 		
 		# Get the recursive definitions, if any
 		recursive_vocab = ProfileRead(self.state)
 		
 		# --------------------------------------------------------------------------------
-		# The simpler case: keywords
+		# The simpler case: terms
 		if inherited_state is None :
 			# this is the vocabulary belonging to the top level of the tree!
-			self.keywords = {}
+			self.terms = {}
 			# TODO: remove this part at some point and exchange it against whatever is decided for the HTML case! 
 			if state.options.host_language != GENERIC_XML :
 				relrev = ["rel","rev"]
-				for key in _predefined_rel : self.keywords[key] = (URIRef(XHTML_URI+key),relrev)
+				for key in _predefined_rel : self.terms[key] = (URIRef(XHTML_URI+key),relrev)
 			# Until here...
-			# add the keywords defined locally
-			for key in recursive_vocab.keywords :
-				self.keywords[key] = recursive_vocab.keywords[key]
+			# add the terms defined locally
+			for key in recursive_vocab.terms :
+				self.terms[key] = recursive_vocab.terms[key]
 		else :
-			if len(recursive_vocab.keywords) == 0 :
-				# just refer to the inherited keywords
-				self.keywords = inherited_state.vocab.keywords
+			if len(recursive_vocab.terms) == 0 :
+				# just refer to the inherited terms
+				self.terms = inherited_state.vocab.terms
 			else :
-				self.keywords = {}
+				self.terms = {}
 				# tried to use the 'update' operation for the dictionary and it failed. Why???
-				for key in inherited_state.vocab.keywords 	: self.keywords[key] = inherited_state.vocab.keywords[key]
-				for key in recursive_vocab.keywords 		: self.keywords[key] = recursive_vocab.keywords[key]
+				for key in inherited_state.vocab.terms 	: self.terms[key] = inherited_state.vocab.terms[key]
+				for key in recursive_vocab.terms 		: self.terms[key] = recursive_vocab.terms[key]
 
 		#-----------------------------------------------------------------
 		# the locally defined namespaces
@@ -396,19 +396,19 @@ class Vocab :
 		else :
 			return None
 
-	def keyword_to_URI(self, attr, keyword) :
-		"""A keyword to URI mapping, where keyword is a simple string and the corresponding
-		URI is defined via the @profile or the @vocab (ie, default keyword uri) mechanism. Returns None if keyword is not defined
-		@param keyword: string
+	def term_to_URI(self, attr, term) :
+		"""A term to URI mapping, where term is a simple string and the corresponding
+		URI is defined via the @profile or the @vocab (ie, default term uri) mechanism. Returns None if term is not defined
+		@param term: string
 		@param attr: attribute name
 		@type attr: string
 		@return: an RDFLib URIRef instance (or None)
 		"""
-		if keyword in self.keywords :
-			uri, attrs = self.keywords[keyword]
+		if term in self.terms :
+			uri, attrs = self.terms[term]
 			if attrs == [] or attr in attrs :
 				return uri
-		elif self.default_keyword_uri != None :
-			return URIRef(self.default_keyword_uri + keyword)
+		elif self.default_term_uri != None :
+			return URIRef(self.default_term_uri + term)
 		return None
 		

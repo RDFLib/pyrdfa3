@@ -23,8 +23,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.6 2010-04-01 08:32:06 ivan Exp $
-$Date: 2010-04-01 08:32:06 $
+$Id: State.py,v 1.7 2010-04-01 08:34:38 ivan Exp $
+$Date: 2010-04-01 08:34:38 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -48,7 +48,6 @@ import urllib
 
 _WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. "
 
-RDFa_PROFILE    = "http://www.w3.org/1999/xhtml/vocab"
 RDFa_VERSION    = "XHTML+RDFa 1.0"
 RDFa_PublicID   = "-//W3C//DTD XHTML+RDFa 1.0//EN"
 RDFa_SystemID   = "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"
@@ -201,18 +200,10 @@ class ExecutionContext :
 					# next level: check the version
 					html = node.ownerDocument.documentElement
 					if not( html.hasAttribute("version") and RDFa_VERSION == html.getAttribute("version") ):
-						# see if least the profile has been set
-						# Find the <head> element
-						head = None
-						for index in range(0,html.childNodes.length-1) :
-							if html.childNodes.item(index).nodeName == "head" :
-								head = html.childNodes.item(index)
-								break
-						if not( head != None and head.hasAttribute("profile") and RDFa_PROFILE in head.getAttribute("profile").strip().split() ) :
-							if self.options.host_language == HTML5_RDFA :
-								self.options.comment_graph.add_info(_WARNING_VERSION + " Note that in the case of HTML5, the DOCTYPE setting may not work...")
-							else :
-								self.options.comment_graph.add_info(_WARNING_VERSION)
+						if self.options.host_language == HTML5_RDFA :
+							self.options.comment_graph.add_info(_WARNING_VERSION + " Note that in the case of HTML5, the DOCTYPE setting may not work...")
+						else :
+							self.options.comment_graph.add_info(_WARNING_VERSION)
 								
 		#-----------------------------------------------------------------
 		# this will be used repeatedly, better store it once and for all...
