@@ -23,8 +23,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.7 2010-04-01 08:34:38 ivan Exp $
-$Date: 2010-04-01 08:34:38 $
+$Id: State.py,v 1.8 2010-04-07 15:23:21 ivan Exp $
+$Date: 2010-04-07 15:23:21 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -69,14 +69,19 @@ def _get_bnode_from_Curie(var) :
 	@param var: CURIE BNode identifier
 	@return: BNode
 	"""
-	if len(var) == 0 :
-		return __empty_bnode
-	if var in __bnodes :
-		return __bnodes[var]
+	if len(var) >= 2 and var[0] == "_" and var[1] == ":" :
+		var = var[2:]
+		if len(var) == 0 :
+			return __empty_bnode
+		if var in __bnodes :
+			return __bnodes[var]
+		else :
+			retval = BNode()
+			__bnodes[var] = retval
+			return retval
 	else :
-		retval = BNode()
-		__bnodes[var] = retval
-		return retval	
+		return None
+
 
 #### Core Class definition
 class ExecutionContext :
@@ -99,19 +104,6 @@ class ExecutionContext :
 	_list = [ "profile", "rel", "rev", "property", "typeof" ]
 	#: mapping table from attribute name to the exact method to retrieve the URI(s). Note that this is a class variable that is initialized by the first instance
 	_resource_type = {}
-	#	"href"		:	ExecutionContext._pureURI,
-	#	"src"		:	ExecutionContext._pureURI,
-	#	"vocab"		:	ExecutionContext._pureURI,
-	#
-	#	"about"		:	ExecutionContext._CURIE_with_base,
-	#	"resource"	:	ExecutionContext._CURIE_with_base,
-	#
-	#	"rel"		:	ExecutionContext._CURIE,
-	#	"rev"		:	ExecutionContext._CURIE,
-	#	"datatype"	:	ExecutionContext._CURIE,
-	#	"typeof"	:	ExecutionContext._CURIE,
-	#	"property"	:	ExecutionContext._CURIE,
-	#}	
 	
 	def __init__(self, node, graph, inherited_state=None, base="", options=None) :
 		"""
@@ -131,19 +123,20 @@ class ExecutionContext :
 		# This additional class initialization that must be done run time, otherwise import errors show up
 		if len(	ExecutionContext._resource_type ) == 0 :	
 			ExecutionContext._resource_type = {
-				"href"		:	ExecutionContext._pureURI,
-				"src"		:	ExecutionContext._pureURI,
-				"profile"	:	ExecutionContext._pureURI,
-				"vocab"	    :   ExecutionContext._pureURI,
+				"href"		:	ExecutionContext._pureURI_with_base,
+				"src"		:	ExecutionContext._pureURI_with_base,
+				"profile"	:	ExecutionContext._pureURI_with_base,
+				"vocab"	    :   ExecutionContext._pureURI_with_base,
 			
-				"about"		:	ExecutionContext._CURIE_with_base,
-				"resource"	:	ExecutionContext._CURIE_with_base,
+				"about"		:	ExecutionContext._URIorPCURIEorSafeCURIE, #ExecutionContext._CURIE_with_base,
+				"resource"	:	ExecutionContext._URIorPCURIEorSafeCURIE, #ExecutionContext._CURIE_with_base,
 			
-				"rel"		:	ExecutionContext._CURIE,
-				"rev"		:	ExecutionContext._CURIE,
-				"datatype"	:	ExecutionContext._CURIE,
-				"typeof"	:	ExecutionContext._CURIE,
-				"property"	:	ExecutionContext._CURIE,
+				# these were all set to CURIE
+				"rel"		:	ExecutionContext._URIOrCURIE,
+				"rev"		:	ExecutionContext._URIOrCURIE,
+				"datatype"	:	ExecutionContext._URIOrCURIE,
+				"typeof"	:	ExecutionContext._URIOrCURIE,
+				"property"	:	ExecutionContext._URIOrCURIE,
 			}	
 		#-----------------------------------------------------------------
 		# This is not inherited:-)
@@ -240,6 +233,7 @@ class ExecutionContext :
 		else :
 			self.defaultNS = None
 
+	#------------------------------------------------------------------------------------------------------------
 	def _check_create_URIRef(self, uri) :
 		"""
 		Mini helping function: it checks whether a uri is using a usual scheme before a URIRef is created. In case
@@ -252,12 +246,10 @@ class ExecutionContext :
 			self.options.comment_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 		return URIRef(val)
 
-	def _pureURI(self, attr, val) :
+	def _pureURI(self, val) :
 		"""Returns a URI for a 'pure' URI (ie, no CURIE). The value should not be emtpy at this point.
 		@param val: attribute value to be interpreted
 		@type val: string
-		@param attr: attribute name
-		@type attr: string
 		@return: an RDFLib URIRef instance
 		"""
 		assert val != ""
@@ -278,7 +270,7 @@ class ExecutionContext :
 		else :
 			# Trust the python library...
 			# Well, not quite:-) there is what is, in my view, a bug in the urljoin; in some cases it
-			# swallows the '#' or '?' character at the end. This is, clearly, a problem with
+			# swallows the '#' or '?' character at the end. This is clearly a problem with
 			# Semantic Web URI-s
 			joined = urlparse.urljoin(self.base, val)
 			try :
@@ -291,10 +283,10 @@ class ExecutionContext :
 
 	def _pureURI_with_base(self, attr, val) :
 		"""Returns a URI for a 'pure' URI (ie, no CURIE). An error is added to the graph is Safe CURIE is
-		used. If the value is empty, the base is returned
+		used. If the value is empty, the base is returned.
 		@param val: attribute value to be interpreted
 		@type val: string
-		@param attr: attribute name
+		@param attr: attribute name (note that this method does not use this value, is only there to have an identical signature with other methods, used indirectly...)
 		@type attr: string
 		@return: an RDFLib URIRef instance or None if Safe Curis is used
 		"""
@@ -304,22 +296,12 @@ class ExecutionContext :
 			self.options.comment_graph.add_error("Illegal usage of CURIE: %s" % val)
 			return None
 		else :
-			return self._pureURI(attr, val)
-		
-	def _CURIE_with_base(self, attr, val) :
-		"""Returns a URI for a CURIE; if the CURIE is empty, the base value returned.
-		@param val: attribute value to be interpreted
-		@type val: string
-		@param attr: attribute name
-		@type attr: string
-		@return: an RDFLib URIRef instance 
-		"""
-		if len(val) == 0 :
-			return URIRef(self.base)
-		return self._CURIE(attr, val)
+			return self._pureURI(val)
 
-	def _CURIE(self, attr, val) :
+	def _URIOrCURIE(self, attr, val) :
 		"""Returns a URI for a CURIE; if the CURIE is empty, None is returned (ie, I{not} the base)
+		Term processing is allowed; relative URIs are not used. Typical usage: @rel. No safe CURIE is allowed here.
+		
 		@param val: attribute value to be interpreted
 		@type val: string
 		@param attr: attribute name
@@ -329,6 +311,44 @@ class ExecutionContext :
 		val.strip()
 		if val == "" :
 			return None
+
+		retval = _get_bnode_from_Curie(val)
+		if retval :
+			# we got a BNode
+			# However, we should check whether a bnode is acceptable at this position or not:
+			if attr in ["property", "rel", "rev"] :
+				self.options.comment_graph.add_error("Blank node CURIE cannot be used in property position: %s" % val)
+				return None
+			else :
+				return retval
+		else :
+			if val.find(":") == -1 :
+				# this is not of a key:lname format, ie, it must be a term
+				#
+				return self.vocab.term_to_URI(attr, val.lower())
+			else :
+				# By now we know that
+				#   - this is not a predefined term 
+				#   - this is not a blank node
+				# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
+				retval = self.vocab.CURIE_to_URI(val)
+				if retval :
+					# yep, we got a real URI
+					return retval
+				else :
+					return self._pureURI(val)
+	
+	def _URIorPCURIEorSafeCURIE(self, attr, val) :
+		"""Returns a URI for a CURIE; relative URI-s are allowed, term is processed only if part of a safe curie. Typical usage: @about.
+		@param val: attribute value to be interpreted
+		@type val: string
+		@param attr: attribute name
+		@type attr: string
+		@return: an RDFLib URIRef instance or None
+		"""
+		val.strip()
+		if val == "" :
+			return URIRef(self.base)
 
 		safe_curie = False
 		if val[0] == '[' :
@@ -344,51 +364,37 @@ class ExecutionContext :
 				safe_curie = True
 				
 		# Get possible blank nodes out of the way
-		if len(val) >= 2 and val[0] == "_" and val[1] == ":" :
-			# this is a blank node...
-			# However, RDF does not allow blank nodes in predicate position,
-			# better check
-			if attr in ["property", "rel", "rev"] :
-				self.options.comment_graph.add_error("Blank node CURIE cannot be used in property position: %s" % val)
-				return None
-			else :
-				return _get_bnode_from_Curie(val[2:])
-		
-		if val.find(":") == -1 :
-			# this is not of a key:lname format. A possibility is that this is simply
-			# a term defined via a @vocab/@profile mechanism (explicitly or implicitly)
-			# This means that the string starts with a proper alphanumeric character...
-			#
-			# Note here that the rule for relative URIs is to preceed the name with '/' or something similar
-			# hence the reliance on alphanumeric character...
-			if val[0].isalpha() :
-				return self.vocab.term_to_URI(attr, val.lower())
-			else :
-				key   = ""
-				lname = val
-		else :
-			key   = val.split(":", 1)[0]
-			lname = val.split(":", 1)[1]
-			if key == "" :
-				# This is the ":blabla" case
-				key = self.vocab.xhtml_prefix
-				
-		# By now we know that
-		#   - this is not a predefined term 
-		#   - this is not a blank node
-		# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
-		retval = self.vocab.CURIE_to_URI(key, lname)
+		retval = _get_bnode_from_Curie(val)
 		if retval :
-			# yep, we got a real URI
+			# we got a BNode
 			return retval
-		elif safe_curie :
-			# Oops. The author used a safe curie but the value was not
-			# interpreted as such. This should not be the case if a safe curie was used, ie,
-			# an error should be raised.
-			self.options.comment_graph.add_error("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
-			return None
-		else :
-			return self._pureURI(attr, val)
+		else :	
+			if val.find(":") == -1 :
+				# this is not of a key:lname format. A possibility is that this is a
+				# term defined via a @vocab/@profile mechanism (explicitly or implicitly),
+				# but that is allowed only if it was a safe curie. Any other case should
+				# be considered as a relative URI
+				if safe_curie :
+					return self.vocab.term_to_URI(attr, val.lower())
+				else :
+					return self._pureURI(val)
+			else :				
+				# By now we know that
+				#   - this is not a term 
+				#   - this is not a blank node
+				# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
+				retval = self.vocab.CURIE_to_URI(val)
+				if retval :
+					# yep, we got a real URI
+					return retval
+				elif safe_curie :
+					# Oops. The author used a safe curie but the value was not
+					# interpreted as such. This should not be the case if a safe curie was used, ie,
+					# an error should be raised.
+					self.options.comment_graph.add_error("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
+					return None
+				else :
+					return self._pureURI(val)
 
 	# -----------------------------------------------------------------------------------------------
 
@@ -423,4 +429,90 @@ class ExecutionContext :
 		else :
 			retval = func(self, attr, val)
 		return retval
+
+	############################# Old Version, probably to be thrown out ##########################
+	#def _CURIE_with_base(self, attr, val) :
+	#	"""Returns a URI for a CURIE; if the CURIE is empty, the base value returned.
+	#	@param val: attribute value to be interpreted
+	#	@type val: string
+	#	@param attr: attribute name
+	#	@type attr: string
+	#	@return: an RDFLib URIRef instance 
+	#	"""
+	#	if len(val) == 0 :
+	#		return URIRef(self.base)
+	#	return self._CURIE(attr, val)
+	#
+	#def _CURIE(self, attr, val) :
+	#	"""Returns a URI for a CURIE; if the CURIE is empty, None is returned (ie, I{not} the base)
+	#	@param val: attribute value to be interpreted
+	#	@type val: string
+	#	@param attr: attribute name
+	#	@type attr: string
+	#	@return: an RDFLib URIRef instance or None
+	#	"""
+	#	val.strip()
+	#	if val == "" :
+	#		return None
+	#
+	#	safe_curie = False
+	#	if val[0] == '[' :
+	#		# safe curies became almost optional, mainly for backward compatibility reasons
+	#		# Note however, that if a safe curie is asked for, a pure URI is not acceptable.
+	#		# Is checked below, and that is why the safe_curie flag is necessary
+	#		if val[-1] != ']' :
+	#			# that is certainly forbidden: an incomplete safe curie
+	#			self.options.comment_graph.add_error("Illegal CURIE: %s" % val)
+	#			return None
+	#		else :
+	#			val = val[1:-1]
+	#			safe_curie = True
+	#			
+	#	# Get possible blank nodes out of the way
+	#	if len(val) >= 2 and val[0] == "_" and val[1] == ":" :
+	#		# this is a blank node...
+	#		# However, RDF does not allow blank nodes in predicate position,
+	#		# better check
+	#		if attr in ["property", "rel", "rev"] :
+	#			self.options.comment_graph.add_error("Blank node CURIE cannot be used in property position: %s" % val)
+	#			return None
+	#		else :
+	#			return _get_bnode_from_Curie(val[2:])
+	#	
+	#	if val.find(":") == -1 :
+	#		# this is not of a key:lname format. A possibility is that this is simply
+	#		# a term defined via a @vocab/@profile mechanism (explicitly or implicitly)
+	#		# This means that the string starts with a proper alphanumeric character...
+	#		#
+	#		# Note here that the rule for relative URIs is to preceed the name with '/' or something similar
+	#		# hence the reliance on alphanumeric character...
+	#		if val[0].isalpha() :
+	#			return self.vocab.term_to_URI(attr, val.lower())
+	#		else :
+	#			key   = ""
+	#			lname = val
+	#	else :
+	#		key   = val.split(":", 1)[0]
+	#		lname = val.split(":", 1)[1]
+	#		if key == "" :
+	#			# This is the ":blabla" case
+	#			key = self.vocab.xhtml_prefix
+	#			
+	#	# By now we know that
+	#	#   - this is not a predefined term 
+	#	#   - this is not a blank node
+	#	# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
+	#	retval = self.vocab.CURIE_to_URI(key, lname)
+	#	if retval :
+	#		# yep, we got a real URI
+	#		return retval
+	#	elif safe_curie :
+	#		# Oops. The author used a safe curie but the value was not
+	#		# interpreted as such. This should not be the case if a safe curie was used, ie,
+	#		# an error should be raised.
+	#		self.options.comment_graph.add_error("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
+	#		return None
+	#	else :
+	#		return self._pureURI(attr, val)
+	#
 	

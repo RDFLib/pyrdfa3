@@ -378,13 +378,19 @@ class Vocab :
 				self.xhtml_prefix = XHTML_PREFIX + '_' + ("%d" % random.randint(1,1000))
 				self.ns[self.xhtml_prefix] = Namespace(XHTML_URI)
 
-	def CURIE_to_URI(self, prefix, lname) :
+	def CURIE_to_URI(self, val) :
 		"""CURIE to URI mapping. Note that this method does not take care of the
 		blank node management, ie, when the key is '_'; this is something that
 		has to be taken care of summer higher up.
-		@param prefix: the prefix defined for the CURIE
-		@param lname: local name
+		@param val: the full CURIE
+		@type val: string
 		"""
+		prefix	= val.split(":", 1)[0]
+		lname	= val.split(":", 1)[1]
+
+		if prefix == "" :
+			prefix = self.xhtml_prefix
+			
 		if prefix in self.ns :
 			# yep, we have a CURIE here!
 			# ensure a nicer output...
