@@ -9,15 +9,15 @@ Management of vocabularies, terms, etc.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
-@var XHTML_PREFIX: prefix for the XHTML vocabulary namespace
+@var XHTML_PREFIX: prefix for the XHTML vocabulary URI
 @var XHTML_URI: URI prefix of the XHTML vocabulary
 @var usual_protocols: list of "usual" protocols (used to generate warnings when CURIES are not protected)
 @var _predefined_rel: list of predefined C{@rev} and C{@rel} values that should be mapped onto the XHTML vocabulary URI-s.
 """
 
 """
-$Id:$
-$Date:$
+$Id: Curie.py,v 1.1 2010-04-10 10:46:02 ivan Exp $
+$Date: 2010-04-10 10:46:02 $
 """
 
 import re, sys
@@ -30,7 +30,7 @@ from rdflib.URIRef		import URIRef
 from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from rdflib.Graph		import Graph
-from pyRdfa.Options		import Options, GENERIC_XML, XHTML_RDFA, HTML5_RDFA
+from pyRdfa.Options		import Options, RDFA_CORE, XHTML_RDFA, HTML5_RDFA
 from pyRdfa.Utils 		import quote_URI, URIOpener, RDFXML_MT, TURTLE_MT, HTML_MT, XHTML_MT, NT_MT
 import xml.dom.minidom
 
@@ -39,17 +39,20 @@ debug = True
 import random
 import urlparse
 
+XHTML_PREFIX = "xhv"
+XHTML_URI    = "http://www.w3.org/1999/xhtml/vocab#"
+
 _WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. Note that in the case of HTML5, the DOCTYPE setting may not work..."
 
 ####Predefined @rel/@rev/@property values
 # predefined values for the @rel and @rev values. These are considered to be part of a specific
 # namespace, defined by the RDFa document.
-XHTML_PREFIX = "xhv"
-XHTML_URI    = "http://www.w3.org/1999/xhtml/vocab#"
-_predefined_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
-					'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next',
-					'p3pv1', 'prev', 'role', 'section', 'subsection', 'start', 'license',
-					'up', 'last', 'stylesheet', 'first', 'top']
+_predefined_html_rel  = [
+	'alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
+	'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next',
+	'p3pv1', 'prev', 'role', 'section', 'subsection', 'start', 'license',
+	'up', 'last', 'stylesheet', 'first', 'top'
+]
 
 _XSD_NS = Namespace(u'http://www.w3.org/2001/XMLSchema#')
 
@@ -101,22 +104,14 @@ class ProfileRead :
 		@type state: L{State.ExecutionContext}
 		"""
 		self.state = state
-		from pyRdfa import pyRdfa
-		options = Options(warnings = False,
-						  space_preserve = False,
-						  transformers = [],
-						  xhtml = (state.options.host_language == XHTML_RDFA),
-						  lax = state.options.lax)
-		options.host_language = state.options.host_language
-		# this is the (recursive) RDFa processor:
-		self.Rdfa_processor = pyRdfa(options)
 
+		# Terms are stored as tuples; the second element is a boolean, defining whether the term is case-sensitive (default) or not
+		# at the moment, there are no rdfa vocabulary terms to set the latter, but it is important for the html cases
 		self.terms  = {}
-		self.ns        = {}
+		self.ns     = {}
 		
-		# see what the @vocab gives us...
+		# see what the @profile gives us...
 		for prof in self.state.getURI("profile") :
-
 			# avoid infinite recursion here...
 			if prof in ProfileRead.profile_stack :
 				# That one has already been done, danger of recursion:-(
@@ -136,8 +131,8 @@ class ProfileRead :
 					# or a prefix setting
 					# extra check is done to see whether there are more than one settings
 					# rdflib works with iterators and I need the whole set here to make the checks:-(
-					term_list = [k for k in graph.objects(subj, ns_rdfa_profile["term"])]
-					prefix_list  = [k for k in graph.objects(subj, ns_rdfa_profile["prefix"])]
+					term_list 	= [k for k in graph.objects(subj, ns_rdfa_profile["term"])]
+					prefix_list	= [k for k in graph.objects(subj, ns_rdfa_profile["prefix"])]
 					if len(term_list) > 0 and len(prefix_list) > 0 :
 						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof))
 					elif len(term_list) > 1 :
@@ -149,7 +144,7 @@ class ProfileRead :
 						if len(term_list) > 0 :
 							term = term_list[0]
 							if isinstance(term, Literal) :
-								self.terms[str(term)] = (URIRef(uri),[])
+								self.terms[str(term)] = (URIRef(uri),True)
 							else :
 								self.state.options.comment_graph.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri))
 						if len(prefix_list) > 0 :
@@ -207,9 +202,11 @@ class ProfileRead :
 				(type,value,traceback) = sys.exc_info()
 				self.state.options.comment_graph.add_warning("Could not parse N-Triple content at <%s> (%s)" % (name,value))
 				return None
-		elif content.content_type == HTML_MT or content.content_type == XHTML_MT :
+		elif content.content_type == HTML_MT or content.content_type == XHTML_MT or re.match("application/[a-zA-Z0-9]+\+xml",content.content_type) != None :
 			try :
-				return self.Rdfa_processor.graph_from_source(content.data)		
+				from pyRdfa import pyRdfa
+				options = Options(warnings = False)
+				return pyRdfa(options).graph_from_source(content.data)
 			except :
 				(type,value,traceback) = sys.exc_info()
 				self.state.options.comment_graph.add_warning("Could not parse RDFa content at <%s> (%s)" % (name,value))
@@ -246,29 +243,41 @@ class Vocab :
 		self.graph	= graph
 		
 		# --------------------------------------------------------------------------------
+		# Set the default CURIE URI
+		if inherited_state == None :
+			self.default_curie_uri = Namespace(XHTML_URI)
+			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)
+		else :
+			self.default_curie_uri = inherited_state.vocab.default_curie_uri
+		
+		# --------------------------------------------------------------------------------
 		# Set the default term URI
 		def_kw_uri = self.state.getURI("vocab")
 		if inherited_state == None :
 			# Note that this may result in storing None, which is fine
-			self.default_term_uri = def_kw_uri
+			# However, the HTML/XHTML case has to be handled in a somewhat different manner
+			if def_kw_uri == None and (self.state.options.host_language == XHTML_RDFA or self.state.options.host_language) :
+				self.default_term_uri = XHTML_URI
+			else :
+				self.default_term_uri = def_kw_uri
 		else :
 			if def_kw_uri != None :
 				self.default_term_uri = def_kw_uri
 			else :
 				self.default_term_uri = inherited_state.vocab.default_term_uri
 		
+		# --------------------------------------------------------------------------------
 		# Get the recursive definitions, if any
 		recursive_vocab = ProfileRead(self.state)
 		
 		# --------------------------------------------------------------------------------
-		# The simpler case: terms
+		# The simpler case: terms, adding those that have been defined by a possible @profile file
 		if inherited_state is None :
 			# this is the vocabulary belonging to the top level of the tree!
 			self.terms = {}
 			# TODO: remove this part at some point and exchange it against whatever is decided for the HTML case! 
-			if state.options.host_language != GENERIC_XML :
-				relrev = ["rel","rev"]
-				for key in _predefined_rel : self.terms[key] = (URIRef(XHTML_URI+key),relrev)
+			if self.state.options.host_language == XHTML_RDFA or self.state.options.host_language :
+				for key in _predefined_html_rel : self.terms[key] = (URIRef(XHTML_URI+key),False)
 			# Until here...
 			# add the terms defined locally
 			for key in recursive_vocab.terms :
@@ -289,43 +298,10 @@ class Vocab :
 				
 		# Add the namespaces defined via a @profile
 		for key in recursive_vocab.ns : dict[key] = recursive_vocab.ns[key]
-		
-		# Add the locally defined namespaces using the @prefix syntax
-		# this may override the definition in @profile
-		if state.node.hasAttribute("prefix") :
-			pr = state.node.getAttribute("prefix")
-			if pr != None :
-				# '=' may be surrounded by whitespace characters.
-				for item in re.sub("\s*=\s*","=",pr.strip()).split() :
-					ns = item.strip().split('=')
-					if len(ns) >= 3 :
-						# this is the case when either the left hand or the right hand side of a 
-						# '=' is empty and there are several declarations in @prefix
-						state.options.comment_graph.add_error("Error in @prefix, ambiguous prefix declaration: %s" % ns)
-						continue
-					elif len(ns) <= 1 :
-						# stand alone term without any '=' in @prefix
-						state.options.comment_graph.add_error("Error in @prefix, uninterpretable prefix declaration: %s" % ns[0])
-						continue
-					elif len(ns) > 1 :
-						# sorting out the cases when the left or the right hand side of '=' is empty and
-						# this is the only declaration in @prefix (cumulated cases are handled by the case for len(ns)>=3
-						if ns[1] == "" :
-							state.options.comment_graph.add_error("Error in @prefix, missing URI in prefix declaration: %s" % ns[0])
-							continue
-						if ns[0] == "" :
-							state.options.comment_graph.add_error("Error in @prefix, missing prefix for prefix declaration: %s" % ns[1])
-							continue	
-						(prefix,value) = (ns[0],ns[1])
-						# I am not sure how this case will be handled, though; this was used in the Prefix hgrddl module
-						# DEFAULTNS="DEFAULTNS"
-						uri = quote_URI(value, state.options)
-						ns  = Namespace(uri)
-						dict[prefix] = ns
-		
+
 		# Add the locally defined namespaces using the xmlns: syntax
 		# Note that the placement of this code means that the local definitions will override
-		# the effects of a @profile or @prefix
+		# the effects of a @profile
 		for i in range(0, state.node.attributes.length) :
 			attr = state.node.attributes.item(i)
 			if attr.name.find('xmlns:') == 0 :	
@@ -345,6 +321,35 @@ class Vocab :
 						# Add an entry to the dictionary, possibly overriding an existing one
 						dict[prefix] = ns
 
+		# Add the locally defined namespaces using the @prefix syntax
+		# this may override the definition in @profile and @xmlns
+		if state.node.hasAttribute("prefix") :
+			pr = state.node.getAttribute("prefix")
+			if pr != None :
+				# separator character is whitespace
+				pr_list = pr.strip().split()
+				for i in range(0,len(pr_list),2) :
+					prefix = pr_list[i]
+					# see if there is a URI at all
+					if i == len(pr_list) - 1 :
+						state.options.comment_graph.add_error("Missing URI in prefix declaration for %s in %s" % (prefix,pr))
+						break
+					else :
+						value = pr_list[i+1]
+					
+					# see if the value of prefix is o.k., ie, there is a ':' at the end
+					if prefix[-1] != ':' :
+						state.options.comment_graph.add_error("Invalid prefix declaration %s in %s" % (prefix,pr))
+						continue
+					else :
+						prefix = prefix[:-1]
+						uri = Namespace(quote_URI(value, state.options))
+						if prefix == "" :
+							#something to be done here
+							self.default_curie_uri = uri
+						else :
+							dict[prefix] = uri
+
 		# See if anything has been collected at all.
 		# If not, the namespaces of the incoming state is
 		# taken over by reference. Otherwise that is copied to the
@@ -358,25 +363,6 @@ class Vocab :
 				for key in dict						: self.ns[key] = dict[key]
 			else :
 				self.ns = dict
-				
-		#------------------------------------------------------------------------
-				
-		# see if the xhtml core vocabulary has been set
-		# This whole code seems to be relevant for an XHTML case only if at all
-		self.xhtml_prefix = None
-		for prefix in self.ns.keys() :
-			if XHTML_URI == str(self.ns[prefix]) :
-				self.xhtml_prefix = prefix
-				break
-		if self.xhtml_prefix == None :
-			if XHTML_PREFIX not in self.ns :
-				self.ns[XHTML_PREFIX] = Namespace(XHTML_URI)
-				self.xhtml_prefix = XHTML_PREFIX
-			else :
-				# the most disagreeable thing, the user has used
-				# the prefix for something else...
-				self.xhtml_prefix = XHTML_PREFIX + '_' + ("%d" % random.randint(1,1000))
-				self.ns[self.xhtml_prefix] = Namespace(XHTML_URI)
 
 	def CURIE_to_URI(self, val) :
 		"""CURIE to URI mapping. Note that this method does not take care of the
@@ -389,9 +375,8 @@ class Vocab :
 		lname	= val.split(":", 1)[1]
 
 		if prefix == "" :
-			prefix = self.xhtml_prefix
-			
-		if prefix in self.ns :
+			return self.default_curie_uri[lname]
+		elif prefix in self.ns :
 			# yep, we have a CURIE here!
 			# ensure a nicer output...
 			self.graph.bind(prefix, self.ns[prefix])
@@ -410,11 +395,18 @@ class Vocab :
 		@type attr: string
 		@return: an RDFLib URIRef instance (or None)
 		"""
-		if term in self.terms :
-			uri, attrs = self.terms[term]
-			if attrs == [] or attr in attrs :
-				return uri
-		elif self.default_term_uri != None :
+		for defined_term in self.terms :
+			uri, case_sensitive = self.terms[defined_term]
+			if case_sensitive :
+				if term == defined_term :
+					return uri
+			else :
+				if term.lower() == defined_term.lower() :
+					return uri
+
+		# check the default term uri, if any
+		if self.default_term_uri != None :
 			return URIRef(self.default_term_uri + term)
+
 		return None
 		
