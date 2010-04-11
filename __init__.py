@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.14 2010-03-31 15:29:41 ivan Exp $ $Date: 2010-03-31 15:29:41 $
+$Id: __init__.py,v 1.15 2010-04-11 15:44:45 ivan Exp $ $Date: 2010-04-11 15:44:45 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -144,9 +144,9 @@ from rdflib.RDFS		import RDFSNS as ns_rdfs
 
 from pyRdfa.State				import ExecutionContext
 from pyRdfa.Parse				import parse_one_node
-from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR, GENERIC_XML, XHTML_RDFA, HTML5_RDFA
+from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR, RDFA_CORE, XHTML_RDFA, HTML5_RDFA
 from pyRdfa.transform.HeadAbout	import head_about_transform
-from pyRdfa.Utils				import URIOpener
+from pyRdfa.Utils				import URIOpener, HTML_MT, XHTML_MT, XML_MT
 
 import xml.dom.minidom
 import urlparse
@@ -173,24 +173,24 @@ class RDFaError(Exception) :
 #########################################################################################################
 class pyRdfa :
 	"""Main processing class for the distiller"""
-	#: For some doctype and element name combinations an automatic switch to an input mode is done
-	_switch = {
-		("http://www.w3.org/1999/xhtml","html") : XHTML_RDFA,
-		("http://www.w3.org/2000/svg","svg")    : GENERIC_XML
-	}
 	
-	def __init__(self, options = None, base = "") :
+	def __init__(self, options = None, base = "", media_type = "") :
 		"""
 		@keyword options: Options for the distiller
 		@type options: L{Options}
 		@keyword base: URI for the default "base" value (usually the URI of the file to be processed)
+		@keyword media_type: explicit setting of media type (a.k.a. media type) of the the RDFa source
 		"""
+		self.base    	  = base
+
+		# predefined content type
+		self.media_type = media_type
+
 		if options == None :
 			self.options = Options()
 		else :
 			self.options = options
-		self.base    	  = base
-		self.content_type = ""
+			self.options.set_host_language(self.media_type)
 		
 		self.xml_serializer_registered		= False
 		self.turtle_serializer_registered	= False
@@ -212,10 +212,23 @@ class pyRdfa :
 			if urlparse.urlparse(name)[0] != "" :
 				url_request 	  = URIOpener(name)
 				self.base 		  = url_request.location
-				self.content_type = url_request.content_type
+				if self.media_type == "" :
+					if url_request.content_type in [ XHTML_MT, HTML_MT, XML_MT ] :
+						self.media_type = url_request.content_type
+					else :
+						self.media_type = XML_MT
+					self.options.set_host_language(self.media_type)
 				return url_request.data
 			else :
 				self.base = name
+				if self.media_type == "" :
+					if name.endswith(".xhtml") :
+						self.media_type = XHTML_MT
+					elif name.endswith(".html") :
+						self.media_type = HTML_MT
+					else :
+						self.media_type = XML_MT
+					self.options.set_host_language(self.media_type)
 				return file(name)
 		else :
 			return name
@@ -354,7 +367,6 @@ class pyRdfa :
 		input = self._get_input(name)
 		msg = ""
 		
-		# Check if the host language is HTML5 or not
 		parser = None
 		if self.options.host_language == HTML5_RDFA :
 			import html5lib
@@ -362,20 +374,8 @@ class pyRdfa :
 			parse = parser.parse
 		else :
 			# in other cases an XML parser has to be used
-			parse = xml.dom.minidom.parse
-			
+			parse = xml.dom.minidom.parse			
 		dom = parse(input)
-		
-		# Try to second-guess the input type for the non HTML5 case.
-		# This is _not_ really kosher, but the minidom is not really namespace aware...
-		# In practice the goal is to have the system recognize svg content automatically
-		# I expect this to possibly disappear in case of RDFa 1.1
-		if 	self.options.host_language != HTML5_RDFA :
-			top = dom.documentElement
-			if top.hasAttribute("xmlns") :
-				key = (top.getAttribute("xmlns"), top.nodeName)
-				if key in self._switch :
-					self.options.host_language = self._switch[key]
 
 		return self.graph_from_DOM(dom, graph)	
 	
@@ -433,9 +433,7 @@ def processURI(uri, outputFormat, form={}) :
 	  - C{extras-dc=[true|false]}: implement the Dublin Core dialect to include DC statements from the header. See L{transform.DublinCore} for further details.
 	  - C{extras-openid=[true|false]}: interpret the 'openid' references in the header. See L{transform.OpenID} for further details.
 	  - C{extras-li=[true|false]}: 'ol' and 'ul' elements are possibly transformed to generate collections or containers. See L{transform.ContainersCollections} for further details.
-	 - C{parser=[strict|lax]}: use the "strict" mode, ie, only strict XML input is accepted, or try with the HTML5 parser, too. Default is C{lax}.
-	 - C{host=[xhtml|xml]}: the underlying host language is XHTML or XML (e.g., SVG1.2). In the xml case the C{xml:base} attribute as well as the built-in C{metadata} is properly interpreted. Default is C{xhtml}. Note that the C{svg} value can also be used as an alias to C{xml}.
-	 - C{rdfa11=[true|false]}: implement those features that the RDFa group has already accepted as part of the next release of RDFa but is not yet final
+	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header shoudl be used
 
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
 	@param outputFormat: serialization formats, as understood by RDFLib. Note that though "turtle" is
@@ -458,21 +456,18 @@ def processURI(uri, outputFormat, form={}) :
 		base	= uri
 
 	# working through the possible options
-	# Host language: generic XML or strictly XHTML
-	xhtml = True
-	if "host" in form.keys() and form.getfirst("host").lower() == "xhtml" :
-		xhtml = True
-	if "host" in form.keys() and (form.getfirst("host").lower() == "xml" or form.getfirst("host").lower() == "svg"):
-		xhtml = False
-
-	# Lax parsing for XHTML is allowed
-	lax = True
-	if "parser" in form.keys() and form.getfirst("parser").lower() == "strict" :
-		# the request is to stick to XHTML
-		lax = False
-	if "parser" in form.keys() and form.getfirst("parser").lower() == "lax" :
-		# the request is to be lax
-		lax = True
+	# Host language: HTML, XHTML, or XML
+	# Note that these options should be used for the upload and inline version only in case of a form
+	# for real uris the returned content type should be used
+	if "host_language" in form.keys() :
+		if form.getfirst("host_language").lower() == "xhtml" :
+			media_type = XHTML_MT
+		elif form.getfirst("host_language").lower() == "html" :
+			media_type = HTML_MT
+		else :
+			media_type = XML_MT
+	else :
+		media_type = ""
 		
 	transformers = []
 	if "extras" in form.keys() and form.getfirst("extras").lower() == "true" :
@@ -480,8 +475,6 @@ def processURI(uri, outputFormat, form={}) :
 		from pyRdfa.transform.OpenID                	import OpenID_transform
 		from pyRdfa.transform.DublinCore            	import DC_transform
 		from pyRdfa.transform.ContainersCollections		import decorate_li_s
-		# from pyRdfa.transform.Prefix				 	import set_prefixes, handle_vars
-		# transformers = [decorate_li_s, OpenID_transform, DC_transform, meta_transform, handle_vars, set_prefixes]
 		transformers = [decorate_li_s, OpenID_transform, DC_transform, meta_transform]
 	else :
 		if "extra-meta" in form.keys() and form.getfirst("extra-meta").lower() == "true" :
@@ -496,12 +489,6 @@ def processURI(uri, outputFormat, form={}) :
 		if "extra-li" in form.keys() and form.getfirst("extra-li").lower() == "true" :
 			from pyRdfa.transform.ContainersCollections import decorate_li_s
 			transformers.append(decorate_li_s)
-		#if "extra-prefix" in form.keys() and form.getfirst("extra-prefix").lower() == "true" :
-		#	from pyRdfa.transform.Prefix import set_prefixes
-		#	transformers.append(set_prefixes)
-		#if "extra-vars" in form.keys() and form.getfirst("extra-vars").lower() == "true" :
-		#	from pyRdfa.transform.Prefix import handle_vars
-		#	transformers.append(handle_vars)
 
 	if "warnings" in form.keys() and form.getfirst("warnings").lower() == "true" :
 		warnings = True
@@ -513,8 +500,8 @@ def processURI(uri, outputFormat, form={}) :
 	else :
 		space_preserve = True
 
-	options = Options(warnings=warnings, space_preserve=space_preserve, transformers=transformers, xhtml = xhtml, lax = lax)
-	processor = pyRdfa(options, base)
+	options = Options(warnings=warnings, space_preserve=space_preserve, transformers=transformers)
+	processor = pyRdfa(options = options, base = base, media_type = media_type)
 	
 	try:
 		return processor.rdf_from_source(input, outputFormat)

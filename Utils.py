@@ -29,10 +29,8 @@ SVG_MT		= 'application/svg+xml'
 XML_MT		= 'application/xml'
 NT_MT		= 'text/plain'
 
-# mapping suffixes to media types...
-RDFXML = 'application/rdf+xml'
-TURTLE = 'text/turtle'
-_preferred_suffixes = {
+#: mapping suffixes to media types...
+preferred_suffixes = {
 	"rdf"	: RDFXML_MT,
 	"ttl"	: TURTLE_MT,
 	"n3"	: TURTLE_MT,
@@ -49,7 +47,7 @@ _preferred_suffixes = {
 class URIOpener :
 	"""A wrapper around the urllib2 method to open a resource. Beyond accessing the data itself, the class
 	sets a number of instance variable that might be relevant for processing.
-	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml.
+	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml (unless set explicitly by the caller).
 	
 	@ivar data : the real data, ie, a file-like object
 	@ivar headers : the return headers as sent back by the server
@@ -82,9 +80,9 @@ class URIOpener :
 				# for file:// type URI or if the server is not properly set up to return the right
 				# mime type
 				self.content_type = ""
-				for suffix in _preferred_suffixes.keys() :
+				for suffix in preferred_suffixes.keys() :
 					if name.endswith(suffix) :
-						self.content_type = _preferred_suffixes[suffix]
+						self.content_type = preferred_suffixes[suffix]
 						break
 			
 			if URIOpener.CONTENT_LOCATION in self.headers :

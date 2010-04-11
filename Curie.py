@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Management of vocabularies, terms, etc.
+Management of vocabularies, terms, and their mapping to URI-s. The module's name is a slight misnomer because, beyond handling CURIE-s, it also handles terms...
 
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -16,11 +16,17 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.1 2010-04-10 10:46:02 ivan Exp $
-$Date: 2010-04-10 10:46:02 $
+$Id: Curie.py,v 1.2 2010-04-11 15:44:45 ivan Exp $
+$Date: 2010-04-11 15:44:45 $
 """
 
 import re, sys
+
+#: Regular expression objects for NCNAME
+ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
+
+#: Regular expression object for a general XML application media type
+xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
 
 from rdflib.RDF			import RDFNS   as ns_rdf
 from rdflib.RDFS		import RDFSNS  as ns_rdfs
@@ -31,7 +37,7 @@ from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from rdflib.Graph		import Graph
 from pyRdfa.Options		import Options, RDFA_CORE, XHTML_RDFA, HTML5_RDFA
-from pyRdfa.Utils 		import quote_URI, URIOpener, RDFXML_MT, TURTLE_MT, HTML_MT, XHTML_MT, NT_MT
+from pyRdfa.Utils 		import quote_URI, URIOpener, RDFXML_MT, TURTLE_MT, HTML_MT, XHTML_MT, NT_MT, XML_MT
 import xml.dom.minidom
 
 debug = True
@@ -75,6 +81,11 @@ default_namespaces = {
 
 #: the namespace used in vocabulary management
 ns_rdfa_profile = Namespace("http://www.w3.org/ns/rdfa#")
+
+
+#### Managing blank nodes for CURIE-s
+__bnodes = {}
+__empty_bnode = BNode()
 
 # This is a necessary optimization: we should avoid reading in the same vocabulary definition
 # several times. Ie, some sort of a caching mechanism is necessary.
@@ -136,21 +147,27 @@ class ProfileRead :
 					if len(term_list) > 0 and len(prefix_list) > 0 :
 						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof))
 					elif len(term_list) > 1 :
-						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for several term mappings in <%s>" % (uri,prof))
+						self.state.options.comment_graph.add_warning("The same URI <%s> is used for several term mappings in <%s>" % (uri,prof))
 					elif len(prefix_list) > 1 :
-						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for several prefix mappings in <%s>" % (uri,prof))
+						self.state.options.comment_graph.add_warning("The same URI <%s> is used for several prefix mappings in <%s>" % (uri,prof))
 					else :
-						# everything seems to be o.k., though a check for literals is still to be done
+						# everything seems to be o.k., though a check for literals and on the validity of the term is still to be done
 						if len(term_list) > 0 :
 							term = term_list[0]
 							if isinstance(term, Literal) :
-								self.terms[str(term)] = (URIRef(uri),True)
+								if ncname.match(term) != None :
+									self.terms[str(term)] = (URIRef(uri),True)
+								else :
+									self.state.options.comment_graph.add_warning("Term <%s> defined in <%s> for <%s> is invalid; ignored" % (term, prof, uri))
 							else :
 								self.state.options.comment_graph.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri))
 						if len(prefix_list) > 0 :
 							prefix = prefix_list[0]
 							if isinstance(prefix, Literal) :
-								self.ns[str(prefix)] = Namespace(uri)
+								if ncname.match(prefix) != None :
+									self.ns[str(prefix)] = Namespace(uri)
+								else :
+									self.state.options.comment_graph.add_warning("Prefix <%s> defined in <%s> for <%s> is invalid; ignored" % (prefix, prof, uri))
 							else :
 								self.state.options.comment_graph.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, prof, uri))
 				# store the cache value, avoid re-reading again...
@@ -202,7 +219,7 @@ class ProfileRead :
 				(type,value,traceback) = sys.exc_info()
 				self.state.options.comment_graph.add_warning("Could not parse N-Triple content at <%s> (%s)" % (name,value))
 				return None
-		elif content.content_type == HTML_MT or content.content_type == XHTML_MT or re.match("application/[a-zA-Z0-9]+\+xml",content.content_type) != None :
+		elif content.content_type in [HTML_MT, XHTML_MT, XML_MT] or xml_application_media_type.match(content.content_type) != None :
 			try :
 				from pyRdfa import pyRdfa
 				options = Options(warnings = False)
@@ -215,7 +232,7 @@ class ProfileRead :
 			self.state.options.comment_graph.add_warning("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name,content.content_type))
 			return None
 
-class Vocab :
+class Curie :
 	"""
 	Wrapper around vocabulary management, ie, mapping a term (a term) to a URI, as well as a CURIE to a URI (typical
 	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
@@ -248,7 +265,7 @@ class Vocab :
 			self.default_curie_uri = Namespace(XHTML_URI)
 			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)
 		else :
-			self.default_curie_uri = inherited_state.vocab.default_curie_uri
+			self.default_curie_uri = inherited_state.curie.default_curie_uri
 		
 		# --------------------------------------------------------------------------------
 		# Set the default term URI
@@ -264,7 +281,7 @@ class Vocab :
 			if def_kw_uri != None :
 				self.default_term_uri = def_kw_uri
 			else :
-				self.default_term_uri = inherited_state.vocab.default_term_uri
+				self.default_term_uri = inherited_state.curie.default_term_uri
 		
 		# --------------------------------------------------------------------------------
 		# Get the recursive definitions, if any
@@ -285,11 +302,11 @@ class Vocab :
 		else :
 			if len(recursive_vocab.terms) == 0 :
 				# just refer to the inherited terms
-				self.terms = inherited_state.vocab.terms
+				self.terms = inherited_state.curie.terms
 			else :
 				self.terms = {}
 				# tried to use the 'update' operation for the dictionary and it failed. Why???
-				for key in inherited_state.vocab.terms 	: self.terms[key] = inherited_state.vocab.terms[key]
+				for key in inherited_state.curie.terms 	: self.terms[key] = inherited_state.curie.terms[key]
 				for key in recursive_vocab.terms 		: self.terms[key] = recursive_vocab.terms[key]
 
 		#-----------------------------------------------------------------
@@ -355,11 +372,11 @@ class Vocab :
 		# taken over by reference. Otherwise that is copied to the
 		# the local dictionary
 		if len(dict) == 0 and inherited_state :
-			self.ns = inherited_state.vocab.ns
+			self.ns = inherited_state.curie.ns
 		else :
 			self.ns = {}
 			if inherited_state :
-				for key in inherited_state.vocab.ns	: self.ns[key] = inherited_state.vocab.ns[key]
+				for key in inherited_state.curie.ns	: self.ns[key] = inherited_state.curie.ns[key]
 				for key in dict						: self.ns[key] = dict[key]
 			else :
 				self.ns = dict
@@ -368,45 +385,86 @@ class Vocab :
 		"""CURIE to URI mapping. Note that this method does not take care of the
 		blank node management, ie, when the key is '_'; this is something that
 		has to be taken care of summer higher up.
+		
+		Note that this method does I{not} take care of the last step of CURIE processing, ie, the fact that if
+		it does not have a CURIE then the value is used a URI. This is done on the caller's side, because this has
+		to be combined with base, for example. The method I{does} take care of BNode processing, though, ie,
+		CURIE-s of the form "_:XXX".
+		
 		@param val: the full CURIE
 		@type val: string
+		@return: URIRef of a URI or None.
 		"""
-		prefix	= val.split(":", 1)[0]
-		lname	= val.split(":", 1)[1]
-
-		if prefix == "" :
-			return self.default_curie_uri[lname]
-		elif prefix in self.ns :
-			# yep, we have a CURIE here!
-			# ensure a nicer output...
-			self.graph.bind(prefix, self.ns[prefix])
-			if lname == "" :
-				return URIRef(str(self.ns[prefix]))
-			else :
-				return self.ns[prefix][lname]
-		else :
+		# Just to be on the safe side:
+		if val == "" or val == ":" : return None
+		
+		# See if this is indeed a valid CURIE, ie, it can be split by a colon
+		curie_split = val.split(':',1)
+		if len(curie_split) == 1 :
+			# there is no ':' character in the string, ie, it is not a valid curie
 			return None
+		else :
+			prefix    = curie_split[0]
+			reference = curie_split[1]
+			
+			# first possibility: empty prefix
+			if len(prefix) == 0 :
+				return self.default_curie_uri[reference]
+			else :
+				# prefix is non-empty; can be a bnode
+				if prefix == "_" :
+					# yep, BNode processing. There is a difference whether the reference is empty or not...
+					if len(reference) == 0 :
+						return __empty_bnode
+					else :
+						# see if this variable has been used before for a BNode
+						if reference in __bnodes :
+							return __bnodes[reference]
+						else :
+							# a new bnode...
+							retval = BNode()
+							__bnodes[reference] = retval
+							return retval
+				# check if the prefix is a valid NCNAME
+				elif ncname.match(prefix) :
+					# see if there is a binding for this:
+					if prefix in self.ns :
+						# yep, a binding has been defined!
+						if len(reference) == 0 :
+							return URIRef(str(self.ns[prefix]))
+						else :
+							return self.ns[prefix][reference]
+					else :
+						# no definition for this thing...
+						# the CURIE should be used as a URI, but that is handled by the caller (using base and stuff...)
+						return None
+				else :
+					return None
+				
 
-	def term_to_URI(self, attr, term) :
+	def term_to_URI(self, term) :
 		"""A term to URI mapping, where term is a simple string and the corresponding
 		URI is defined via the @profile or the @vocab (ie, default term uri) mechanism. Returns None if term is not defined
 		@param term: string
-		@param attr: attribute name
-		@type attr: string
 		@return: an RDFLib URIRef instance (or None)
 		"""
-		for defined_term in self.terms :
-			uri, case_sensitive = self.terms[defined_term]
-			if case_sensitive :
-				if term == defined_term :
-					return uri
-			else :
-				if term.lower() == defined_term.lower() :
-					return uri
+		if len(term) == 0 : return None
 
-		# check the default term uri, if any
-		if self.default_term_uri != None :
-			return URIRef(self.default_term_uri + term)
+		if ncname.match(term) :
+			# It is a valid NCNAME
+			for defined_term in self.terms :
+				uri, case_sensitive = self.terms[defined_term]
+				if case_sensitive :
+					if term == defined_term :
+						return uri
+				else :
+					if term.lower() == defined_term.lower() :
+						return uri
+	
+			# check the default term uri, if any
+			if self.default_term_uri != None :
+				return URIRef(self.default_term_uri + term)
 
+		# If it got here, it is all wrong...
 		return None
 		

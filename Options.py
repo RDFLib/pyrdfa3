@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.3 2010-02-19 12:26:14 ivan Exp $ $Date: 2010-02-19 12:26:14 $
+$Id: Options.py,v 1.4 2010-04-11 15:44:45 ivan Exp $ $Date: 2010-04-11 15:44:45 $
 """
 
 import sys
@@ -26,6 +26,7 @@ from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from rdflib.Namespace	import Namespace
 from rdflib.RDFS		import comment as rdfs_comment
+from pyRdfa.Utils		import XHTML_MT, HTML_MT
 
 DIST_URI = "http://www.w3.org/2007/08/pyRdfa/distiller"
 DIST_NS  = DIST_URI + '#'
@@ -44,6 +45,13 @@ _message_properties = {
 	INFO	: ns_errors["information"],
 	DEBUG	: ns_errors["debug"]
 }
+
+#: host language: General XML (RDFa Core)
+RDFA_CORE   = 0
+#: host language: XHTML
+XHTML_RDFA  = 1
+#: host language: HTML
+HTML5_RDFA  = 2
 
 def _add_to_comment_graph(graph, msg, prop, uri) :
 	"""
@@ -121,11 +129,6 @@ class CommentGraph :
 	def _add_debug(self, txt) :
 		self._add_triple(txt, DEBUG)
 
-
-GENERIC_XML = 0
-XHTML_RDFA  = 1
-HTML5_RDFA  = 2
-
 class Options :
 	"""Settable options. An instance of this class is stored in
 	the L{execution context<ExecutionContext>} of the parser.
@@ -138,23 +141,19 @@ class Options :
 	@type warnings: Boolean
 	@ivar transformers: extra transformers
 	@type transformers: list
-	@type host_language: the host language for the RDFa attributes. Default is XHTML_RDFA, but it can be GENERIC_XML and HTML5_RDFA
+	@type host_language: the host language for the RDFa attributes. Default is XHTML_RDFA, but it can be RDFA_CORE and HTML5_RDFA
 	@ivar host_language: integer (logically: an enumeration)	
-	@ivar lax: whether a 'lax' parsing of XHTML (ie, HTML5) is allowed. This means that the value of the host language might change run time
-	@type lax: Boolean
 	"""
-	def __init__(self, warnings = False, space_preserve = True, transformers=[], xhtml = True, lax = False) :
+	def __init__(self, warnings = False, space_preserve = True, transformers=[], host_language = RDFA_CORE) :
 		"""
-		@param space_preserve: whether plain literals should preserve spaces at output or not
+		@keyword space_preserve: whether plain literals should preserve spaces at output or not
 		@type space_preserve: Boolean
-		@param warnings: whether warnings should be generated or not
+		@keyword warnings: whether warnings should be generated or not
 		@type warnings: Boolean
-		@param transformers: extra transformers
+		@keyword transformers: extra transformers
 		@type transformers: list
-		@param xhtml: initial value for the host language. If True, the value is set to XHTML_RDFA. Note that run-time the class variable might be set ot HTML5_RDFA, depending on the value of the lax flag and the result of parsing.
-		@type xhtml: Booelan	
-		@param lax: whether a 'lax' parsing of XHTML (ie, HTML5) is allowed. This means that the value of the host language might change run time
-		@type lax: Boolean
+		@keyword host_language: default host language
+		@type host_language: string
 		"""
 		self.space_preserve 	= space_preserve
 		self.transformers   	= transformers
@@ -163,13 +162,21 @@ class Options :
 		self.lax				= lax
 		from pyRdfa import rdfa_current_version
 		self.rdfa_version 		= rdfa_current_version
-		
-		if lax 		:
-			self.host_language = HTML5_RDFA
-		elif xhtml	:
+		self.host_language 		= host_language
+			
+	def set_host_language(self, content_type) :
+		"""
+		Set the host language for processing, based on the recognized types. What this means is that everything is considered to be
+		'core' RDFa, except if XHTML or HTML is used
+		@param content_type: content type
+		@type content_type: string
+		"""
+		if content_type == XHTML_MT :
 			self.host_language = XHTML_RDFA
-		else		:
-			self.host_language = GENERIC_XML
+		elif content_type == HTML_MT :
+			self.host_language = HTML_RDFA
+		else :
+			self.host_language = RDFA_CORE		
 		
 	def __str__(self) :
 		retval = """Current options:

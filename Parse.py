@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.3 2010-03-31 15:29:41 ivan Exp $
-$Date: 2010-03-31 15:29:41 $
+$Id: Parse.py,v 1.4 2010-04-11 15:44:45 ivan Exp $
+$Date: 2010-04-11 15:44:45 $
 """
 
 import sys
@@ -21,7 +21,7 @@ import sys
 from pyRdfa.State   		import ExecutionContext
 from pyRdfa.Literal 		import generate_literal
 from pyRdfa.EmbeddedRDF	 	import handle_embeddedRDF
-from pyRdfa.Options			import GENERIC_XML, XHTML_RDFA, HTML5_RDFA
+from pyRdfa.Options			import RDFA_CORE, XHTML_RDFA, HTML5_RDFA
 
 from rdflib.URIRef  import URIRef
 from rdflib.BNode   import BNode
@@ -40,7 +40,6 @@ def _has_one_of_attributes(node,*args) :
 	@rtype: Boolean
 	"""
 	return True in [ node.hasAttribute(attr) for attr in args ]
-
 
 #######################################################################
 def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
@@ -68,14 +67,14 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	# This may add some triples to the target graph that does not originate from RDFa parsing
 	# If the function return TRUE, that means that an rdf:RDF has been found. No
 	# RDFa parsing should be done on that subtree, so we simply return...
-	if state.options.host_language == GENERIC_XML and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
+	if state.options.host_language == RDFA_CORE and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
 		return	
 
 	#---------------------------------------------------------------------------------
 	# First, let us check whether there is anything to do at all. Ie,
 	# whether there is any relevant RDFa specific attribute on the element
 	#
-	if not _has_one_of_attributes(node, "href", "resource", "about", "property", "rel", "rev", "typeof", "src") :
+	if not _has_one_of_attributes(node, "href", "resource", "about", "property", "rel", "rev", "typeof", "src", "vocab", "profile", "prefix") :
 		# nop, there is nothing to do here, just go down the tree and return...
 		for n in node.childNodes :
 			if n.nodeType == node.ELEMENT_NODE : parse_one_node(n, graph, parent_object, state, parent_incomplete_triples)
