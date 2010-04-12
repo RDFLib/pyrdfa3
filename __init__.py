@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.15 2010-04-11 15:44:45 ivan Exp $ $Date: 2010-04-11 15:44:45 $
+$Id: __init__.py,v 1.16 2010-04-12 14:36:14 ivan Exp $ $Date: 2010-04-12 14:36:14 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -144,13 +144,12 @@ from rdflib.RDFS		import RDFSNS as ns_rdfs
 
 from pyRdfa.State				import ExecutionContext
 from pyRdfa.Parse				import parse_one_node
-from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR, RDFA_CORE, XHTML_RDFA, HTML5_RDFA
+from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR
 from pyRdfa.transform.HeadAbout	import head_about_transform
-from pyRdfa.Utils				import URIOpener, HTML_MT, XHTML_MT, XML_MT
+from pyRdfa.Utils				import URIOpener, MediaTypes, HostLanguage
 
 import xml.dom.minidom
 import urlparse
-
 
 debug = True
 
@@ -213,21 +212,21 @@ class pyRdfa :
 				url_request 	  = URIOpener(name)
 				self.base 		  = url_request.location
 				if self.media_type == "" :
-					if url_request.content_type in [ XHTML_MT, HTML_MT, XML_MT ] :
+					if url_request.content_type in [ MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml ] :
 						self.media_type = url_request.content_type
 					else :
-						self.media_type = XML_MT
+						self.media_type = MediaTypes.xml
 					self.options.set_host_language(self.media_type)
 				return url_request.data
 			else :
 				self.base = name
 				if self.media_type == "" :
 					if name.endswith(".xhtml") :
-						self.media_type = XHTML_MT
+						self.media_type = MediaTypes.xhtml
 					elif name.endswith(".html") :
-						self.media_type = HTML_MT
+						self.media_type = MediaTypes.html
 					else :
-						self.media_type = XML_MT
+						self.media_type = MediaTypes.xml
 					self.options.set_host_language(self.media_type)
 				return file(name)
 		else :
@@ -368,7 +367,9 @@ class pyRdfa :
 		msg = ""
 		
 		parser = None
-		if self.options.host_language == HTML5_RDFA :
+		if self.options.host_language == HostLanguage.html_rdfa :
+			import warnings
+			warnings.filterwarnings("ignore", category=DeprecationWarning)
 			import html5lib
 			parser = html5lib.HTMLParser(tree=html5lib.treebuilders.getTreeBuilder("dom"))
 			parse = parser.parse
@@ -461,11 +462,11 @@ def processURI(uri, outputFormat, form={}) :
 	# for real uris the returned content type should be used
 	if "host_language" in form.keys() :
 		if form.getfirst("host_language").lower() == "xhtml" :
-			media_type = XHTML_MT
+			media_type = MediaTypes.xhtml
 		elif form.getfirst("host_language").lower() == "html" :
-			media_type = HTML_MT
+			media_type = MediaTypes.html
 		else :
-			media_type = XML_MT
+			media_type = MediaTypes.xml
 	else :
 		media_type = ""
 		

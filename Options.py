@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.4 2010-04-11 15:44:45 ivan Exp $ $Date: 2010-04-11 15:44:45 $
+$Id: Options.py,v 1.5 2010-04-12 14:36:13 ivan Exp $ $Date: 2010-04-12 14:36:13 $
 """
 
 import sys
@@ -26,7 +26,7 @@ from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from rdflib.Namespace	import Namespace
 from rdflib.RDFS		import comment as rdfs_comment
-from pyRdfa.Utils		import XHTML_MT, HTML_MT
+from pyRdfa.Utils		import MediaTypes, HostLanguage
 
 DIST_URI = "http://www.w3.org/2007/08/pyRdfa/distiller"
 DIST_NS  = DIST_URI + '#'
@@ -45,13 +45,6 @@ _message_properties = {
 	INFO	: ns_errors["information"],
 	DEBUG	: ns_errors["debug"]
 }
-
-#: host language: General XML (RDFa Core)
-RDFA_CORE   = 0
-#: host language: XHTML
-XHTML_RDFA  = 1
-#: host language: HTML
-HTML5_RDFA  = 2
 
 def _add_to_comment_graph(graph, msg, prop, uri) :
 	"""
@@ -141,10 +134,10 @@ class Options :
 	@type warnings: Boolean
 	@ivar transformers: extra transformers
 	@type transformers: list
-	@type host_language: the host language for the RDFa attributes. Default is XHTML_RDFA, but it can be RDFA_CORE and HTML5_RDFA
+	@type host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml_rdfa, but it can be HostLanguage.rdfa_core and HostLanguage.html_rdfa
 	@ivar host_language: integer (logically: an enumeration)	
 	"""
-	def __init__(self, warnings = False, space_preserve = True, transformers=[], host_language = RDFA_CORE) :
+	def __init__(self, warnings = False, space_preserve = True, transformers=[], host_language = HostLanguage.rdfa_core) :
 		"""
 		@keyword space_preserve: whether plain literals should preserve spaces at output or not
 		@type space_preserve: Boolean
@@ -159,9 +152,6 @@ class Options :
 		self.transformers   	= transformers
 		self.comment_graph  	= CommentGraph(warnings) 
 		self.warnings			= warnings
-		self.lax				= lax
-		from pyRdfa import rdfa_current_version
-		self.rdfa_version 		= rdfa_current_version
 		self.host_language 		= host_language
 			
 	def set_host_language(self, content_type) :
@@ -171,12 +161,12 @@ class Options :
 		@param content_type: content type
 		@type content_type: string
 		"""
-		if content_type == XHTML_MT :
-			self.host_language = XHTML_RDFA
-		elif content_type == HTML_MT :
-			self.host_language = HTML_RDFA
+		if content_type == MediaTypes.xhtml :
+			self.host_language = HostLanguage.xhtml_rdfa
+		elif content_type == MediaTypes.html :
+			self.host_language = HostLanguage.html_rdfa
 		else :
-			self.host_language = RDFA_CORE		
+			self.host_language = HostLanguage.rdfa_core		
 		
 	def __str__(self) :
 		retval = """Current options:

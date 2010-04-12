@@ -23,8 +23,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.9 2010-04-11 15:44:45 ivan Exp $
-$Date: 2010-04-11 15:44:45 $
+$Id: State.py,v 1.10 2010-04-12 14:36:14 ivan Exp $
+$Date: 2010-04-12 14:36:14 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -34,8 +34,8 @@ from rdflib.Namespace	import Namespace
 from rdflib.URIRef		import URIRef
 from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
-from pyRdfa.Options		import Options, RDFA_CORE, XHTML_RDFA, HTML5_RDFA
-from pyRdfa.Utils 		import quote_URI
+from pyRdfa.Options		import Options
+from pyRdfa.Utils 		import quote_URI, HostLanguage
 from pyRdfa.Curie		import Curie
 
 debug = True
@@ -131,7 +131,7 @@ class ExecutionContext :
 			self.base		= inherited_state.base
 			self.options	= inherited_state.options
 			# for generic XML versions the xml:base attribute should be handled
-			if self.options.host_language == RDFA_CORE and node.hasAttribute("xml:base") :
+			if self.options.host_language == HostLanguage.rdfa_core and node.hasAttribute("xml:base") :
 				self.base = node.getAttribute("xml:base")
 		else :
 			# this is the branch called from the very top
@@ -145,14 +145,14 @@ class ExecutionContext :
 
 			self.base = ""
 			# handle the base element case for HTML
-			if self.options.host_language == XHTML_RDFA or self.options.host_language == HTML_RDFA :
+			if self.options.host_language in [ HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa ] :
 				for bases in node.getElementsByTagName("base") :
 					if bases.hasAttribute("href") :
 						self.base = bases.getAttribute("href")
 						continue
 
 			# xml:base is not part of XHTML+RDFa, but it is a valid in core
-			if self.options.host_language == RDFA_CORE and node.hasAttribute("xml:base") :
+			if self.options.host_language == HostLanguage.rdfa_core and node.hasAttribute("xml:base") :
 				self.base = node.getAttribute("xml:base")		
 
 			# If no local setting for base occurs, the input argument has it
@@ -160,25 +160,6 @@ class ExecutionContext :
 				self.base = base	
 
 			self.options.comment_graph.set_base_URI(URIRef(quote_URI(base, self.options)))
-
-			# check the the presence of the @version attribute for the RDFa profile...
-			# This whole branch is, however, irrelevant if the host language is a generic XML one (eg, SVG)
-			if self.options.host_language != RDFA_CORE :
-				doctype = None
-				try :
-					# I am not 100% sure the HTML5 minidom implementation has this, so let us just be
-					# cautious here...
-					doctype = node.ownerDocument.doctype
-				except :
-					pass
-				if doctype == None or not( doctype.publicId == RDFa_PublicID and doctype.systemId == RDFa_SystemID ) :
-					# next level: check the version
-					html = node.ownerDocument.documentElement
-					if not( html.hasAttribute("version") and RDFa_VERSION == html.getAttribute("version") ):
-						if self.options.host_language == HTML5_RDFA :
-							self.options.comment_graph.add_info(_WARNING_VERSION + " Note that in the case of HTML5, the DOCTYPE setting may not work...")
-						else :
-							self.options.comment_graph.add_info(_WARNING_VERSION)
 								
 		#-----------------------------------------------------------------
 		# this will be used repeatedly, better store it once and for all...
@@ -288,6 +269,7 @@ class ExecutionContext :
 				val = val[1:-1]
 				safe_curie = True
 				
+
 		retval = self.curie.CURIE_to_URI(val)
 		if retval == None :
 			# the value could not be interpreted as a CURIE, ie, it did not produce any valid
@@ -298,7 +280,7 @@ class ExecutionContext :
 				self.options.comment_graph.add_error("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
 				return None
 			else :
-				self._URI(val)
+				return self._URI(val)
 		else :
 			return retval
 

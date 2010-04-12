@@ -20,26 +20,31 @@ import urlparse, urllib2
 import httpheader
 
 
-# Some common media types, better have them at one place to avoid misstyping...
-RDFXML_MT 	= 'application/rdf+xml'
-TURTLE_MT 	= 'text/turtle'
-HTML_MT		= 'text/html'
-XHTML_MT	= 'application/xhtml+xml'
-SVG_MT		= 'application/svg+xml'
-XML_MT		= 'application/xml'
-NT_MT		= 'text/plain'
+class HostLanguage :
+	"""Host language types for RDFa"""
+	(rdfa_core, xhtml_rdfa, html_rdfa) = range(0,3)
+	
+class MediaTypes :
+	"""Some common media types, better have them at one place to avoid misstyping..."""
+	rdfxml 	= 'application/rdf+xml'
+	turtle 	= 'text/turtle'
+	html	= 'text/html'
+	xhtml	= 'application/xhtml+xml'
+	svg		= 'application/svg+xml'
+	xml		= 'application/xml'
+	nt		= 'text/plain'
 
 #: mapping suffixes to media types...
 preferred_suffixes = {
-	"rdf"	: RDFXML_MT,
-	"ttl"	: TURTLE_MT,
-	"n3"	: TURTLE_MT,
-	"owl"	: RDFXML_MT,
-	"html"	: HTML_MT,
-	"xhtml"	: XHTML_MT,
-	"svg"	: SVG_MT,
-	"xml"	: XML_MT,
-	"nt"	: NT_MT
+	"rdf"	: MediaTypes.rdfxml,
+	"ttl"	: MediaTypes.turtle,
+	"n3"	: MediaTypes.turtle,
+	"owl"	: MediaTypes.rdfxml,
+	"html"	: MediaTypes.html,
+	"xhtml"	: MediaTypes.xhtml,
+	"svg"	: MediaTypes.svg,
+	"xml"	: MediaTypes.xml,
+	"nt"	: MediaTypes.nt
 }
 
 #########################################################################################################

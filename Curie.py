@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.2 2010-04-11 15:44:45 ivan Exp $
-$Date: 2010-04-11 15:44:45 $
+$Id: Curie.py,v 1.3 2010-04-12 14:36:13 ivan Exp $
+$Date: 2010-04-12 14:36:13 $
 """
 
 import re, sys
@@ -36,8 +36,8 @@ from rdflib.URIRef		import URIRef
 from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from rdflib.Graph		import Graph
-from pyRdfa.Options		import Options, RDFA_CORE, XHTML_RDFA, HTML5_RDFA
-from pyRdfa.Utils 		import quote_URI, URIOpener, RDFXML_MT, TURTLE_MT, HTML_MT, XHTML_MT, NT_MT, XML_MT
+from pyRdfa.Options		import Options
+from pyRdfa.Utils 		import quote_URI, URIOpener, MediaTypes, HostLanguage
 import xml.dom.minidom
 
 debug = True
@@ -192,7 +192,7 @@ class ProfileRead :
 			self.state.options.comment_graph.add_warning("Profile document <%s> could not be dereferenced (%s)" % (name,value))
 			return None
 		
-		if content.content_type == TURTLE_MT :
+		if content.content_type == MediaTypes.turtle :
 			retval = Graph()
 			try :
 				retval.parse(content.data,format="n3")
@@ -201,7 +201,7 @@ class ProfileRead :
 				(type,value,traceback) = sys.exc_info()
 				self.state.options.comment_graph.add_warning("Could not parse Turtle content content at <%s> (%s)" % (name,value))
 				return None
-		elif content.content_type == RDFXML_MT :
+		elif content.content_type == MediaTypes.rdfxml :
 			try :
 				retval = Graph()
 				retval.parse(content.data)
@@ -210,7 +210,7 @@ class ProfileRead :
 				(type,value,traceback) = sys.exc_info()
 				self.state.options.comment_graph.add_warning("Could not parse RDF/XML content at <%s> (%s)" % (name,value))
 				return None
-		elif content.content_type == NT_MT :
+		elif content.content_type == MediaTypes.nt :
 			try :
 				retval = Graph()
 				retval.parse(content.data,format="nt")
@@ -219,7 +219,7 @@ class ProfileRead :
 				(type,value,traceback) = sys.exc_info()
 				self.state.options.comment_graph.add_warning("Could not parse N-Triple content at <%s> (%s)" % (name,value))
 				return None
-		elif content.content_type in [HTML_MT, XHTML_MT, XML_MT] or xml_application_media_type.match(content.content_type) != None :
+		elif content.content_type in [MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml] or xml_application_media_type.match(content.content_type) != None :
 			try :
 				from pyRdfa import pyRdfa
 				options = Options(warnings = False)
@@ -271,9 +271,7 @@ class Curie :
 		# Set the default term URI
 		def_kw_uri = self.state.getURI("vocab")
 		if inherited_state == None :
-			# Note that this may result in storing None, which is fine
-			# However, the HTML/XHTML case has to be handled in a somewhat different manner
-			if def_kw_uri == None and (self.state.options.host_language == XHTML_RDFA or self.state.options.host_language) :
+			if def_kw_uri == None :
 				self.default_term_uri = XHTML_URI
 			else :
 				self.default_term_uri = def_kw_uri
@@ -292,8 +290,9 @@ class Curie :
 		if inherited_state is None :
 			# this is the vocabulary belonging to the top level of the tree!
 			self.terms = {}
-			# TODO: remove this part at some point and exchange it against whatever is decided for the HTML case! 
-			if self.state.options.host_language == XHTML_RDFA or self.state.options.host_language :
+			# HTML has its own set of predefined terms. Though, conceptually, that can be done without @profile,
+			# it is better that way...
+			if self.state.options.host_language in [HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa] :
 				for key in _predefined_html_rel : self.terms[key] = (URIRef(XHTML_URI+key),False)
 			# Until here...
 			# add the terms defined locally
