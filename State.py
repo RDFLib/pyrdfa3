@@ -2,29 +2,24 @@
 """
 Parser's execution context (a.k.a. state) object and handling. The state includes:
 
-  - dictionary for namespaces. Keys are the namespace prefixes, values are RDFLib Namespace instances
   - language, retrieved from C{@xml:lang}
   - URI base, determined by <base> (or set explicitly). This is a little bit superfluous, because the current RDFa syntax does not make use of C{@xml:base}; ie, this could be a global value.  But the structure is prepared to add C{@xml:base} easily, if needed.
   - options, in the form of an L{Options<pyRdfa.Options>} instance
+  - a separate vocabulary/CURIE handling resource, in the form of an L{Curie<pyRdfa.CURIE>} instance
 
-The execution context object is also used to turn relative URI-s and CURIES into real URI references.
+The execution context object is also used to handle URI-s, CURIE-s, terms, etc.
 
-@summary: RDFa core parser processing step
+@summary: RDFa parser execution context
 @requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
-
-@var RDFa_PROFILE: the official RDFa profile URI
-@var RDFa_VERSION: the official version string of RDFa
-@var __bnodes: dictionary of blank node names to real blank node
-@var __empty_bnode: I{The} Bnode to be associated with the CURIE of the form "C{_:}".
 """
 
 """
-$Id: State.py,v 1.11 2010-04-14 11:27:05 ivan Exp $
-$Date: 2010-04-14 11:27:05 $
+$Id: State.py,v 1.12 2010-04-14 12:48:38 ivan Exp $
+$Date: 2010-04-14 12:48:38 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -46,19 +41,17 @@ import urlparse
 import urllib
 
 
-_WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. "
-
-RDFa_VERSION    = "XHTML+RDFa 1.0"
-RDFa_PublicID   = "-//W3C//DTD XHTML+RDFa 1.0//EN"
-RDFa_SystemID   = "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"
+#_WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. "
+#
+#RDFa_VERSION    = "XHTML+RDFa 1.0"
+#RDFa_PublicID   = "-//W3C//DTD XHTML+RDFa 1.0//EN"
+#RDFa_SystemID   = "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"
 
 #: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
 usual_schemes = ["doi", "file", "ftp", "gopher", "hdl", "http", "https", "imap", "isbn", "ldap", "lsid",
 				 "mailto", "mms", "mstp", "news", "nntp", "prospero", "rsync", "rtmp", "rtsp", "rtspu", "sftp",
 				 "shttp", "sip", "sips", "snews", "stp", "svn", "svn+ssh", "telnet", "tel", "urn", "wais"
 				]
-
-
 
 #### Core Class definition
 class ExecutionContext :
@@ -71,15 +64,15 @@ class ExecutionContext :
 	@ivar base: the 'base' URI
 	@ivar defaultNS: default namespace
 	@ivar lang: language tag (possibly None)
-	@ivar vocab: vocabulary management class instance
-	@type vocan: L{Curie.Curie}
+	@ivar curie: vocabulary management class instance
+	@type curie: L{Curie.Curie}
 	@ivar node: the node to which this state belongs
 	@type node: DOM node instance
 	"""
 
 	#: list of attributes that allow for lists of values and should be treated as such	
 	_list = [ "profile", "rel", "rev", "property", "typeof" ]
-	#: mapping table from attribute name to the exact method to retrieve the URI(s). Note that this is a class variable that is initialized by the first instance
+	#: mapping table from attribute name to the exact method to retrieve the URI(s).
 	_resource_type = {}
 	
 	def __init__(self, node, graph, inherited_state=None, base="", options=None) :
@@ -108,7 +101,6 @@ class ExecutionContext :
 				"about"		:	ExecutionContext._URIorCURIE, 
 				"resource"	:	ExecutionContext._URIorCURIE, 
 			
-				# these were all set to CURIE
 				"rel"		:	ExecutionContext._term_or_URIorCURIE,
 				"rev"		:	ExecutionContext._term_or_URIorCURIE,
 				"datatype"	:	ExecutionContext._term_or_URIorCURIE,
@@ -116,17 +108,14 @@ class ExecutionContext :
 				"property"	:	ExecutionContext._term_or_URIorCURIE,
 			}	
 		#-----------------------------------------------------------------
-		# This is not inherited:-)
 		self.node = node
 		
 		#-----------------------------------------------------------------
-		# settling the base
-		# note that, strictly speaking, it is not necessary to add the base to the
-		# context, because there is only one place to set it (<base> element of the <header>).
+		# Settling the base
 		# It is done because it is prepared for a possible future change in direction of
 		# accepting xml:base on each element.
 		# At the moment, it is invoked with a 'None' at the top level of parsing, that is
-		# when the <base> element is looked for.
+		# when the <base> element is looked for (for the HTML cases, that is)
 		if inherited_state :
 			self.base		= inherited_state.base
 			self.options	= inherited_state.options
@@ -136,7 +125,7 @@ class ExecutionContext :
 		else :
 			# this is the branch called from the very top
 
-			# this is just to play safe. I believe this branch should actually not happen...
+			# this is just to play safe. I believe this should actually not happen...
 			if options == None :
 				from pyRdfa import Options
 				self.options = Options()
@@ -159,6 +148,7 @@ class ExecutionContext :
 			if self.base == "" :
 				self.base = base	
 
+			# This should be set once for the correct handling of warnings/errors
 			self.options.comment_graph.set_base_URI(URIRef(quote_URI(base, self.options)))
 								
 		#-----------------------------------------------------------------
@@ -172,20 +162,25 @@ class ExecutionContext :
 		#-----------------------------------------------------------------
 		# Settling the language tags
 		# @lang has priority over @xml:lang
-		# I just want to be prepared here...
-		if node.hasAttribute("xml:lang") :
-			self.lang = node.getAttribute("xml:lang")
-			if len(self.lang) == 0 : self.lang = None
-		elif node.hasAttribute("lang") :
-			self.lang = node.getAttribute("lang")
-			if len(self.lang) == 0 : self.lang = None
-		elif inherited_state :
+		# it is a bit messy: the three fundamental modes (xhtml, html, or xml) are all slightly different:-(
+		# first get the inherited state's language, if any
+		if inherited_state :
 			self.lang = inherited_state.lang
 		else :
 			self.lang = None
 			
-		if node.hasAttribute("xml:lang") and node.hasAttribute("lang") and node.getAttribute("lang") != node.getAttribute("xml:lang") :
-			self.options.comment_graph.add_info("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (node.getAttribute("xml:lang"),node.getAttribute("lang")))			
+		if node.hasAttribute("xml:lang") :
+			self.lang = node.getAttribute("xml:lang")
+			if len(self.lang) == 0 : self.lang = None
+		if self.options.host_language in [ HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa ] :
+			if node.hasAttribute("lang") :
+				self.lang = node.getAttribute("lang")
+
+				# Also check a possible error, namely a clash with xml:lang		
+				if node.hasAttribute("xml:lang") and self.lang != node.getAttribute("xml:lang") :
+					self.options.comment_graph.add_info("Both xml:lang and lang used on an element with different values; lang prevails. (%s and %s)" % (node.getAttribute("xml:lang"), node.getAttribute("lang")))			
+
+				if len(self.lang) == 0 : self.lang = None
 			
 		#-----------------------------------------------------------------
 		# Set the default namespace. Used when generating XML Literals
@@ -199,7 +194,9 @@ class ExecutionContext :
 	#------------------------------------------------------------------------------------------------------------
 
 	def _URI(self, val) :
-		"""Returns a URI for a 'pure' URI (ie, no CURIE). The value should not be emtpy at this point.
+		"""Returns a URI for a 'pure' URI (ie, no CURIE). The method resolves possible relative URI-s. It also
+		checks whether the URI uses an unusual URI scheme (and issues a warning); this may be the result of an
+		uninterpreted CURIE...
 		@param val: attribute value to be interpreted
 		@type val: string
 		@return: an RDFLib URIRef instance
@@ -248,7 +245,8 @@ class ExecutionContext :
 				return check_create_URIRef(joined)
 
 	def _URIorCURIE(self, val) :
-		"""Returns a URI for a CURIE. Typical usage: @about.
+		"""Returns a URI for a (safe or not safe) CURIE. In case it is a safe CURIE but the CURIE itself
+		is not defined, an error message is issued. 
 		@param val: attribute value to be interpreted
 		@type val: string
 		@return: an RDFLib URIRef instance or None
@@ -268,7 +266,6 @@ class ExecutionContext :
 			else :
 				val = val[1:-1]
 				safe_curie = True
-				
 
 		retval = self.curie.CURIE_to_URI(val)
 		if retval == None :
@@ -290,7 +287,8 @@ class ExecutionContext :
 				return retval
 
 	def _term_or_URIorCURIE(self, val) :
-		"""Returns a URI either for a term or for a CURIE. Typical usage: @rel
+		"""Returns a URI either for a term or for a CURIE. The value must be an NCNAME to be handled as a term; otherwise
+		the method falls back on a URI or CURIE.
 		@param val: attribute value to be interpreted
 		@type val: string
 		@return: an RDFLib URIRef instance or None
@@ -308,8 +306,9 @@ class ExecutionContext :
 	# -----------------------------------------------------------------------------------------------
 
 	def getURI(self, attr) :
-		"""Get the URI(s) for the attribute. The value of the attribute determines whether the value should be
-		a pure URI, a CURIE, etc, and whether the return is a single element of a list of those.
+		"""Get the URI(s) for the attribute. The name of the attribute determines whether the value should be
+		a pure URI, a CURIE, etc, and whether the return is a single element of a list of those. This is done
+		using the L{ExecutionContext._resource_type} table.
 		@param attr: attribute name
 		@type attr: string
 		@return: an RDFLib URIRef instance (or None) or a list of those
@@ -324,7 +323,7 @@ class ExecutionContext :
 				return None
 		
 		# This may raise an exception if the attr has no key. This, actually,
-		# should not happen if the code is correct, so I leave this in for debugging purposes
+		# should not happen if the code is correct, but it does not harm having it here...
 		try :
 			func = ExecutionContext._resource_type[attr]
 		except :
@@ -338,6 +337,3 @@ class ExecutionContext :
 		else :
 			retval = func(self, val.strip())
 		return retval
-
-
-	# -----------------------------------------------------------------------------------------------

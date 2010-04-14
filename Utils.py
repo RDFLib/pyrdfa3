@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Various Utilities
+Various utilities for pyRdfa.
 
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -19,13 +19,12 @@ from rdflib.RDF import RDFNS  as ns_rdf
 import urlparse, urllib2
 import httpheader
 
-
 class HostLanguage :
-	"""Host language types for RDFa"""
+	"""An enumeration style class: host language types for RDFa"""
 	(rdfa_core, xhtml_rdfa, html_rdfa) = range(0,3)
 	
 class MediaTypes :
-	"""Some common media types, better have them at one place to avoid misstyping..."""
+	"""An enumeration style class: some common media types, better have them at one place to avoid misstyping..."""
 	rdfxml 	= 'application/rdf+xml'
 	turtle 	= 'text/turtle'
 	html	= 'text/html'
@@ -34,17 +33,17 @@ class MediaTypes :
 	xml		= 'application/xml'
 	nt		= 'text/plain'
 
-#: mapping suffixes to media types...
+#: mapping preferred suffixes to media types...
 preferred_suffixes = {
-	"rdf"	: MediaTypes.rdfxml,
-	"ttl"	: MediaTypes.turtle,
-	"n3"	: MediaTypes.turtle,
-	"owl"	: MediaTypes.rdfxml,
-	"html"	: MediaTypes.html,
-	"xhtml"	: MediaTypes.xhtml,
-	"svg"	: MediaTypes.svg,
-	"xml"	: MediaTypes.xml,
-	"nt"	: MediaTypes.nt
+	".rdf"		: MediaTypes.rdfxml,
+	".ttl"		: MediaTypes.turtle,
+	".n3"		: MediaTypes.turtle,
+	".owl"		: MediaTypes.rdfxml,
+	".html"		: MediaTypes.html,
+	".xhtml"	: MediaTypes.xhtml,
+	".svg"		: MediaTypes.svg,
+	".xml"		: MediaTypes.xml,
+	".nt"		: MediaTypes.nt
 }
 
 #########################################################################################################
@@ -54,10 +53,10 @@ class URIOpener :
 	sets a number of instance variable that might be relevant for processing.
 	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml (unless set explicitly by the caller).
 	
-	@ivar data : the real data, ie, a file-like object
-	@ivar headers : the return headers as sent back by the server
-	@ivar content_type : the 'CONTENT_TYPE' header or, if not set by the server, the empty string
-	@ivar location : the real location of the data (ie, after possible redirection and content negotiation)
+	@ivar data: the real data, ie, a file-like object
+	@ivar headers: the return headers as sent back by the server
+	@ivar content_type: the 'CONTENT_TYPE' header or, if not set by the server, the empty string
+	@ivar location: the real location of the data (ie, after possible redirection and content negotiation)
 	"""
 	CONTENT_LOCATION	= 'Content-Location'
 	CONTENT_TYPE		= 'Content-Type'

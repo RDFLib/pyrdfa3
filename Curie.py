@@ -16,21 +16,15 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.4 2010-04-14 11:27:05 ivan Exp $
-$Date: 2010-04-14 11:27:05 $
+$Id: Curie.py,v 1.5 2010-04-14 12:48:38 ivan Exp $
+$Date: 2010-04-14 12:48:38 $
 """
 
 import re, sys
 
-#: Regular expression objects for NCNAME
-ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
-
-#: Regular expression object for a general XML application media type
-xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
 
 from rdflib.RDF			import RDFNS   as ns_rdf
 from rdflib.RDFS		import RDFSNS  as ns_rdfs
-from rdflib.RDFS		import comment as rdfs_comment
 from rdflib.Namespace	import Namespace
 from rdflib.URIRef		import URIRef
 from rdflib.Literal		import Literal
@@ -40,20 +34,23 @@ from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, URIOpener, MediaTypes, HostLanguage
 import xml.dom.minidom
 
-debug = True
-
 import random
 import urlparse
+
+#: Regular expression object for NCNAME
+ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
+
+#: Regular expression object for a general XML application media type
+xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
+
 
 XHTML_PREFIX = "xhv"
 XHTML_URI    = "http://www.w3.org/1999/xhtml/vocab#"
 
-_WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. Note that in the case of HTML5, the DOCTYPE setting may not work..."
-
-####Predefined @rel/@rev/@property values
-# predefined values for the @rel and @rev values. These are considered to be part of a specific
-# namespace, defined by the RDFa document.
-_predefined_html_rel  = [
+# Predefined terms for XHTML
+# At the moment this is just hardcoded, we will see whether this can be handled as
+# some form of a default profile mechanism.
+_predefined_html_terms  = [
 	'alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
 	'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next',
 	'p3pv1', 'prev', 'role', 'section', 'subsection', 'start', 'license',
@@ -63,7 +60,7 @@ _predefined_html_rel  = [
 _XSD_NS = Namespace(u'http://www.w3.org/2001/XMLSchema#')
 
 # list of namespaces that are considered as default, ie, the user should not be forced to declare:
-# Not used at the moment, bound the to whole default setting issue which is still open
+# Not used at the moment, bound the to whole default setting issue of the WG which is still open
 default_namespaces = {
 	"xsd"		: "http://www.w3.org/2001/XMLSchema#",
 	"rdf"		: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -79,24 +76,21 @@ default_namespaces = {
 	"openid"	: "http://xmlns.openid.net/auth#"
 }
 
-#: the namespace used in vocabulary management
+#: the namespace used in profile management
 ns_rdfa_profile = Namespace("http://www.w3.org/ns/rdfa#")
 
-#### Managing blank nodes for CURIE-s
+#### Managing blank nodes for CURIE-s: mapping from local names to blank nodes.
 __bnodes = {}
 __empty_bnode = BNode()
 
-# This is a necessary optimization: we should avoid reading in the same vocabulary definition
-# several times. Ie, some sort of a caching mechanism is necessary.
-
 class ProfileRead :
 	"""
-	Wrapper around the "recursive" access to profile files. The main job of this task to retrieve
-	term and namespace definitions by accessing an RDFa file stored in a URI as given by the
-	values of the @profile attribute values. Each vocab class has one instance of this class.
+	Wrapper around the "recursive" access to profile files. The main job of this class is to retrieve
+	term and prefix definitions by accessing an RDF file stored in a URI as given by the
+	values of the @profile attribute values. Each curie class has one instance of this class.
 	
-	The main reason to put this into a separate class is to localize a caching mechanism, that
-	ensures that the same vocabulary file is read only once.
+	(The main reason to put this into a separate class is to localize a caching mechanism, that
+	ensures that the same vocabulary file is read only once.)
 	
 	@ivar terms: collection of all term mappings
 	@type terms: dictionary
@@ -118,6 +112,7 @@ class ProfileRead :
 		# Terms are stored as tuples; the second element is a boolean, defining whether the term is case-sensitive (default) or not
 		# at the moment, there are no rdfa vocabulary terms to set the latter, but it is important for the html cases
 		self.terms  = {}
+		# This is to store the local Namespaces (a.k.a. prefixes)
 		self.ns     = {}
 		
 		# see what the @profile gives us...
@@ -177,7 +172,7 @@ class ProfileRead :
 	def _get_graph(self, name) :
 		"""
 		Parse the vocabulary file, and return an RDFLib Graph. The URI's content type is checked and either one of
-		RDFLib's parsers is invoked (for the Turtle, RDF/XML, and N Triple cases) or the RDFa processing is invoked, recursively,
+		RDFLib's parsers is invoked (for the Turtle, RDF/XML, and N Triple cases) or a separate RDFa processing is invoked
 		on the RDFa content.
 		
 		@param name: URI of the vocabulary file
@@ -185,7 +180,7 @@ class ProfileRead :
 		"""
 		content = None
 		try :
-			content = URIOpener(name, {'Accept' : 'text/html, application/xhtml+xml, text/turtle, application/rdf+xml'})
+			content = URIOpener(name, {'Accept' : 'text/html, application/xhtml+xml, text/turtle, application/rdf+xml, application/xml'})
 		except  :
 			(type,value,traceback) = sys.exc_info()
 			self.state.options.comment_graph.add_warning("Profile document <%s> could not be dereferenced (%s)" % (name,value))
@@ -231,11 +226,12 @@ class ProfileRead :
 			self.state.options.comment_graph.add_warning("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name,content.content_type))
 			return None
 
+
 class Curie :
 	"""
-	Wrapper around vocabulary management, ie, mapping a term (a term) to a URI, as well as a CURIE to a URI (typical
+	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI (typical
 	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
-	"state", defined in State.py
+	"state", instance of L{State.ExecutionContext}
 	@ivar state: State to which this instance belongs
 	@type state: L{State.ExecutionContext}
 	@ivar graph: The RDF Graph under generation
@@ -268,15 +264,17 @@ class Curie :
 		
 		# --------------------------------------------------------------------------------
 		# Set the default term URI
-		def_kw_uri = self.state.getURI("vocab")
+		# Note that it is still an open issue whether the XHTML_URI should be used
+		# for RDFa core, or whether it should be set to None.
+		def_term_uri = self.state.getURI("vocab")
 		if inherited_state == None :
-			if def_kw_uri == None :
+			if def_term_uri == None :
 				self.default_term_uri = XHTML_URI
 			else :
-				self.default_term_uri = def_kw_uri
+				self.default_term_uri = def_term_uri
 		else :
-			if def_kw_uri != None :
-				self.default_term_uri = def_kw_uri
+			if def_term_uri != None :
+				self.default_term_uri = def_term_uri
 			else :
 				self.default_term_uri = inherited_state.curie.default_term_uri
 		
@@ -289,11 +287,11 @@ class Curie :
 		if inherited_state is None :
 			# this is the vocabulary belonging to the top level of the tree!
 			self.terms = {}
-			# HTML has its own set of predefined terms. Though, conceptually, that can be done without @profile,
+			# HTML has its own set of predefined terms. Though, conceptually, that can be done with @profile,
 			# it is better that way...
 			if self.state.options.host_language in [HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa] :
-				for key in _predefined_html_rel : self.terms[key] = (URIRef(XHTML_URI+key),False)
-			# Until here...
+				for key in _predefined_html_terms : self.terms[key] = (URIRef(XHTML_URI+key),False)
+
 			# add the terms defined locally
 			for key in recursive_vocab.terms :
 				self.terms[key] = recursive_vocab.terms[key]
@@ -363,16 +361,20 @@ class Curie :
 							#something to be done here
 							self.default_curie_uri = uri
 						else :
-							dict[prefix] = uri
+							# last check: is the prefix an NCNAME?
+							if ncname.match(prefix) :
+								dict[prefix] = uri
+							else :
+								state.options.comment_graph.add_error("Invalid prefix declaration (must be an NCNAME) %s in %s" % (prefix,pr))
 
 		# See if anything has been collected at all.
 		# If not, the namespaces of the incoming state is
 		# taken over by reference. Otherwise that is copied to the
 		# the local dictionary
+		self.ns = {}
 		if len(dict) == 0 and inherited_state :
 			self.ns = inherited_state.curie.ns
 		else :
-			self.ns = {}
 			if inherited_state :
 				for key in inherited_state.curie.ns	: self.ns[key] = inherited_state.curie.ns[key]
 				for key in dict						: self.ns[key] = dict[key]
@@ -434,11 +436,9 @@ class Curie :
 							return self.ns[prefix][reference]
 					else :
 						# no definition for this thing...
-						# the CURIE should be used as a URI, but that is handled by the caller (using base and stuff...)
 						return None
 				else :
 					return None
-				
 
 	def term_to_URI(self, term) :
 		"""A term to URI mapping, where term is a simple string and the corresponding
