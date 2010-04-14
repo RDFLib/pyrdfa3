@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.3 2010-04-12 14:36:13 ivan Exp $
-$Date: 2010-04-12 14:36:13 $
+$Id: Curie.py,v 1.4 2010-04-14 11:27:05 ivan Exp $
+$Date: 2010-04-14 11:27:05 $
 """
 
 import re, sys
@@ -81,7 +81,6 @@ default_namespaces = {
 
 #: the namespace used in vocabulary management
 ns_rdfa_profile = Namespace("http://www.w3.org/ns/rdfa#")
-
 
 #### Managing blank nodes for CURIE-s
 __bnodes = {}

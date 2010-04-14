@@ -23,8 +23,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.10 2010-04-12 14:36:14 ivan Exp $
-$Date: 2010-04-12 14:36:14 $
+$Id: State.py,v 1.11 2010-04-14 11:27:05 ivan Exp $
+$Date: 2010-04-14 11:27:05 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -282,7 +282,12 @@ class ExecutionContext :
 			else :
 				return self._URI(val)
 		else :
-			return retval
+			# there is an unlikely case where the retval is actually a URIRef with a relative URI. Better filter that one out
+			if isinstance(retval, BNode) == False and urlparse.urlsplit(str(retval))[0] == "" :
+				# yep, there is something wrong, a new URIRef has to be created:
+				return URIRef(self.base+str(retval))
+			else :
+				return retval
 
 	def _term_or_URIorCURIE(self, val) :
 		"""Returns a URI either for a term or for a CURIE. Typical usage: @rel
@@ -293,22 +298,12 @@ class ExecutionContext :
 		# This case excludes the pure base, ie, the empty value
 		if val == "" :
 			return None
-		
-		if val[0] == '[' :
-			# safe curies became almost optional, mainly for backward compatibility reasons
-			# Note however, that if a safe curie is asked for, a pure URI is not acceptable.
-			# Is checked below, and that is why the safe_curie flag is necessary
-			if val[-1] != ']' :
-				# that is certainly forbidden: an incomplete safe curie
-				self.options.comment_graph.add_error("Illegal safe term: %s" % val)
-				return None
-			else :
-				term = val[1:-1]
+		from Curie import ncname
+		if ncname.match(val) :
+			# This is a term, must be handled as such...
+			return self.curie.term_to_URI(val)
 		else :
-			term = val
-		
-		return self.curie.term_to_URI(term) or self._URIorCURIE(val)
-		# return self.curie.term_to_URI(val) or self._URIorCURIE(val)
+			return self._URIorCURIE(val)
 
 	# -----------------------------------------------------------------------------------------------
 
@@ -346,104 +341,3 @@ class ExecutionContext :
 
 
 	# -----------------------------------------------------------------------------------------------
-
-
-
-	#def _sgsdgdURIOrCURIE(self, attr, val) :
-	#	"""Returns a URI for a CURIE; if the CURIE is empty, None is returned (ie, I{not} the base)
-	#	Term processing is allowed; relative URIs are not used. Typical usage: @rel. No safe CURIE is allowed here.
-	#	
-	#	@param val: attribute value to be interpreted
-	#	@type val: string
-	#	@param attr: attribute name
-	#	@type attr: string
-	#	@return: an RDFLib URIRef instance or None
-	#	"""
-	#	val.strip()
-	#	if val == "" :
-	#		return None
-	#
-	#	retval = _get_bnode_from_Curie(val)
-	#	if retval :
-	#		# we got a BNode
-	#		# However, we should check whether a bnode is acceptable at this position or not:
-	#		if attr in ["property", "rel", "rev"] :
-	#			self.options.comment_graph.add_error("Blank node CURIE cannot be used in property position: %s" % val)
-	#			return None
-	#		else :
-	#			return retval
-	#	else :
-	#		if val.find(":") == -1 :
-	#			# this is not of a key:lname format, ie, it must be a term
-	#			#
-	#			return self.curie.term_to_URI(attr, val.lower())
-	#		else :
-	#			# By now we know that
-	#			#   - this is not a predefined term 
-	#			#   - this is not a blank node
-	#			# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
-	#			retval = self.curie.CURIE_to_URI(val)
-	#			if retval :
-	#				# yep, we got a real URI
-	#				return retval
-	#			else :
-	#				return self._pureURI(val)
-	
-		#def _URIorPCURIEorSafeCURIE(self, attr, val) :
-		#"""Returns a URI for a CURIE; relative URI-s are allowed, term is processed only if part of a safe curie. Typical usage: @about.
-		#@param val: attribute value to be interpreted
-		#@type val: string
-		#@param attr: attribute name
-		#@type attr: string
-		#@return: an RDFLib URIRef instance or None
-		#"""
-		#val.strip()
-		#if val == "" :
-		#	return URIRef(self.base)
-		#
-		#safe_curie = False
-		#if val[0] == '[' :
-		#	# safe curies became almost optional, mainly for backward compatibility reasons
-		#	# Note however, that if a safe curie is asked for, a pure URI is not acceptable.
-		#	# Is checked below, and that is why the safe_curie flag is necessary
-		#	if val[-1] != ']' :
-		#		# that is certainly forbidden: an incomplete safe curie
-		#		self.options.comment_graph.add_error("Illegal CURIE: %s" % val)
-		#		return None
-		#	else :
-		#		val = val[1:-1]
-		#		safe_curie = True
-		#		
-		## Get possible blank nodes out of the way
-		#retval = _get_bnode_from_Curie(val)
-		#if retval :
-		#	# we got a BNode
-		#	return retval
-		#else :	
-		#	if val.find(":") == -1 :
-		#		# this is not of a key:lname format. A possibility is that this is a
-		#		# term defined via a @vocab/@profile mechanism (explicitly or implicitly),
-		#		# but that is allowed only if it was a safe curie. Any other case should
-		#		# be considered as a relative URI
-		#		if safe_curie :
-		#			return self.curie.term_to_URI(attr, val.lower())
-		#		else :
-		#			return self._pureURI(val)
-		#	else :				
-		#		# By now we know that
-		#		#   - this is not a term 
-		#		#   - this is not a blank node
-		#		# Consequently, it is either a well defined CURIE, or an absolute or relative URI		
-		#		retval = self.curie.CURIE_to_URI(val)
-		#		if retval :
-		#			# yep, we got a real URI
-		#			return retval
-		#		elif safe_curie :
-		#			# Oops. The author used a safe curie but the value was not
-		#			# interpreted as such. This should not be the case if a safe curie was used, ie,
-		#			# an error should be raised.
-		#			self.options.comment_graph.add_error("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
-		#			return None
-		#		else :
-		#			return self._pureURI(val)
-		#
