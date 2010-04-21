@@ -14,17 +14,18 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 $Id:$
 $Date:$
 """
-import urllib
-from rdflib.RDF import RDFNS  as ns_rdf
-import urlparse, urllib2
+import os, os.path, sys, imp
+import urllib, urlparse, urllib2
 import httpheader
 
+from rdflib.RDF import RDFNS  as ns_rdf
+
 class HostLanguage :
-	"""An enumeration style class: host language types for RDFa"""
+	"""An enumeration style class: recognized host language types for RDFa"""
 	(rdfa_core, xhtml_rdfa, html_rdfa) = range(0,3)
 	
 class MediaTypes :
-	"""An enumeration style class: some common media types, better have them at one place to avoid misstyping..."""
+	"""An enumeration style class: some common media types (better have them at one place to avoid misstyping...)"""
 	rdfxml 	= 'application/rdf+xml'
 	turtle 	= 'text/turtle'
 	html	= 'text/html'
@@ -97,6 +98,104 @@ class URIOpener :
 			from pyRdfa import RDFaError
 			raise RDFaError,' %s' % msg
 
+#########################################################################################################
+# Handling Cached URIs
+class CachedURIOpener(URIOpener) :
+	loaded_modules = {}
+	def __init__(self, uri, additional_headers = {}, cached_env = "") :
+		resolved = False
+		if cached_env in CachedURIOpener.loaded_modules :
+			# This modules has already been imported once
+			self.index = CachedURIOpener.loaded_modules[cached_env]
+			resolved = self._resolve_cache(uri, base, additional_headers)
+		else :
+			# let us try to import the module
+			if cached_env in os.environ :
+				base = os.environ[cached_env]
+				if base not in sys.path :
+					sys.path.insert(0, base)
+				try :
+					(f,p,d) = imp.find_module(cached_env)	
+					imp.load_module(cached_env,f,p,d)
+					m = sys.modules[cached_env]
+					self.index = m.__dict__['index']
+					CachedURIOpener.loaded_modules[cached_env] = self.index
+					resolved = self._resolve_cache(uri, base, additional_headers)
+				except :
+					pass
+					#(type,value,traceback) = sys.exc_info()
+					#print value
+					# if anything happened here, just forget about caching...
+							
+		# If the resolved flag has been set then we do not have anything else to do
+		# and the attributes for self.location, self.content_type, etc, have been set.
+		# Otherwise we fall back on a real URI opening
+		if not resolved :
+			URIOpener.__init__(self, uri, additional_headers)
+		else :
+			self.location = uri
+		
+	def _resolve_cache(self, uri, base, additional_headers) :
+		def headersort(x,y) :
+			if x[1] < y[1] :
+				return 1
+			elif x[1] > y[1] :
+				return -1
+			else :
+				return 0
+
+		# There can be a bunch of exceptions raised by, eg, invalid headers; these are all simply swallowed for now
+		try :
+			# See which are the acceptable media types for the caller
+			# Suffix type list is set to a ([suffixlist],media_type), highest priority first
+			suffix_type_list = []
+			if 'Accept' in additional_headers :
+				# Get the accept headers, with possibly rearranging them based on the 'q' values
+				headers = httpheader.parse_accept_header(additional_headers['Accept'])
+				headers.sort(headersort)
+				for ctype in [str(x[0]) for x in headers] :
+					# Several suffixes may share media types, like owl and rdf...
+					suffxs = []
+					for sffx in preferred_suffixes.keys() :
+						if preferred_suffixes[sffx] == ctype :
+							suffxs.append(sffx)
+					suffix_type_list.append((suffxs, ctype))
+					
+			# First, attempt to resolve the incoming URI as is
+			if self._resolve_uri(uri, base, None) :
+				# got it!
+				return True
+			else :
+				for suffxs, ctype in suffix_type_list :
+					for sufx in suffxs :
+						retval = self._resolve_uri( uri+sufx, base, ctype )
+						if retval == True :
+							return True
+			# Sadly, there is no cache
+			return False
+		except :
+			return False
+
+	def _resolve_uri(self, uri, base, content_type) :
+		if uri in self.index :
+			fname = self.index[uri]
+			# This file name should be combined with the base
+			try :
+				self.data = file(os.path.join(base,fname))
+				if content_type :
+					self.content_type = content_type
+				else :
+					# try to guess based on the suffix
+					# this should be the case when the original URI
+					# included a suffix already
+					for key in preferred_suffixes.keys() :
+						if uri.endswith(key) :
+							self.content_type = preferred_suffixes[key]
+				return True
+			except :
+				return False
+		else :
+			return False
 
 #########################################################################################################
 

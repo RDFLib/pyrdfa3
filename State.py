@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.12 2010-04-14 12:48:38 ivan Exp $
-$Date: 2010-04-14 12:48:38 $
+$Id: State.py,v 1.13 2010-04-21 08:45:43 ivan Exp $
+$Date: 2010-04-21 08:45:43 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -33,19 +33,11 @@ from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, HostLanguage
 from pyRdfa.Curie		import Curie
 
-debug = True
-
 import re
 import random
 import urlparse
 import urllib
 
-
-#_WARNING_VERSION = "RDFa profile or RFDa version has not been set (for a correct identification of RDFa). This is not a requirement for RDFa, but it is advised to use one of those nevertheless. "
-#
-#RDFa_VERSION    = "XHTML+RDFa 1.0"
-#RDFa_PublicID   = "-//W3C//DTD XHTML+RDFa 1.0//EN"
-#RDFa_SystemID   = "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"
 
 #: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
 usual_schemes = ["doi", "file", "ftp", "gopher", "hdl", "http", "https", "imap", "isbn", "ldap", "lsid",

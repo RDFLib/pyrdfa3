@@ -16,12 +16,14 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.5 2010-04-14 12:48:38 ivan Exp $
-$Date: 2010-04-14 12:48:38 $
+$Id: Curie.py,v 1.6 2010-04-21 08:45:41 ivan Exp $
+$Date: 2010-04-21 08:45:41 $
 """
 
 import re, sys
-
+import xml.dom.minidom
+import random
+import urlparse
 
 from rdflib.RDF			import RDFNS   as ns_rdf
 from rdflib.RDFS		import RDFSNS  as ns_rdfs
@@ -30,12 +32,9 @@ from rdflib.URIRef		import URIRef
 from rdflib.Literal		import Literal
 from rdflib.BNode		import BNode
 from rdflib.Graph		import Graph
-from pyRdfa.Options		import Options
-from pyRdfa.Utils 		import quote_URI, URIOpener, MediaTypes, HostLanguage
-import xml.dom.minidom
 
-import random
-import urlparse
+from pyRdfa.Options		import Options
+from pyRdfa.Utils 		import quote_URI, URIOpener, CachedURIOpener, MediaTypes, HostLanguage
 
 #: Regular expression object for NCNAME
 ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
@@ -178,12 +177,15 @@ class ProfileRead :
 		@param name: URI of the vocabulary file
 		@return: An RDFLib Graph instance; None if the dereferencing or the parsing was unsuccessful
 		"""
+		from pyRdfa import CACHED_PROFILES_ID
 		content = None
 		try :
-			content = URIOpener(name, {'Accept' : 'text/html, application/xhtml+xml, text/turtle, application/rdf+xml, application/xml'})
+			content = CachedURIOpener(name,
+									  {'Accept' : 'text/html;q=0.7, application/xhtml+xml;q=0.7, text/turtle;q=1.0, application/rdf+xml;q=0.8'},
+									  CACHED_PROFILES_ID)
 		except  :
 			(type,value,traceback) = sys.exc_info()
-			self.state.options.comment_graph.add_warning("Profile document <%s> could not be dereferenced (%s)" % (name,value))
+			self.state.options.comment_graph.add_warning("Profile document <%s> could not be dereferenced (%s)" % (name, value))
 			return None
 		
 		if content.content_type == MediaTypes.turtle :

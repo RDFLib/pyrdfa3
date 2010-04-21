@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.16 2010-04-12 14:36:14 ivan Exp $ $Date: 2010-04-12 14:36:14 $
+$Id: __init__.py,v 1.17 2010-04-21 08:45:57 ivan Exp $ $Date: 2010-04-21 08:45:57 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -152,6 +152,9 @@ import xml.dom.minidom
 import urlparse
 
 debug = True
+
+#: Variable used to characterize cache directories for RDFa profiles
+CACHED_PROFILES_ID = 'cached_profiles'
 
 #: current "official" version of RDFa that this package implements
 rdfa_current_version	= 1.1
