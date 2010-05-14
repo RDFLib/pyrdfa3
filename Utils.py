@@ -31,6 +31,7 @@ class MediaTypes :
 	html	= 'text/html'
 	xhtml	= 'application/xhtml+xml'
 	svg		= 'application/svg+xml'
+	smil	= 'application/smil+xml'
 	xml		= 'application/xml'
 	nt		= 'text/plain'
 
@@ -43,6 +44,7 @@ preferred_suffixes = {
 	".html"		: MediaTypes.html,
 	".xhtml"	: MediaTypes.xhtml,
 	".svg"		: MediaTypes.svg,
+	".smil"		: MediaTypes.smil,
 	".xml"		: MediaTypes.xml,
 	".nt"		: MediaTypes.nt
 }

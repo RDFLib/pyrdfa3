@@ -12,11 +12,21 @@ distribution also includes the CGI front-end and a separate utility script to be
 ==============
 
 From a Python file, expecting an RDF/XML pretty printed output::
- from pyRdfa import processFile
- print processFile('filename.html')
+ from pyRdfa import pyRdfa
+ print pyRdfa().rdf_from_source('filename')
 
-Other output formats (eg, turtle) are also possible. There is a L{separate entry for CGI calls<processURI>} as well
-as for L{processing an XML DOM Tree directly<parseRDFa>} (instead of a file).
+Other output formats (eg, turtle) are also possible. Eg, to produce Turtle output, one could use:
+ from pyRdfa import pyRdfa
+ print pyRdfa().rdf_from_source('filename', outputFormat='turtle')
+
+It is also possible to embed an RDFa processing. Eg, using:
+ from pyRdfa import pyRdfa
+ print pyRdfa().graph_from_source('filename')
+
+This will return an RDFLib.Graph object instead of a serialization thereof. See the the description of the
+L{pyRdfa class<pyRdfa.pyRdfa>} for further details.
+
+There is a L{separate entry for CGI calls<processURI>}.
 
 Return formats
 --------------
@@ -32,7 +42,7 @@ Options
 
 The package also implements some optional features that are not fully part of the RDFa syntax. At the moment these are:
 
- - extra warnings and information (eg, missing C{@profile, @version} attribute or DTD, possibly erronous CURIE-s) are added to the output graph
+ - extra warnings and information (eg, possibly erronous CURIE-s) are added to the output graph
  - possibility that plain literals are normalized in terms of white spaces. Default: false. (The RDFa specification requires keeping the white spaces and leave applications to normalize them, if needed)
  - extra, built-in transformers are executed on the DOM tree prior to RDFa processing (see below)
 
@@ -40,7 +50,7 @@ Options are collected in an instance of the L{Options} class and passed to the p
 if extra warnings are required, the code may be::
  from pyRdfa import processFile, Options
  options = Options(warnings=True)
- print processFile('filename.html',options=options)
+ print pyRdfa(options=options).rdf_from_source('filename')
 
 Transformers
 ============
@@ -55,8 +65,6 @@ Some transformations are included in the package and can be used at invocation. 
  - The 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
  - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
  - Implementing the Dublin Core dialect to include DC statements from the header.  See L{transform.DublinCore} for further details.
- - Use the C{@prefix} attribute as a possible replacement for the C{xmlns} formalism. See L{transform.Prefix} for further details.
- - Use the C{@var-xx} pattern instead of the official attribute names; this may be the way to get around HTML5’s extension issues. See  L{transform.Prefix} for further details.
 
 The user of the package may refer to those and pass it on to the L{processFile} call via an L{Options} instance. The caller of the
 package may also add his/her transformer modules. Here is a possible usage with the 'openid' transformer
@@ -64,42 +72,35 @@ added to the call::
  from pyRdfa import processFile, Options
  from pyRdfa.transform.OpenID import OpenID_transform
  options = Options(transformers=[OpenID_transform])
- print processFile('filename.html',options=options)
+ print pyRdfa(options=options).rdf_from_source('filename')
 
 In the case of a call via a CGI script, these built-in transformers can be used via extra flags, see L{processURI} for further details.
 
 Note that the current option instance is passed to all transformers as extra parameters. Extensions of the package
 may make use of that to control the transformers, if necessary.
 
-HTML5
-=====
+Host Languages
+==============
 
-The U{RDFa syntax<http://www.w3.org/TR/rdfa-syntax>} is defined in terms of XHTML. However, in future,
-U{HTML5<http://www.w3.org/TR/html5/>} may also be considered as a carrier language for RDFa. Therefore, the distiller can be started up in two different modes:
- - in a "strict" XML mode the input is parsed by an XML parser (Python's xml minidom), and an exception is raised if the parser experiences problems
- - in a "lax" mode, meaning that if the XML parser has problems, then there is a fallback on an U{HTML5 parser<http://code.google.com/p/html5lib/>} to parse the input. This also covers HTML4 "tag soup" files.
+RDFa 1.1. Core is defined for generic XML; there are specific documents to describe how the generic specification is valid
+for XHTML and HTML5.
 
-The CGI script's setup uses "lax" as a default; a separate flag can be used to force the system to use strict mode  (see L{processURI}).
+pyRdfa makes an automatic switch among these based on the content type of the source. If the content type is 'text/html', the
+content is supposed to be HTML5; if it is 'application/xml+xhtml', then it is considered to be XHTML; finally, if it is
+'application/xml' or 'application/xxx+xml' (where 'xxx' stands for anything except 'xhtml'), then it is considered
+to be general XML.
 
-SVG 1.2 (and XML host languages in general)
-===========================================
+Beyond the differences described in the RDFa documents, the effect of this choice have the following effect on the
+behaviour of pyRdfa:
 
-The U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>} specification has also adopted RDFa as a means to add metadata to SVG content.
-This means that RDFa attributes can also be used to express metadata. There are, however, two subtle differences when using RDFa with XHTML
-or with SVG, namely:
+ - In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; otherwise the simple XML parser, part of the core Python environment, is used.
+ - In the case of generic XML the distiller also considers a more "traditional" way of adding RDF metadata to a file, namely by directly including RDF/XML into the XML file with a proper namespace. The distiller extracts that RDF graph and merges it with the output of the regular RDFa processing.
 
- - SVG also has a more "traditional" way of adding RDF metadata to a file, namely by directly including RDF/XML into SVG (as a child of a C{metadata} element. According to the specification of SVG, the graphs extracted from an SVG file and originating from such embedded contents and the graph extracted via RDFa attributes should be merged to yield the output RDF graph.
- - whereas XHTML1.1 does I{not} use the C{xml:base} functionality, SVG (and generic XML applications) does.
+The content type can be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}. However, the distiller attempts
+to find the content type by
 
-By default, the distiller runs in XHTML 'mode', ie, these two extra features are not implemented.
-However, if an L{Options} instance is created with xhtml=False, distiller considers that the underlying host language is pure XML,
-and these two additional features are also implemented. An example would be::
- from pyRdfa import processFile, Options
- options = Options(xhtml=False)
- print processFile('filename.svg',options=options)
-
-The CGI interface can also be used to set this option (see L{processURI}). Note that the 'lax' parsing is (obviously) disallowed in this case.
-
+ - looking at the content type header as returned by an HTTP call; if unsuccessful or the invocation is done locally then
+ - looking at the suffix of the URI or file name (.html and .xhtml are considered to be HTML5 and XHTML, respectively; otherwise XML is considered)
 
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up
@@ -115,7 +116,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.17 2010-04-21 08:45:57 ivan Exp $ $Date: 2010-04-21 08:45:57 $
+$Id: __init__.py,v 1.18 2010-05-14 11:26:56 ivan Exp $ $Date: 2010-05-14 11:26:56 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -171,6 +172,11 @@ class RDFaError(Exception) :
 	Exception class."""
 	pass
 
+class RDFaStopParsing(Exception) :
+	"""Just a wrapper around a special exception that stops parsing at a given node. Raised when, for example, @profile
+	references cannot be properly dereferenced. It does not add any new functionality to the
+	Exception class."""
+	pass
 	
 #########################################################################################################
 class pyRdfa :

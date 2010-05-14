@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.13 2010-04-21 08:45:43 ivan Exp $
-$Date: 2010-04-21 08:45:43 $
+$Id: State.py,v 1.14 2010-05-14 11:26:56 ivan Exp $
+$Date: 2010-05-14 11:26:56 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -162,14 +162,14 @@ class ExecutionContext :
 			self.lang = None
 			
 		if node.hasAttribute("xml:lang") :
-			self.lang = node.getAttribute("xml:lang")
+			self.lang = node.getAttribute("xml:lang").lower()
 			if len(self.lang) == 0 : self.lang = None
 		if self.options.host_language in [ HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa ] :
 			if node.hasAttribute("lang") :
-				self.lang = node.getAttribute("lang")
+				self.lang = node.getAttribute("lang").lower()
 
 				# Also check a possible error, namely a clash with xml:lang		
-				if node.hasAttribute("xml:lang") and self.lang != node.getAttribute("xml:lang") :
+				if node.hasAttribute("xml:lang") and self.lang != node.getAttribute("xml:lang").lower() :
 					self.options.comment_graph.add_info("Both xml:lang and lang used on an element with different values; lang prevails. (%s and %s)" % (node.getAttribute("xml:lang"), node.getAttribute("lang")))			
 
 				if len(self.lang) == 0 : self.lang = None

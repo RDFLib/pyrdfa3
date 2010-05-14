@@ -12,8 +12,11 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.5 2010-04-12 14:36:14 ivan Exp $
-$Date: 2010-04-12 14:36:14 $
+$Id: Parse.py,v 1.6 2010-05-14 11:26:56 ivan Exp $
+$Date: 2010-05-14 11:26:56 $
+
+Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
+is stopped (on the whole subtree)
 """
 
 import sys
@@ -57,10 +60,15 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	@return: whether the caller has to complete it's parent's incomplete triples
 	@rtype: Boolean
 	"""
+	from pyRdfa import RDFaStopParsing
 
 	# Update the state. This means, for example, the possible local settings of
 	# namespaces and lang
-	state = ExecutionContext(node, graph, inherited_state=incoming_state)
+	state = None
+	try :
+		state = ExecutionContext(node, graph, inherited_state=incoming_state)
+	except RDFaStopParsing :
+		return
 
 	#---------------------------------------------------------------------------------
 	# Handle the special case for embedded RDF, eg, in SVG1.2. 

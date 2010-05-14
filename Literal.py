@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.3 2010-02-19 12:26:14 ivan Exp $
-$Date: 2010-02-19 12:26:14 $
+$Id: Literal.py,v 1.4 2010-05-14 11:26:56 ivan Exp $
+$Date: 2010-05-14 11:26:56 $
 """
 
 import re
@@ -161,17 +161,24 @@ def generate_literal(node, graph, subject, state) :
 			else :
 				object = Literal(_get_literal(node),datatype=datatype,lang=lang)
 		else :
-			# no controlling @datatype. We have to see if there is markup in the contained
-			# element
-			if True in [ n.nodeType == node.ELEMENT_NODE for n in node.childNodes ] :
-				# yep, and XML Literal should be generated
-				object = Literal(_get_XML_literal(node),datatype=XMLLiteral)
-				retval = False
-			else :
-				val = _get_literal(node)
-				# At this point, there might be entities in the string that are returned as real characters by the dom
-				# implementation. That should be turned back
-				object = Literal(_get_literal(node),lang=lang)
+			val = _get_literal(node)
+			# At this point, there might be entities in the string that are returned as real characters by the dom
+			# implementation. That should be turned back
+			object = Literal(_get_literal(node),lang=lang)
+			
+			# This was the code that imposed an XMLLiteral when there was a markup among the children. This
+			# is now gone; just kept the code for a while in case the decision is reversed....
+			## no controlling @datatype. We have to see if there is markup in the contained
+			## element
+			#if True in [ n.nodeType == node.ELEMENT_NODE for n in node.childNodes ] :
+			#	# yep, and XML Literal should be generated
+			#	object = Literal(_get_XML_literal(node),datatype=XMLLiteral)
+			#	retval = False
+			#else :
+			#	val = _get_literal(node)
+			#	# At this point, there might be entities in the string that are returned as real characters by the dom
+			#	# implementation. That should be turned back
+			#	object = Literal(_get_literal(node),lang=lang)
 
 	# The object may be empty, for example in an ill-defined <meta> element...
 	if object != "" :

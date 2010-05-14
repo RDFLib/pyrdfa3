@@ -16,8 +16,13 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.6 2010-04-21 08:45:41 ivan Exp $
-$Date: 2010-04-21 08:45:41 $
+$Id: Curie.py,v 1.7 2010-05-14 11:26:56 ivan Exp $
+$Date: 2010-05-14 11:26:56 $
+
+Changes:
+	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
+	- if a @profile cannot be dereferenced then a RDFaStopParsing exception is raised rather than just go on
+
 """
 
 import re, sys
@@ -115,7 +120,11 @@ class ProfileRead :
 		self.ns     = {}
 		
 		# see what the @profile gives us...
-		for prof in self.state.getURI("profile") :
+		#for prof in self.state.getURI("profile") :
+		# The right-most URI has a higher priority, so we have to go in reverse order
+		profs = self.state.getURI("profile")
+		profs.reverse()
+		for prof in profs :
 			# avoid infinite recursion here...
 			if prof in ProfileRead.profile_stack :
 				# That one has already been done, danger of recursion:-(
@@ -128,7 +137,10 @@ class ProfileRead :
 			else :
 				# this vocab value has not been seen yet...
 				graph = self._get_graph(prof)
-				if graph == None : continue
+				if graph == None :
+					#from pyRdfa import RDFaStopParsing
+					#raise RDFaStopParsing()
+					continue
 				
 				for (subj,uri) in graph.subject_objects(ns_rdfa_profile["uri"]) :
 					# subj is, usually, a bnode, and is used as a subject for either a term
@@ -158,7 +170,7 @@ class ProfileRead :
 							prefix = prefix_list[0]
 							if isinstance(prefix, Literal) :
 								if ncname.match(prefix) != None :
-									self.ns[str(prefix)] = Namespace(uri)
+									self.ns[str(prefix).lower()] = Namespace(uri)
 								else :
 									self.state.options.comment_graph.add_warning("Prefix <%s> defined in <%s> for <%s> is invalid; ignored" % (prefix, prof, uri))
 							else :
@@ -334,7 +346,7 @@ class Curie :
 						# create a new RDFLib Namespace entry
 						ns = Namespace(uri)
 						# Add an entry to the dictionary, possibly overriding an existing one
-						dict[prefix] = ns
+						dict[prefix.lower()] = ns
 
 		# Add the locally defined namespaces using the @prefix syntax
 		# this may override the definition in @profile and @xmlns
@@ -365,7 +377,7 @@ class Curie :
 						else :
 							# last check: is the prefix an NCNAME?
 							if ncname.match(prefix) :
-								dict[prefix] = uri
+								dict[prefix.lower()] = uri
 							else :
 								state.options.comment_graph.add_error("Invalid prefix declaration (must be an NCNAME) %s in %s" % (prefix,pr))
 
@@ -406,7 +418,7 @@ class Curie :
 			# there is no ':' character in the string, ie, it is not a valid curie
 			return None
 		else :
-			prefix    = curie_split[0]
+			prefix    = curie_split[0].lower()
 			reference = curie_split[1]
 			
 			# first possibility: empty prefix
