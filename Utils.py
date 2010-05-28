@@ -108,21 +108,21 @@ class CachedURIOpener(URIOpener) :
 		resolved = False
 		if cached_env in CachedURIOpener.loaded_modules :
 			# This modules has already been imported once
-			self.index = CachedURIOpener.loaded_modules[cached_env]
-			resolved = self._resolve_cache(uri, base, additional_headers)
+			(self.index, self.base) = CachedURIOpener.loaded_modules[cached_env]
+			resolved = self._resolve_cache(uri, additional_headers)
 		else :
 			# let us try to import the module
 			if cached_env in os.environ :
-				base = os.environ[cached_env]
-				if base not in sys.path :
-					sys.path.insert(0, base)
+				self.base = os.environ[cached_env]
+				if self.base not in sys.path :
+					sys.path.insert(0, self.base)
 				try :
 					(f,p,d) = imp.find_module(cached_env)	
 					imp.load_module(cached_env,f,p,d)
 					m = sys.modules[cached_env]
 					self.index = m.__dict__['index']
-					CachedURIOpener.loaded_modules[cached_env] = self.index
-					resolved = self._resolve_cache(uri, base, additional_headers)
+					CachedURIOpener.loaded_modules[cached_env] = (self.index, self.base)
+					resolved = self._resolve_cache(uri, additional_headers)
 				except :
 					pass
 					#(type,value,traceback) = sys.exc_info()
@@ -137,7 +137,7 @@ class CachedURIOpener(URIOpener) :
 		else :
 			self.location = uri
 		
-	def _resolve_cache(self, uri, base, additional_headers) :
+	def _resolve_cache(self, uri, additional_headers) :
 		def headersort(x,y) :
 			if x[1] < y[1] :
 				return 1
@@ -170,7 +170,7 @@ class CachedURIOpener(URIOpener) :
 			else :
 				for suffxs, ctype in suffix_type_list :
 					for sufx in suffxs :
-						retval = self._resolve_uri( uri+sufx, base, ctype )
+						retval = self._resolve_uri( uri+sufx, ctype )
 						if retval == True :
 							return True
 			# Sadly, there is no cache
@@ -178,12 +178,12 @@ class CachedURIOpener(URIOpener) :
 		except :
 			return False
 
-	def _resolve_uri(self, uri, base, content_type) :
+	def _resolve_uri(self, uri, content_type) :
 		if uri in self.index :
 			fname = self.index[uri]
 			# This file name should be combined with the base
 			try :
-				self.data = file(os.path.join(base,fname))
+				self.data = file(os.path.join(self.base, fname))
 				if content_type :
 					self.content_type = content_type
 				else :

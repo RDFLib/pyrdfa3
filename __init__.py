@@ -116,7 +116,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.18 2010-05-14 11:26:56 ivan Exp $ $Date: 2010-05-14 11:26:56 $
+$Id: __init__.py,v 1.19 2010-05-28 14:18:00 ivan Exp $ $Date: 2010-05-28 14:18:00 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -143,6 +143,40 @@ from rdflib.Namespace	import Namespace
 from rdflib.RDF			import RDFNS  as ns_rdf
 from rdflib.RDFS		import RDFSNS as ns_rdfs
 
+ns_rdfa = Namespace("http://www.w3.org/ns/rdfa#")
+debug = True
+
+#########################################################################################################
+
+# Exception/error handling. Essentially, all the different exceptions are re-packaged into
+# separate exception class, to allow for an easier management on the user level
+
+class RDFaError(Exception) :
+	"""Just a wrapper around the local exceptions. It does not add any new functionality to the
+	Exception class."""
+	pass
+
+class FailedProfile(RDFaError) :
+	"""Raised when @profile references cannot be properly dereferenced. It does not add any new functionality to the
+	Exception class."""
+	pass
+
+class FailedSource(RDFaError) :
+	"""Raised when the original source cannot be accessed. It does not add any new functionality to the
+	Exception class."""
+	pass
+
+class ProcessingError(RDFaError) :
+	"""Error found during processing. It does not add any new functionality to the
+	Exception class."""
+	pass
+
+class pyRdfaError(Exception) :
+	"""Used as a wrapper around local exceptions. This is outside the error conditions described by the
+	RDFa specification"""
+	pass
+
+
 from pyRdfa.State				import ExecutionContext
 from pyRdfa.Parse				import parse_one_node
 from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR
@@ -151,8 +185,6 @@ from pyRdfa.Utils				import URIOpener, MediaTypes, HostLanguage
 
 import xml.dom.minidom
 import urlparse
-
-debug = True
 
 #: Variable used to characterize cache directories for RDFa profiles
 CACHED_PROFILES_ID = 'cached_profiles'
@@ -164,19 +196,6 @@ rdfa_current_version	= 1.1
 builtInTransformers = [
 	head_about_transform
 ]
-
-# Exception handling. Essentially, all the different exceptions are re-packaged into
-# separate exception class, to allow for an easier management on the user level
-class RDFaError(Exception) :
-	"""Just a wrapper around the local exceptions. It does not add any new functionality to the
-	Exception class."""
-	pass
-
-class RDFaStopParsing(Exception) :
-	"""Just a wrapper around a special exception that stops parsing at a given node. Raised when, for example, @profile
-	references cannot be properly dereferenced. It does not add any new functionality to the
-	Exception class."""
-	pass
 	
 #########################################################################################################
 class pyRdfa :
@@ -214,32 +233,36 @@ class pyRdfa :
 		@type name: string or a file-like object
 		@return: a file like object if opening "name" is possible and successful, "name" otherwise
 		"""
-		if isinstance(name, basestring) :
-			# check if this is a URI, ie, if there is a valid 'scheme' part
-			# otherwise it is considered to be a simple file
-			if urlparse.urlparse(name)[0] != "" :
-				url_request 	  = URIOpener(name)
-				self.base 		  = url_request.location
-				if self.media_type == "" :
-					if url_request.content_type in [ MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml ] :
-						self.media_type = url_request.content_type
-					else :
-						self.media_type = MediaTypes.xml
-					self.options.set_host_language(self.media_type)
-				return url_request.data
+		try :
+			if isinstance(name, basestring) :
+				# check if this is a URI, ie, if there is a valid 'scheme' part
+				# otherwise it is considered to be a simple file
+				if urlparse.urlparse(name)[0] != "" :
+					url_request 	  = URIOpener(name)
+					self.base 		  = url_request.location
+					if self.media_type == "" :
+						if url_request.content_type in [ MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml ] :
+							self.media_type = url_request.content_type
+						else :
+							self.media_type = MediaTypes.xml
+						self.options.set_host_language(self.media_type)
+					return url_request.data
+				else :
+					self.base = name
+					if self.media_type == "" :
+						if name.endswith(".xhtml") :
+							self.media_type = MediaTypes.xhtml
+						elif name.endswith(".html") :
+							self.media_type = MediaTypes.html
+						else :
+							self.media_type = MediaTypes.xml
+						self.options.set_host_language(self.media_type)
+					return file(name)
 			else :
-				self.base = name
-				if self.media_type == "" :
-					if name.endswith(".xhtml") :
-						self.media_type = MediaTypes.xhtml
-					elif name.endswith(".html") :
-						self.media_type = MediaTypes.html
-					else :
-						self.media_type = MediaTypes.xml
-					self.options.set_host_language(self.media_type)
-				return file(name)
-		else :
-			return name
+				return name
+		except :
+			(type, value, traceback) = sys.exc_info()
+			raise FailedSource(value)
 		
 	def _register_XML_serializer(self) :
 		"""The default XML Serializer of RDFlib is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer>} is
@@ -277,7 +300,7 @@ class pyRdfa :
 		else :
 			return outputFormat
 
-	def create_exception_graph(self, exception_msg, graph=None, http=True) :
+	def create_exception_graph(self, exception_type, exception_msg, graph=None, http=True) :
 		"""
 		This method takes an exception and turns its message into a serialized RDF Graph. This is used when
 		the distiller is used as a CGI script or with files and is asked to return an RDF content in case of exceptions.
@@ -295,19 +318,20 @@ class pyRdfa :
 		if graph == None :
 			graph = Graph()
 
-		graph.bind("dist",DIST_NS)
+		graph.bind("dist", DIST_NS)
+		graph.bind("rdfa", ns_rdfa)
 		
-		if not exception_msg :
-			_add_to_comment_graph(graph, Literal("%s" % exception_msg), ERROR, URIRef(self.base))
+		if exception_msg :
+			_add_to_comment_graph(exception_type, graph, Literal("%s" % exception_msg), ERROR, URIRef(self.base))
 	
 		# Add a 400 error message information
 		if http:
 			ns_http=Namespace("http://www.w3.org/2006/http#")
 			graph.bind("http",ns_http)
 			response = BNode()
-			graph.add((response,ns_rdf["type"],ns_http["Response"]))
-			graph.add((response,ns_http["statusCodeNumber"],Literal("400")))
-			graph.add((response,ns_http["statusCode"],URIRef("http://www.w3.org/2008/http-statusCodes#statusCode400")))
+			graph.add((response, ns_rdf["type"], ns_http["Response"]))
+			graph.add((response, ns_http["statusCodeNumber"], Literal("400")))
+			graph.add((response, ns_http["statusCode"], URIRef("http://www.w3.org/2008/http-statusCodes#statusCode400")))
 			
 		return graph
 	
@@ -337,11 +361,15 @@ class pyRdfa :
 	
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
-		state = ExecutionContext(topElement, graph, base=self.base, options=self.options)
+		try :
+			state = ExecutionContext(topElement, graph, base=self.base, options=self.options)
 	
-		# The top level subject starts with the current document; this
-		# is used by the recursion
-		subject = URIRef(state.base)
+			# The top level subject starts with the current document; this
+			# is used by the recursion
+			subject = URIRef(state.base)
+		except FailedProfile :
+			(type, value, traceback) = sys.exc_info()
+			self.create_exception_graph(type, value, graph=graph, http=False)
 	
 		parse_one_node(topElement, graph, subject, state, [])
 		
@@ -410,7 +438,7 @@ class pyRdfa :
 					self.graph_from_source(name, graph)
 				except :
 					(type, value, traceback) = sys.exc_info()
-					self.create_exception_graph(value, graph= graph, http=False)
+					self.create_exception_graph(type, value, graph=graph, http=False)
 		else :
 			# let the caller deal with the exceptions
 			for name in names :
@@ -453,7 +481,6 @@ def processURI(uri, outputFormat, form={}) :
 	@type form: cgi FieldStorage instance
 	@return: serialized graph
 	@rtype: string
-	@raise RDFaError: if the accept header of the call requires HTML, then all possible exceptions are re-raised as RDFaError
 	"""
 	if uri == "uploaded:" :
 		input	= form["uploaded"].file
@@ -562,7 +589,7 @@ def processURI(uri, outputFormat, form={}) :
 			print "</body>"
 			print "</html>"
 		else :
-			return processor.create_exception_graph(value).serialize(format=outputFormat)
+			return processor.create_exception_graph(type, value).serialize(format=outputFormat)
 
 
 ################################################# Deprecated entry points, kept for backward compatibility... 

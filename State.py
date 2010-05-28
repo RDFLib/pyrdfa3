@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.14 2010-05-14 11:26:56 ivan Exp $
-$Date: 2010-05-14 11:26:56 $
+$Id: State.py,v 1.15 2010-05-28 14:18:00 ivan Exp $
+$Date: 2010-05-28 14:18:00 $
 """
 
 from rdflib.RDF			import RDFNS   as ns_rdf
@@ -32,6 +32,7 @@ from rdflib.BNode		import BNode
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, HostLanguage
 from pyRdfa.Curie		import Curie
+from pyRdfa 			import FailedProfile, FailedSource
 
 import re
 import random
@@ -161,17 +162,35 @@ class ExecutionContext :
 		else :
 			self.lang = None
 			
-		if node.hasAttribute("xml:lang") :
-			self.lang = node.getAttribute("xml:lang").lower()
-			if len(self.lang) == 0 : self.lang = None
 		if self.options.host_language in [ HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa ] :
+			# we may have lang and xml:lang
 			if node.hasAttribute("lang") :
-				self.lang = node.getAttribute("lang").lower()
+				lang = node.getAttribute("lang").lower()
+			else :
+				lang = None
 
-				# Also check a possible error, namely a clash with xml:lang		
-				if node.hasAttribute("xml:lang") and self.lang != node.getAttribute("xml:lang").lower() :
-					self.options.comment_graph.add_info("Both xml:lang and lang used on an element with different values; lang prevails. (%s and %s)" % (node.getAttribute("xml:lang"), node.getAttribute("lang")))			
-
+			if node.hasAttribute("xml:lang") :
+				xmllang = node.getAttribute("xml:lang").lower()
+			else :
+				xmllang = None
+				
+			# First of all, set the value, if any
+			if xmllang != None :
+				# this has priority
+				if len(xmllang) != 0 :
+					self.lang = xmllang
+			elif lang != None :
+				if len(lang) != 0 :
+					self.lang = lang
+				
+			# check a posible warning (error?), too
+			if lang != None and xmllang != None and lang != xmllang :
+				self.options.comment_graph.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))			
+		
+		else :
+			# this is a clear case, xml:lang is the only possible option...
+			if node.hasAttribute("xml:lang") :
+				self.lang = node.getAttribute("xml:lang").lower()
 				if len(self.lang) == 0 : self.lang = None
 			
 		#-----------------------------------------------------------------
@@ -253,7 +272,7 @@ class ExecutionContext :
 			# Is checked below, and that is why the safe_curie flag is necessary
 			if val[-1] != ']' :
 				# that is certainly forbidden: an incomplete safe curie
-				self.options.comment_graph.add_error("Illegal CURIE: %s" % val)
+				self.options.comment_graph.add_warning("Illegal CURIE: %s" % val)
 				return None
 			else :
 				val = val[1:-1]
@@ -266,7 +285,7 @@ class ExecutionContext :
 			# The rule says that then the whole value should be considered as a URI
 			# except if it was part of a safe Curie. In that case it should be ignored...
 			if safe_curie :
-				self.options.comment_graph.add_error("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
+				self.options.comment_graph.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
 				return None
 			else :
 				return self._URI(val)

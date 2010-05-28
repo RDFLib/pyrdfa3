@@ -190,11 +190,12 @@ class TurtleSerializer(RecursiveSerializer):
 	def s_squared(self, subject):
 		if (self.refCount(subject) > 0) or not isinstance(subject, BNode) :
 			return False
-		self.write('\n' + self.indent() + " [")
+		self.write('\n' + self.indent() + " []")
 		self.depth += 1
 		self.predicateList(subject)
+		self.write(' .')
 		self.depth -= 1
-		self.write('].')
+		#self.write('].')
 		return True
 
 	def s_default(self, subject):

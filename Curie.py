@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.7 2010-05-14 11:26:56 ivan Exp $
-$Date: 2010-05-14 11:26:56 $
+$Id: Curie.py,v 1.8 2010-05-28 14:18:00 ivan Exp $
+$Date: 2010-05-28 14:18:00 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -40,6 +40,9 @@ from rdflib.Graph		import Graph
 
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, URIOpener, CachedURIOpener, MediaTypes, HostLanguage
+from pyRdfa 			import FailedProfile, FailedSource
+
+from pyRdfa				import ns_rdfa
 
 #: Regular expression object for NCNAME
 ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
@@ -80,9 +83,6 @@ default_namespaces = {
 	"openid"	: "http://xmlns.openid.net/auth#"
 }
 
-#: the namespace used in profile management
-ns_rdfa_profile = Namespace("http://www.w3.org/ns/rdfa#")
-
 #### Managing blank nodes for CURIE-s: mapping from local names to blank nodes.
 __bnodes = {}
 __empty_bnode = BNode()
@@ -121,7 +121,7 @@ class ProfileRead :
 		
 		# see what the @profile gives us...
 		#for prof in self.state.getURI("profile") :
-		# The right-most URI has a higher priority, so we have to go in reverse order
+		# The right-most URI has a lower priority, so we have to go in reverse order
 		profs = self.state.getURI("profile")
 		profs.reverse()
 		for prof in profs :
@@ -142,13 +142,13 @@ class ProfileRead :
 					#raise RDFaStopParsing()
 					continue
 				
-				for (subj,uri) in graph.subject_objects(ns_rdfa_profile["uri"]) :
+				for (subj,uri) in graph.subject_objects(ns_rdfa["uri"]) :
 					# subj is, usually, a bnode, and is used as a subject for either a term
 					# or a prefix setting
 					# extra check is done to see whether there are more than one settings
 					# rdflib works with iterators and I need the whole set here to make the checks:-(
-					term_list 	= [k for k in graph.objects(subj, ns_rdfa_profile["term"])]
-					prefix_list	= [k for k in graph.objects(subj, ns_rdfa_profile["prefix"])]
+					term_list 	= [k for k in graph.objects(subj, ns_rdfa["term"])]
+					prefix_list	= [k for k in graph.objects(subj, ns_rdfa["prefix"])]
 					if len(term_list) > 0 and len(prefix_list) > 0 :
 						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof))
 					elif len(term_list) > 1 :
@@ -188,6 +188,7 @@ class ProfileRead :
 		
 		@param name: URI of the vocabulary file
 		@return: An RDFLib Graph instance; None if the dereferencing or the parsing was unsuccessful
+		@raise: FailedProfile if the profile document could not be dereferenced or is not a known media type
 		"""
 		from pyRdfa import CACHED_PROFILES_ID
 		content = None
@@ -197,8 +198,7 @@ class ProfileRead :
 									  CACHED_PROFILES_ID)
 		except  :
 			(type,value,traceback) = sys.exc_info()
-			self.state.options.comment_graph.add_warning("Profile document <%s> could not be dereferenced (%s)" % (name, value))
-			return None
+			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, value))
 		
 		if content.content_type == MediaTypes.turtle :
 			retval = Graph()
@@ -207,8 +207,7 @@ class ProfileRead :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				self.state.options.comment_graph.add_warning("Could not parse Turtle content content at <%s> (%s)" % (name,value))
-				return None
+				raise FailedProfile("Could not parse Turtle content content at <%s> (%s)" % (name,value))
 		elif content.content_type == MediaTypes.rdfxml :
 			try :
 				retval = Graph()
@@ -216,8 +215,7 @@ class ProfileRead :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				self.state.options.comment_graph.add_warning("Could not parse RDF/XML content at <%s> (%s)" % (name,value))
-				return None
+				raise FailedProfile("Could not parse RDF/XML content at <%s> (%s)" % (name,value))
 		elif content.content_type == MediaTypes.nt :
 			try :
 				retval = Graph()
@@ -225,8 +223,7 @@ class ProfileRead :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				self.state.options.comment_graph.add_warning("Could not parse N-Triple content at <%s> (%s)" % (name,value))
-				return None
+				raise FailedProfile("Could not parse N-Triple content at <%s> (%s)" % (name,value))
 		elif content.content_type in [MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml] or xml_application_media_type.match(content.content_type) != None :
 			try :
 				from pyRdfa import pyRdfa
@@ -234,12 +231,9 @@ class ProfileRead :
 				return pyRdfa(options).graph_from_source(content.data)
 			except :
 				(type,value,traceback) = sys.exc_info()
-				self.state.options.comment_graph.add_warning("Could not parse RDFa content at <%s> (%s)" % (name,value))
-				return None
+				raise FailedProfile("Could not parse RDFa content at <%s> (%s)" % (name,value))
 		else :
-			self.state.options.comment_graph.add_warning("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name,content.content_type))
-			return None
-
+			raise FailedProfile("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name,content.content_type))
 
 class Curie :
 	"""
@@ -336,16 +330,16 @@ class Curie :
 				prefix = attr.localName
 				if prefix != "" : # exclude the top level xmlns setting...
 					if prefix == "_" :
-						state.options.comment_graph.add_error("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed" )
+						state.options.comment_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed")
 					elif prefix.find(':') != -1 :
-						state.options.comment_graph.add_error("The character ':' is not valid in a CURIE Prefix" )
+						state.options.comment_graph.add_warning("The character ':' is not valid in a CURIE Prefix")
 					else :					
 						# quote the URI, ie, convert special characters into %.. This is
 						# true, for example, for spaces
 						uri = quote_URI(attr.value, state.options)
 						# create a new RDFLib Namespace entry
 						ns = Namespace(uri)
-						# Add an entry to the dictionary, possibly overriding an existing one
+						# Add an entry to the dictionary if not already there (priority is left to right!)
 						dict[prefix.lower()] = ns
 
 		# Add the locally defined namespaces using the @prefix syntax
@@ -355,31 +349,36 @@ class Curie :
 			if pr != None :
 				# separator character is whitespace
 				pr_list = pr.strip().split()
-				for i in range(0,len(pr_list),2) :
+				for i in range(0, len(pr_list), 2) :
 					prefix = pr_list[i]
 					# see if there is a URI at all
 					if i == len(pr_list) - 1 :
-						state.options.comment_graph.add_error("Missing URI in prefix declaration for %s in %s" % (prefix,pr))
+						state.options.comment_graph.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr))
 						break
 					else :
 						value = pr_list[i+1]
 					
 					# see if the value of prefix is o.k., ie, there is a ':' at the end
 					if prefix[-1] != ':' :
-						state.options.comment_graph.add_error("Invalid prefix declaration %s in %s" % (prefix,pr))
+						state.options.comment_graph.add_warning("Invalid prefix declaration '%s' (in '%s')" % (prefix,pr))
 						continue
 					else :
 						prefix = prefix[:-1]
-						uri = Namespace(quote_URI(value, state.options))
+						uri    = Namespace(quote_URI(value, state.options))
 						if prefix == "" :
 							#something to be done here
 							self.default_curie_uri = uri
+						elif prefix == "_" :
+							state.options.comment_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr)				
 						else :
 							# last check: is the prefix an NCNAME?
 							if ncname.match(prefix) :
-								dict[prefix.lower()] = uri
+								real_prefix = prefix.lower()
+								# This extra check is necessary to allow for a left-to-right priority
+								if real_prefix not in dict :
+									dict[real_prefix] = uri
 							else :
-								state.options.comment_graph.add_error("Invalid prefix declaration (must be an NCNAME) %s in %s" % (prefix,pr))
+								state.options.comment_graph.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr))
 
 		# See if anything has been collected at all.
 		# If not, the namespaces of the incoming state is

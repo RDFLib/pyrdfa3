@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.6 2010-05-14 11:26:56 ivan Exp $
-$Date: 2010-05-14 11:26:56 $
+$Id: Parse.py,v 1.7 2010-05-28 14:18:00 ivan Exp $
+$Date: 2010-05-28 14:18:00 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -30,6 +30,8 @@ from rdflib.URIRef  import URIRef
 from rdflib.BNode   import BNode
 from rdflib.RDF     import RDFNS  as ns_rdf
 from rdflib.RDF     import type
+
+from pyRdfa import FailedProfile, FailedSource
 
 #######################################################################
 # Function to check whether one of a series of attributes
@@ -60,14 +62,15 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	@return: whether the caller has to complete it's parent's incomplete triples
 	@rtype: Boolean
 	"""
-	from pyRdfa import RDFaStopParsing
 
 	# Update the state. This means, for example, the possible local settings of
 	# namespaces and lang
 	state = None
 	try :
 		state = ExecutionContext(node, graph, inherited_state=incoming_state)
-	except RDFaStopParsing :
+	except FailedProfile :
+		(type, value, traceback) = sys.exc_info()
+		incoming_state.options.comment_graph.add_error(value, type)
 		return
 
 	#---------------------------------------------------------------------------------

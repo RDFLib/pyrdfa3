@@ -16,17 +16,30 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.5 2010-04-12 14:36:13 ivan Exp $ $Date: 2010-04-12 14:36:13 $
+$Id: Options.py,v 1.6 2010-05-28 14:18:00 ivan Exp $ $Date: 2010-05-28 14:18:00 $
 """
 
-import sys
-from rdflib.Graph		import Graph
-from rdflib.URIRef		import URIRef
-from rdflib.Literal		import Literal
-from rdflib.BNode		import BNode
-from rdflib.Namespace	import Namespace
-from rdflib.RDFS		import comment as rdfs_comment
-from pyRdfa.Utils		import MediaTypes, HostLanguage
+import sys, datetime
+
+import rdflib
+from rdflib	import URIRef
+from rdflib	import Literal
+from rdflib	import BNode
+from rdflib	import Namespace
+if rdflib.__version__ >= "3.0.0" :
+	from rdflib	import Graph
+	from rdflib	import RDF  as ns_rdfs
+	from rdflib	import RDFS as ns_rdf
+	from rdflib	import XSD  as ns_xsd
+else :
+	from rdflib.Graph	import Graph
+	from rdflib.RDFS	import RDFSNS as ns_rdfs
+	from rdflib.RDF		import RDFNS  as ns_rdf
+	ns_xsd = Namespace(u'http://www.w3.org/2001/XMLSchema#')
+
+from pyRdfa.Utils	import MediaTypes, HostLanguage
+from pyRdfa			import ns_rdfa
+from pyRdfa 		import FailedProfile, FailedSource
 
 DIST_URI = "http://www.w3.org/2007/08/pyRdfa/distiller"
 DIST_NS  = DIST_URI + '#'
@@ -40,16 +53,23 @@ INFO    = 'info'
 DEBUG   = 'debug'
 
 _message_properties = {
-	WARNING	: ns_errors["warning"],
-	ERROR	: ns_errors["error"],
-	INFO	: ns_errors["information"],
-	DEBUG	: ns_errors["debug"]
+	WARNING	: ns_errors["Warning"],
+	ERROR	: ns_rdfa["RDFaError"],
+	INFO	: ns_errors["Information"],
+	DEBUG	: ns_errors["Debug"]
 }
 
-def _add_to_comment_graph(graph, msg, prop, uri) :
+_error_classes = {
+	FailedProfile : ns_rdfa["FailedProfile"],
+	FailedSource  : ns_rdfa["FailedSource"],
+}
+
+def _add_to_comment_graph(type, graph, msg, prop, uri) :
 	"""
 	Add a distiller message to the graph.
 	
+	@param type: Exception type that, possibly, led to the error
+	@type type: Exception
 	@param graph: RDFLib Graph
 	@param msg: message of an exception
 	@type msg: RDFLIb Literal
@@ -59,9 +79,15 @@ def _add_to_comment_graph(graph, msg, prop, uri) :
 	@type uri: URIRef
 	"""
 	bnode = BNode()
-	graph.add((distillerURI, _message_properties[prop], bnode))
-	graph.add((bnode, ns_errors["onURI"], uri))
-	graph.add((bnode, ns_errors["message"], msg))		
+	graph.bind("rdfa", ns_rdfa)
+	
+	graph.add((bnode, ns_rdf["type"], _message_properties[prop]))
+	if type in _error_classes :
+		graph.add((bnode, ns_rdf["type"], _error_classes[type]))
+
+	graph.add((bnode, ns_rdfa["onURI"], uri))
+	graph.add((bnode, ns_rdfs["comment"], msg))
+	graph.add((bnode, ns_rdfa["timeStamp"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
 
 
 class CommentGraph :
@@ -80,12 +106,12 @@ class CommentGraph :
 		self.accumulated_literals = []
 		self.baseURI              = None
 		
-	def _add_triple(self, msg, prop) :
+	def _add_triple(self, msg, prop, type) :
 		obj = Literal(msg)
 		if self.baseURI == None :
-			self.accumulated_literals.append((obj,prop))
+			self.accumulated_literals.append((obj, prop, type))
 		elif self.graph != None :
-			_add_to_comment_graph(self.graph, obj, prop, self.baseURI) 
+			_add_to_comment_graph(type, self.graph, obj, prop, self.baseURI) 
 			
 	def set_base_URI(self, URI) :
 		"""Set the base URI for the comment triples.
@@ -97,30 +123,32 @@ class CommentGraph :
 		"""
 		self.baseURI = URI
 		if self.graph != None :
-			for obj, prop in self.accumulated_literals :
-				_add_to_comment_graph(self.graph, obj, prop, self.baseURI) 
+			for obj, prop, type in self.accumulated_literals :
+				_add_to_comment_graph(type, self.graph, obj, prop, self.baseURI) 
 		self.accumulated_literals = []
 				
 	def add_warning(self, txt) :
 		"""Add a warning. A comment triplet is added to the separate "warning" graph.
 		@param txt: the warning text. It will be preceded by the string "==== pyRdfa Warning ==== "
 		"""
-		self._add_triple(txt, WARNING)
+		self._add_triple(txt, WARNING, None)
 
 	def add_info(self, txt) :
 		"""Add an informational comment. A comment triplet is added to the separate "warning" graph.
 		@param txt: the information text. It will be preceded by the string "==== pyRdfa information ==== "
 		"""
-		self._add_triple(txt, INFO)
+		self._add_triple(txt, INFO, None)
 
-	def add_error(self, txt) :
+	def add_error(self, txt, type=None) :
 		"""Add an error comment. A comment triplet is added to the separate "warning" graph.
 		@param txt: the information text. It will be preceded by the string "==== pyRdfa information ==== "
+		@param type: Exception type that, possibly, led to the error
+		@type type: Exception
 		"""
-		self._add_triple(txt, ERROR)
+		self._add_triple(txt, ERROR, type)
 		
 	def _add_debug(self, txt) :
-		self._add_triple(txt, DEBUG)
+		self._add_triple(txt, DEBUG, None)
 
 class Options :
 	"""Settable options. An instance of this class is stored in
