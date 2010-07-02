@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.16 2010-07-02 13:27:02 ivan Exp $
-$Date: 2010-07-02 13:27:02 $
+$Id: State.py,v 1.17 2010-07-02 14:18:08 ivan Exp $
+$Date: 2010-07-02 14:18:08 $
 """
 
 import rdflib
@@ -45,7 +45,6 @@ import re
 import random
 import urlparse
 import urllib
-
 
 #: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
 usual_schemes = ["doi", "file", "ftp", "gopher", "hdl", "http", "https", "imap", "isbn", "ldap", "lsid",
@@ -98,14 +97,14 @@ class ExecutionContext :
 				"profile"	:	ExecutionContext._URI,
 				"vocab"	    :   ExecutionContext._URI,
 			
-				"about"		:	ExecutionContext._URIorCURIE, 
-				"resource"	:	ExecutionContext._URIorCURIE, 
+				"about"		:	ExecutionContext._CURIEorURI, 
+				"resource"	:	ExecutionContext._CURIEorURI, 
 			
-				"rel"		:	ExecutionContext._term_or_URIorCURIE,
-				"rev"		:	ExecutionContext._term_or_URIorCURIE,
-				"datatype"	:	ExecutionContext._term_or_URIorCURIE,
-				"typeof"	:	ExecutionContext._term_or_URIorCURIE,
-				"property"	:	ExecutionContext._term_or_URIorCURIE,
+				"rel"		:	ExecutionContext._TERMorCURIEorAbsURI,
+				"rev"		:	ExecutionContext._TERMorCURIEorAbsURI,
+				"datatype"	:	ExecutionContext._TERMorCURIEorAbsURI,
+				"typeof"	:	ExecutionContext._TERMorCURIEorAbsURI,
+				"property"	:	ExecutionContext._TERMorCURIEorAbsURI,
 			}	
 		#-----------------------------------------------------------------
 		self.node = node
@@ -211,6 +210,7 @@ class ExecutionContext :
 
 	#------------------------------------------------------------------------------------------------------------
 
+
 	def _URI(self, val) :
 		"""Returns a URI for a 'pure' URI (ie, no CURIE). The method resolves possible relative URI-s. It also
 		checks whether the URI uses an unusual URI scheme (and issues a warning); this may be the result of an
@@ -219,6 +219,7 @@ class ExecutionContext :
 		@type val: string
 		@return: an RDFLib URIRef instance
 		"""
+
 		def check_create_URIRef(uri) :
 			"""
 			Mini helping function: it checks whether a uri is using a usual scheme before a URIRef is created. In case
@@ -230,7 +231,7 @@ class ExecutionContext :
 			if urlparse.urlsplit(val)[0] not in usual_schemes :
 				self.options.processor_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 			return URIRef(val)
-		
+
 		if val == "" :
 			return URIRef(self.base)
 
@@ -246,7 +247,6 @@ class ExecutionContext :
 				# relative URI, to be combined with local file name:
 				return URIRef(self.base + val.strip())
 			else :
-				# base should be forgotten
 				return check_create_URIRef(val)
 		else :
 			# Trust the python library...
@@ -262,7 +262,7 @@ class ExecutionContext :
 			except :
 				return check_create_URIRef(joined)
 
-	def _URIorCURIE(self, val) :
+	def _CURIEorURI(self, val) :
 		"""Returns a URI for a (safe or not safe) CURIE. In case it is a safe CURIE but the CURIE itself
 		is not defined, an error message is issued. 
 		@param val: attribute value to be interpreted
@@ -287,8 +287,7 @@ class ExecutionContext :
 
 		retval = self.curie.CURIE_to_URI(val)
 		if retval == None :
-			# the value could not be interpreted as a CURIE, ie, it did not produce any valid
-			# URI.
+			# the value could not be interpreted as a CURIE, ie, it did not produce any valid URI.
 			# The rule says that then the whole value should be considered as a URI
 			# except if it was part of a safe Curie. In that case it should be ignored...
 			if safe_curie :
@@ -304,9 +303,9 @@ class ExecutionContext :
 			else :
 				return retval
 
-	def _term_or_URIorCURIE(self, val) :
+	def _TERMorCURIEorAbsURI(self, val) :
 		"""Returns a URI either for a term or for a CURIE. The value must be an NCNAME to be handled as a term; otherwise
-		the method falls back on a URI or CURIE.
+		the method falls back on a CURIE or an absolute URI.
 		@param val: attribute value to be interpreted
 		@type val: string
 		@return: an RDFLib URIRef instance or None
@@ -319,7 +318,21 @@ class ExecutionContext :
 			# This is a term, must be handled as such...
 			return self.curie.term_to_URI(val)
 		else :
-			return self._URIorCURIE(val)
+			# try a CURIE
+			retval = self.curie.CURIE_to_URI(val)
+			if retval :
+				return retval
+			else :
+				# See if it is an absolute URI
+				scheme = urlparse.urlsplit(val)[0]
+				if scheme == "" :
+					# bug; there should be no relative URIs here
+					self.options.processor_graph.add_warning("Relative URI is not allowed in this position: [%s]" % val)
+					return None
+				else :
+					if scheme not in usual_schemes :
+						self.options.processor_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
+					return URIRef(val)
 
 	# -----------------------------------------------------------------------------------------------
 

@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.9 2010-07-02 13:27:02 ivan Exp $
-$Date: 2010-07-02 13:27:02 $
+$Id: Curie.py,v 1.10 2010-07-02 14:18:07 ivan Exp $
+$Date: 2010-07-02 14:18:07 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -403,9 +403,7 @@ class Curie :
 				self.ns = dict
 
 	def CURIE_to_URI(self, val) :
-		"""CURIE to URI mapping. Note that this method does not take care of the
-		blank node management, ie, when the key is '_'; this is something that
-		has to be taken care of summer higher up.
+		"""CURIE to URI mapping. 
 		
 		Note that this method does I{not} take care of the last step of CURIE processing, ie, the fact that if
 		it does not have a CURIE then the value is used a URI. This is done on the caller's side, because this has
