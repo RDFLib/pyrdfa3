@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.6 2010-05-28 14:18:00 ivan Exp $ $Date: 2010-05-28 14:18:00 $
+$Id: Options.py,v 1.7 2010-07-02 13:27:02 ivan Exp $ $Date: 2010-07-02 13:27:02 $
 """
 
 import sys, datetime
@@ -28,17 +28,15 @@ from rdflib	import BNode
 from rdflib	import Namespace
 if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import Graph
-	from rdflib	import RDF  as ns_rdfs
-	from rdflib	import RDFS as ns_rdf
-	from rdflib	import XSD  as ns_xsd
+	from rdflib	import RDF  as ns_rdf
+	from rdflib	import RDFS as ns_rdfs
 else :
 	from rdflib.Graph	import Graph
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
-	ns_xsd = Namespace(u'http://www.w3.org/2001/XMLSchema#')
 
 from pyRdfa.Utils	import MediaTypes, HostLanguage
-from pyRdfa			import ns_rdfa
+from pyRdfa			import ns_rdfa, ns_xsd
 from pyRdfa 		import FailedProfile, FailedSource
 
 DIST_URI = "http://www.w3.org/2007/08/pyRdfa/distiller"
@@ -64,7 +62,7 @@ _error_classes = {
 	FailedSource  : ns_rdfa["FailedSource"],
 }
 
-def _add_to_comment_graph(type, graph, msg, prop, uri) :
+def _add_to_processor_graph(type, graph, msg, prop, uri) :
 	"""
 	Add a distiller message to the graph.
 	
@@ -90,28 +88,25 @@ def _add_to_comment_graph(type, graph, msg, prop, uri) :
 	graph.add((bnode, ns_rdfa["timeStamp"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
 
 
-class CommentGraph :
-	"""Class to handle the 'comment graph', ie, the (RDF) Graph containing the warnings,
+class ProcessorGraph :
+	"""Class to handle the 'processor graph', ie, the (RDF) Graph containing the warnings,
 	error messages, and informational messages.
 	"""
-	def __init__(self, warnings = False) :
+	def __init__(self) :
 		"""
 		@param warnings: whether a graph should effectively be set up, or whether this
 		should just be an empty shell for the various calls to work (without effect)
 		"""
-		if warnings :
-			self.graph = Graph()
-		else :
-			self.graph = None
-		self.accumulated_literals = []
-		self.baseURI              = None
+		self.graph 					= Graph()
+		self.accumulated_literals 	= []
+		self.baseURI              	= None
 		
 	def _add_triple(self, msg, prop, type) :
 		obj = Literal(msg)
 		if self.baseURI == None :
 			self.accumulated_literals.append((obj, prop, type))
 		elif self.graph != None :
-			_add_to_comment_graph(type, self.graph, obj, prop, self.baseURI) 
+			_add_to_processor_graph(type, self.graph, obj, prop, self.baseURI) 
 			
 	def set_base_URI(self, URI) :
 		"""Set the base URI for the comment triples.
@@ -124,7 +119,7 @@ class CommentGraph :
 		self.baseURI = URI
 		if self.graph != None :
 			for obj, prop, type in self.accumulated_literals :
-				_add_to_comment_graph(type, self.graph, obj, prop, self.baseURI) 
+				_add_to_processor_graph(type, self.graph, obj, prop, self.baseURI) 
 		self.accumulated_literals = []
 				
 	def add_warning(self, txt) :
@@ -156,31 +151,36 @@ class Options :
 
 	@ivar space_preserve: whether plain literals should preserve spaces at output or not
 	@type space_preserve: Boolean
-	@ivar comment_graph: Graph for the storage of warnings
-	@type comment_graph: L{CommentGraph}
-	@ivar warnings: whether warnings should be generated or not
-	@type warnings: Boolean
+	@ivar output_default_graph: whether the 'default' graph should be returned to the user
+	@type output_default_graph: Boolean
+	@ivar output_processor_graph: whether the 'processor' graph should be returned to the user
+	@type output_processor_graph: Boolean
+	@ivar processor_graph: the 'processor' Graph
+	@type processor_graph: L{CommentGraph}
 	@ivar transformers: extra transformers
 	@type transformers: list
 	@type host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml_rdfa, but it can be HostLanguage.rdfa_core and HostLanguage.html_rdfa
 	@ivar host_language: integer (logically: an enumeration)	
 	"""
-	def __init__(self, warnings = False, space_preserve = True, transformers=[], host_language = HostLanguage.rdfa_core) :
+	def __init__(self, output_default_graph = True, output_processor_graph = False, space_preserve = True, transformers=[], host_language = HostLanguage.rdfa_core) :
 		"""
 		@keyword space_preserve: whether plain literals should preserve spaces at output or not
 		@type space_preserve: Boolean
-		@keyword warnings: whether warnings should be generated or not
-		@type warnings: Boolean
+		@keyword output_default_graph: whether the 'default' graph should be returned to the user
+		@type output_default_graph: Boolean
+		@keyword output_processor_graph: whether the 'processor' graph should be returned to the user
+		@type output_processor_graph: Boolean
 		@keyword transformers: extra transformers
 		@type transformers: list
 		@keyword host_language: default host language
 		@type host_language: string
 		"""
-		self.space_preserve 	= space_preserve
-		self.transformers   	= transformers
-		self.comment_graph  	= CommentGraph(warnings) 
-		self.warnings			= warnings
-		self.host_language 		= host_language
+		self.space_preserve 		= space_preserve
+		self.transformers   		= transformers
+		self.processor_graph  		= ProcessorGraph() 
+		self.output_default_graph	= output_default_graph
+		self.output_processor_graph	= output_processor_graph
+		self.host_language 			= host_language
 			
 	def set_host_language(self, content_type) :
 		"""

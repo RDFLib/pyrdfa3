@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.8 2010-05-28 14:18:00 ivan Exp $
-$Date: 2010-05-28 14:18:00 $
+$Id: Curie.py,v 1.9 2010-07-02 13:27:02 ivan Exp $
+$Date: 2010-07-02 13:27:02 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -30,13 +30,19 @@ import xml.dom.minidom
 import random
 import urlparse
 
-from rdflib.RDF			import RDFNS   as ns_rdf
-from rdflib.RDFS		import RDFSNS  as ns_rdfs
-from rdflib.Namespace	import Namespace
-from rdflib.URIRef		import URIRef
-from rdflib.Literal		import Literal
-from rdflib.BNode		import BNode
-from rdflib.Graph		import Graph
+import rdflib
+from rdflib	import URIRef
+from rdflib	import Literal
+from rdflib	import BNode
+from rdflib	import Namespace
+if rdflib.__version__ >= "3.0.0" :
+	from rdflib	import Graph
+	from rdflib	import RDF  as ns_rdf
+	from rdflib	import RDFS as ns_rdfs
+else :
+	from rdflib.Graph	import Graph
+	from rdflib.RDFS	import RDFSNS as ns_rdfs
+	from rdflib.RDF		import RDFNS  as ns_rdf
 
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, URIOpener, CachedURIOpener, MediaTypes, HostLanguage
@@ -84,8 +90,8 @@ default_namespaces = {
 }
 
 #### Managing blank nodes for CURIE-s: mapping from local names to blank nodes.
-__bnodes = {}
-__empty_bnode = BNode()
+_bnodes = {}
+_empty_bnode = BNode()
 
 class ProfileRead :
 	"""
@@ -150,11 +156,11 @@ class ProfileRead :
 					term_list 	= [k for k in graph.objects(subj, ns_rdfa["term"])]
 					prefix_list	= [k for k in graph.objects(subj, ns_rdfa["prefix"])]
 					if len(term_list) > 0 and len(prefix_list) > 0 :
-						self.state.options.comment_graph.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof))
+						self.state.options.processor_graph.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof))
 					elif len(term_list) > 1 :
-						self.state.options.comment_graph.add_warning("The same URI <%s> is used for several term mappings in <%s>" % (uri,prof))
+						self.state.options.processor_graph.add_warning("The same URI <%s> is used for several term mappings in <%s>" % (uri,prof))
 					elif len(prefix_list) > 1 :
-						self.state.options.comment_graph.add_warning("The same URI <%s> is used for several prefix mappings in <%s>" % (uri,prof))
+						self.state.options.processor_graph.add_warning("The same URI <%s> is used for several prefix mappings in <%s>" % (uri,prof))
 					else :
 						# everything seems to be o.k., though a check for literals and on the validity of the term is still to be done
 						if len(term_list) > 0 :
@@ -163,18 +169,18 @@ class ProfileRead :
 								if ncname.match(term) != None :
 									self.terms[str(term)] = (URIRef(uri),True)
 								else :
-									self.state.options.comment_graph.add_warning("Term <%s> defined in <%s> for <%s> is invalid; ignored" % (term, prof, uri))
+									self.state.options.processor_graph.add_warning("Term <%s> defined in <%s> for <%s> is invalid; ignored" % (term, prof, uri))
 							else :
-								self.state.options.comment_graph.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri))
+								self.state.options.processor_graph.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri))
 						if len(prefix_list) > 0 :
 							prefix = prefix_list[0]
 							if isinstance(prefix, Literal) :
 								if ncname.match(prefix) != None :
 									self.ns[str(prefix).lower()] = Namespace(uri)
 								else :
-									self.state.options.comment_graph.add_warning("Prefix <%s> defined in <%s> for <%s> is invalid; ignored" % (prefix, prof, uri))
+									self.state.options.processor_graph.add_warning("Prefix <%s> defined in <%s> for <%s> is invalid; ignored" % (prefix, prof, uri))
 							else :
-								self.state.options.comment_graph.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, prof, uri))
+								self.state.options.processor_graph.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, prof, uri))
 				# store the cache value, avoid re-reading again...
 				ProfileRead.profile_cache[prof] = (self.terms, self.ns)
 			# Remove infinite anti-recursion measure
@@ -330,9 +336,9 @@ class Curie :
 				prefix = attr.localName
 				if prefix != "" : # exclude the top level xmlns setting...
 					if prefix == "_" :
-						state.options.comment_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed")
+						state.options.processor_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed")
 					elif prefix.find(':') != -1 :
-						state.options.comment_graph.add_warning("The character ':' is not valid in a CURIE Prefix")
+						state.options.processor_graph.add_warning("The character ':' is not valid in a CURIE Prefix")
 					else :					
 						# quote the URI, ie, convert special characters into %.. This is
 						# true, for example, for spaces
@@ -341,6 +347,7 @@ class Curie :
 						ns = Namespace(uri)
 						# Add an entry to the dictionary if not already there (priority is left to right!)
 						dict[prefix.lower()] = ns
+						self.graph.bind(prefix.lower(),ns)
 
 		# Add the locally defined namespaces using the @prefix syntax
 		# this may override the definition in @profile and @xmlns
@@ -353,14 +360,14 @@ class Curie :
 					prefix = pr_list[i]
 					# see if there is a URI at all
 					if i == len(pr_list) - 1 :
-						state.options.comment_graph.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr))
+						state.options.processor_graph.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr))
 						break
 					else :
 						value = pr_list[i+1]
 					
 					# see if the value of prefix is o.k., ie, there is a ':' at the end
 					if prefix[-1] != ':' :
-						state.options.comment_graph.add_warning("Invalid prefix declaration '%s' (in '%s')" % (prefix,pr))
+						state.options.processor_graph.add_warning("Invalid prefix declaration '%s' (in '%s')" % (prefix,pr))
 						continue
 					else :
 						prefix = prefix[:-1]
@@ -369,7 +376,7 @@ class Curie :
 							#something to be done here
 							self.default_curie_uri = uri
 						elif prefix == "_" :
-							state.options.comment_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr)				
+							state.options.processor_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr)				
 						else :
 							# last check: is the prefix an NCNAME?
 							if ncname.match(prefix) :
@@ -377,8 +384,9 @@ class Curie :
 								# This extra check is necessary to allow for a left-to-right priority
 								if real_prefix not in dict :
 									dict[real_prefix] = uri
+									self.graph.bind(real_prefix,uri)
 							else :
-								state.options.comment_graph.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr))
+								state.options.processor_graph.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr))
 
 		# See if anything has been collected at all.
 		# If not, the namespaces of the incoming state is
@@ -428,15 +436,15 @@ class Curie :
 				if prefix == "_" :
 					# yep, BNode processing. There is a difference whether the reference is empty or not...
 					if len(reference) == 0 :
-						return __empty_bnode
+						return _empty_bnode
 					else :
 						# see if this variable has been used before for a BNode
-						if reference in __bnodes :
-							return __bnodes[reference]
+						if reference in _bnodes :
+							return _bnodes[reference]
 						else :
 							# a new bnode...
 							retval = BNode()
-							__bnodes[reference] = retval
+							_bnodes[reference] = retval
 							return retval
 				# check if the prefix is a valid NCNAME
 				elif ncname.match(prefix) :

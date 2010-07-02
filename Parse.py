@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.7 2010-05-28 14:18:00 ivan Exp $
-$Date: 2010-05-28 14:18:00 $
+$Id: Parse.py,v 1.8 2010-07-02 13:27:02 ivan Exp $
+$Date: 2010-07-02 13:27:02 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -26,10 +26,19 @@ from pyRdfa.Literal 		import generate_literal
 from pyRdfa.EmbeddedRDF	 	import handle_embeddedRDF
 from pyRdfa.Utils			import HostLanguage
 
-from rdflib.URIRef  import URIRef
-from rdflib.BNode   import BNode
-from rdflib.RDF     import RDFNS  as ns_rdf
-from rdflib.RDF     import type
+import rdflib
+from rdflib	import URIRef
+from rdflib	import Literal
+from rdflib	import BNode
+from rdflib	import Namespace
+if rdflib.__version__ >= "3.0.0" :
+	from rdflib	import Graph
+	from rdflib	import RDF  as ns_rdf
+	from rdflib	import RDFS as ns_rdfs
+else :
+	from rdflib.Graph	import Graph
+	from rdflib.RDFS	import RDFSNS as ns_rdfs
+	from rdflib.RDF		import RDFNS  as ns_rdf
 
 from pyRdfa import FailedProfile, FailedSource
 
@@ -70,7 +79,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		state = ExecutionContext(node, graph, inherited_state=incoming_state)
 	except FailedProfile :
 		(type, value, traceback) = sys.exc_info()
-		incoming_state.options.comment_graph.add_error(value, type)
+		incoming_state.options.processor_graph.add_error(value, type)
 		return
 
 	#---------------------------------------------------------------------------------
@@ -145,9 +154,9 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		current_object = current_subject
 
 	# ---------------------------------------------------------------------
-	# The possible typeof indicates a number of type statements on the newSubject
+	## The possible typeof indicates a number of type statements on the newSubject
 	for defined_type in state.getURI("typeof") :
-		graph.add((current_subject,type,defined_type))
+		graph.add((current_subject, ns_rdf["type"], defined_type))
 
 	# ---------------------------------------------------------------------
 	# In case of @rel/@rev, either triples or incomplete triples are generated

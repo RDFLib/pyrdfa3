@@ -116,7 +116,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.19 2010-05-28 14:18:00 ivan Exp $ $Date: 2010-05-28 14:18:00 $
+$Id: __init__.py,v 1.20 2010-07-02 13:27:02 ivan Exp $ $Date: 2010-07-02 13:27:02 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -136,14 +136,24 @@ __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
 
 import sys, StringIO
-from rdflib.Graph		import Graph
-from rdflib.URIRef		import URIRef
-from rdflib.BNode		import BNode
-from rdflib.Namespace	import Namespace
-from rdflib.RDF			import RDFNS  as ns_rdf
-from rdflib.RDFS		import RDFSNS as ns_rdfs
+
+import rdflib
+from rdflib	import URIRef
+from rdflib	import Literal
+from rdflib	import BNode
+from rdflib	import Namespace
+if rdflib.__version__ >= "3.0.0" :
+	from rdflib	import Graph
+	from rdflib	import RDF  as ns_rdf
+	from rdflib	import RDFS as ns_rdfs
+else :
+	from rdflib.Graph	import Graph
+	from rdflib.RDFS	import RDFSNS as ns_rdfs
+	from rdflib.RDF		import RDFNS  as ns_rdf
 
 ns_rdfa = Namespace("http://www.w3.org/ns/rdfa#")
+ns_xsd  = Namespace(u'http://www.w3.org/2001/XMLSchema#')
+
 debug = True
 
 #########################################################################################################
@@ -179,7 +189,7 @@ class pyRdfaError(Exception) :
 
 from pyRdfa.State				import ExecutionContext
 from pyRdfa.Parse				import parse_one_node
-from pyRdfa.Options				import Options, DIST_NS, _add_to_comment_graph, ERROR
+from pyRdfa.Options				import Options, DIST_NS, _add_to_processor_graph, ERROR
 from pyRdfa.transform.HeadAbout	import head_about_transform
 from pyRdfa.Utils				import URIOpener, MediaTypes, HostLanguage
 
@@ -322,7 +332,7 @@ class pyRdfa :
 		graph.bind("rdfa", ns_rdfa)
 		
 		if exception_msg :
-			_add_to_comment_graph(exception_type, graph, Literal("%s" % exception_msg), ERROR, URIRef(self.base))
+			_add_to_processor_graph(exception_type, graph, Literal("%s" % exception_msg), ERROR, URIRef(self.base))
 	
 		# Add a 400 error message information
 		if http:
@@ -347,9 +357,18 @@ class pyRdfa :
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance
 		"""
+		def copyGraph(tog,fromg) :
+			for t in fromg :
+				tog.add(t)
+			for k,ns in fromg.namespaces() :
+				tog.bind(k,ns)
+
 		if graph == None :
-			# Create the RDF Graph
+			# Create the RDF Graph, that will contain the return triples...
 			graph   = Graph()
+			
+		# this will collect the content, the 'default graph', as called in the RDFa spec
+		default_graph = Graph()
 	
 		# get the DOM tree
 		topElement = dom.documentElement
@@ -362,27 +381,26 @@ class pyRdfa :
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
 		try :
-			state = ExecutionContext(topElement, graph, base=self.base, options=self.options)
-	
+			state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options)
 			# The top level subject starts with the current document; this
 			# is used by the recursion
 			subject = URIRef(state.base)
+			parse_one_node(topElement, default_graph, subject, state, [])
+			processor_graph = self.options.processor_graph.graph
 		except FailedProfile :
+			# This may occur if the top level @profile cannot be dereferenced, which stops the processing as a whole!
 			(type, value, traceback) = sys.exc_info()
-			self.create_exception_graph(type, value, graph=graph, http=False)
+			processor_graph = Graph()
+			self.create_exception_graph(type, value, graph=processor_graph, http=False)
 	
-		parse_one_node(topElement, graph, subject, state, [])
-		
-		# possibly add the comment graph content
-		if self.options.comment_graph.graph != None :
-			# Add the content of the comment graph to the output
-			bound = False
-			for t in self.options.comment_graph.graph :
-				if not bound :
-					graph.bind("dist", DIST_NS)
-					bound = True
-				graph.add(t)
-				
+		# What should be returned depends on the way the options have been set up
+		if self.options.output_default_graph :
+			copyGraph(graph, default_graph)
+			if self.options.output_processor_graph :
+				copyGraph(graph, processor_graph)
+		elif self.options.output_processor_graph :
+			copyGraph(graph, processor_graph)
+
 		return graph
 	
 	def graph_from_source(self, name, graph = None) :
@@ -417,7 +435,7 @@ class pyRdfa :
 
 		return self.graph_from_DOM(dom, graph)	
 	
-	def rdf_from_sources(self, names, outputFormat = "xml", rdfOutput = False) :
+	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
 		"""
 		Extract and RDF graph from a list of RDFa sources and serialize them in one graph. The sources are parsed, the RDF
 		extracted, and serialization is done in the specified format.
@@ -428,9 +446,19 @@ class pyRdfa :
 		@return: a serialized RDF Graph
 		@rtype: string
 		"""
-		outputFormat = self._register_serializers(outputFormat)
+		if rdflib.__version__ >= "3.0.0" :
+			# there is no need to use the private serializers, the previous bugs are supposed to have been
+			# handled. Only the merge of the output format names are necessary...
+			if outputFormat == "xml"  : outputFormat = "pretty-xml"
+			elif outputFormat == "n3" : outputFormat = "turtle"
+		else :
+			# use the extra serializers, needed for older versions of rdflib...
+			outputFormat = self._register_serializers(outputFormat)
 		
 		graph = Graph()
+		graph.bind("dist", DIST_NS)
+		graph.bind("rdfa", ns_rdfa)
+		graph.bind("xsd", Namespace(u'http://www.w3.org/2001/XMLSchema#'))
 		# the value of rdfOutput determines the reaction on exceptions...
 		if rdfOutput :
 			for name in names :
@@ -445,7 +473,7 @@ class pyRdfa :
 				self.graph_from_source(name, graph)
 		return graph.serialize(format=outputFormat)
 
-	def rdf_from_source(self, name, outputFormat = "xml", rdfOutput = False) :
+	def rdf_from_source(self, name, outputFormat = "pretty-xml", rdfOutput = False) :
 		"""
 		Extract and RDF graph from an RDFa source and serialize it in one graph. The source is parsed, the RDF
 		extracted, and serialization is done in the specified format.
@@ -464,7 +492,7 @@ def processURI(uri, outputFormat, form={}) :
 
 	The call accepts extra form options (ie, HTTP GET options) as follows:
 	
-	 - C{warnings=[true|false]} means that extra warnings (eg, missing C{@profile} attribute, possibly erronous CURIE-s) are added to the output graph. Default: False
+	 - C{graph=[default|processor|default,processor|processor,default]} specifying which graphs are returned. Default: default.
 	 - C{space-preserve=[true|false]} means that plain literals are normalized in terms of white spaces. Default: false.
 	 - C{extras=[true|false]} means that extra, built-in transformers are executed on the DOM tree prior to RDFa processing. Default: false. Alternatively, a finer granurality can be used with the following options:
 	  - C{extras-meta=[true|false]}: the 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
@@ -527,17 +555,25 @@ def processURI(uri, outputFormat, form={}) :
 			from pyRdfa.transform.ContainersCollections import decorate_li_s
 			transformers.append(decorate_li_s)
 
-	if "warnings" in form.keys() and form.getfirst("warnings").lower() == "true" :
-		warnings = True
-	else :
-		warnings = False
+	output_default_graph 	= True
+	output_processor_graph 	= False
+	if "graph" in form.keys() :
+		a = form.getfirst("graph").lower()
+		if a == "processor" :
+			output_default_graph 	= False
+			output_processor_graph 	= True
+		elif a == "processor,default" or a == "default,processor" :
+			output_processor_graph 	= True
+		elif a == "default" :				
+			output_default_graph 	= True
+			output_processor_graph 	= False			
 
 	if "space-preserve" in form.keys() and form.getfirst("space-preserve").lower() == "false" :
 		space_preserve = False
 	else :
 		space_preserve = True
 
-	options = Options(warnings=warnings, space_preserve=space_preserve, transformers=transformers)
+	options = Options(output_default_graph = output_default_graph, output_processor_graph = output_processor_graph, space_preserve=space_preserve, transformers=transformers)
 	processor = pyRdfa(options = options, base = base, media_type = media_type)
 	
 	try:
@@ -581,9 +617,8 @@ def processURI(uri, outputFormat, form={}) :
 			else :
 				print "<dt>URI received:</dt><dd><code>'%s'</code></dd>" % cgi.escape(uri)
 			print "<dt>Format:</dt><dd> %s</dd>" % outputFormat
-			if "warnings" in form : print "<dt>Warnings:</dt><dd> %s</dd>" % form["warnings"].value
+			if "graph" in form : print "<dt>Warnings:</dt><dd> %s</dd>" % form["graph"].value
 			if "space-preserve" in form : print "<dt>Space preserve:</dt><dd> %s</dd>" % form["space-preserve"].value
-			if "parser" in form : print "<dt>Parser strict or lax:</dt><dd> %s</dd>" % form["parser"].value
 			if "host" in form : print "<dt>Host language:</dt><dd> %s</dd>" % form["host"].value
 			print "</dl>"
 			print "</body>"

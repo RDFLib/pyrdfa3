@@ -18,7 +18,11 @@ import os, os.path, sys, imp
 import urllib, urlparse, urllib2
 import httpheader
 
-from rdflib.RDF import RDFNS  as ns_rdf
+import rdflib
+if rdflib.__version__ >= "3.0.0" :
+	from rdflib	import RDF as ns_rdf
+else :
+	from rdflib.RDF	import RDFNS  as ns_rdf
 
 class HostLanguage :
 	"""An enumeration style class: recognized host language types for RDFa"""
@@ -219,7 +223,7 @@ def quote_URI(uri, options) :
 	for c in _warnChars :
 		if suri.find(c) != -1 :
 			if options != None :
-				options.comment_graph.add_warning('Unusual character in uri:%s; possible error?' % suri)
+				options.processor_graph.add_warning('Unusual character in uri:%s; possible error?' % suri)
 			break
 	return urllib.quote(suri, _unquotedChars)
 

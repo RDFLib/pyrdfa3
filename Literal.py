@@ -12,15 +12,20 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.4 2010-05-14 11:26:56 ivan Exp $
-$Date: 2010-05-14 11:26:56 $
+$Id: Literal.py,v 1.5 2010-07-02 13:27:02 ivan Exp $
+$Date: 2010-07-02 13:27:02 $
 """
 
 import re
-from rdflib.Literal		import Literal
-from rdflib.RDF			import RDFNS  as ns_rdf
-from rdflib.RDF     	import XMLLiteral
-from rdflib.Namespace	import Namespace
+
+import rdflib
+from rdflib	import Literal
+from rdflib	import Namespace
+if rdflib.__version__ >= "3.0.0" :
+	from rdflib	import RDF  as ns_rdf
+else :
+	from rdflib.RDF	import RDFNS  as ns_rdf
+XMLLiteral = ns_rdf["XMLLiteral"]
 
 def __putBackEntities(str) :
 	"""Put 'back' entities for the '&','<', and '>' characters, to produce kosher XML string.

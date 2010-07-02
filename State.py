@@ -18,17 +18,24 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.15 2010-05-28 14:18:00 ivan Exp $
-$Date: 2010-05-28 14:18:00 $
+$Id: State.py,v 1.16 2010-07-02 13:27:02 ivan Exp $
+$Date: 2010-07-02 13:27:02 $
 """
 
-from rdflib.RDF			import RDFNS   as ns_rdf
-from rdflib.RDFS		import RDFSNS  as ns_rdfs
-from rdflib.RDFS		import comment as rdfs_comment
-from rdflib.Namespace	import Namespace
-from rdflib.URIRef		import URIRef
-from rdflib.Literal		import Literal
-from rdflib.BNode		import BNode
+import rdflib
+from rdflib	import URIRef
+from rdflib	import Literal
+from rdflib	import BNode
+from rdflib	import Namespace
+if rdflib.__version__ >= "3.0.0" :
+	from rdflib	import RDF  as ns_rdf
+	from rdflib	import RDFS as ns_rdfs
+else :
+	from rdflib.RDFS	import RDFSNS as ns_rdfs
+	from rdflib.RDF		import RDFNS  as ns_rdf
+
+
+
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, HostLanguage
 from pyRdfa.Curie		import Curie
@@ -142,7 +149,7 @@ class ExecutionContext :
 				self.base = base	
 
 			# This should be set once for the correct handling of warnings/errors
-			self.options.comment_graph.set_base_URI(URIRef(quote_URI(base, self.options)))
+			self.options.processor_graph.set_base_URI(URIRef(quote_URI(base, self.options)))
 								
 		#-----------------------------------------------------------------
 		# this will be used repeatedly, better store it once and for all...
@@ -185,7 +192,7 @@ class ExecutionContext :
 				
 			# check a posible warning (error?), too
 			if lang != None and xmllang != None and lang != xmllang :
-				self.options.comment_graph.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))			
+				self.options.processor_graph.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))			
 		
 		else :
 			# this is a clear case, xml:lang is the only possible option...
@@ -221,7 +228,7 @@ class ExecutionContext :
 			"""
 			val = uri.strip()
 			if urlparse.urlsplit(val)[0] not in usual_schemes :
-				self.options.comment_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
+				self.options.processor_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 			return URIRef(val)
 		
 		if val == "" :
@@ -272,7 +279,7 @@ class ExecutionContext :
 			# Is checked below, and that is why the safe_curie flag is necessary
 			if val[-1] != ']' :
 				# that is certainly forbidden: an incomplete safe curie
-				self.options.comment_graph.add_warning("Illegal CURIE: %s" % val)
+				self.options.processor_graph.add_warning("Illegal CURIE: %s" % val)
 				return None
 			else :
 				val = val[1:-1]
@@ -285,7 +292,7 @@ class ExecutionContext :
 			# The rule says that then the whole value should be considered as a URI
 			# except if it was part of a safe Curie. In that case it should be ignored...
 			if safe_curie :
-				self.options.comment_graph.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
+				self.options.processor_graph.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
 				return None
 			else :
 				return self._URI(val)
