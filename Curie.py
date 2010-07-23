@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.10 2010-07-02 14:18:07 ivan Exp $
-$Date: 2010-07-02 14:18:07 $
+$Id: Curie.py,v 1.11 2010-07-23 12:31:38 ivan Exp $
+$Date: 2010-07-23 12:31:38 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -28,7 +28,7 @@ Changes:
 import re, sys
 import xml.dom.minidom
 import random
-import urlparse
+import urlparse, urllib2
 
 import rdflib
 from rdflib	import URIRef
@@ -46,8 +46,8 @@ else :
 
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, URIOpener, CachedURIOpener, MediaTypes, HostLanguage
-from pyRdfa 			import FailedProfile, FailedSource
-
+from pyRdfa 			import FailedProfile
+from pyRdfa				import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa				import ns_rdfa
 
 #: Regular expression object for NCNAME
@@ -55,7 +55,6 @@ ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
 
 #: Regular expression object for a general XML application media type
 xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
-
 
 XHTML_PREFIX = "xhv"
 XHTML_URI    = "http://www.w3.org/1999/xhtml/vocab#"
@@ -119,12 +118,13 @@ class ProfileRead :
 		"""
 		self.state = state
 
-		# Terms are stored as tuples; the second element is a boolean, defining whether the term is case-sensitive (default) or not
-		# at the moment, there are no rdfa vocabulary terms to set the latter, but it is important for the html cases
+		# This is to store the local terms
 		self.terms  = {}
 		# This is to store the local Namespaces (a.k.a. prefixes)
 		self.ns     = {}
 		
+		if state.rdfa_version < "1.1" :
+			return
 		# see what the @profile gives us...
 		#for prof in self.state.getURI("profile") :
 		# The right-most URI has a lower priority, so we have to go in reverse order
@@ -156,31 +156,31 @@ class ProfileRead :
 					term_list 	= [k for k in graph.objects(subj, ns_rdfa["term"])]
 					prefix_list	= [k for k in graph.objects(subj, ns_rdfa["prefix"])]
 					if len(term_list) > 0 and len(prefix_list) > 0 :
-						self.state.options.processor_graph.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof))
+						self.state.options.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof), IncorrectProfileDefinition, prof)
 					elif len(term_list) > 1 :
-						self.state.options.processor_graph.add_warning("The same URI <%s> is used for several term mappings in <%s>" % (uri,prof))
+						self.state.options.add_warning("The same URI <%s> is used for several term mappings in <%s>" % (uri,prof), IncorrectProfileDefinition, prof)
 					elif len(prefix_list) > 1 :
-						self.state.options.processor_graph.add_warning("The same URI <%s> is used for several prefix mappings in <%s>" % (uri,prof))
+						self.state.options.add_warning("The same URI <%s> is used for several prefix mappings in <%s>" % (uri,prof), IncorrectProfileDefinition, prof)
 					else :
 						# everything seems to be o.k., though a check for literals and on the validity of the term is still to be done
 						if len(term_list) > 0 :
 							term = term_list[0]
 							if isinstance(term, Literal) :
 								if ncname.match(term) != None :
-									self.terms[str(term)] = (URIRef(uri),True)
+									self.terms[str(term).lower()] = URIRef(uri)
 								else :
-									self.state.options.processor_graph.add_warning("Term <%s> defined in <%s> for <%s> is invalid; ignored" % (term, prof, uri))
+									self.state.options.add_warning("Term <%s> defined in <%s> for <%s> is invalid; ignored" % (term, prof, uri), IncorrectProfileDefinition, prof)
 							else :
-								self.state.options.processor_graph.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri))
+								self.state.options.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri), IncorrectProfileDefinition, prof)
 						if len(prefix_list) > 0 :
 							prefix = prefix_list[0]
 							if isinstance(prefix, Literal) :
 								if ncname.match(prefix) != None :
 									self.ns[str(prefix).lower()] = Namespace(uri)
 								else :
-									self.state.options.processor_graph.add_warning("Prefix <%s> defined in <%s> for <%s> is invalid; ignored" % (prefix, prof, uri))
+									self.state.options.add_warning("Prefix <%s> defined in <%s> for <%s> is invalid; ignored" % (prefix, prof, uri), IncorrectProfileDefinition, prof)
 							else :
-								self.state.options.processor_graph.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, prof, uri))
+								self.state.options.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, prof, uri), IncorrectProfileDefinition, prof)
 				# store the cache value, avoid re-reading again...
 				ProfileRead.profile_cache[prof] = (self.terms, self.ns)
 			# Remove infinite anti-recursion measure
@@ -196,15 +196,20 @@ class ProfileRead :
 		@return: An RDFLib Graph instance; None if the dereferencing or the parsing was unsuccessful
 		@raise: FailedProfile if the profile document could not be dereferenced or is not a known media type
 		"""
-		from pyRdfa import CACHED_PROFILES_ID
+		from pyRdfa import CACHED_PROFILES_ID, HTTPError, RDFaError
 		content = None
 		try :
 			content = CachedURIOpener(name,
 									  {'Accept' : 'text/html;q=0.7, application/xhtml+xml;q=0.7, text/turtle;q=1.0, application/rdf+xml;q=0.8'},
 									  CACHED_PROFILES_ID)
-		except  :
+
+		except HTTPError, e :
+			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, e.msg), name, http_code = e.http_code)
+		except RDFaError, e :
+			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, e.msg), name)
+		except Exception, e :
 			(type,value,traceback) = sys.exc_info()
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, value))
+			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, value), name)
 		
 		if content.content_type == MediaTypes.turtle :
 			retval = Graph()
@@ -213,7 +218,7 @@ class ProfileRead :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse Turtle content content at <%s> (%s)" % (name,value))
+				raise FailedProfile("Could not parse Turtle content content at <%s> (%s)" % (name,value), name)
 		elif content.content_type == MediaTypes.rdfxml :
 			try :
 				retval = Graph()
@@ -221,7 +226,7 @@ class ProfileRead :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse RDF/XML content at <%s> (%s)" % (name,value))
+				raise FailedProfile("Could not parse RDF/XML content at <%s> (%s)" % (name,value), name)
 		elif content.content_type == MediaTypes.nt :
 			try :
 				retval = Graph()
@@ -229,7 +234,7 @@ class ProfileRead :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse N-Triple content at <%s> (%s)" % (name,value))
+				raise FailedProfile("Could not parse N-Triple content at <%s> (%s)" % (name,value), name)
 		elif content.content_type in [MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml] or xml_application_media_type.match(content.content_type) != None :
 			try :
 				from pyRdfa import pyRdfa
@@ -237,9 +242,9 @@ class ProfileRead :
 				return pyRdfa(options).graph_from_source(content.data)
 			except :
 				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse RDFa content at <%s> (%s)" % (name,value))
+				raise FailedProfile("Could not parse RDFa content at <%s> (%s)" % (name,value), name)
 		else :
-			raise FailedProfile("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name,content.content_type))
+			raise FailedProfile("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name,content.content_type), name)
 
 class Curie :
 	"""
@@ -280,20 +285,22 @@ class Curie :
 		# Set the default term URI
 		# Note that it is still an open issue whether the XHTML_URI should be used
 		# for RDFa core, or whether it should be set to None.
-		def_term_uri = self.state.getURI("vocab")
-		if inherited_state == None :
-			if def_term_uri == None :
-				self.default_term_uri = XHTML_URI
-			else :
+		# This is a 1.1 feature, ie, should be ignored if the version is < 1.0
+		if state.rdfa_version >= "1.1" :
+			def_term_uri = self.state.getURI("vocab")
+			if inherited_state == None :
 				self.default_term_uri = def_term_uri
+			else :
+				if def_term_uri != None :
+					self.default_term_uri = def_term_uri
+				else :
+					self.default_term_uri = inherited_state.curie.default_term_uri
 		else :
-			if def_term_uri != None :
-				self.default_term_uri = def_term_uri
-			else :
-				self.default_term_uri = inherited_state.curie.default_term_uri
-		
+			self.default_term_uri = None
+
 		# --------------------------------------------------------------------------------
 		# Get the recursive definitions, if any
+		# Note that if the underlying file is 1.0 version, the returned structure will be, essentially, empty
 		recursive_vocab = ProfileRead(self.state)
 		
 		# --------------------------------------------------------------------------------
@@ -303,8 +310,8 @@ class Curie :
 			self.terms = {}
 			# HTML has its own set of predefined terms. Though, conceptually, that can be done with @profile,
 			# it is better that way...
-			if self.state.options.host_language in [HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa] :
-				for key in _predefined_html_terms : self.terms[key] = (URIRef(XHTML_URI+key),False)
+			#if self.state.options.host_language in [HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa] :
+			#	for key in _predefined_html_terms : self.terms[key] = URIRef(XHTML_URI+key)
 
 			# add the terms defined locally
 			for key in recursive_vocab.terms :
@@ -336,9 +343,9 @@ class Curie :
 				prefix = attr.localName
 				if prefix != "" : # exclude the top level xmlns setting...
 					if prefix == "_" :
-						state.options.processor_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed")
+						state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed", IncorrectPrefixDefinition)
 					elif prefix.find(':') != -1 :
-						state.options.processor_graph.add_warning("The character ':' is not valid in a CURIE Prefix")
+						state.options.add_warning("The character ':' is not valid in a CURIE Prefix", IncorrectPrefixDefinition)
 					else :					
 						# quote the URI, ie, convert special characters into %.. This is
 						# true, for example, for spaces
@@ -346,12 +353,16 @@ class Curie :
 						# create a new RDFLib Namespace entry
 						ns = Namespace(uri)
 						# Add an entry to the dictionary if not already there (priority is left to right!)
-						dict[prefix.lower()] = ns
-						self.graph.bind(prefix.lower(),ns)
+						if state.rdfa_version >= "1.1" :
+							pr = prefix.lower()
+						else :
+							pr = prefix
+						dict[pr] = ns
+						self.graph.bind(pr,ns)
 
 		# Add the locally defined namespaces using the @prefix syntax
 		# this may override the definition in @profile and @xmlns
-		if state.node.hasAttribute("prefix") :
+		if state.rdfa_version >= "1.1" and state.node.hasAttribute("prefix") :
 			pr = state.node.getAttribute("prefix")
 			if pr != None :
 				# separator character is whitespace
@@ -360,14 +371,14 @@ class Curie :
 					prefix = pr_list[i]
 					# see if there is a URI at all
 					if i == len(pr_list) - 1 :
-						state.options.processor_graph.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr))
+						state.options.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
 						break
 					else :
 						value = pr_list[i+1]
 					
 					# see if the value of prefix is o.k., ie, there is a ':' at the end
 					if prefix[-1] != ':' :
-						state.options.processor_graph.add_warning("Invalid prefix declaration '%s' (in '%s')" % (prefix,pr))
+						state.options.add_warning("Invalid prefix declaration '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
 						continue
 					else :
 						prefix = prefix[:-1]
@@ -376,7 +387,7 @@ class Curie :
 							#something to be done here
 							self.default_curie_uri = uri
 						elif prefix == "_" :
-							state.options.processor_graph.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr)				
+							state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr, IncorrectPrefixDefinition)				
 						else :
 							# last check: is the prefix an NCNAME?
 							if ncname.match(prefix) :
@@ -386,7 +397,7 @@ class Curie :
 									dict[real_prefix] = uri
 									self.graph.bind(real_prefix,uri)
 							else :
-								state.options.processor_graph.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr))
+								state.options.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
 
 		# See if anything has been collected at all.
 		# If not, the namespaces of the incoming state is
@@ -423,7 +434,10 @@ class Curie :
 			# there is no ':' character in the string, ie, it is not a valid curie
 			return None
 		else :
-			prefix    = curie_split[0].lower()
+			if self.state.rdfa_version > "1.1" :
+				prefix	= curie_split[0].lower()
+			else :
+				prefix	= curie_split[0]
 			reference = curie_split[1]
 			
 			# first possibility: empty prefix
@@ -470,13 +484,9 @@ class Curie :
 		if ncname.match(term) :
 			# It is a valid NCNAME
 			for defined_term in self.terms :
-				uri, case_sensitive = self.terms[defined_term]
-				if case_sensitive :
-					if term == defined_term :
-						return uri
-				else :
-					if term.lower() == defined_term.lower() :
-						return uri
+				uri = self.terms[defined_term]
+				if term.lower() == defined_term :
+					return uri
 	
 			# check the default term uri, if any
 			if self.default_term_uri != None :

@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.5 2010-07-02 13:27:02 ivan Exp $
-$Date: 2010-07-02 13:27:02 $
+$Id: Literal.py,v 1.6 2010-07-23 12:31:38 ivan Exp $
+$Date: 2010-07-23 12:31:38 $
 """
 
 import re
@@ -22,9 +22,9 @@ import rdflib
 from rdflib	import Literal
 from rdflib	import Namespace
 if rdflib.__version__ >= "3.0.0" :
-	from rdflib	import RDF  as ns_rdf
+	from rdflib	import RDF as ns_rdf
 else :
-	from rdflib.RDF	import RDFNS  as ns_rdf
+	from rdflib.RDF	import RDFNS as ns_rdf
 XMLLiteral = ns_rdf["XMLLiteral"]
 
 def __putBackEntities(str) :
@@ -166,24 +166,23 @@ def generate_literal(node, graph, subject, state) :
 			else :
 				object = Literal(_get_literal(node),datatype=datatype,lang=lang)
 		else :
-			val = _get_literal(node)
-			# At this point, there might be entities in the string that are returned as real characters by the dom
-			# implementation. That should be turned back
-			object = Literal(_get_literal(node),lang=lang)
-			
-			# This was the code that imposed an XMLLiteral when there was a markup among the children. This
-			# is now gone; just kept the code for a while in case the decision is reversed....
-			## no controlling @datatype. We have to see if there is markup in the contained
-			## element
-			#if True in [ n.nodeType == node.ELEMENT_NODE for n in node.childNodes ] :
-			#	# yep, and XML Literal should be generated
-			#	object = Literal(_get_XML_literal(node),datatype=XMLLiteral)
-			#	retval = False
-			#else :
-			#	val = _get_literal(node)
-			#	# At this point, there might be entities in the string that are returned as real characters by the dom
-			#	# implementation. That should be turned back
-			#	object = Literal(_get_literal(node),lang=lang)
+			if state.rdfa_version > "1.1" :
+				val = _get_literal(node)
+				# At this point, there might be entities in the string that are returned as real characters by the dom
+				# implementation. That should be turned back
+				object = Literal(_get_literal(node),lang=lang)
+			else :				
+				# no controlling @datatype. We have to see if there is markup in the contained
+				# element
+				if True in [ n.nodeType == node.ELEMENT_NODE for n in node.childNodes ] :
+					# yep, and XML Literal should be generated
+					object = Literal(_get_XML_literal(node),datatype=XMLLiteral)
+					retval = False
+				else :
+					val = _get_literal(node)
+					# At this point, there might be entities in the string that are returned as real characters by the dom
+					# implementation. That should be turned back
+					object = Literal(_get_literal(node),lang=lang)
 
 	# The object may be empty, for example in an ill-defined <meta> element...
 	if object != "" :

@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.8 2010-07-02 13:27:02 ivan Exp $
-$Date: 2010-07-02 13:27:02 $
+$Id: Parse.py,v 1.9 2010-07-23 12:31:38 ivan Exp $
+$Date: 2010-07-23 12:31:38 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -40,7 +40,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa import FailedProfile, FailedSource
+from pyRdfa import FailedProfile, ProfileReferenceError
 
 #######################################################################
 # Function to check whether one of a series of attributes
@@ -77,9 +77,10 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	state = None
 	try :
 		state = ExecutionContext(node, graph, inherited_state=incoming_state)
-	except FailedProfile :
-		(type, value, traceback) = sys.exc_info()
-		incoming_state.options.processor_graph.add_error(value, type)
+	except FailedProfile, f :
+		bnode = incoming_state.options.add_error(f.msg, ProfileReferenceError, f.context)
+		if f.http_code :
+			incoming_state.options.processor_graph.add_http_context(bnode, f.http_code)
 		return
 
 	#---------------------------------------------------------------------------------

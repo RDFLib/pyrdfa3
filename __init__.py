@@ -66,8 +66,7 @@ Some transformations are included in the package and can be used at invocation. 
  - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
  - Implementing the Dublin Core dialect to include DC statements from the header.  See L{transform.DublinCore} for further details.
 
-The user of the package may refer to those and pass it on to the L{processFile} call via an L{Options} instance. The caller of the
-package may also add his/her transformer modules. Here is a possible usage with the 'openid' transformer
+The user of the package may refer to those and pass it on to the L{processFile} call via an L{Options} instance. The caller of the package may also add his/her transformer modules. Here is a possible usage with the 'openid' transformer
 added to the call::
  from pyRdfa import processFile, Options
  from pyRdfa.transform.OpenID import OpenID_transform
@@ -116,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.20 2010-07-02 13:27:02 ivan Exp $ $Date: 2010-07-02 13:27:02 $
+$Id: __init__.py,v 1.21 2010-07-23 12:31:38 ivan Exp $ $Date: 2010-07-23 12:31:38 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -136,6 +135,7 @@ __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
 
 import sys, StringIO
+import os, httpheader
 
 import rdflib
 from rdflib	import URIRef
@@ -151,8 +151,12 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-ns_rdfa = Namespace("http://www.w3.org/ns/rdfa#")
-ns_xsd  = Namespace(u'http://www.w3.org/2001/XMLSchema#')
+import xml.dom.minidom
+import urlparse
+
+ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
+ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
+ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
 debug = True
 
@@ -164,17 +168,34 @@ debug = True
 class RDFaError(Exception) :
 	"""Just a wrapper around the local exceptions. It does not add any new functionality to the
 	Exception class."""
-	pass
+	def __init__(self, msg) :
+		self.msg = msg
+		Exception.__init__(self)
 
 class FailedProfile(RDFaError) :
 	"""Raised when @profile references cannot be properly dereferenced. It does not add any new functionality to the
 	Exception class."""
-	pass
+	def __init__(self, msg, context, http_code = None) :
+		self.msg 		= msg
+		self.context	= context
+		self.http_code 	= http_code
+		RDFaError.__init__(self, msg)
 
 class FailedSource(RDFaError) :
 	"""Raised when the original source cannot be accessed. It does not add any new functionality to the
 	Exception class."""
-	pass
+	def __init__(self, msg, http_code = None) :
+		self.msg		= msg
+		self.http_code 	= http_code
+		RDFaError.__init__(self, msg)
+		
+class HTTPError(RDFaError) :
+	"""Raised when HTTP problems are detected. It does not add any new functionality to the
+	Exception class."""
+	def __init__(self, http_msg, http_code) :
+		self.msg		= http_msg
+		self.http_code	= http_code
+		RDFaError.__init__(self,http_msg)
 
 class ProcessingError(RDFaError) :
 	"""Error found during processing. It does not add any new functionality to the
@@ -186,25 +207,38 @@ class pyRdfaError(Exception) :
 	RDFa specification"""
 	pass
 
+# Error and Warning classes
+RDFA_Error					= ns_distill["Error"]
+RDFA_Warning				= ns_distill["Warning"]
+RDFA_Info					= ns_distill["Information"]
+NonConformantMarkup			= ns_distill["NonConformantMarkup"]
+ProfileReferenceError		= ns_distill["ProfileReferenceError"]
+UnresolvablePrefix			= ns_distill["InvalidCurie"]
+UnresolvableTerm			= ns_distill["InvalidTerm"]
 
-from pyRdfa.State				import ExecutionContext
-from pyRdfa.Parse				import parse_one_node
-from pyRdfa.Options				import Options, DIST_NS, _add_to_processor_graph, ERROR
-from pyRdfa.transform.HeadAbout	import head_about_transform
-from pyRdfa.Utils				import URIOpener, MediaTypes, HostLanguage
+FileReferenceError			= ns_distill["FileReferenceError"]
+IncorrectProfileDefinition 	= ns_distill["IncorrectProfileDefinition"]
+IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
 
-import xml.dom.minidom
-import urlparse
+#############################################################################################
+
+from pyRdfa.State						import ExecutionContext
+from pyRdfa.Parse						import parse_one_node
+from pyRdfa.Options						import Options
+from pyRdfa.transform.HeadAbout			import head_about_transform
+from pyRdfa.transform.DefaultProfile	import add_default_profile
+from pyRdfa.Utils						import URIOpener, MediaTypes, HostLanguage
 
 #: Variable used to characterize cache directories for RDFa profiles
 CACHED_PROFILES_ID = 'cached_profiles'
 
 #: current "official" version of RDFa that this package implements
-rdfa_current_version	= 1.1
+rdfa_current_version	= "1.1"
 
 #: List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
-	head_about_transform
+	head_about_transform,
+	add_default_profile
 ]
 	
 #########################################################################################################
@@ -275,8 +309,8 @@ class pyRdfa :
 			raise FailedSource(value)
 		
 	def _register_XML_serializer(self) :
-		"""The default XML Serializer of RDFlib is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer>} is
-		registered in RDFlib and used in the rest of the package.
+		"""The default XML Serializer of RDFLib 2.X is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer>} is
+		registered in RDFlib and used in the rest of the package. This is not used for RDFLib 3.X.
 		"""
 		if not self.xml_serializer_registered :
 			from rdflib.plugin import register
@@ -285,8 +319,9 @@ class pyRdfa :
 			self.xml_serializer_registered = True
 
 	def _register_Turtle_serializer(self) :
-		"""The default Turtle Serializers of RDFlib is buggy and not very nice as far as the output is concerned.
+		"""The default Turtle Serializers of RDFLib 2.X is buggy and not very nice as far as the output is concerned.
 		An L{own version<serializers.TurtleSerializer>} is registered in RDFLib and used in the rest of the package.
+		This is not used for RDFLib 3.X.
 		"""
 		if not self.turtle_serializer_registered :
 			from rdflib.plugin import register
@@ -297,7 +332,7 @@ class pyRdfa :
 	def _register_serializers(self, outputFormat) :
 		"""If necessary, register the serializer for a specific name. Frontend to
 		L{_register_XML_serializer} and L{_register_Turtle_serializer}.
-		@param outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml" and "pretty-xml", as well as "turtle" and "n3" are synonyms.
+		@param outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml" and "pretty-xml", as well as "turtle" and "n3" are synonyms. Used for RDFLib 2.X.
 		@return: the final output format name
 		"""
 		# Exchanging the pretty xml and turtle serializers against the version stored with this package
@@ -309,41 +344,6 @@ class pyRdfa :
 			return self.turtle_serializer_name
 		else :
 			return outputFormat
-
-	def create_exception_graph(self, exception_type, exception_msg, graph=None, http=True) :
-		"""
-		This method takes an exception and turns its message into a serialized RDF Graph. This is used when
-		the distiller is used as a CGI script or with files and is asked to return an RDF content in case of exceptions.
-	
-		@param exception_msg: message of an exception
-		@type exception_msg: string
-		@param format: the format of the return, should be n3/turtle or xml
-		@keyword graph: an RDF Graph (if None, than a new one is created)
-		@type graph: rdflib Graph instance
-		@keyword http: whether an extra http information should be added or not
-		@type http: Boolean
-		"""
-		from rdflib.Literal	import Literal
-	
-		if graph == None :
-			graph = Graph()
-
-		graph.bind("dist", DIST_NS)
-		graph.bind("rdfa", ns_rdfa)
-		
-		if exception_msg :
-			_add_to_processor_graph(exception_type, graph, Literal("%s" % exception_msg), ERROR, URIRef(self.base))
-	
-		# Add a 400 error message information
-		if http:
-			ns_http=Namespace("http://www.w3.org/2006/http#")
-			graph.bind("http",ns_http)
-			response = BNode()
-			graph.add((response, ns_rdf["type"], ns_http["Response"]))
-			graph.add((response, ns_http["statusCodeNumber"], Literal("400")))
-			graph.add((response, ns_http["statusCode"], URIRef("http://www.w3.org/2008/http-statusCodes#statusCode400")))
-			
-		return graph
 	
 	####################################################################################################################
 	# Externally used methods
@@ -386,54 +386,74 @@ class pyRdfa :
 			# is used by the recursion
 			subject = URIRef(state.base)
 			parse_one_node(topElement, default_graph, subject, state, [])
-			processor_graph = self.options.processor_graph.graph
-		except FailedProfile :
+		except FailedProfile, f :
 			# This may occur if the top level @profile cannot be dereferenced, which stops the processing as a whole!
-			(type, value, traceback) = sys.exc_info()
-			processor_graph = Graph()
-			self.create_exception_graph(type, value, graph=processor_graph, http=False)
+			bnode = self.options.add_error(f.msg, ProfileReferenceError, f.context)
+			if f.http_code :
+				self.options.processor_graph.add_http_context(bnode, f.http_code)
+			# This may occur if the top level @profile cannot be dereferenced, which stops the processing as a whole!
 	
 		# What should be returned depends on the way the options have been set up
 		if self.options.output_default_graph :
 			copyGraph(graph, default_graph)
 			if self.options.output_processor_graph :
-				copyGraph(graph, processor_graph)
+				copyGraph(graph, self.options.processor_graph.graph)
 		elif self.options.output_processor_graph :
-			copyGraph(graph, processor_graph)
+			copyGraph(graph, self.options.processor_graph.graph)
+
+		self.options.reset_processor_graph()
 
 		return graph
 	
-	def graph_from_source(self, name, graph = None) :
+	def graph_from_source(self, name, graph = None, rdfOutput = False) :
 		"""
 		Extract an RDF graph from an RDFa source. The source is parsed, the RDF extracted, and the RDFa Graph is
 		returned. This is a fron-end to the L{pyRdfa.graph_from_DOM} method.
-		
-		At the moment the choice between an HTML5 parsing and an pure XML parsing is not really clear. I expect that
-		to be cleaner in RDF1.1. The clean approach may be, at least for URI-s, to look at the return media type...
-		
+				
 		@param name: a URI, a file name, or a file-like object
-		@type graph: rdflib Graph instance. If None, a new one is created.
+		@param graph: rdflib Graph instance. If None, a new one is created.
+		@param rdfOutput: whether exception should be turned into RDF and returned as part of the processor graph
 		@return: an RDF Graph
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance
 		"""
-		# First, open the source...
-		input = self._get_input(name)
-		msg = ""
+		def copyErrors(tog, options) :
+			if tog == None :
+				tog = Graph()
+			if options.output_processor_graph :
+				for t in options.processor_graph.graph :
+					tog.add(t)
+				for k,ns in options.processor_graph.graph.namespaces() :
+					tog.bind(k,ns)
+			options.reset_processor_graph()
+			return tog
 		
-		parser = None
-		if self.options.host_language == HostLanguage.html_rdfa :
-			import warnings
-			warnings.filterwarnings("ignore", category=DeprecationWarning)
-			import html5lib
-			parser = html5lib.HTMLParser(tree=html5lib.treebuilders.getTreeBuilder("dom"))
-			parse = parser.parse
-		else :
-			# in other cases an XML parser has to be used
-			parse = xml.dom.minidom.parse			
-		dom = parse(input)
-
-		return self.graph_from_DOM(dom, graph)	
+		try :
+			# First, open the source...
+			input = self._get_input(name)
+			msg = ""
+			
+			parser = None
+			if self.options.host_language == HostLanguage.html_rdfa :
+				import warnings
+				warnings.filterwarnings("ignore", category=DeprecationWarning)
+				import html5lib
+				parser = html5lib.HTMLParser(tree=html5lib.treebuilders.getTreeBuilder("dom"))
+				parse = parser.parse
+			else :
+				# in other cases an XML parser has to be used
+				parse = xml.dom.minidom.parse			
+			dom = parse(input)
+	
+			return self.graph_from_DOM(dom, graph)
+		except FailedSource, f :
+			if not rdfOutput : raise f
+			self.options.add_error(f.msg, FileReferenceError, name)
+			return copyErrors(graph, self.options)
+		except Exception :
+			if not rdfOutput : raise
+			(type, value, traceback) = sys.exc_info()
+			return copyErrors(graph, self.options)
 	
 	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
 		"""
@@ -456,21 +476,10 @@ class pyRdfa :
 			outputFormat = self._register_serializers(outputFormat)
 		
 		graph = Graph()
-		graph.bind("dist", DIST_NS)
-		graph.bind("rdfa", ns_rdfa)
 		graph.bind("xsd", Namespace(u'http://www.w3.org/2001/XMLSchema#'))
 		# the value of rdfOutput determines the reaction on exceptions...
-		if rdfOutput :
-			for name in names :
-				try :
-					self.graph_from_source(name, graph)
-				except :
-					(type, value, traceback) = sys.exc_info()
-					self.create_exception_graph(type, value, graph=graph, http=False)
-		else :
-			# let the caller deal with the exceptions
-			for name in names :
-				self.graph_from_source(name, graph)
+		for name in names :
+			self.graph_from_source(name, graph, rdfOutput)
 		return graph.serialize(format=outputFormat)
 
 	def rdf_from_source(self, name, outputFormat = "pretty-xml", rdfOutput = False) :
@@ -490,20 +499,17 @@ class pyRdfa :
 def processURI(uri, outputFormat, form={}) :
 	"""The standard processing of an RDFa uri options in a form, ie, as an entry point from a CGI call.
 
-	The call accepts extra form options (ie, HTTP GET options) as follows:
+	The call accepts extra form options (eg, HTTP GET options) as follows:
 	
 	 - C{graph=[default|processor|default,processor|processor,default]} specifying which graphs are returned. Default: default.
 	 - C{space-preserve=[true|false]} means that plain literals are normalized in terms of white spaces. Default: false.
 	 - C{extras=[true|false]} means that extra, built-in transformers are executed on the DOM tree prior to RDFa processing. Default: false. Alternatively, a finer granurality can be used with the following options:
-	  - C{extras-meta=[true|false]}: the 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
-	  - C{extras-dc=[true|false]}: implement the Dublin Core dialect to include DC statements from the header. See L{transform.DublinCore} for further details.
-	  - C{extras-openid=[true|false]}: interpret the 'openid' references in the header. See L{transform.OpenID} for further details.
 	  - C{extras-li=[true|false]}: 'ol' and 'ul' elements are possibly transformed to generate collections or containers. See L{transform.ContainersCollections} for further details.
 	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header shoudl be used
 
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
 	@param outputFormat: serialization formats, as understood by RDFLib. Note that though "turtle" is
-	a possible parameter value, the RDFLib turtle generation does funny (though legal) things with
+	a possible parameter value, some versions of the RDFLib turtle generation does funny (though legal) things with
 	namespaces, defining unusual and unwanted prefixes...
 	@param form: extra call options (from the CGI call) to set up the local options
 	@type form: cgi FieldStorage instance
@@ -573,59 +579,69 @@ def processURI(uri, outputFormat, form={}) :
 	else :
 		space_preserve = True
 
-	options = Options(output_default_graph = output_default_graph, output_processor_graph = output_processor_graph, space_preserve=space_preserve, transformers=transformers)
+	options = Options(output_default_graph = output_default_graph,
+					  output_processor_graph = output_processor_graph,
+					  space_preserve=space_preserve,
+					  transformers=transformers)
 	processor = pyRdfa(options = options, base = base, media_type = media_type)
 	
-	try:
-		return processor.rdf_from_source(input, outputFormat)
+	
+	# Decide the output format; the issue is what should happen in case of a top level error like an inaccessibility of
+	# the html source: should a graph be returned or an HTML page with an error message?
+
+	# decide whether HTML or RDF should be sent. 
+	htmlOutput = False
+	if 'HTTP_ACCEPT' in os.environ :
+		acc = os.environ['HTTP_ACCEPT']
+		possibilities = ['text/html','application/rdf+xml','text/turtle; charset=utf-8']
+
+		# this nice module does content negotiation and returns the preferred format
+		sg = httpheader.acceptable_content_type(acc, possibilities)
+		htmlOutput = (sg != None and sg[0] == httpheader.content_type('text/html'))
+		os.environ['rdfaerror'] = 'true'
+		
+	# This is really for testing purposes only, it is an unpublished flag to force RDF output no
+	# matter what
+	rdfOutput = ("forceRDFOutput" in form.keys()) or not htmlOutput
+	
+	try :
+		return processor.rdf_from_source(input, outputFormat, rdfOutput = rdfOutput)
 	except :
+		# This branch should occur only if an exception is really raised, ie, if it is not turned
+		# into a graph value.
 		(type,value,traceback) = sys.exc_info()
 
-		# decide whether HTML or RDF should be sent. 
-		import os, httpheader
-		htmlOutput = False
-		if 'HTTP_ACCEPT' in os.environ :
-			acc = os.environ['HTTP_ACCEPT']
-			possibilities = ['text/html','application/rdf+xml','text/turtle; charset=utf-8']
-
-			# this nice module does content negotiation and returns the preferred format
-			sg = httpheader.acceptable_content_type(acc, possibilities)
-			htmlOutput = (sg != None and sg[0] == httpheader.content_type('text/html'))
-			os.environ['rdfaerror'] = 'true'
-
-		# This is really for testing purposes only, it is an unpublished flag to force RDF output no
-		# matter what
-		forceRDFOutput = "forceRDFOutput" in form.keys()
-
-		if (not forceRDFOutput) and htmlOutput :
-			import traceback, cgi
-			print 'Content-type: text/html; charset=utf-8'
-			print
-			print "<html>"
-			print "<head>"
-			print "<title>Error in RDFa processing</title>"
-			print "</head><body>"
-			print "<h1>Error in distilling RDFa</h1>"
-			print "<pre>"
-			traceback.print_exc(file=sys.stdout)
-			print "</pre>"
-			print "<pre>%s</pre>" % value
-			print "<h1>Information received</h1>"
-			print "<dl>"
-			if "text" in form and form["text"].value != None and len(form["text"].value.strip()) != 0 :
-				print "<dt>Text input:</dt><dd>%s</dd>" % cgi.escape(form["text"].value).replace('\n','<br/>')
-			else :
-				print "<dt>URI received:</dt><dd><code>'%s'</code></dd>" % cgi.escape(uri)
-			print "<dt>Format:</dt><dd> %s</dd>" % outputFormat
-			if "graph" in form : print "<dt>Warnings:</dt><dd> %s</dd>" % form["graph"].value
-			if "space-preserve" in form : print "<dt>Space preserve:</dt><dd> %s</dd>" % form["space-preserve"].value
-			if "host" in form : print "<dt>Host language:</dt><dd> %s</dd>" % form["host"].value
-			print "</dl>"
-			print "</body>"
-			print "</html>"
+		import traceback, cgi
+		print 'Content-type: text/html; charset=utf-8'
+		print
+		print "<html>"
+		print "<head>"
+		print "<title>Error in RDFa processing</title>"
+		print "</head><body>"
+		print "<h1>Error in distilling RDFa</h1>"
+		print "<pre>"
+		traceback.print_exc(file=sys.stdout)
+		print "</pre>"
+		print "<pre>%s</pre>" % value
+		print "<h1>Distiller request details</h1>"
+		print "<dl>"
+		if uri == "text:" and "text" in form and form["text"].value != None and len(form["text"].value.strip()) != 0 :
+			print "<dt>Text input:</dt><dd>%s</dd>" % cgi.escape(form["text"].value).replace('\n','<br/>')
+		elif uri == "uploaded:" :
+			print "<dt>Uploaded file</dt>"
 		else :
-			return processor.create_exception_graph(type, value).serialize(format=outputFormat)
-
+			print "<dt>URI received:</dt><dd><code>'%s'</code></dd>" % cgi.escape(uri)
+		if "host_language" in form.keys() :
+			print "<dt>Media Type:</dt><dd>%s</dd>" % media_type
+		if "graph" in form.keys() :
+			print "<dt>Requested graphs:</dt><dd>%s</dd>" % form.getfirst("graph").lower()
+		else :
+			print "<dt>Requested graphs:</dt><dd>default</dd>"
+		print "<dt>Output serialization format:</dt><dd> %s</dd>" % outputFormat
+		if "space-preserve" in form : print "<dt>Space preserve:</dt><dd> %s</dd>" % form["space-preserve"].value
+		print "</dl>"
+		print "</body>"
+		print "</html>"
 
 ################################################# Deprecated entry points, kept for backward compatibility... 
 def processFile(input, outputFormat="xml", options = None, base="", rdfOutput = False) :

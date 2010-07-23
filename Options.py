@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.7 2010-07-02 13:27:02 ivan Exp $ $Date: 2010-07-02 13:27:02 $
+$Id: Options.py,v 1.8 2010-07-23 12:31:38 ivan Exp $ $Date: 2010-07-23 12:31:38 $
 """
 
 import sys, datetime
@@ -35,61 +35,16 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.Utils	import MediaTypes, HostLanguage
-from pyRdfa			import ns_rdfa, ns_xsd
-from pyRdfa 		import FailedProfile, FailedSource
+from pyRdfa.Utils	import MediaTypes, HostLanguage, content_to_host_language
+from pyRdfa			import ns_xsd, ns_distill
 
-DIST_URI = "http://www.w3.org/2007/08/pyRdfa/distiller"
-DIST_NS  = DIST_URI + '#'
+from pyRdfa 		import RDFA_Error, RDFA_Warning, RDFA_Info
 
-ns_errors 		= Namespace(DIST_NS)
-distillerURI	= URIRef(DIST_URI)
-
-WARNING = 'warning'
-ERROR   = 'error'
-INFO    = 'info'
-DEBUG   = 'debug'
-
-_message_properties = {
-	WARNING	: ns_errors["Warning"],
-	ERROR	: ns_rdfa["RDFaError"],
-	INFO	: ns_errors["Information"],
-	DEBUG	: ns_errors["Debug"]
-}
-
-_error_classes = {
-	FailedProfile : ns_rdfa["FailedProfile"],
-	FailedSource  : ns_rdfa["FailedSource"],
-}
-
-def _add_to_processor_graph(type, graph, msg, prop, uri) :
-	"""
-	Add a distiller message to the graph.
-	
-	@param type: Exception type that, possibly, led to the error
-	@type type: Exception
-	@param graph: RDFLib Graph
-	@param msg: message of an exception
-	@type msg: RDFLIb Literal
-	@param prop: the property to be used
-	@type prop: string, must be one of 'warning', 'error', 'info', 'debug'
-	@param uri: the top URI used to invoke the distiller
-	@type uri: URIRef
-	"""
-	bnode = BNode()
-	graph.bind("rdfa", ns_rdfa)
-	
-	graph.add((bnode, ns_rdf["type"], _message_properties[prop]))
-	if type in _error_classes :
-		graph.add((bnode, ns_rdf["type"], _error_classes[type]))
-
-	graph.add((bnode, ns_rdfa["onURI"], uri))
-	graph.add((bnode, ns_rdfs["comment"], msg))
-	graph.add((bnode, ns_rdfa["timeStamp"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
-
+ns_dc = Namespace("http://purl.org/dc/terms/")
+ns_ht = Namespace("http://www.w3.org/2006/http#")
 
 class ProcessorGraph :
-	"""Class to handle the 'processor graph', ie, the (RDF) Graph containing the warnings,
+	"""Wrapper around the 'processor graph', ie, the (RDF) Graph containing the warnings,
 	error messages, and informational messages.
 	"""
 	def __init__(self) :
@@ -97,53 +52,51 @@ class ProcessorGraph :
 		@param warnings: whether a graph should effectively be set up, or whether this
 		should just be an empty shell for the various calls to work (without effect)
 		"""
-		self.graph 					= Graph()
-		self.accumulated_literals 	= []
-		self.baseURI              	= None
+		self.graph = Graph()
+		self.graph.bind("dc", ns_dc)
+		self.graph.bind("pyrdfa", ns_distill)
+		self.graph.bind("rdf", ns_rdf)
 		
-	def _add_triple(self, msg, prop, type) :
-		obj = Literal(msg)
-		if self.baseURI == None :
-			self.accumulated_literals.append((obj, prop, type))
-		elif self.graph != None :
-			_add_to_processor_graph(type, self.graph, obj, prop, self.baseURI) 
+	def add_triples(self, msg, top_class, info_class, context) :
+		"""
+		Add an error structure to the processor graph: a bnode with a number of predicates as defined by the RDFa
+		document
+		@param msg: the core error message, added as an object to a dc:description
+		@param top_class: Error, Warning, or Info; an explicit rdf:type added to the bnode
+		@type top_class: URIRef
+		@param info_class: An additional error class, added as an rdf:type to the bnode in case it is not None
+		@type info_class: URIRef
+		@param context: An additional information added, if not None, as an object with rdfa:context as a predicate
+		@type context: either an URIRef or a URI String (an URIRef will be created in the second case)
+		@return: the bnode that serves as a subject for the errors. The caller may add additional information
+		@rtype: BNode
+		"""
+		#print "yyyy"
+		#print "top class: %s" % top_class
+		#print "info class: %s" % info_class
+		#print "----"
+		bnode = BNode()
+		
+		self.graph.add((bnode, ns_rdf["type"], top_class))
+		if info_class :
+			self.graph.add((bnode, ns_rdf["type"], info_class))
+		self.graph.add((bnode, ns_dc["description"], Literal(msg)))
+		self.graph.add((bnode, ns_dc["date"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
+		if context :
+			if not isinstance(context,URIRef) :
+				context = URIRef(context)
+			self.graph.add((bnode, ns_distill["context"], context))
 			
-	def set_base_URI(self, URI) :
-		"""Set the base URI for the comment triples.
+		return bnode
+	
+	def add_http_context(self, subj, http_code) :
+		self.graph.bind("ht",ns_ht)
+		bnode = BNode()
+		self.graph.add((subj, ns_distill["context"], bnode))
+		self.graph.add((bnode, ns_rdf["type"], ns_ht["Response"]))
+		self.graph.add((bnode, ns_ht["sc"], URIRef("http://www.w3.org/2008/http-statusCodes/statusCode%s" % http_code)))
 		
-		Note that this method I{must} be called at some point to complete the triples. Without it the triples
-		added via L{add_warning<CommentGraph.add_warning>}, L{add_info<CommentGraph.add_info>}, etc, will not be added to the final graph.
-		
-		@param URI: URIRef for the subject of the comments
-		"""
-		self.baseURI = URI
-		if self.graph != None :
-			for obj, prop, type in self.accumulated_literals :
-				_add_to_processor_graph(type, self.graph, obj, prop, self.baseURI) 
-		self.accumulated_literals = []
-				
-	def add_warning(self, txt) :
-		"""Add a warning. A comment triplet is added to the separate "warning" graph.
-		@param txt: the warning text. It will be preceded by the string "==== pyRdfa Warning ==== "
-		"""
-		self._add_triple(txt, WARNING, None)
 
-	def add_info(self, txt) :
-		"""Add an informational comment. A comment triplet is added to the separate "warning" graph.
-		@param txt: the information text. It will be preceded by the string "==== pyRdfa information ==== "
-		"""
-		self._add_triple(txt, INFO, None)
-
-	def add_error(self, txt, type=None) :
-		"""Add an error comment. A comment triplet is added to the separate "warning" graph.
-		@param txt: the information text. It will be preceded by the string "==== pyRdfa information ==== "
-		@param type: Exception type that, possibly, led to the error
-		@type type: Exception
-		"""
-		self._add_triple(txt, ERROR, type)
-		
-	def _add_debug(self, txt) :
-		self._add_triple(txt, DEBUG, None)
 
 class Options :
 	"""Settable options. An instance of this class is stored in
@@ -159,8 +112,10 @@ class Options :
 	@type processor_graph: L{CommentGraph}
 	@ivar transformers: extra transformers
 	@type transformers: list
-	@type host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml_rdfa, but it can be HostLanguage.rdfa_core and HostLanguage.html_rdfa
-	@ivar host_language: integer (logically: an enumeration)	
+	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml_rdfa, but it can be HostLanguage.rdfa_core and HostLanguage.html_rdfa
+	@type host_language: integer (logically: an enumeration)
+	@ivar content_type: the content type of the host file. Default is None
+	@type content_type: string (logically: an enumeration)
 	"""
 	def __init__(self, output_default_graph = True, output_processor_graph = False, space_preserve = True, transformers=[], host_language = HostLanguage.rdfa_core) :
 		"""
@@ -185,24 +140,57 @@ class Options :
 	def set_host_language(self, content_type) :
 		"""
 		Set the host language for processing, based on the recognized types. What this means is that everything is considered to be
-		'core' RDFa, except if XHTML or HTML is used
+		'core' RDFa, except if XHTML or HTML is used; indeed, no other language defined a deviation to core (yet...)
 		@param content_type: content type
 		@type content_type: string
 		"""
-		if content_type == MediaTypes.xhtml :
-			self.host_language = HostLanguage.xhtml_rdfa
-		elif content_type == MediaTypes.html :
-			self.host_language = HostLanguage.html_rdfa
+		if content_type in content_to_host_language :
+			self.host_language = content_to_host_language[content_type]
 		else :
-			self.host_language = HostLanguage.rdfa_core		
+			self.host_language = HostLanguage.rdfa_core
 		
 	def __str__(self) :
 		retval = """Current options:
-		space_preserve : %s
-		warnings       : %s
-		lax parsing    : %s
-		host language  : %s
+		preserve space         : %s
+		output processor graph : %s
+		output default graph   : %s
+		host language          : %s
 		"""
-		return retval % (self.space_preserve, self.warnings, self.lax, self.host_language)
+		return retval % (self.space_preserve, self.output_processor_graph, self.output_default_graph, self.host_language)
+		
+	def reset_processor_graph(self):
+		"""Empty the processor graph. This is necessary if the same options is reused
+		for several RDFa sources, and new error messages should be generated.
+		"""
+		self.processor_graph.graph.remove((None,None,None))
 
+	def add_warning(self, txt, warning_type=None, context=None) :
+		"""Add a warning to the processor graph.
+		@param txt: the warning text. 
+		@keyword warning_type: Warning Class
+		@type warning_type: URIRef
+		@keyword context: possible context to be added to the processor graph
+		@type context: URIRef or String
+		"""
+		return self.processor_graph.add_triples(txt, RDFA_Warning, warning_type, context)
+
+	def add_info(self, txt, info_type=None) :
+		"""Add an informational comment to the processor graph.
+		@param txt: the information text. 
+		@keyword info_type: Info Class
+		@type info_type: URIRef
+		@keyword context: possible context to be added to the processor graph
+		@type context: URIRef or String
+		"""
+		return self.processor_graph.add_triples(txt, RDFA_Info, info_type, context)
+
+	def add_error(self, txt, err_type=None, context=None) :
+		"""Add an error  to the processor graph.
+		@param txt: the information text. 
+		@keyword err_type: Error Class
+		@type err_type: URIRef
+		@keyword context: possible context to be added to the processor graph
+		@type context: URIRef or String
+		"""
+		return self.processor_graph.add_triples(txt, RDFA_Error, err_type, context)
 

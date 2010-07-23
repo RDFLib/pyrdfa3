@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.17 2010-07-02 14:18:08 ivan Exp $
-$Date: 2010-07-02 14:18:08 $
+$Id: State.py,v 1.18 2010-07-23 12:31:38 ivan Exp $
+$Date: 2010-07-23 12:31:38 $
 """
 
 import rdflib
@@ -34,17 +34,18 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-
-
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, HostLanguage
 from pyRdfa.Curie		import Curie
-from pyRdfa 			import FailedProfile, FailedSource
+from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
 
 import re
 import random
 import urlparse
 import urllib
+
+RDFa_1_0_VERSION    = "XHTML+RDFa 1.0"
+
 
 #: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
 usual_schemes = ["doi", "file", "ftp", "gopher", "hdl", "http", "https", "imap", "isbn", "ldap", "lsid",
@@ -67,6 +68,8 @@ class ExecutionContext :
 	@type curie: L{Curie.Curie}
 	@ivar node: the node to which this state belongs
 	@type node: DOM node instance
+	@ivar rdfa_version: RDFa version of the content
+	@type rdfa_version: String
 	"""
 
 	#: list of attributes that allow for lists of values and should be treated as such	
@@ -116,13 +119,24 @@ class ExecutionContext :
 		# At the moment, it is invoked with a 'None' at the top level of parsing, that is
 		# when the <base> element is looked for (for the HTML cases, that is)
 		if inherited_state :
-			self.base		= inherited_state.base
-			self.options	= inherited_state.options
+			self.rdfa_version	= inherited_state.rdfa_version
+			self.base			= inherited_state.base
+			self.options		= inherited_state.options
 			# for generic XML versions the xml:base attribute should be handled
 			if self.options.host_language == HostLanguage.rdfa_core and node.hasAttribute("xml:base") :
 				self.base = node.getAttribute("xml:base")
 		else :
 			# this is the branch called from the very top
+			
+			# get the version
+			# Check if the 1.0 version is set explicitly
+			html = node.ownerDocument.documentElement
+			if html.hasAttribute("version") and RDFa_1_0_VERSION == html.getAttribute("version"):
+				# The version has been set to be explicitly 1.0
+				self.rdfa_version = "1.0"
+			else :
+				from pyRdfa import rdfa_current_version
+				self.rdfa_version = rdfa_current_version
 
 			# this is just to play safe. I believe this should actually not happen...
 			if options == None :
@@ -146,9 +160,6 @@ class ExecutionContext :
 			# If no local setting for base occurs, the input argument has it
 			if self.base == "" :
 				self.base = base	
-
-			# This should be set once for the correct handling of warnings/errors
-			self.options.processor_graph.set_base_URI(URIRef(quote_URI(base, self.options)))
 								
 		#-----------------------------------------------------------------
 		# this will be used repeatedly, better store it once and for all...
@@ -191,7 +202,7 @@ class ExecutionContext :
 				
 			# check a posible warning (error?), too
 			if lang != None and xmllang != None and lang != xmllang :
-				self.options.processor_graph.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))			
+				self.options.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))			
 		
 		else :
 			# this is a clear case, xml:lang is the only possible option...
@@ -229,7 +240,7 @@ class ExecutionContext :
 			"""
 			val = uri.strip()
 			if urlparse.urlsplit(val)[0] not in usual_schemes :
-				self.options.processor_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
+				self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 			return URIRef(val)
 
 		if val == "" :
@@ -279,29 +290,37 @@ class ExecutionContext :
 			# Is checked below, and that is why the safe_curie flag is necessary
 			if val[-1] != ']' :
 				# that is certainly forbidden: an incomplete safe curie
-				self.options.processor_graph.add_warning("Illegal CURIE: %s" % val)
+				self.options.add_warning("Illegal CURIE: %s" % val, UnresolvablePrefix)
 				return None
 			else :
 				val = val[1:-1]
 				safe_curie = True
-
-		retval = self.curie.CURIE_to_URI(val)
-		if retval == None :
-			# the value could not be interpreted as a CURIE, ie, it did not produce any valid URI.
-			# The rule says that then the whole value should be considered as a URI
-			# except if it was part of a safe Curie. In that case it should be ignored...
+				
+		# There is a branch here depending on whether we are in 1.1 or 1.0 mode
+		if self.rdfa_version > "1.1" :
+			retval = self.curie.CURIE_to_URI(val)
+			if retval == None :
+				# the value could not be interpreted as a CURIE, ie, it did not produce any valid URI.
+				# The rule says that then the whole value should be considered as a URI
+				# except if it was part of a safe Curie. In that case it should be ignored...
+				if safe_curie :
+					self.options.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val, UnresolvablePrefix)
+					return None
+				else :
+					return self._URI(val)
+			else :
+				# there is an unlikely case where the retval is actually a URIRef with a relative URI. Better filter that one out
+				if isinstance(retval, BNode) == False and urlparse.urlsplit(str(retval))[0] == "" :
+					# yep, there is something wrong, a new URIRef has to be created:
+					return URIRef(self.base+str(retval))
+				else :
+					return retval
+		else :
+			# in 1.0 mode a CURIE can be considered only in case of a safe CURIE
 			if safe_curie :
-				self.options.processor_graph.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val)
-				return None
+				return self.curie.CURIE_to_URI(val)
 			else :
 				return self._URI(val)
-		else :
-			# there is an unlikely case where the retval is actually a URIRef with a relative URI. Better filter that one out
-			if isinstance(retval, BNode) == False and urlparse.urlsplit(str(retval))[0] == "" :
-				# yep, there is something wrong, a new URIRef has to be created:
-				return URIRef(self.base+str(retval))
-			else :
-				return retval
 
 	def _TERMorCURIEorAbsURI(self, val) :
 		"""Returns a URI either for a term or for a CURIE. The value must be an NCNAME to be handled as a term; otherwise
@@ -316,23 +335,31 @@ class ExecutionContext :
 		from Curie import ncname
 		if ncname.match(val) :
 			# This is a term, must be handled as such...
-			return self.curie.term_to_URI(val)
+			retval = self.curie.term_to_URI(val)
+			if not retval :
+				self.options.add_warning("Unresolvable term: %s" % val, UnresolvableTerm)
+			else :
+				return retval
 		else :
 			# try a CURIE
 			retval = self.curie.CURIE_to_URI(val)
 			if retval :
 				return retval
-			else :
+			elif self.rdfa_version > "1.1" :
 				# See if it is an absolute URI
 				scheme = urlparse.urlsplit(val)[0]
 				if scheme == "" :
 					# bug; there should be no relative URIs here
-					self.options.processor_graph.add_warning("Relative URI is not allowed in this position: [%s]" % val)
+					self.options.add_warning("Relative URI is not allowed in this position: [%s]" % val, UnresolvablePrefix)
 					return None
 				else :
 					if scheme not in usual_schemes :
-						self.options.processor_graph.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
+						self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 					return URIRef(val)
+			else :
+				# rdfa 1.0 case
+				self.options.add_warning("CURIE was used but value does not correspond to a defined CURIE: %s" % val.strip(), UnresolvablePrefix)
+				return None
 
 	# -----------------------------------------------------------------------------------------------
 

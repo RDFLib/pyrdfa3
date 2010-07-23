@@ -2,6 +2,8 @@
 """
 Various utilities for pyRdfa.
 
+Most of the utilities are straightforward, except for the caching module whose usage that is described in the class description. 
+
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
@@ -25,7 +27,8 @@ else :
 	from rdflib.RDF	import RDFNS  as ns_rdf
 
 class HostLanguage :
-	"""An enumeration style class: recognized host language types for RDFa"""
+	"""An enumeration style class: recognized host language types for RDFa. Some processing details may also
+	depend on these host languages."""
 	(rdfa_core, xhtml_rdfa, html_rdfa) = range(0,3)
 	
 class MediaTypes :
@@ -38,6 +41,21 @@ class MediaTypes :
 	smil	= 'application/smil+xml'
 	xml		= 'application/xml'
 	nt		= 'text/plain'
+	
+#: mapping from (some) content types to RDFa host languages. This may control the exact processing or at least the default profile (see below)...
+content_to_host_language = {
+	MediaTypes.html		: HostLanguage.html_rdfa,
+	MediaTypes.xhtml	: HostLanguage.xhtml_rdfa,
+	MediaTypes.xml		: HostLanguage.rdfa_core,
+	MediaTypes.smil		: HostLanguage.rdfa_core,
+	MediaTypes.svg		: HostLanguage.rdfa_core,
+}
+	
+#: default profiles for some of the host languages
+default_profiles = {
+	HostLanguage.xhtml_rdfa	: "http://www.w3.org/1999/xhtml",
+	HostLanguage.html_rdfa 	: "http://www.w3.org/1999/xhtml",
+}
 
 #: mapping preferred suffixes to media types...
 preferred_suffixes = {
@@ -58,7 +76,8 @@ preferred_suffixes = {
 class URIOpener :
 	"""A wrapper around the urllib2 method to open a resource. Beyond accessing the data itself, the class
 	sets a number of instance variable that might be relevant for processing.
-	The class also adds an accept header to the outgoing request, namely text/html and application/xhtml+xml (unless set explicitly by the caller).
+	The class also adds an accept header to the outgoing request, namely
+	text/html and application/xhtml+xml (unless set explicitly by the caller).
 	
 	@ivar data: the real data, ie, a file-like object
 	@ivar headers: the return headers as sent back by the server
@@ -100,18 +119,62 @@ class URIOpener :
 				self.location = urlparse.urljoin(self.data.geturl(),self.headers[URIOpener.CONTENT_LOCATION])
 			else :
 				self.location = name
-		except Exception, msg :
+		except urllib2.HTTPError, e :
+			from pyRdfa import HTTPError
+			raise HTTPError('%s' % e, e.code)
+		except Exception, e :
 			from pyRdfa import RDFaError
-			raise RDFaError,' %s' % msg
+			raise RDFaError('%s' % e)
 
 #########################################################################################################
 # Handling Cached URIs
 class CachedURIOpener(URIOpener) :
+	"""
+	Implementation of a simple chaching mechanism for opening URI-s. The fundamental idea is that some URI-s
+	have a cached version (or an equivalent) version in the local file space, and that file is loaded instead of
+	getting to the Web with another request.
+	
+	The essence is to find a dictionary that maps URI-s to local file names. Instead of hardcoding the
+	location of the chached files, an environment variable isued; this environment variable is
+	an input argument to the class' constructor (C{cached_env}).
+	
+	The environment variable plays two roles:
+	
+	 - the value of the environment variable provides a directory in the local file space to locate cached files
+	 - the environment variable itself servers as a Python module name; that module, when imported, should include
+	 the 'index' dictionary to map URI-s to cached files.
+	 
+	For example, if the cached environment variable is C{cached_profiles}", then
+	
+	 - the environment variable C{cached_profiles" may give C{/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles}
+	 - the module C{/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles/cached_profile.py} is (dynamically) imported
+	 - the index dictionary in that profile may contain the entry::
+	"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html" : "cc.html"
+	
+	meaning that if the requested URI is::
+	"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html"
+	
+	the class loads the following local file instead::
+	/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles/cc.html
+	
+	Furthermore, the class may be initialized with additional (HTTP) Accept headers. This means that if the
+	index dictionary does not contain an entry for the incoming URI, suffixes for the content types in the Accept
+	headers will be used to check again (in case that content type is known). Ie, if the requested URI is::
+	"http://www.w3.org/2007/08/pyRdfa/profiles/cc"
+	
+	and the additonal accept header includes 'text/html' then the::
+	"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html"
+	
+	is also checked. This is a crude local imitation of HTTP content negotiation.
+	
+	Obviously, if the cache mechanism fails at any place in finding a local copy, the superclass, ie, a proper
+	HTTP request, is used.
+	"""
 	loaded_modules = {}
 	def __init__(self, uri, additional_headers = {}, cached_env = "") :
 		resolved = False
 		if cached_env in CachedURIOpener.loaded_modules :
-			# This modules has already been imported once
+			# This module has already been imported once
 			(self.index, self.base) = CachedURIOpener.loaded_modules[cached_env]
 			resolved = self._resolve_cache(uri, additional_headers)
 		else :
@@ -121,6 +184,7 @@ class CachedURIOpener(URIOpener) :
 				if self.base not in sys.path :
 					sys.path.insert(0, self.base)
 				try :
+					# These calls do a dynamic import; ie, python magic is going on here...:-)
 					(f,p,d) = imp.find_module(cached_env)	
 					imp.load_module(cached_env,f,p,d)
 					m = sys.modules[cached_env]
@@ -168,13 +232,13 @@ class CachedURIOpener(URIOpener) :
 					suffix_type_list.append((suffxs, ctype))
 					
 			# First, attempt to resolve the incoming URI as is
-			if self._resolve_uri(uri, base, None) :
+			if self._resolve_uri(uri, None) :
 				# got it!
 				return True
 			else :
 				for suffxs, ctype in suffix_type_list :
 					for sufx in suffxs :
-						retval = self._resolve_uri( uri+sufx, ctype )
+						retval = self._resolve_uri(uri+sufx, ctype)
 						if retval == True :
 							return True
 			# Sadly, there is no cache
