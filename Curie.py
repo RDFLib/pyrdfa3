@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.11 2010-07-23 12:31:38 ivan Exp $
-$Date: 2010-07-23 12:31:38 $
+$Id: Curie.py,v 1.12 2010-07-25 11:01:42 ivan Exp $
+$Date: 2010-07-25 11:01:42 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -105,6 +105,8 @@ class ProfileRead :
 	@type terms: dictionary
 	@ivar ns: namespace mapping
 	@type ns: dictionary
+	@ivar vocabulary: default vocabulary
+	@type vocabulary: string
 	@cvar profile_cache: cache, maps a URI on a (terms,ns) tuple
 	@type profile_cache: dictionary
 	"""
@@ -122,6 +124,8 @@ class ProfileRead :
 		self.terms  = {}
 		# This is to store the local Namespaces (a.k.a. prefixes)
 		self.ns     = {}
+		# Default vocabulary
+		self.vocabulary = None
 		
 		if state.rdfa_version < "1.1" :
 			return
@@ -147,6 +151,9 @@ class ProfileRead :
 					#from pyRdfa import RDFaStopParsing
 					#raise RDFaStopParsing()
 					continue
+				
+				for (subj,uri) in graph.subject_objects(ns_rdfa["vocabulary"]) :
+					self.vocabulary = uri
 				
 				for (subj,uri) in graph.subject_objects(ns_rdfa["uri"]) :
 					# subj is, usually, a bnode, and is used as a subject for either a term
@@ -280,6 +287,11 @@ class Curie :
 			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)
 		else :
 			self.default_curie_uri = inherited_state.curie.default_curie_uri
+
+		# --------------------------------------------------------------------------------
+		# Get the recursive definitions, if any
+		# Note that if the underlying file is 1.0 version, the returned structure will be, essentially, empty
+		recursive_vocab = ProfileRead(self.state)
 		
 		# --------------------------------------------------------------------------------
 		# Set the default term URI
@@ -287,21 +299,24 @@ class Curie :
 		# for RDFa core, or whether it should be set to None.
 		# This is a 1.1 feature, ie, should be ignored if the version is < 1.0
 		if state.rdfa_version >= "1.1" :
+			# See
 			def_term_uri = self.state.getURI("vocab")
+			# that is the absolute default setup...
 			if inherited_state == None :
-				self.default_term_uri = def_term_uri
+				self.default_term_uri = None
 			else :
-				if def_term_uri != None :
-					self.default_term_uri = def_term_uri
-				else :
-					self.default_term_uri = inherited_state.curie.default_term_uri
+				self.default_term_uri = inherited_state.curie.default_term_uri
+				
+			# see if the profile has defined a default profile:
+			if recursive_vocab.vocabulary :
+				self.default_term_uri = recursive_vocab.vocabulary
+				
+			# see if there is local vocab
+			def_term_uri = self.state.getURI("vocab")
+			if def_term_uri :			
+				self.default_term_uri = def_term_uri
 		else :
 			self.default_term_uri = None
-
-		# --------------------------------------------------------------------------------
-		# Get the recursive definitions, if any
-		# Note that if the underlying file is 1.0 version, the returned structure will be, essentially, empty
-		recursive_vocab = ProfileRead(self.state)
 		
 		# --------------------------------------------------------------------------------
 		# The simpler case: terms, adding those that have been defined by a possible @profile file
