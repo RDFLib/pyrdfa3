@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.21 2010-07-23 12:31:38 ivan Exp $ $Date: 2010-07-23 12:31:38 $
+$Id: __init__.py,v 1.22 2010-07-26 13:27:52 ivan Exp $ $Date: 2010-07-26 13:27:52 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -682,4 +682,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 	warnings.warn("Use the pyRdfa class with graph_from_DOM method directly", DeprecationWarning)
 	return pyRdfa(options, base).graph_from_DOM(graph)
 
+###################################################################################################
+"""
+$Log: __init__.py,v $
+Revision 1.22  2010-07-26 13:27:52  ivan
+testing the log entry part
 
+"""
