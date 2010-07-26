@@ -248,7 +248,6 @@ class CachedURIOpener(URIOpener) :
 			return False
 
 	def _resolve_uri(self, uri, content_type) :
-		print type(uri)
 		if uri in self.index :			
 			fname = self.index[uri]
 			# This file name should be combined with the base
