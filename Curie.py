@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.12 2010-07-25 11:01:42 ivan Exp $
-$Date: 2010-07-25 11:01:42 $
+$Id: Curie.py,v 1.13 2010-07-26 09:07:12 ivan Exp $
+$Date: 2010-07-26 09:07:12 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -58,6 +58,8 @@ xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
 
 XHTML_PREFIX = "xhv"
 XHTML_URI    = "http://www.w3.org/1999/xhtml/vocab#"
+
+GRDDL_PROFILE = "http://www.w3.org/2003/g/data-view"
 
 # Predefined terms for XHTML
 # At the moment this is just hardcoded, we will see whether this can be handled as
@@ -134,7 +136,11 @@ class ProfileRead :
 		# The right-most URI has a lower priority, so we have to go in reverse order
 		profs = self.state.getURI("profile")
 		profs.reverse()
-		for prof in profs :
+		for profuriref in profs :
+			prof = str(profuriref)
+			# jump over a GRDDL Profile, which is a very different thing
+			if prof == GRDDL_PROFILE :
+				continue
 			# avoid infinite recursion here...
 			if prof in ProfileRead.profile_stack :
 				# That one has already been done, danger of recursion:-(
@@ -216,8 +222,8 @@ class ProfileRead :
 			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, e.msg), name)
 		except Exception, e :
 			(type,value,traceback) = sys.exc_info()
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, value), name)
-		
+			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, value), name)		
+				
 		if content.content_type == MediaTypes.turtle :
 			retval = Graph()
 			try :
@@ -245,7 +251,7 @@ class ProfileRead :
 		elif content.content_type in [MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml] or xml_application_media_type.match(content.content_type) != None :
 			try :
 				from pyRdfa import pyRdfa
-				options = Options(warnings = False)
+				options = Options()
 				return pyRdfa(options).graph_from_source(content.data)
 			except :
 				(type,value,traceback) = sys.exc_info()

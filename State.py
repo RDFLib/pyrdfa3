@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.18 2010-07-23 12:31:38 ivan Exp $
-$Date: 2010-07-23 12:31:38 $
+$Id: State.py,v 1.19 2010-07-26 09:07:12 ivan Exp $
+$Date: 2010-07-26 09:07:12 $
 """
 
 import rdflib
@@ -131,9 +131,22 @@ class ExecutionContext :
 			# get the version
 			# Check if the 1.0 version is set explicitly
 			html = node.ownerDocument.documentElement
+			
+			
 			if html.hasAttribute("version") and RDFa_1_0_VERSION == html.getAttribute("version"):
 				# The version has been set to be explicitly 1.0
-				self.rdfa_version = "1.0"
+				
+				# It is still not 100% sure whether the version information is to control what happens here.
+				# the commented code takes into account the rdfa 1.0 version attribute to possibly control
+				# the version (switching off some rdfa1.1. specific features); the current just sets
+				# the version to the version set in the parser as a global variable
+				
+				# @@@ This line should be restored if version must be taken into account
+				# self.rdfa_version = "1.0"
+				
+				# @@@ The following 2 lines should be removed if the version must be taken into account
+				from pyRdfa import rdfa_current_version
+				self.rdfa_version = rdfa_current_version
 			else :
 				from pyRdfa import rdfa_current_version
 				self.rdfa_version = rdfa_current_version

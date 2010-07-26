@@ -244,10 +244,12 @@ class CachedURIOpener(URIOpener) :
 			# Sadly, there is no cache
 			return False
 		except :
+			
 			return False
 
 	def _resolve_uri(self, uri, content_type) :
-		if uri in self.index :
+		print type(uri)
+		if uri in self.index :			
 			fname = self.index[uri]
 			# This file name should be combined with the base
 			try :
@@ -255,11 +257,9 @@ class CachedURIOpener(URIOpener) :
 				if content_type :
 					self.content_type = content_type
 				else :
-					# try to guess based on the suffix
-					# this should be the case when the original URI
-					# included a suffix already
+					# try to guess based on the suffix of the file
 					for key in preferred_suffixes.keys() :
-						if uri.endswith(key) :
+						if fname.endswith(key) :
 							self.content_type = preferred_suffixes[key]
 				return True
 			except :

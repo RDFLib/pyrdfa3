@@ -101,13 +101,13 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: ContainersCollections.py,v 1.1 2010-01-18 13:42:38 ivan Exp $
-$Date: 2010-01-18 13:42:38 $
+$Id: ContainersCollections.py,v 1.2 2010-07-26 09:07:21 ivan Exp $
+$Date: 2010-07-26 09:07:21 $
 """
 
 import random
-from pyRdfa.Parse           import _has_one_of_attributes
-from pyRdfa.transform.utils import rdf_prefix, traverse_tree, dump
+from pyRdfa.Parse	import _has_one_of_attributes
+from pyRdfa.Utils 	import rdf_prefix, traverse_tree, dump
 
 _NONE       = 0
 _CONTAINER  = 1
