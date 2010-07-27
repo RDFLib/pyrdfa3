@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.13 2010-07-26 09:07:12 ivan Exp $
-$Date: 2010-07-26 09:07:12 $
+$Id: Curie.py,v 1.14 2010-07-27 13:19:19 ivan Exp $
+$Date: 2010-07-27 13:19:19 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -154,46 +154,18 @@ class ProfileRead :
 				# this vocab value has not been seen yet...
 				graph = self._get_graph(prof)
 				if graph == None :
-					#from pyRdfa import RDFaStopParsing
-					#raise RDFaStopParsing()
 					continue
 				
-				for (subj,uri) in graph.subject_objects(ns_rdfa["vocabulary"]) :
-					self.vocabulary = uri
+				voc_defs = [ uri for uri in graph.objects(None,ns_rdfa["vocabulary"]) ]
+				# if the array is bigger than 1, this means several vocabulary definitions have been added
+				# which is not acceptable...
+				if len(voc_defs) == 1 :
+					self.vocabulary = voc_defs[0]
+				elif len(voc_defs) > 1 :
+					self.state.options.add_warning("Two or more default vocabulary URIs defined in the profile; ignored", IncorrectProfileDefinition, prof)
+				self._find_terms(graph, prof, "term")
+				self._find_terms(graph, prof, "prefix")
 				
-				for (subj,uri) in graph.subject_objects(ns_rdfa["uri"]) :
-					# subj is, usually, a bnode, and is used as a subject for either a term
-					# or a prefix setting
-					# extra check is done to see whether there are more than one settings
-					# rdflib works with iterators and I need the whole set here to make the checks:-(
-					term_list 	= [k for k in graph.objects(subj, ns_rdfa["term"])]
-					prefix_list	= [k for k in graph.objects(subj, ns_rdfa["prefix"])]
-					if len(term_list) > 0 and len(prefix_list) > 0 :
-						self.state.options.add_warning("The same URI <%s> is used both for term and prefix mapping in <%s>" % (uri,prof), IncorrectProfileDefinition, prof)
-					elif len(term_list) > 1 :
-						self.state.options.add_warning("The same URI <%s> is used for several term mappings in <%s>" % (uri,prof), IncorrectProfileDefinition, prof)
-					elif len(prefix_list) > 1 :
-						self.state.options.add_warning("The same URI <%s> is used for several prefix mappings in <%s>" % (uri,prof), IncorrectProfileDefinition, prof)
-					else :
-						# everything seems to be o.k., though a check for literals and on the validity of the term is still to be done
-						if len(term_list) > 0 :
-							term = term_list[0]
-							if isinstance(term, Literal) :
-								if ncname.match(term) != None :
-									self.terms[str(term).lower()] = URIRef(uri)
-								else :
-									self.state.options.add_warning("Term <%s> defined in <%s> for <%s> is invalid; ignored" % (term, prof, uri), IncorrectProfileDefinition, prof)
-							else :
-								self.state.options.add_warning("Non literal term <%s> defined in <%s> for <%s>; ignored" % (term, prof, uri), IncorrectProfileDefinition, prof)
-						if len(prefix_list) > 0 :
-							prefix = prefix_list[0]
-							if isinstance(prefix, Literal) :
-								if ncname.match(prefix) != None :
-									self.ns[str(prefix).lower()] = Namespace(uri)
-								else :
-									self.state.options.add_warning("Prefix <%s> defined in <%s> for <%s> is invalid; ignored" % (prefix, prof, uri), IncorrectProfileDefinition, prof)
-							else :
-								self.state.options.add_warning("Non literal prefix <%s> defined in <%s> for <%s>; ignored" % (prefix, prof, uri), IncorrectProfileDefinition, prof)
 				# store the cache value, avoid re-reading again...
 				ProfileRead.profile_cache[prof] = (self.terms, self.ns)
 			# Remove infinite anti-recursion measure
@@ -258,6 +230,58 @@ class ProfileRead :
 				raise FailedProfile("Could not parse RDFa content at <%s> (%s)" % (name,value), name)
 		else :
 			raise FailedProfile("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name,content.content_type), name)
+			
+	def _find_terms(self, graph, prof, term_or_prefix) :
+		"""
+		Extract the term/prefix definitions from the graph and fill in the necessary dictionaries. A load
+		of possible warnings are checked and handled.
+		"""
+		opposite_term_or_prefix = ((term_or_prefix == "term") and "prefix") or "term"
+			
+		# Note the usage of frozenset: it removes duplicates
+		for term in frozenset([ term for term in graph.objects(None,ns_rdfa[term_or_prefix]) ]) :
+			e_tuple = (term_or_prefix,term)
+			# find all the subjects for a specific term. If there are more than one,
+			# that is an error
+			# check of the term is really a valid Literal, ie, an NCNAME
+			if not isinstance(term, Literal) :
+				self.state.options.add_warning("Non Literal %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			if ncname.match(term) == None :
+				self.state.options.add_warning("Non NCNAME %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			
+			# So far so good, this is a fine term		
+			subjs = [ subj for subj in graph.subjects(ns_rdfa[term_or_prefix],term) ]
+			if len(subjs) != 1 :
+				self.state.options.add_warning("The %s '%s' is defined twice; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			
+			# we got a subject!
+			subj = subjs[0]
+			
+			# check if the same subj has been used for several term definitions
+			if len([ oterm for oterm in graph.objects(subj,ns_rdfa[term_or_prefix]) ]) != 1 :
+				self.state.options.add_warning("Same subject is used for several %s definion (including '%s'); ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			# check if the same subj has been used for prefix definion, too
+			if len([pr for pr in graph.objects(subj,ns_rdfa[opposite_term_or_prefix])]) != 0 :
+				# if we get here, the same subject has been reused, which is not allowed
+				self.state.options.add_warning("Same subject is used for both %s and %s ('%s' and '%s'); ignored" % (term_or_prefix, opposite_term_or_prefix, term,pr), IncorrectProfileDefinition, prof)
+				continue
+				
+			# The subject is kosher, we can get the uris
+			uris = [ uri for uri in graph.objects(subj,ns_rdfa["uri"]) ]
+			if len(uris) == 0 :
+				self.state.options.add_warning("No URI defined for %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+			elif len(uris) > 1 :
+				self.state.options.add_warning("More than one URIs defined for %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+			else :
+				# got it...
+				if term_or_prefix == "term" :
+					self.terms[str(term).lower()] = URIRef(uris[0])
+				else :
+					self.ns[str(term).lower()] = Namespace(quote_URI(uris[0], self.state.options))
 
 class Curie :
 	"""
@@ -516,3 +540,10 @@ class Curie :
 		# If it got here, it is all wrong...
 		return None
 		
+#########################
+"""
+$Log: Curie.py,v $
+Revision 1.14  2010-07-27 13:19:19  ivan
+Changed the profile term/prefix management to take care of all the errors and ignore entries with errors altogether
+
+"""
