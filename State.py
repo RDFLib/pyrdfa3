@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.19 2010-07-26 09:07:12 ivan Exp $
-$Date: 2010-07-26 09:07:12 $
+$Id: State.py,v 1.20 2010-08-14 06:13:33 ivan Exp $
+$Date: 2010-08-14 06:13:33 $
 """
 
 import rdflib
@@ -310,7 +310,7 @@ class ExecutionContext :
 				safe_curie = True
 				
 		# There is a branch here depending on whether we are in 1.1 or 1.0 mode
-		if self.rdfa_version > "1.1" :
+		if self.rdfa_version >= "1.1" :
 			retval = self.curie.CURIE_to_URI(val)
 			if retval == None :
 				# the value could not be interpreted as a CURIE, ie, it did not produce any valid URI.
@@ -358,7 +358,7 @@ class ExecutionContext :
 			retval = self.curie.CURIE_to_URI(val)
 			if retval :
 				return retval
-			elif self.rdfa_version > "1.1" :
+			elif self.rdfa_version >= "1.1" :
 				# See if it is an absolute URI
 				scheme = urlparse.urlsplit(val)[0]
 				if scheme == "" :
@@ -370,6 +370,7 @@ class ExecutionContext :
 						self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 					return URIRef(val)
 			else :
+				print "here????"
 				# rdfa 1.0 case
 				self.options.add_warning("CURIE was used but value does not correspond to a defined CURIE: %s" % val.strip(), UnresolvablePrefix)
 				return None

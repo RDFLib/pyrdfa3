@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.14 2010-07-27 13:19:19 ivan Exp $
-$Date: 2010-07-27 13:19:19 $
+$Id: Curie.py,v 1.15 2010-08-14 06:13:33 ivan Exp $
+$Date: 2010-08-14 06:13:33 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -156,6 +156,13 @@ class ProfileRead :
 				if graph == None :
 					continue
 				
+				# An alternative definition for vocabulary has to be set!
+				
+				
+				
+				# until here...
+				
+				
 				voc_defs = [ uri for uri in graph.objects(None,ns_rdfa["vocabulary"]) ]
 				# if the array is bigger than 1, this means several vocabulary definitions have been added
 				# which is not acceptable...
@@ -235,6 +242,9 @@ class ProfileRead :
 		"""
 		Extract the term/prefix definitions from the graph and fill in the necessary dictionaries. A load
 		of possible warnings are checked and handled.
+		@param graph: the graph to extract the triplets from
+		@param prof: URI of the profile file, to be added to warnings
+		@param term_or_prefix: the string "term" or "prefix"
 		"""
 		opposite_term_or_prefix = ((term_or_prefix == "term") and "prefix") or "term"
 			
@@ -282,6 +292,45 @@ class ProfileRead :
 					self.terms[str(term).lower()] = URIRef(uris[0])
 				else :
 					self.ns[str(term).lower()] = Namespace(quote_URI(uris[0], self.state.options))
+					
+	def _find_terms_alternative(self, graph, prof, term_or_prefix) :
+		"""
+		Extract the term/prefix definitions from the graph and fill in the necessary dictionaries. A load
+		of possible warnings are checked and handled.
+		Extract the term/prefix definitions from the graph and fill in the necessary dictionaries. A load
+		of possible warnings are checked and handled.
+		@param graph: the graph to extract the triplets from
+		@param prof: URI of the profile file, to be added to warnings
+		@param term_or_prefix: the string "term" or "prefix"
+		"""
+		# All the possible term/prefix specifications
+		pairs = [(uri,str) for (uri,str) in graph.subject_objects(ns_rdfa[term_or_prefix])]
+		for e_tuple in pairs :
+			uri, term = e_tuple
+			# Some errors have to be settled here...
+			if not isinstance(term, Literal) :
+				self.state.options.add_warning("Non Literal %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			if ncname.match(term) == None :
+				self.state.options.add_warning("Non NCNAME %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			if not isinstance(uri, URIRef) :
+				self.state.options.add_warning("Incorrect subject; %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			# The most complicated one: has the same term/prefix been defined twice with different values?
+			if len([ y for y in pairs if y[0] == uri and y[1] != str ]) != 0 :
+				self.state.options.add_warning("Assignment for same URI twice; %s '%s'; both ignored" % e_tuple, IncorrectProfileDefinition, prof)
+				continue
+			
+			# if we got here, everything should be fine...
+			if term_or_prefix == "term" :
+				self.terms[str(term).lower()] = uri
+			else :
+				self.ns[str(term).lower()] = Namespace(uri)
+			
+				
+
+##################################################################################################################
 
 class Curie :
 	"""
@@ -479,7 +528,7 @@ class Curie :
 			# there is no ':' character in the string, ie, it is not a valid curie
 			return None
 		else :
-			if self.state.rdfa_version > "1.1" :
+			if self.state.rdfa_version >= "1.1" :
 				prefix	= curie_split[0].lower()
 			else :
 				prefix	= curie_split[0]
@@ -543,7 +592,10 @@ class Curie :
 #########################
 """
 $Log: Curie.py,v $
-Revision 1.14  2010-07-27 13:19:19  ivan
+Revision 1.15  2010-08-14 06:13:33  ivan
+*** empty log message ***
+
+Revision 1.14  2010/07/27 13:19:19  ivan
 Changed the profile term/prefix management to take care of all the errors and ignore entries with errors altogether
 
 """

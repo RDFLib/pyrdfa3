@@ -286,7 +286,7 @@ def quote_URI(uri, options) :
 	for c in _warnChars :
 		if suri.find(c) != -1 :
 			if options != None :
-				options.processor_graph.add_warning('Unusual character in uri:%s; possible error?' % suri)
+				options.add_warning('Unusual character in uri: %s; possible error?' % suri)
 			break
 	return urllib.quote(suri, _unquotedChars)
 

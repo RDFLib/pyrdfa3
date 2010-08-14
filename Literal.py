@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.6 2010-07-23 12:31:38 ivan Exp $
-$Date: 2010-07-23 12:31:38 $
+$Id: Literal.py,v 1.7 2010-08-14 06:13:33 ivan Exp $
+$Date: 2010-08-14 06:13:33 $
 """
 
 import re
@@ -166,7 +166,7 @@ def generate_literal(node, graph, subject, state) :
 			else :
 				object = Literal(_get_literal(node),datatype=datatype,lang=lang)
 		else :
-			if state.rdfa_version > "1.1" :
+			if state.rdfa_version >= "1.1" :
 				val = _get_literal(node)
 				# At this point, there might be entities in the string that are returned as real characters by the dom
 				# implementation. That should be turned back
