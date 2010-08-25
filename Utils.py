@@ -329,18 +329,19 @@ def dump(node) :
 
 	@param node: DOM node
 	"""
-	def _printNode(node) :
-		"""
-		Print the content of the DOM node's attributes (just a crude print, nothing fancy)
-		@param node: DOM node
-		"""
-		debugStr = 'Node: %s, typeof="%s" property="%s" rel="%s" rev="%s" resource="%s" about="%s"' % (node.tagName,node.getAttribute("typeof"),node.getAttribute("property"),node.getAttribute("rel"),node.getAttribute("rev"),node.getAttribute("resource"),node.getAttribute("about"))
-		print debugStr
-		return False
-
-	for i in range(0,node.attributes.length) :
-		attr = node.attributes.item(i)
-		if attr.prefix == "xmlns" :
-			print "... %s:%s='%s'" % (attr.prefix,attr.localName,attr.value)
-
-	traverse_tree(node,_printNode)
+	print node.toprettyxml(indent="", newl="")
+	#def _printNode(node) :
+	#	"""
+	#	Print the content of the DOM node's attributes (just a crude print, nothing fancy)
+	#	@param node: DOM node
+	#	"""
+	#	debugStr = 'Node: %s, typeof="%s" property="%s" rel="%s" rev="%s" resource="%s" about="%s"' % (node.tagName,node.getAttribute("typeof"),node.getAttribute("property"),node.getAttribute("rel"),node.getAttribute("rev"),node.getAttribute("resource"),node.getAttribute("about"))
+	#	print debugStr
+	#	return False
+	#
+	#for i in range(0,node.attributes.length) :
+	#	attr = node.attributes.item(i)
+	#	if attr.prefix == "xmlns" :
+	#		print "... %s:%s='%s'" % (attr.prefix,attr.localName,attr.value)
+	#
+	#traverse_tree(node,_printNode)
