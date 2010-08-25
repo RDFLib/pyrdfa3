@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.20 2010-08-14 06:13:33 ivan Exp $
-$Date: 2010-08-14 06:13:33 $
+$Id: State.py,v 1.21 2010-08-25 11:23:55 ivan Exp $
+$Date: 2010-08-25 11:23:55 $
 """
 
 import rdflib
@@ -363,14 +363,13 @@ class ExecutionContext :
 				scheme = urlparse.urlsplit(val)[0]
 				if scheme == "" :
 					# bug; there should be no relative URIs here
-					self.options.add_warning("Relative URI is not allowed in this position: [%s]" % val, UnresolvablePrefix)
+					self.options.add_warning("Relative URI is not allowed in this position, or not a legal CURIE reference: [%s]" % val, UnresolvablePrefix)
 					return None
 				else :
 					if scheme not in usual_schemes :
 						self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 					return URIRef(val)
 			else :
-				print "here????"
 				# rdfa 1.0 case
 				self.options.add_warning("CURIE was used but value does not correspond to a defined CURIE: %s" % val.strip(), UnresolvablePrefix)
 				return None

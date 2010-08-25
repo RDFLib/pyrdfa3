@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.15 2010-08-14 06:13:33 ivan Exp $
-$Date: 2010-08-14 06:13:33 $
+$Id: Curie.py,v 1.16 2010-08-25 11:23:55 ivan Exp $
+$Date: 2010-08-25 11:23:55 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -533,6 +533,8 @@ class Curie :
 			else :
 				prefix	= curie_split[0]
 			reference = curie_split[1]
+			if len(reference) > 0 and reference[0] == ":" :
+				return None
 			
 			# first possibility: empty prefix
 			if len(prefix) == 0 :
@@ -592,7 +594,10 @@ class Curie :
 #########################
 """
 $Log: Curie.py,v $
-Revision 1.15  2010-08-14 06:13:33  ivan
+Revision 1.16  2010-08-25 11:23:55  ivan
+*** empty log message ***
+
+Revision 1.15  2010/08/14 06:13:33  ivan
 *** empty log message ***
 
 Revision 1.14  2010/07/27 13:19:19  ivan
