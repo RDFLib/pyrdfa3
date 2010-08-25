@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.22 2010-07-26 13:27:52 ivan Exp $ $Date: 2010-07-26 13:27:52 $
+$Id: __init__.py,v 1.23 2010-08-25 11:22:19 ivan Exp $ $Date: 2010-08-25 11:22:19 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -545,8 +545,8 @@ def processURI(uri, outputFormat, form={}) :
 		from pyRdfa.transform.MetaName              	import meta_transform
 		from pyRdfa.transform.OpenID                	import OpenID_transform
 		from pyRdfa.transform.DublinCore            	import DC_transform
-		from pyRdfa.transform.ContainersCollections		import decorate_li_s
-		transformers = [decorate_li_s, OpenID_transform, DC_transform, meta_transform]
+		from pyRdfa.transform.ContainersCollections		import containers_collections
+		transformers = [containers_collections, OpenID_transform, DC_transform, meta_transform]
 	else :
 		if "extra-meta" in form.keys() and form.getfirst("extra-meta").lower() == "true" :
 			from pyRdfa.transform.MetaName import meta_transform
@@ -558,8 +558,8 @@ def processURI(uri, outputFormat, form={}) :
 			from pyRdfa.transform.DublinCore import DC_transform
 			transformers.append(DC_transform)
 		if "extra-li" in form.keys() and form.getfirst("extra-li").lower() == "true" :
-			from pyRdfa.transform.ContainersCollections import decorate_li_s
-			transformers.append(decorate_li_s)
+			from pyRdfa.transform.ContainersCollections import containers_collections
+			transformers.append(containers_collections)
 
 	output_default_graph 	= True
 	output_processor_graph 	= False
@@ -685,7 +685,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.22  2010-07-26 13:27:52  ivan
+Revision 1.23  2010-08-25 11:22:19  ivan
+Adaptation to the new collection/container approach
+
+Revision 1.22  2010/07/26 13:27:52  ivan
 testing the log entry part
 
 """
