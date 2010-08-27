@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-
+Handling of collections and containers as a preprocessor to the full RDFa processing. See the RDFa text for the details.
 
 @summary: Transfomer to handle RDF collections and containers
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -11,8 +11,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: ContainersCollections.py,v 1.3 2010-08-25 11:21:59 ivan Exp $
-$Date: 2010-08-25 11:21:59 $
+$Id: ContainersCollections.py,v 1.4 2010-08-27 13:45:06 ivan Exp $
+$Date: 2010-08-27 13:45:06 $
 """
 
 import uuid
@@ -149,11 +149,18 @@ class CollectionsContainers :
 			if self.is_trigger(n) :
 				return
 			elif n.hasAttribute("property") and n.getAttribute("property") == _trigger_mb :
-				n.setAttribute("property", str(ns_rdf["_%d" % self.li]))
+				# Grrrr... there is a backward incompatibility with RDFLib...
+				# It checks the closed namespaces, which is fine, but
+				# the only way to generate an rdf:_i attribute is to pass
+				# an integer; otherwise it raises an exception.
+				attr = (rdflib.__version__ >= "3.0.0" and str(ns_rdf[self.li])) or str(ns_rdf["_%d" % self.li])
+				n.setAttribute("property", attr)
 				self.li += 1
 				return
 			elif n.hasAttribute("rel") and n.getAttribute("rel") == _trigger_mb :
-				n.setAttribute("rel", str(ns_rdf["_%d" % self.li]))
+				# See comment above...
+				attr = (rdflib.__version__ >= "3.0.0" and str(ns_rdf[self.li])) or str(ns_rdf["_%d" % self.li])
+				n.setAttribute("rel", attr)
 				self.li += 1
 				return
 			for nc in n.childNodes :
