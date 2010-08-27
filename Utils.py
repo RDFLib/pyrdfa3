@@ -302,27 +302,6 @@ def traverse_tree(node, func) :
 		if n.nodeType == node.ELEMENT_NODE :
 			traverse_tree(n, func)
 
-def rdf_prefix(html) :
-	"""Extract the top level prefix used for RDF. Although in most cases it is
-	'rdf', we cannot be sure...
-	@param html: the DOM Node for the HTML element
-	@return: prefix name
-	"""
-	dict = {}
-	for i in range(0,html.attributes.length) :
-		attr = html.attributes.item(i)
-		if attr.prefix == "xmlns" :
-			# yep, there is a namespace setting
-			key = attr.localName
-			if key != "" :
-				# exclude the top level xmlns setting...
-				uri = attr.value
-				if uri == ns_rdf.__str__() :
-					return key
-
-	# if it has not been set, the system will set it for 'rdf'...
-	return 'rdf'
-
 def dump(node) :
 	"""
 	This is just for debug purposes: it prints the essential content of the node in the tree starting at node.
@@ -345,3 +324,8 @@ def dump(node) :
 	#		print "... %s:%s='%s'" % (attr.prefix,attr.localName,attr.value)
 	#
 	#traverse_tree(node,_printNode)
+
+###########
+"""
+$Log:$
+"""
