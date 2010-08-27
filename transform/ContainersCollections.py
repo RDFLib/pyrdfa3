@@ -11,8 +11,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: ContainersCollections.py,v 1.4 2010-08-27 13:45:06 ivan Exp $
-$Date: 2010-08-27 13:45:06 $
+$Id: ContainersCollections.py,v 1.5 2010-08-27 13:45:44 ivan Exp $
+$Date: 2010-08-27 13:45:44 $
 """
 
 import uuid
@@ -226,3 +226,10 @@ def containers_collections(html, option) :
 	handler.look_for_triggers(html)
 	#dump(html)
 	
+############
+"""
+$Log: ContainersCollections.py,v $
+Revision 1.5  2010-08-27 13:45:44  ivan
+Added cvs log placeholder
+
+"""
