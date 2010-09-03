@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Curie.py,v 1.16 2010-08-25 11:23:55 ivan Exp $
-$Date: 2010-08-25 11:23:55 $
+$Id: TermOrCurie.py,v 1.1 2010-09-03 13:04:47 ivan Exp $
+$Date: 2010-09-03 13:04:47 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -156,20 +156,24 @@ class ProfileRead :
 				if graph == None :
 					continue
 				
-				# An alternative definition for vocabulary has to be set!
-				
-				
-				
-				# until here...
-				
-				
-				voc_defs = [ uri for uri in graph.objects(None,ns_rdfa["vocabulary"]) ]
-				# if the array is bigger than 1, this means several vocabulary definitions have been added
-				# which is not acceptable...
-				if len(voc_defs) == 1 :
-					self.vocabulary = voc_defs[0]
-				elif len(voc_defs) > 1 :
-					self.state.options.add_warning("Two or more default vocabulary URIs defined in the profile; ignored", IncorrectProfileDefinition, prof)
+				if True :
+					voc_defs = [ uri for uri in graph.objects(None,ns_rdfa["vocabulary"]) ]				
+					# if the array is bigger than 1, this means several vocabulary definitions have been added
+					# which is not acceptable...
+					if len(voc_defs) == 1 :
+						self.vocabulary = voc_defs[0]
+					elif len(voc_defs) > 1 :
+						self.state.options.add_warning("Two or more default vocabulary URIs defined in the profile; ignored", IncorrectProfileDefinition, prof)
+				else :
+					# just a syntax trick; if the new version of the vocabulary management comes into the picture, then the previous branch should go
+					voc_defs = [ uri for uri in graph.subjects(None,ns_rdfa["vocabulary"]) ]				
+					# if the array is bigger than 1, this means several vocabulary definitions have been added
+					# which is not acceptable...
+					if len(voc_defs) == 1 :
+						self.vocabulary = str(voc_defs[0])
+					elif len(voc_defs) > 1 :
+						self.state.options.add_warning("Two or more default vocabulary URIs defined in the profile; ignored", IncorrectProfileDefinition, prof)
+					
 				self._find_terms(graph, prof, "term")
 				self._find_terms(graph, prof, "prefix")
 				
@@ -318,8 +322,8 @@ class ProfileRead :
 				self.state.options.add_warning("Incorrect subject; %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
 				continue
 			# The most complicated one: has the same term/prefix been defined twice with different values?
-			if len([ y for y in pairs if y[0] == uri and y[1] != str ]) != 0 :
-				self.state.options.add_warning("Assignment for same URI twice; %s '%s'; both ignored" % e_tuple, IncorrectProfileDefinition, prof)
+			if len([ y for y in pairs if y[0] != uri and y[1] == str ]) != 0 :
+				self.state.options.add_warning("Assignment for the same %s '%s' twice: <%s>; both ignored" % (term_or_prefix, term, uri), IncorrectProfileDefinition, prof)
 				continue
 			
 			# if we got here, everything should be fine...
@@ -332,7 +336,7 @@ class ProfileRead :
 
 ##################################################################################################################
 
-class Curie :
+class TermOrCurie :
 	"""
 	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI (typical
 	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
@@ -593,8 +597,11 @@ class Curie :
 		
 #########################
 """
-$Log: Curie.py,v $
-Revision 1.16  2010-08-25 11:23:55  ivan
+$Log: TermOrCurie.py,v $
+Revision 1.1  2010-09-03 13:04:47  ivan
+*** empty log message ***
+
+Revision 1.16  2010/08/25 11:23:55  ivan
 *** empty log message ***
 
 Revision 1.15  2010/08/14 06:13:33  ivan
