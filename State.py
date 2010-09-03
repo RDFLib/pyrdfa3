@@ -5,7 +5,7 @@ Parser's execution context (a.k.a. state) object and handling. The state include
   - language, retrieved from C{@xml:lang}
   - URI base, determined by <base> (or set explicitly). This is a little bit superfluous, because the current RDFa syntax does not make use of C{@xml:base}; ie, this could be a global value.  But the structure is prepared to add C{@xml:base} easily, if needed.
   - options, in the form of an L{Options<pyRdfa.Options>} instance
-  - a separate vocabulary/CURIE handling resource, in the form of an L{Curie<pyRdfa.CURIE>} instance
+  - a separate vocabulary/CURIE handling resource, in the form of an L{TermOrCurie<pyRdfa.TermOrCurie>} instance
 
 The execution context object is also used to handle URI-s, CURIE-s, terms, etc.
 
@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.21 2010-08-25 11:23:55 ivan Exp $
-$Date: 2010-08-25 11:23:55 $
+$Id: State.py,v 1.22 2010-09-03 13:13:36 ivan Exp $
+$Date: 2010-09-03 13:13:36 $
 """
 
 import rdflib
@@ -36,7 +36,7 @@ else :
 
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI, HostLanguage
-from pyRdfa.Curie		import Curie
+from pyRdfa.TermOrCurie	import TermOrCurie
 from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
 
 import re
@@ -64,8 +64,8 @@ class ExecutionContext :
 	@ivar base: the 'base' URI
 	@ivar defaultNS: default namespace
 	@ivar lang: language tag (possibly None)
-	@ivar curie: vocabulary management class instance
-	@type curie: L{Curie.Curie}
+	@ivar term_or_curie: vocabulary management class instance
+	@type term_or_curie: L{TermOrCurie.TermOrCurie}
 	@ivar node: the node to which this state belongs
 	@type node: DOM node instance
 	@ivar rdfa_version: RDFa version of the content
@@ -180,7 +180,7 @@ class ExecutionContext :
 
 		#-----------------------------------------------------------------
 		# generate and store the local CURIE handling class instance
-		self.curie = Curie(self, graph, inherited_state)
+		self.term_or_curie = TermOrCurie(self, graph, inherited_state)
 
 		#-----------------------------------------------------------------
 		# Settling the language tags
@@ -299,10 +299,10 @@ class ExecutionContext :
 		safe_curie = False
 		if val[0] == '[' :
 			# safe curies became almost optional, mainly for backward compatibility reasons
-			# Note however, that if a safe curie is asked for, a pure URI is not acceptable.
+			# Note however, that if a safe CURIE is asked for, a pure URI is not acceptable.
 			# Is checked below, and that is why the safe_curie flag is necessary
 			if val[-1] != ']' :
-				# that is certainly forbidden: an incomplete safe curie
+				# that is certainly forbidden: an incomplete safe CURIE
 				self.options.add_warning("Illegal CURIE: %s" % val, UnresolvablePrefix)
 				return None
 			else :
@@ -311,11 +311,11 @@ class ExecutionContext :
 				
 		# There is a branch here depending on whether we are in 1.1 or 1.0 mode
 		if self.rdfa_version >= "1.1" :
-			retval = self.curie.CURIE_to_URI(val)
+			retval = self.term_or_curie.CURIE_to_URI(val)
 			if retval == None :
 				# the value could not be interpreted as a CURIE, ie, it did not produce any valid URI.
 				# The rule says that then the whole value should be considered as a URI
-				# except if it was part of a safe Curie. In that case it should be ignored...
+				# except if it was part of a safe CURIE. In that case it should be ignored...
 				if safe_curie :
 					self.options.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val, UnresolvablePrefix)
 					return None
@@ -331,7 +331,7 @@ class ExecutionContext :
 		else :
 			# in 1.0 mode a CURIE can be considered only in case of a safe CURIE
 			if safe_curie :
-				return self.curie.CURIE_to_URI(val)
+				return self.term_or_curie.CURIE_to_URI(val)
 			else :
 				return self._URI(val)
 
@@ -345,17 +345,17 @@ class ExecutionContext :
 		# This case excludes the pure base, ie, the empty value
 		if val == "" :
 			return None
-		from Curie import ncname
+		from TermOrCurie import ncname
 		if ncname.match(val) :
 			# This is a term, must be handled as such...
-			retval = self.curie.term_to_URI(val)
+			retval = self.term_or_curie.term_to_URI(val)
 			if not retval :
 				self.options.add_warning("Unresolvable term: %s" % val, UnresolvableTerm)
 			else :
 				return retval
 		else :
 			# try a CURIE
-			retval = self.curie.CURIE_to_URI(val)
+			retval = self.term_or_curie.CURIE_to_URI(val)
 			if retval :
 				return retval
 			elif self.rdfa_version >= "1.1" :
@@ -408,3 +408,11 @@ class ExecutionContext :
 		else :
 			retval = func(self, val.strip())
 		return retval
+
+####################
+"""
+$Log: State.py,v $
+Revision 1.22  2010-09-03 13:13:36  ivan
+Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class
+
+"""

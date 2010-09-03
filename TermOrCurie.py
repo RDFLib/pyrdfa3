@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.1 2010-09-03 13:04:47 ivan Exp $
-$Date: 2010-09-03 13:04:47 $
+$Id: TermOrCurie.py,v 1.2 2010-09-03 13:12:51 ivan Exp $
+$Date: 2010-09-03 13:12:51 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -98,7 +98,7 @@ class ProfileRead :
 	"""
 	Wrapper around the "recursive" access to profile files. The main job of this class is to retrieve
 	term and prefix definitions by accessing an RDF file stored in a URI as given by the
-	values of the @profile attribute values. Each curie class has one instance of this class.
+	values of the @profile attribute values. Each L{TermOrCURIE} class has one instance of this class.
 	
 	(The main reason to put this into a separate class is to localize a caching mechanism, that
 	ensures that the same vocabulary file is read only once.)
@@ -369,7 +369,7 @@ class TermOrCurie :
 			self.default_curie_uri = Namespace(XHTML_URI)
 			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)
 		else :
-			self.default_curie_uri = inherited_state.curie.default_curie_uri
+			self.default_curie_uri = inherited_state.term_or_curie.default_curie_uri
 
 		# --------------------------------------------------------------------------------
 		# Get the recursive definitions, if any
@@ -388,7 +388,7 @@ class TermOrCurie :
 			if inherited_state == None :
 				self.default_term_uri = None
 			else :
-				self.default_term_uri = inherited_state.curie.default_term_uri
+				self.default_term_uri = inherited_state.term_or_curie.default_term_uri
 				
 			# see if the profile has defined a default profile:
 			if recursive_vocab.vocabulary :
@@ -417,12 +417,12 @@ class TermOrCurie :
 		else :
 			if len(recursive_vocab.terms) == 0 :
 				# just refer to the inherited terms
-				self.terms = inherited_state.curie.terms
+				self.terms = inherited_state.term_or_curie.terms
 			else :
 				self.terms = {}
 				# tried to use the 'update' operation for the dictionary and it failed. Why???
-				for key in inherited_state.curie.terms 	: self.terms[key] = inherited_state.curie.terms[key]
-				for key in recursive_vocab.terms 		: self.terms[key] = recursive_vocab.terms[key]
+				for key in inherited_state.term_or_curie.terms 	: self.terms[key] = inherited_state.term_or_curie.terms[key]
+				for key in recursive_vocab.terms 				: self.terms[key] = recursive_vocab.terms[key]
 
 		#-----------------------------------------------------------------
 		# the locally defined namespaces
@@ -503,11 +503,11 @@ class TermOrCurie :
 		# the local dictionary
 		self.ns = {}
 		if len(dict) == 0 and inherited_state :
-			self.ns = inherited_state.curie.ns
+			self.ns = inherited_state.term_or_curie.ns
 		else :
 			if inherited_state :
-				for key in inherited_state.curie.ns	: self.ns[key] = inherited_state.curie.ns[key]
-				for key in dict						: self.ns[key] = dict[key]
+				for key in inherited_state.term_or_curie.ns	: self.ns[key] = inherited_state.term_or_curie.ns[key]
+				for key in dict								: self.ns[key] = dict[key]
 			else :
 				self.ns = dict
 
@@ -529,7 +529,7 @@ class TermOrCurie :
 		# See if this is indeed a valid CURIE, ie, it can be split by a colon
 		curie_split = val.split(':',1)
 		if len(curie_split) == 1 :
-			# there is no ':' character in the string, ie, it is not a valid curie
+			# there is no ':' character in the string, ie, it is not a valid CURIE
 			return None
 		else :
 			if self.state.rdfa_version >= "1.1" :
@@ -598,7 +598,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.1  2010-09-03 13:04:47  ivan
+Revision 1.2  2010-09-03 13:12:51  ivan
+Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class
+
+Revision 1.1  2010/09/03 13:04:47  ivan
 *** empty log message ***
 
 Revision 1.16  2010/08/25 11:23:55  ivan
