@@ -115,7 +115,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.23 2010-08-25 11:22:19 ivan Exp $ $Date: 2010-08-25 11:22:19 $
+$Id: __init__.py,v 1.24 2010-10-26 14:32:10 ivan Exp $ $Date: 2010-10-26 14:32:10 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -504,7 +504,8 @@ def processURI(uri, outputFormat, form={}) :
 	 - C{graph=[default|processor|default,processor|processor,default]} specifying which graphs are returned. Default: default.
 	 - C{space-preserve=[true|false]} means that plain literals are normalized in terms of white spaces. Default: false.
 	 - C{extras=[true|false]} means that extra, built-in transformers are executed on the DOM tree prior to RDFa processing. Default: false. Alternatively, a finer granurality can be used with the following options:
-	  - C{extras-li=[true|false]}: 'ol' and 'ul' elements are possibly transformed to generate collections or containers. See L{transform.ContainersCollections} for further details.
+	  - C{extras-meta=[true|false]}: the @name attribute for metas are converted into @property for further processing
+	  - C{extras-cc=[true|false]}: containers and collections are generated. See L{transform.ContainersCollections} for further details.
 	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header shoudl be used
 
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
@@ -557,6 +558,10 @@ def processURI(uri, outputFormat, form={}) :
 		if "extra-dc" in form.keys() and form.getfirst("extra-dc").lower() == "true" :
 			from pyRdfa.transform.DublinCore import DC_transform
 			transformers.append(DC_transform)
+		if "extra-cc" in form.keys() and form.getfirst("extra-cc").lower() == "true" :
+			from pyRdfa.transform.ContainersCollections import containers_collections
+			transformers.append(containers_collections)
+		# This is here only for backward compatibility
 		if "extra-li" in form.keys() and form.getfirst("extra-li").lower() == "true" :
 			from pyRdfa.transform.ContainersCollections import containers_collections
 			transformers.append(containers_collections)
@@ -685,7 +690,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.23  2010-08-25 11:22:19  ivan
+Revision 1.24  2010-10-26 14:32:10  ivan
+*** empty log message ***
+
+Revision 1.23  2010/08/25 11:22:19  ivan
 Adaptation to the new collection/container approach
 
 Revision 1.22  2010/07/26 13:27:52  ivan

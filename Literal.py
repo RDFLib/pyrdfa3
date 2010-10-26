@@ -12,20 +12,22 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.7 2010-08-14 06:13:33 ivan Exp $
-$Date: 2010-08-14 06:13:33 $
+$Id: Literal.py,v 1.8 2010-10-26 14:32:10 ivan Exp $
+$Date: 2010-10-26 14:32:10 $
 """
 
 import re
 
 import rdflib
-from rdflib	import Literal
-from rdflib	import Namespace
+from rdflib	import Literal, URIRef, Namespace
 if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import RDF as ns_rdf
 else :
 	from rdflib.RDF	import RDFNS as ns_rdf
 XMLLiteral = ns_rdf["XMLLiteral"]
+
+#from pyRdfa.uri import url_regexp, registered_schemes
+#uriexpression = re.compile(url_regexp)
 
 def __putBackEntities(str) :
 	"""Put 'back' entities for the '&','<', and '>' characters, to produce kosher XML string.
@@ -91,7 +93,7 @@ def generate_literal(node, graph, subject, state) :
 			def addPf(prefx, string) :
 				pf = string.split(':')[0]
 				if pf != string and pf not in prefx : prefx.append(pf)
-			# edn addPf
+			# end addPf
 				
 			# first the local name of the node
 			addPf(prefixes, node.tagName)
@@ -128,9 +130,6 @@ def generate_literal(node, graph, subject, state) :
 		# If XML Literals must be canonicalized for space, then this is the return line:
 		#return re.sub(r'(\r| |\n|\t)+'," ",rc).strip()
 	# end getXMLLiteral
-
-	# Most of the times the literal is a 'normal' one, ie, not an XML Literal
-	retval = True
 	
 	# Get the Property URI-s
 	props = state.getURI("property")
@@ -152,32 +151,41 @@ def generate_literal(node, graph, subject, state) :
 	# The simple case: separate @content attribute
 	if node.hasAttribute("content") :
 		val = node.getAttribute("content")
-		object = Literal(node.getAttribute("content"), datatype=datatype, lang=lang)
+		# Handling the automatic uri conversion case
+		if dtset == False :
+			if _is_URI(val) :
+				object = URIRef(val)
+			else :
+				object = Literal(val, lang=lang)
+		else :
+			if datatype == None or datatype == '' :
+				object = Literal(val, lang=lang)
+			else :
+				object = Literal(val, datatype=datatype)
 		# The value of datatype has been set, and the keyword paramaters take care of the rest
 	else :
 		# see if there *is* a datatype (even if it is empty!)
 		if dtset :
 			# yep. The Literal content is the pure text part of the current element:
-			# We have to check whether the specified datatype is, in fact, and
+			# We have to check whether the specified datatype is, in fact, an
 			# explicit XML Literal
 			if datatype == XMLLiteral :
 				object = Literal(_get_XML_literal(node),datatype=XMLLiteral)
 				retval = False
+			elif datatype == None or datatype == '' :
+				object = Literal(_get_literal(node), lang=lang)
 			else :
-				object = Literal(_get_literal(node),datatype=datatype,lang=lang)
+				object = Literal(_get_literal(node), datatype=datatype)
 		else :
 			if state.rdfa_version >= "1.1" :
 				val = _get_literal(node)
-				# At this point, there might be entities in the string that are returned as real characters by the dom
-				# implementation. That should be turned back
-				object = Literal(_get_literal(node),lang=lang)
+				object = Literal(val, lang=lang)
 			else :				
 				# no controlling @datatype. We have to see if there is markup in the contained
 				# element
 				if True in [ n.nodeType == node.ELEMENT_NODE for n in node.childNodes ] :
 					# yep, and XML Literal should be generated
 					object = Literal(_get_XML_literal(node),datatype=XMLLiteral)
-					retval = False
 				else :
 					val = _get_literal(node)
 					# At this point, there might be entities in the string that are returned as real characters by the dom
@@ -189,5 +197,5 @@ def generate_literal(node, graph, subject, state) :
 		for prop in props :
 			graph.add((subject,prop,object))
 
-	return retval
+	# return
 

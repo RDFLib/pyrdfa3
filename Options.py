@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.8 2010-07-23 12:31:38 ivan Exp $ $Date: 2010-07-23 12:31:38 $
+$Id: Options.py,v 1.9 2010-10-26 14:32:10 ivan Exp $ $Date: 2010-10-26 14:32:10 $
 """
 
 import sys, datetime
@@ -71,10 +71,6 @@ class ProcessorGraph :
 		@return: the bnode that serves as a subject for the errors. The caller may add additional information
 		@rtype: BNode
 		"""
-		#print "yyyy"
-		#print "top class: %s" % top_class
-		#print "info class: %s" % info_class
-		#print "----"
 		bnode = BNode()
 		
 		self.graph.add((bnode, ns_rdf["type"], top_class))
@@ -95,7 +91,6 @@ class ProcessorGraph :
 		self.graph.add((subj, ns_distill["context"], bnode))
 		self.graph.add((bnode, ns_rdf["type"], ns_ht["Response"]))
 		self.graph.add((bnode, ns_ht["sc"], URIRef("http://www.w3.org/2008/http-statusCodes/statusCode%s" % http_code)))
-		
 
 
 class Options :

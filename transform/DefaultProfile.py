@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: DefaultProfile.py,v 1.1 2010-07-23 12:31:18 ivan Exp $
-$Date: 2010-07-23 12:31:18 $
+$Id: DefaultProfile.py,v 1.2 2010-10-26 14:32:33 ivan Exp $
+$Date: 2010-10-26 14:32:33 $
 """
 
 def add_default_profile(top, options) :
@@ -33,16 +33,3 @@ def add_default_profile(top, options) :
 			# maybe it is already there, so avoid adding it twice:
 			if not (len(dprofs.split()) == 1 and dprofs == prof) :
 				top.setAttribute("profile",prof + " " + dprofs)
-		
-		
-		#
-		#
-		#for top in html.getElementsByTagName("html") :
-		#	if not top.hasAttribute("profile") :
-		#		top.setAttribute("profile",prof)
-		#	else :
-		#		dprofs = top.getAttribute("profile").strip()
-		#		# maybe it is already there, so avoid adding it twice:
-		#		if not (len(dprofs.split()) == 1 and dprofs == prof) :
-		#			top.setAttribute("profile",prof + " " + dprofs)
-		#

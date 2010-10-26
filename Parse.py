@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.9 2010-07-23 12:31:38 ivan Exp $
-$Date: 2010-07-23 12:31:38 $
+$Id: Parse.py,v 1.10 2010-10-26 14:32:10 ivan Exp $
+$Date: 2010-10-26 14:32:10 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -120,7 +120,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		elif node.hasAttribute("typeof") :
 			current_subject = BNode()
 			
-		# get_URI may return None in case of an illegal Curie, so
+		# get_URI may return None in case of an illegal CURIE, so
 		# we have to be careful here, not use only an 'else'
 		if current_subject == None :
 			current_subject = parent_object
@@ -144,7 +144,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		elif node.hasAttribute("typeof") :
 			current_subject = BNode()
 
-		# get_URI_ref may return None in case of an illegal Curie, so
+		# get_URI_ref may return None in case of an illegal CURIE, so
 		# we have to be careful here, not use only an 'else'
 		if current_subject == None :
 			current_subject = parent_object
@@ -179,14 +179,11 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	# ----------------------------------------------------------------------
 	# Generation of the literal values. The newSubject is the subject
 	# A particularity of property is that it stops the parsing down the DOM tree if an XML Literal is generated,
-	# because everything down there is part of the generated literal. For this purpose the recurse flag is set (and used later
-	# in the parsing process).
+	# because everything down there is part of the generated literal. 
 	if node.hasAttribute("property") :
 		# Generate the literal. It has been put it into a separate module to make it more managable
 		# the overall return value should be set to true if any valid triple has been generated
-		recurse = generate_literal(node, graph, current_subject,state)
-	else :
-		recurse = True
+		generate_literal(node, graph, current_subject,state)
 
 	# ----------------------------------------------------------------------
 	# Setting the current object to a bnode is setting up a possible resource
@@ -198,10 +195,9 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 
 	#-----------------------------------------------------------------------
 	# Here is the recursion step for all the children
-	if recurse :
-		for n in node.childNodes :
-			if n.nodeType == node.ELEMENT_NODE : 
-				parse_one_node(n, graph, object_to_children, state, incomplete_triples)
+	for n in node.childNodes :
+		if n.nodeType == node.ELEMENT_NODE : 
+			parse_one_node(n, graph, object_to_children, state, incomplete_triples)
 
 	# ---------------------------------------------------------------------
 	# At this point, the parent's incomplete triples may be completed

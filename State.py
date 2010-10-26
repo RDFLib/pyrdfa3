@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.22 2010-09-03 13:13:36 ivan Exp $
-$Date: 2010-09-03 13:13:36 $
+$Id: State.py,v 1.23 2010-10-26 14:32:10 ivan Exp $
+$Date: 2010-10-26 14:32:10 $
 """
 
 import rdflib
@@ -46,11 +46,11 @@ import urllib
 
 RDFa_1_0_VERSION    = "XHTML+RDFa 1.0"
 
-
 #: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
-usual_schemes = ["doi", "file", "ftp", "gopher", "hdl", "http", "https", "imap", "isbn", "ldap", "lsid",
-				 "mailto", "mms", "mstp", "news", "nntp", "prospero", "rsync", "rtmp", "rtsp", "rtspu", "sftp",
-				 "shttp", "sip", "sips", "snews", "stp", "svn", "svn+ssh", "telnet", "tel", "urn", "wais"
+usual_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "geo", "gopher", "hdl", "http", "https", "imap",
+				 "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
+				 "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
+				 "stp", "svn", "svn+ssh", "telnet", "tel", "tv", "urn", "wais"
 				]
 
 #### Core Class definition
@@ -412,7 +412,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.22  2010-09-03 13:13:36  ivan
+Revision 1.23  2010-10-26 14:32:10  ivan
+*** empty log message ***
+
+Revision 1.22  2010/09/03 13:13:36  ivan
 Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class
 
 """

@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.2 2010-09-03 13:12:51 ivan Exp $
-$Date: 2010-09-03 13:12:51 $
+$Id: TermOrCurie.py,v 1.3 2010-10-26 14:32:10 ivan Exp $
+$Date: 2010-10-26 14:32:10 $
 
 Changes:
 	- the order in the @profile attribute should be right to left (meaning that the URI List has to be reversed first)
@@ -293,7 +293,7 @@ class ProfileRead :
 			else :
 				# got it...
 				if term_or_prefix == "term" :
-					self.terms[str(term).lower()] = URIRef(uris[0])
+					self.terms[str(term)] = URIRef(uris[0])
 				else :
 					self.ns[str(term).lower()] = Namespace(quote_URI(uris[0], self.state.options))
 					
@@ -583,12 +583,21 @@ class TermOrCurie :
 
 		if ncname.match(term) :
 			# It is a valid NCNAME
+			# the algorithm is: first make a case sensitive match; if that fails than make a case insensive one
+			# The first is easy, the second one is a little bit more convoluted
+			
+			# 1. simple, case sensitive test:
+			if term in self.terms :
+				# yep, term is a valid key as is
+				return self.terms[term]
+				
+			# 2. the case insensitive test
 			for defined_term in self.terms :
 				uri = self.terms[defined_term]
-				if term.lower() == defined_term :
+				if term.lower() == defined_term.lower() :
 					return uri
 	
-			# check the default term uri, if any
+			# 3. check the default term uri, if any
 			if self.default_term_uri != None :
 				return URIRef(self.default_term_uri + term)
 
@@ -598,7 +607,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.2  2010-09-03 13:12:51  ivan
+Revision 1.3  2010-10-26 14:32:10  ivan
+*** empty log message ***
+
+Revision 1.2  2010/09/03 13:12:51  ivan
 Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class
 
 Revision 1.1  2010/09/03 13:04:47  ivan
