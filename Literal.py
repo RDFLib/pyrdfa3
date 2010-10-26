@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.8 2010-10-26 14:32:10 ivan Exp $
-$Date: 2010-10-26 14:32:10 $
+$Id: Literal.py,v 1.9 2010-10-26 14:48:40 ivan Exp $
+$Date: 2010-10-26 14:48:40 $
 """
 
 import re
@@ -153,10 +153,7 @@ def generate_literal(node, graph, subject, state) :
 		val = node.getAttribute("content")
 		# Handling the automatic uri conversion case
 		if dtset == False :
-			if _is_URI(val) :
-				object = URIRef(val)
-			else :
-				object = Literal(val, lang=lang)
+			object = Literal(val, lang=lang)
 		else :
 			if datatype == None or datatype == '' :
 				object = Literal(val, lang=lang)
