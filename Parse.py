@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.10 2010-10-26 14:32:10 ivan Exp $
-$Date: 2010-10-26 14:32:10 $
+$Id: Parse.py,v 1.11 2010-10-29 16:30:22 ivan Exp $
+$Date: 2010-10-29 16:30:22 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -183,7 +183,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	if node.hasAttribute("property") :
 		# Generate the literal. It has been put it into a separate module to make it more managable
 		# the overall return value should be set to true if any valid triple has been generated
-		generate_literal(node, graph, current_subject,state)
+		generate_literal(node, graph, current_subject, state)
 
 	# ----------------------------------------------------------------------
 	# Setting the current object to a bnode is setting up a possible resource

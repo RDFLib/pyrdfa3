@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: MyGraph.py,v 1.1 2010-10-29 15:39:13 ivan Exp $ $Date: 2010-10-29 15:39:13 $
+$Id: MyGraph.py,v 1.2 2010-10-29 16:30:22 ivan Exp $ $Date: 2010-10-29 16:30:22 $
 
 """
 
@@ -29,10 +29,22 @@ import rdflib
 if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import Graph
 else :
-	from rdflib.Graph	import Graph
+	from rdflib.Graph import Graph
+from rdflib	import Namespace
 
 _xml_serializer_name	= "my-rdfxml"
 _turtle_serializer_name	= "my-turtle"
+
+#: Default bindings. This is just for the beauty of things: bindings are added to the graph to make the output nicer. If this is not done, RDFlib defines prefixes like "_1:", "_2:" which is, though correct, ugly...
+_bindings = [	
+	("foaf", "http://xmlns.com/foaf/0.1/"),
+	("xsd",  "http://www.w3.org/2001/XMLSchema#"),
+	("rdf",  "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+	("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
+	("skos", "http://www.w3.org/2004/02/skos/core#"),
+	("cc",   "http://creativecommons.org/ns#")
+]
+
 	
 #########################################################################################################
 class MyGraph(Graph) :
@@ -48,7 +60,9 @@ class MyGraph(Graph) :
 	turtle_serializer_registered	= False
 	
 	def __init__(self) :
-		Graph.__init__()
+		Graph.__init__(self)
+		for (prefix,uri) in _bindings :
+			self.bind(prefix,Namespace(uri))
 				
 	def _register_XML_serializer(self) :
 		"""The default XML Serializer of RDFLib 2.X is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer>} is
@@ -75,25 +89,28 @@ class MyGraph(Graph) :
 		if rdflib.__version__ >= "3.0.0" :
 			# this is the easy case
 			if format == "xml" or format == "pretty-xml" :
-				Graph.serialize(self, format="pretty-xml")
+				return Graph.serialize(self, format="pretty-xml")
 			elif format == "nt" :
-				Graph.serialize(self, format="nt")
+				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :
-				Graph.serialize(self, format="n3")
+				return Graph.serialize(self, format="n3")
 		else :
 			if format == "xml" or format == "pretty-xml" :
 				self._register_XML_serializer()
-				Graph.serialize(self, format=_xml_serializer_name)
+				return Graph.serialize(self, format=_xml_serializer_name)
 			elif format == "nt" :
-				Graph.serialize(self, format="nt")
+				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :
 				self._register_Turtle_serializer()
-				Graph.serialize(self, format=_turtle_serializer_name)
+				return Graph.serialize(self, format=_turtle_serializer_name)
 
 """
 $Log: MyGraph.py,v $
-Revision 1.1  2010-10-29 15:39:13  ivan
+Revision 1.2  2010-10-29 16:30:22  ivan
 *** empty log message ***
+
+Revision 1.1  2010/10/29 15:39:13  ivan
+Initial version
 
 
 """

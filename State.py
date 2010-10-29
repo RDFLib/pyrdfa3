@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.23 2010-10-26 14:32:10 ivan Exp $
-$Date: 2010-10-26 14:32:10 $
+$Id: State.py,v 1.24 2010-10-29 16:30:22 ivan Exp $
+$Date: 2010-10-29 16:30:22 $
 """
 
 import rdflib
@@ -44,8 +44,6 @@ import random
 import urlparse
 import urllib
 
-RDFa_1_0_VERSION    = "XHTML+RDFa 1.0"
-
 #: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
 usual_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "geo", "gopher", "hdl", "http", "https", "imap",
 				 "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
@@ -62,7 +60,8 @@ class ExecutionContext :
 	@ivar options: reference to the overall options
 	@type options: L{Options.Options}
 	@ivar base: the 'base' URI
-	@ivar defaultNS: default namespace
+	@ivar parsedBase: the parsed version of base, as produced by urlparse.urlsplit
+	@ivar defaultNS: default namespace (if defined via @xmlns) to be used for XML Literals
 	@ivar lang: language tag (possibly None)
 	@ivar term_or_curie: vocabulary management class instance
 	@type term_or_curie: L{TermOrCurie.TermOrCurie}
@@ -77,7 +76,7 @@ class ExecutionContext :
 	#: mapping table from attribute name to the exact method to retrieve the URI(s).
 	_resource_type = {}
 	
-	def __init__(self, node, graph, inherited_state=None, base="", options=None) :
+	def __init__(self, node, graph, inherited_state=None, base="", options=None, rdfa_version = None) :
 		"""
 		@param node: the current DOM Node
 		@param graph: the RDFLib Graph
@@ -92,7 +91,7 @@ class ExecutionContext :
 		@keyword options: invocation options, and references to warning graphs
 		@type options: L{Options<pyRdfa.Options>}
 		"""
-		# This additional class initialization that must be done run time, otherwise import errors show up
+		# This is, conceptually, an additional class initialization, but it must be done run time, otherwise import errors show up
 		if len(	ExecutionContext._resource_type ) == 0 :	
 			ExecutionContext._resource_type = {
 				"href"		:	ExecutionContext._URI,
@@ -113,9 +112,8 @@ class ExecutionContext :
 		self.node = node
 		
 		#-----------------------------------------------------------------
-		# Settling the base
-		# It is done because it is prepared for a possible future change in direction of
-		# accepting xml:base on each element.
+		# Settling the base. In a generic XML, xml:base should be accepted at all levels (though this is not the
+		# case in, say, XHTML...)
 		# At the moment, it is invoked with a 'None' at the top level of parsing, that is
 		# when the <base> element is looked for (for the HTML cases, that is)
 		if inherited_state :
@@ -129,28 +127,13 @@ class ExecutionContext :
 			# this is the branch called from the very top
 			
 			# get the version
-			# Check if the 1.0 version is set explicitly
-			html = node.ownerDocument.documentElement
-			
-			
-			if html.hasAttribute("version") and RDFa_1_0_VERSION == html.getAttribute("version"):
-				# The version has been set to be explicitly 1.0
-				
-				# It is still not 100% sure whether the version information is to control what happens here.
-				# the commented code takes into account the rdfa 1.0 version attribute to possibly control
-				# the version (switching off some rdfa1.1. specific features); the current just sets
-				# the version to the version set in the parser as a global variable
-				
-				# @@@ This line should be restored if version must be taken into account
-				# self.rdfa_version = "1.0"
-				
-				# @@@ The following 2 lines should be removed if the version must be taken into account
-				from pyRdfa import rdfa_current_version
-				self.rdfa_version = rdfa_current_version
+			# If the version has been set explicitly, that wins!
+			if rdfa_version is not None :
+				self.rdfa_version = rdfa_version
 			else :
 				from pyRdfa import rdfa_current_version
 				self.rdfa_version = rdfa_current_version
-
+			
 			# this is just to play safe. I believe this should actually not happen...
 			if options == None :
 				from pyRdfa import Options
@@ -231,12 +214,10 @@ class ExecutionContext :
 			self.defaultNS = inherited_state.defaultNS
 		else :
 			self.defaultNS = None
-
-	#------------------------------------------------------------------------------------------------------------
-
+	# end __init__
 
 	def _URI(self, val) :
-		"""Returns a URI for a 'pure' URI (ie, no CURIE). The method resolves possible relative URI-s. It also
+		"""Returns a URI for a 'pure' URI (ie, not a CURIE). The method resolves possible relative URI-s. It also
 		checks whether the URI uses an unusual URI scheme (and issues a warning); this may be the result of an
 		uninterpreted CURIE...
 		@param val: attribute value to be interpreted
@@ -285,10 +266,11 @@ class ExecutionContext :
 					return check_create_URIRef(joined)
 			except :
 				return check_create_URIRef(joined)
+	# end _URI
 
 	def _CURIEorURI(self, val) :
 		"""Returns a URI for a (safe or not safe) CURIE. In case it is a safe CURIE but the CURIE itself
-		is not defined, an error message is issued. 
+		is not defined, an error message is issued. Otherwise, if it is not a CURIE, it is taken to be a URI
 		@param val: attribute value to be interpreted
 		@type val: string
 		@return: an RDFLib URIRef instance or None
@@ -298,12 +280,11 @@ class ExecutionContext :
 
 		safe_curie = False
 		if val[0] == '[' :
-			# safe curies became almost optional, mainly for backward compatibility reasons
-			# Note however, that if a safe CURIE is asked for, a pure URI is not acceptable.
+			# If a safe CURIE is asked for, a pure URI is not acceptable.
 			# Is checked below, and that is why the safe_curie flag is necessary
 			if val[-1] != ']' :
 				# that is certainly forbidden: an incomplete safe CURIE
-				self.options.add_warning("Illegal CURIE: %s" % val, UnresolvablePrefix)
+				self.options.add_warning("Illegal safe CURIE: %s" % val, UnresolvablePrefix)
 				return None
 			else :
 				val = val[1:-1]
@@ -334,6 +315,7 @@ class ExecutionContext :
 				return self.term_or_curie.CURIE_to_URI(val)
 			else :
 				return self._URI(val)
+	# end _CURIEorURI
 
 	def _TERMorCURIEorAbsURI(self, val) :
 		"""Returns a URI either for a term or for a CURIE. The value must be an NCNAME to be handled as a term; otherwise
@@ -345,12 +327,14 @@ class ExecutionContext :
 		# This case excludes the pure base, ie, the empty value
 		if val == "" :
 			return None
+		
 		from TermOrCurie import ncname
 		if ncname.match(val) :
 			# This is a term, must be handled as such...
 			retval = self.term_or_curie.term_to_URI(val)
 			if not retval :
 				self.options.add_warning("Unresolvable term: %s" % val, UnresolvableTerm)
+				return None
 			else :
 				return retval
 		else :
@@ -373,6 +357,7 @@ class ExecutionContext :
 				# rdfa 1.0 case
 				self.options.add_warning("CURIE was used but value does not correspond to a defined CURIE: %s" % val.strip(), UnresolvablePrefix)
 				return None
+	# end _TERMorCURIEorAbsURI
 
 	# -----------------------------------------------------------------------------------------------
 
@@ -386,7 +371,6 @@ class ExecutionContext :
 		"""
 		if self.node.hasAttribute(attr) :
 			val = self.node.getAttribute(attr)
-			val.strip()
 		else :
 			if attr in ExecutionContext._list :
 				return []
@@ -403,16 +387,20 @@ class ExecutionContext :
 		
 		if attr in ExecutionContext._list :
 			# Allows for a list
-			resources = [ func(self, v.strip()) for v in val.split() if v != None ]
+			resources = [ func(self, v.strip()) for v in val.strip().split() if v != None ]
 			retval = [ r for r in resources if r != None ]
 		else :
 			retval = func(self, val.strip())
 		return retval
+	# end getURI
 
 ####################
 """
 $Log: State.py,v $
-Revision 1.23  2010-10-26 14:32:10  ivan
+Revision 1.24  2010-10-29 16:30:22  ivan
+*** empty log message ***
+
+Revision 1.23  2010/10/26 14:32:10  ivan
 *** empty log message ***
 
 Revision 1.22  2010/09/03 13:13:36  ivan

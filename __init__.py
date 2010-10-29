@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-RDFa parser, also referred to as a "RDFa Distiller". It is
+RDFa 1.1 parser, also referred to as a “RDFa Distiller”. It is
 deployed, via a CGI front-end, on the U{W3C RDFa Distiller page<http://www.w3.org/2007/08/pyRdfa/>}.
 
-For details on RDFa, the reader should consult the U{RDFa syntax document<http://www.w3.org/TR/rdfa-syntax>}. This package
-can be downloaded U{as a compressed tar file<http://dev.w3.org/2004/PythonLib-IH/dist/pyRdfa.tar.gz>}. The
+For details on RDFa, the reader should consult the U{RDFa Core 1.1<http://www.w3.org/TR/rdfa-core/>}
+and the U{XHTML+RDFa1.1<http://www.w3.org/TR/2010/xhtml-rdfa>} documents.
+
+This package can also be downloaded U{as a compressed tar file<http://dev.w3.org/2004/PythonLib-IH/dist/pyRdfa.tar.gz>}. The
 distribution also includes the CGI front-end and a separate utility script to be run locally.
 
 
@@ -23,10 +25,10 @@ It is also possible to embed an RDFa processing. Eg, using:
  from pyRdfa import pyRdfa
  print pyRdfa().graph_from_source('filename')
 
-This will return an RDFLib.Graph object instead of a serialization thereof. See the the description of the
-L{pyRdfa class<pyRdfa.pyRdfa>} for further details.
+will return an RDFLib.Graph object instead of a serialization thereof. See the the description of the
+L{pyRdfa class<pyRdfa.pyRdfa>} for further possible entry points details.
 
-There is a L{separate entry for CGI calls<processURI>}.
+There is also, as part of this module, a L{separate entry for CGI calls<processURI>}.
 
 Return formats
 --------------
@@ -40,28 +42,30 @@ By default, the output format for the graph is RDF/XML. At present, the followin
 Options
 =======
 
-The package also implements some optional features that are not fully part of the RDFa syntax. At the moment these are:
+The package also implements some optional features that are not part of the RDFa recommendations. At the moment these are:
 
- - extra warnings and information (eg, possibly erronous CURIE-s) are added to the output graph
- - possibility that plain literals are normalized in terms of white spaces. Default: false. (The RDFa specification requires keeping the white spaces and leave applications to normalize them, if needed)
+ - extra warnings and information (eg, possibly erronous CURIE-s) are created as a “processor graph”. There user options to determine whether this graph should be added to the output or not, or even whether that should be the only option.
+ - possibility for plain literals to be normalized in terms of white spaces. Default: false. (The RDFa specification requires keeping the white spaces and leave applications to normalize them, if needed)
  - extra, built-in transformers are executed on the DOM tree prior to RDFa processing (see below)
 
 Options are collected in an instance of the L{Options} class and passed to the processing functions as an extra argument. Eg,
 if extra warnings are required, the code may be::
  from pyRdfa import processFile, Options
- options = Options(warnings=True)
+ options = Options(output_processor_graph=True)
  print pyRdfa(options=options).rdf_from_source('filename')
+ 
+See the description of the L{Options<Options.Options>} class for the details.
 
 Transformers
 ============
 
 The package uses the concept of 'transformers': the parsed DOM tree is possibly
-transformed before performing the real RDFa processing. This transformer structure makes it possible to
-add additional 'services' without distoring the core code of RDFa processing. (Ben Adida referred to these as "hGRDDL"...)
+transformed I{before} performing the real RDFa processing. This transformer structure makes it possible to
+add additional 'services' without distoring the core code of RDFa processing.
 
 Some transformations are included in the package and can be used at invocation. These are:
 
- - 'ol' and 'ul' elements are possibly transformed to generate collections or containers. See L{transform.ContainersCollections} for further details.
+ - Special syntax to generate collections or containers. See the description of L{transform.ContainersCollections} for further details.
  - The 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
  - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
  - Implementing the Dublin Core dialect to include DC statements from the header.  See L{transform.DublinCore} for further details.
@@ -73,9 +77,9 @@ added to the call::
  options = Options(transformers=[OpenID_transform])
  print pyRdfa(options=options).rdf_from_source('filename')
 
-In the case of a call via a CGI script, these built-in transformers can be used via extra flags, see L{processURI} for further details.
+In the case of a call via a CGI script, some of these built-in transformers can be used via extra flags, see L{processURI} for further details.
 
-Note that the current option instance is passed to all transformers as extra parameters. Extensions of the package
+The current option instance is passed to all transformers as extra parameters. Extensions of the package
 may make use of that to control the transformers, if necessary.
 
 Host Languages
@@ -95,7 +99,7 @@ behaviour of pyRdfa:
  - In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; otherwise the simple XML parser, part of the core Python environment, is used.
  - In the case of generic XML the distiller also considers a more "traditional" way of adding RDF metadata to a file, namely by directly including RDF/XML into the XML file with a proper namespace. The distiller extracts that RDF graph and merges it with the output of the regular RDFa processing.
 
-The content type can be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}. However, the distiller attempts
+The content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}. However, the distiller also attempts
 to find the content type by
 
  - looking at the content type header as returned by an HTTP call; if unsuccessful or the invocation is done locally then
@@ -115,7 +119,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.24 2010-10-26 14:32:10 ivan Exp $ $Date: 2010-10-26 14:32:10 $
+$Id: __init__.py,v 1.25 2010-10-29 16:30:22 ivan Exp $ $Date: 2010-10-29 16:30:22 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -143,19 +147,22 @@ from rdflib	import Literal
 from rdflib	import BNode
 from rdflib	import Namespace
 if rdflib.__version__ >= "3.0.0" :
-	from rdflib	import Graph
 	from rdflib	import RDF  as ns_rdf
 	from rdflib	import RDFS as ns_rdfs
 else :
-	from rdflib.Graph	import Graph
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
+
+from pyRdfa.MyGraph import MyGraph as Graph
 
 import xml.dom.minidom
 import urlparse
 
+#: Namespace, in the RDFLib sense, for the rdfa vocabulary
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
+#: Namespace, in the RDFLib sense, for the XSD Datatypes
 ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
+#: Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
 debug = True
@@ -229,10 +236,10 @@ from pyRdfa.transform.HeadAbout			import head_about_transform
 from pyRdfa.transform.DefaultProfile	import add_default_profile
 from pyRdfa.Utils						import URIOpener, MediaTypes, HostLanguage
 
-#: Variable used to characterize cache directories for RDFa profiles
-CACHED_PROFILES_ID = 'cached_profiles'
+#: Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<Utils.CachedURIOpener>} for details
+CACHED_PROFILES_ID = 'cached_profiles' 
 
-#: current "official" version of RDFa that this package implements
+#: current "official" version of RDFa that this package implements. This can be changed at the invocation of the package
 rdfa_current_version	= "1.1"
 
 #: List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
@@ -243,16 +250,27 @@ builtInTransformers = [
 	
 #########################################################################################################
 class pyRdfa :
-	"""Main processing class for the distiller"""
+	"""Main processing class for the distiller
 	
-	def __init__(self, options = None, base = "", media_type = "") :
+	@ivar options: an instance of the L{Options} class
+	@ivar media_type: the preferred default media type, possibly set at initialization
+	@ivar base: the base value, possibly set at initialization
+	@ivar xml_serializer_registered: the package uses its own RDF/XML serializer instead of the one of RDFLib 2.X, that was buggy. This must be registered once to RDFLib 2.X; note used for RDFLib 3.X.
+	@type xml_serializer_registered: boolean
+	@ivar turtle_serializer_registered: the package uses its own Turtle serializer instead of the one of RDFLib 2.X, that was buggy. This must be registered once to RDFLib 2.X; note used for RDFLib 3.X.
+	@type turtle_serializer_registered: boolean
+	@ivar xml_serializer_name: the name to use to refer to the built-in RDF/XML serializer
+	@ivar turtle_serializer_name: the name to use to refer to the built-in Turtle serializer
+	"""
+	def __init__(self, options = None, base = "", media_type = "", rdfa_version = None) :
 		"""
 		@keyword options: Options for the distiller
 		@type options: L{Options}
 		@keyword base: URI for the default "base" value (usually the URI of the file to be processed)
-		@keyword media_type: explicit setting of media type (a.k.a. media type) of the the RDFa source
+		@keyword media_type: explicit setting of the preferred media type (a.k.a. content type) of the the RDFa source
+		@keyword rdfa_version: the RDFa version that should be used. If not set, the value of the global L{rdfa_current_version} variable is used
 		"""
-		self.base    	  = base
+		self.base = base
 
 		# predefined content type
 		self.media_type = media_type
@@ -261,18 +279,25 @@ class pyRdfa :
 			self.options = Options()
 		else :
 			self.options = options
+
+		if media_type != "" :
 			self.options.set_host_language(self.media_type)
-		
-		self.xml_serializer_registered		= False
-		self.turtle_serializer_registered	= False
-		self.xml_serializer_name			= "my-rdfxml"
-		self.turtle_serializer_name			= "my-turtle"
+			
+		if rdfa_version is not None :
+			self.rdfa_version = rdfa_version
+		else :
+			self.rdfa_version = rdfa_current_version
 		
 	def _get_input(self, name) :
 		"""
-		Trying to guess whether "name" is a URI, a string; it then tries to open these as such accordingly,
-		returning a file-like object. If name is a plain string then it returns the input argument (that should
+		Trying to guess whether "name" is a URI or a string (for a file); it then tries to open this source accordingly,
+		returning a file-like object. If name none of these, it returns the input argument (that should
 		be, supposidly, a file-like object already)
+		
+		If the media type has not been set explicitly at initialization of this instance,
+		the method also sets the media_type based on the HTTP GET response or the suffix of the file. See
+		L{Utils.preferred_suffixes} for the suffix to media type mapping. 
+		
 		@param name: identifier of the input source
 		@type name: string or a file-like object
 		@return: a file like object if opening "name" is possible and successful, "name" otherwise
@@ -307,50 +332,14 @@ class pyRdfa :
 		except :
 			(type, value, traceback) = sys.exc_info()
 			raise FailedSource(value)
-		
-	def _register_XML_serializer(self) :
-		"""The default XML Serializer of RDFLib 2.X is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer>} is
-		registered in RDFlib and used in the rest of the package. This is not used for RDFLib 3.X.
-		"""
-		if not self.xml_serializer_registered :
-			from rdflib.plugin import register
-			from rdflib.syntax import serializer, serializers
-			register(self.xml_serializer_name, serializers.Serializer, "pyRdfa.serializers.PrettyXMLSerializer", "PrettyXMLSerializer")
-			self.xml_serializer_registered = True
-
-	def _register_Turtle_serializer(self) :
-		"""The default Turtle Serializers of RDFLib 2.X is buggy and not very nice as far as the output is concerned.
-		An L{own version<serializers.TurtleSerializer>} is registered in RDFLib and used in the rest of the package.
-		This is not used for RDFLib 3.X.
-		"""
-		if not self.turtle_serializer_registered :
-			from rdflib.plugin import register
-			from rdflib.syntax import serializer, serializers
-			register(self.turtle_serializer_name, serializers.Serializer, "pyRdfa.serializers.TurtleSerializer", "TurtleSerializer")
-			self.turtle_serialzier_registered = True
-
-	def _register_serializers(self, outputFormat) :
-		"""If necessary, register the serializer for a specific name. Frontend to
-		L{_register_XML_serializer} and L{_register_Turtle_serializer}.
-		@param outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml" and "pretty-xml", as well as "turtle" and "n3" are synonyms. Used for RDFLib 2.X.
-		@return: the final output format name
-		"""
-		# Exchanging the pretty xml and turtle serializers against the version stored with this package
-		if outputFormat in ["pretty-xml", "xml"] :
-			self._register_XML_serializer()
-			return self.xml_serializer_name
-		elif outputFormat in ["turtle", "n3"] :
-			self._register_Turtle_serializer()
-			return self.turtle_serializer_name
-		else :
-			return outputFormat
 	
 	####################################################################################################################
 	# Externally used methods
 	#
 	def graph_from_DOM(self, dom, graph = None) :
 		"""
-		Extract the RDF Graph from a DOM tree.
+		Extract the RDF Graph from a DOM tree. This is where the real meat happens. All other methods get down to this
+		one, eventually (eg, after opening a URI and parsing it into a DOM)
 		@param dom: a DOM Node element, the top level entry node for the whole tree (to make it clear, a dom.documentElement is used to initiate processing)
 		@keyword graph: an RDF Graph (if None, than a new one is created)
 		@type graph: rdflib Graph instance. If None, a new one is created.
@@ -373,25 +362,24 @@ class pyRdfa :
 		# get the DOM tree
 		topElement = dom.documentElement
 	
-		# Perform the built-in and external transformations on the HTML tree. This is,
-		# in simulated form, the hGRDDL approach of Ben Adida
+		# Perform the built-in and external transformations on the HTML tree. 
 		for trans in self.options.transformers + builtInTransformers :
 			trans(topElement, self.options)
 	
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
 		try :
-			state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options)
+			state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
 			# The top level subject starts with the current document; this
 			# is used by the recursion
 			subject = URIRef(state.base)
+			# this function is the real workhorse
 			parse_one_node(topElement, default_graph, subject, state, [])
 		except FailedProfile, f :
 			# This may occur if the top level @profile cannot be dereferenced, which stops the processing as a whole!
 			bnode = self.options.add_error(f.msg, ProfileReferenceError, f.context)
 			if f.http_code :
 				self.options.processor_graph.add_http_context(bnode, f.http_code)
-			# This may occur if the top level @profile cannot be dereferenced, which stops the processing as a whole!
 	
 		# What should be returned depends on the way the options have been set up
 		if self.options.output_default_graph :
@@ -401,6 +389,7 @@ class pyRdfa :
 		elif self.options.output_processor_graph :
 			copyGraph(graph, self.options.processor_graph.graph)
 
+		# this is necessary if several DOM trees are handled in a row...
 		self.options.reset_processor_graph()
 
 		return graph
@@ -408,7 +397,7 @@ class pyRdfa :
 	def graph_from_source(self, name, graph = None, rdfOutput = False) :
 		"""
 		Extract an RDF graph from an RDFa source. The source is parsed, the RDF extracted, and the RDFa Graph is
-		returned. This is a fron-end to the L{pyRdfa.graph_from_DOM} method.
+		returned. This is a front-end to the L{pyRdfa.graph_from_DOM} method.
 				
 		@param name: a URI, a file name, or a file-like object
 		@param graph: rdflib Graph instance. If None, a new one is created.
@@ -465,16 +454,7 @@ class pyRdfa :
 		@type rdfOutput: boolean
 		@return: a serialized RDF Graph
 		@rtype: string
-		"""
-		if rdflib.__version__ >= "3.0.0" :
-			# there is no need to use the private serializers, the previous bugs are supposed to have been
-			# handled. Only the merge of the output format names are necessary...
-			if outputFormat == "xml"  : outputFormat = "pretty-xml"
-			elif outputFormat == "n3" : outputFormat = "turtle"
-		else :
-			# use the extra serializers, needed for older versions of rdflib...
-			outputFormat = self._register_serializers(outputFormat)
-		
+		"""		
 		graph = Graph()
 		graph.bind("xsd", Namespace(u'http://www.w3.org/2001/XMLSchema#'))
 		# the value of rdfOutput determines the reaction on exceptions...
@@ -503,6 +483,7 @@ def processURI(uri, outputFormat, form={}) :
 	
 	 - C{graph=[default|processor|default,processor|processor,default]} specifying which graphs are returned. Default: default.
 	 - C{space-preserve=[true|false]} means that plain literals are normalized in terms of white spaces. Default: false.
+	 - C{rfa-version} provides the RDFa version that should be used for distilling. The string should be of the form "1.0", "1.1", etc. Default is the highest version the current package implements.
 	 - C{extras=[true|false]} means that extra, built-in transformers are executed on the DOM tree prior to RDFa processing. Default: false. Alternatively, a finer granurality can be used with the following options:
 	  - C{extras-meta=[true|false]}: the @name attribute for metas are converted into @property for further processing
 	  - C{extras-cc=[true|false]}: containers and collections are generated. See L{transform.ContainersCollections} for further details.
@@ -526,7 +507,12 @@ def processURI(uri, outputFormat, form={}) :
 	else :
 		input	= uri
 		base	= uri
-
+		
+	if "rdfa-version" in form.keys() :
+		rdfa_version = form.getfirst("rdfa-version")
+	else :
+		rdfa_version = None
+	
 	# working through the possible options
 	# Host language: HTML, XHTML, or XML
 	# Note that these options should be used for the upload and inline version only in case of a form
@@ -575,9 +561,6 @@ def processURI(uri, outputFormat, form={}) :
 			output_processor_graph 	= True
 		elif a == "processor,default" or a == "default,processor" :
 			output_processor_graph 	= True
-		elif a == "default" :				
-			output_default_graph 	= True
-			output_processor_graph 	= False			
 
 	if "space-preserve" in form.keys() and form.getfirst("space-preserve").lower() == "false" :
 		space_preserve = False
@@ -588,7 +571,7 @@ def processURI(uri, outputFormat, form={}) :
 					  output_processor_graph = output_processor_graph,
 					  space_preserve=space_preserve,
 					  transformers=transformers)
-	processor = pyRdfa(options = options, base = base, media_type = media_type)
+	processor = pyRdfa(options = options, base = base, media_type = media_type, rdfa_version = rdfa_version)
 	
 	
 	# Decide the output format; the issue is what should happen in case of a top level error like an inaccessibility of
@@ -690,7 +673,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.24  2010-10-26 14:32:10  ivan
+Revision 1.25  2010-10-29 16:30:22  ivan
+*** empty log message ***
+
+Revision 1.24  2010/10/26 14:32:10  ivan
 *** empty log message ***
 
 Revision 1.23  2010/08/25 11:22:19  ivan

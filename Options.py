@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Options class: collect the possible options that govern the parsing possibilities. It also includes a reference and
-handling of the extra Graph for warnings, informations, errors.
-
+L{Options} class: collect the possible options that govern the parsing possibilities. The module also includes the L{ProcessorGraph} class that handles the… processor graph, per RDFa 1.1 (i.e., the graph containing errors and warnings).
 
 @summary: RDFa parser (distiller)
 @requires: U{RDFLib<http://rdflib.net>}
@@ -16,7 +14,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.9 2010-10-26 14:32:10 ivan Exp $ $Date: 2010-10-26 14:32:10 $
+$Id: Options.py,v 1.10 2010-10-29 16:30:22 ivan Exp $ $Date: 2010-10-29 16:30:22 $
 """
 
 import sys, datetime
@@ -53,14 +51,16 @@ class ProcessorGraph :
 		should just be an empty shell for the various calls to work (without effect)
 		"""
 		self.graph = Graph()
-		self.graph.bind("dc", ns_dc)
+		self.graph.bind("dcterm", ns_dc)
 		self.graph.bind("pyrdfa", ns_distill)
 		self.graph.bind("rdf", ns_rdf)
 		
 	def add_triples(self, msg, top_class, info_class, context) :
 		"""
-		Add an error structure to the processor graph: a bnode with a number of predicates as defined by the RDFa
-		document
+		Add an error structure to the processor graph: a bnode with a number of predicates. The structure
+		follows U{the processor graph vocabulary<http://www.w3.org/2010/02/rdfa/wiki/Processor_Graph_Vocabulary>} as described
+		on the RDFa WG Wiki page.
+		
 		@param msg: the core error message, added as an object to a dc:description
 		@param top_class: Error, Warning, or Info; an explicit rdf:type added to the bnode
 		@type top_class: URIRef
@@ -82,7 +82,6 @@ class ProcessorGraph :
 			if not isinstance(context,URIRef) :
 				context = URIRef(context)
 			self.graph.add((bnode, ns_distill["context"], context))
-			
 		return bnode
 	
 	def add_http_context(self, subj, http_code) :
@@ -112,7 +111,7 @@ class Options :
 	@ivar content_type: the content type of the host file. Default is None
 	@type content_type: string (logically: an enumeration)
 	"""
-	def __init__(self, output_default_graph = True, output_processor_graph = False, space_preserve = True, transformers=[], host_language = HostLanguage.rdfa_core) :
+	def __init__(self, output_default_graph = True, output_processor_graph = False, space_preserve = True, transformers=[]) :
 		"""
 		@keyword space_preserve: whether plain literals should preserve spaces at output or not
 		@type space_preserve: Boolean
@@ -122,20 +121,18 @@ class Options :
 		@type output_processor_graph: Boolean
 		@keyword transformers: extra transformers
 		@type transformers: list
-		@keyword host_language: default host language
-		@type host_language: string
 		"""
 		self.space_preserve 		= space_preserve
 		self.transformers   		= transformers
 		self.processor_graph  		= ProcessorGraph() 
 		self.output_default_graph	= output_default_graph
 		self.output_processor_graph	= output_processor_graph
-		self.host_language 			= host_language
+		self.host_language 			= HostLanguage.rdfa_core
 			
 	def set_host_language(self, content_type) :
 		"""
 		Set the host language for processing, based on the recognized types. What this means is that everything is considered to be
-		'core' RDFa, except if XHTML or HTML is used; indeed, no other language defined a deviation to core (yet...)
+		'core' RDFa, except if XHTML or HTML is used; indeed, no other language defined a deviation to core (yet…)
 		@param content_type: content type
 		@type content_type: string
 		"""

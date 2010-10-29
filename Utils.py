@@ -2,7 +2,7 @@
 """
 Various utilities for pyRdfa.
 
-Most of the utilities are straightforward, except for the caching module whose usage that is described in the class description. 
+Most of the utilities are straightforward, except for the caching module whose usage that is described in the L{class description<CachedURIOpener>}. 
 
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -79,9 +79,18 @@ class URIOpener :
 	The class also adds an accept header to the outgoing request, namely
 	text/html and application/xhtml+xml (unless set explicitly by the caller).
 	
+	The content type is either set by the HTTP return. If not set by the server, some common
+	suffixes are used (see L{preferred_suffixes}) to set the content type (this is really of importance
+	for file:/// URI-s). If none of these works, the content type is empty.
+		
+	Interpretation of the content type for the return is done by Deron Meranda's <http://deron.meranda.us/>
+	httpheader module.
+	
+	
 	@ivar data: the real data, ie, a file-like object
 	@ivar headers: the return headers as sent back by the server
-	@ivar content_type: the 'CONTENT_TYPE' header or, if not set by the server, the empty string
+	@ivar content_type: the content type of the resource or the empty string, if the content type cannot be determined
+	@ivar content_type: the content type of the resource or the empty string, if the content type cannot be determined
 	@ivar location: the real location of the data (ie, after possible redirection and content negotiation)
 	"""
 	CONTENT_LOCATION	= 'Content-Location'
@@ -135,7 +144,7 @@ class CachedURIOpener(URIOpener) :
 	getting to the Web with another request.
 	
 	The essence is to find a dictionary that maps URI-s to local file names. Instead of hardcoding the
-	location of the chached files, an environment variable isued; this environment variable is
+	location of the chached files, an environment variable is used; this environment variable is
 	an input argument to the class' constructor (C{cached_env}).
 	
 	The environment variable plays two roles:
@@ -172,6 +181,11 @@ class CachedURIOpener(URIOpener) :
 	"""
 	loaded_modules = {}
 	def __init__(self, uri, additional_headers = {}, cached_env = "") :
+		"""
+		@param name: URL to be opened
+		@keyword additional_headers: additional HTTP request headers to be added to the call
+		@keyword cached_env: the environment variable name the directs the caching
+		"""
 		resolved = False
 		if cached_env in CachedURIOpener.loaded_modules :
 			# This module has already been imported once
@@ -206,7 +220,22 @@ class CachedURIOpener(URIOpener) :
 			self.location = uri
 		
 	def _resolve_cache(self, uri, additional_headers) :
+		"""
+		Resolve the cache. If we get here, the index that maps URI-s to local file names is already available; ie, if
+		possible, a local file is opened for a URI. The suffix of that file
+		determines the media type (see L{preferred_suffixes}).
+		
+		The additional header is considered to set the right priority in opening a file in case the uri cannot be
+		resolved directly. See the class description for the details.
+		
+		@param name: URL to be opened
+		@keyword additional_headers: additional HTTP request headers to be added to the call
+		@return: boolean, signalling whether the caching is successful or not. If not, the caller should initialize the superclass, ie, issue a HTTP GET
+		"""
 		def headersort(x,y) :
+			"""
+			Sorting headers; the way the httpheader module returns these is such that the xx[1] argument gives the preference
+			"""
 			if x[1] < y[1] :
 				return 1
 			elif x[1] > y[1] :
@@ -216,38 +245,45 @@ class CachedURIOpener(URIOpener) :
 
 		# There can be a bunch of exceptions raised by, eg, invalid headers; these are all simply swallowed for now
 		try :
-			# See which are the acceptable media types for the caller
-			# Suffix type list is set to a ([suffixlist],media_type), highest priority first
-			suffix_type_list = []
-			if 'Accept' in additional_headers :
-				# Get the accept headers, with possibly rearranging them based on the 'q' values
-				headers = httpheader.parse_accept_header(additional_headers['Accept'])
-				headers.sort(headersort)
-				for ctype in [str(x[0]) for x in headers] :
-					# Several suffixes may share media types, like owl and rdf...
-					suffxs = []
-					for sffx in preferred_suffixes.keys() :
-						if preferred_suffixes[sffx] == ctype :
-							suffxs.append(sffx)
-					suffix_type_list.append((suffxs, ctype))
-					
-			# First, attempt to resolve the incoming URI as is
-			if self._resolve_uri(uri, None) :
+			if self._resolve_uri(uri) :
 				# got it!
 				return True
-			else :
+			else :			
+				# See which are the acceptable media types for the caller
+				# Suffix type list is set to a ([suffixlist],media_type), highest priority first
+				suffix_type_list = []
+				if 'Accept' in additional_headers :
+					# Get the accept headers, with possibly rearranging them based on the 'q' values
+					headers = httpheader.parse_accept_header(additional_headers['Accept'])
+					headers.sort(headersort)
+					for ctype in [str(x[0]) for x in headers] :
+						# Several suffixes may share media types, like owl and rdf...
+						suffxs = []
+						for sffx in preferred_suffixes.keys() :
+							if preferred_suffixes[sffx] == ctype :
+								suffxs.append(sffx)
+						suffix_type_list.append((suffxs, ctype))
+					
+				# The suffixes have to be examined, and, actually, there may several suffixes for a specific media type...
 				for suffxs, ctype in suffix_type_list :
 					for sufx in suffxs :
-						retval = self._resolve_uri(uri+sufx, ctype)
+						retval = self._resolve_uri(uri+sufx, content_type = ctype)
 						if retval == True :
 							return True
 			# Sadly, there is no cache
 			return False
 		except :
-			
 			return False
 
-	def _resolve_uri(self, uri, content_type) :
+	def _resolve_uri(self, uri, content_type = None) :
+		"""
+		The real cache resolver; only deals with one URI and not with the possible fake content negotiation; that is
+		handled by the caller.
+		
+		@param uri: URL to be opened
+		@keyword content_type: if given, sets the content type for the resource (otherwise the suffix decides)
+		@return: boolean, signalling whether the caching is successful or not. 
+		"""
 		if uri in self.index :			
 			fname = self.index[uri]
 			# This file name should be combined with the base
@@ -260,6 +296,7 @@ class CachedURIOpener(URIOpener) :
 					for key in preferred_suffixes.keys() :
 						if fname.endswith(key) :
 							self.content_type = preferred_suffixes[key]
+							break
 				return True
 			except :
 				return False
