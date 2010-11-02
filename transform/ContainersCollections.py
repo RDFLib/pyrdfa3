@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Handling of collections and containers as a preprocessor to the full RDFa processing. See the RDFa text for the details.
+Handling of collections and containers as a preprocessor to the full RDFa processing. See the
+U{text on the RDFa WG’s pages<http://www.w3.org/2010/02/rdfa/wiki/ContainersAndCollections>} for the details.
 
 @summary: Transfomer to handle RDF collections and containers
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -11,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: ContainersCollections.py,v 1.5 2010-08-27 13:45:44 ivan Exp $
-$Date: 2010-08-27 13:45:44 $
+$Id: ContainersCollections.py,v 1.6 2010-11-02 14:56:46 ivan Exp $
+$Date: 2010-11-02 14:56:46 $
 """
 
 import uuid
@@ -84,7 +85,8 @@ class BIDs :
 
 class CollectionsContainers :
 	"""
-	Handler of collections and containers
+	Handling of collections and containers as a preprocessor to the full RDFa processing. See the module description for the details.
+
 	@cvar blanks: collections of blank node id-s
 	@type blanks: L{BIDs}
 	"""
@@ -219,8 +221,8 @@ def containers_collections(html, option) :
 	"""
 	The main transformer entry point. See the module description for details.
 	@param html: a DOM node for the top level html element
-	@param options: invocation options
-	@type options: L{Options<pyRdfa.Options>}
+	@param option: invocation options (not used in this module)
+	@type option: L{Options<pyRdfa.Options>}
 	"""
 	handler = CollectionsContainers(html)
 	handler.look_for_triggers(html)
@@ -229,7 +231,10 @@ def containers_collections(html, option) :
 ############
 """
 $Log: ContainersCollections.py,v $
-Revision 1.5  2010-08-27 13:45:44  ivan
+Revision 1.6  2010-11-02 14:56:46  ivan
+*** empty log message ***
+
+Revision 1.5  2010/08/27 13:45:44  ivan
 Added cvs log placeholder
 
 """

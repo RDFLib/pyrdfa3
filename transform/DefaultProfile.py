@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Simple transfomer: Add a default @profile value, depending on the media type of the source.
+Simple transfomer: Add a default @profile value, depending on the media type of the source. The
+mapping is defined in L{pyRdfa.Utils.default_profiles}.
 
 @summary: Add a top "about" to <head> and <body>
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -12,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: DefaultProfile.py,v 1.2 2010-10-26 14:32:33 ivan Exp $
-$Date: 2010-10-26 14:32:33 $
+$Id: DefaultProfile.py,v 1.3 2010-11-02 14:56:46 ivan Exp $
+$Date: 2010-11-02 14:56:46 $
 """
 
 def add_default_profile(top, options) :

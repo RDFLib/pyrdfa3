@@ -6,6 +6,7 @@ Most of the utilities are straightforward, except for the caching module whose u
 
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
+@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}. To make distribution easier this module (single file) is added to the distributed tarball.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -90,7 +91,6 @@ class URIOpener :
 	@ivar data: the real data, ie, a file-like object
 	@ivar headers: the return headers as sent back by the server
 	@ivar content_type: the content type of the resource or the empty string, if the content type cannot be determined
-	@ivar content_type: the content type of the resource or the empty string, if the content type cannot be determined
 	@ivar location: the real location of the data (ie, after possible redirection and content negotiation)
 	"""
 	CONTENT_LOCATION	= 'Content-Location'
@@ -153,27 +153,17 @@ class CachedURIOpener(URIOpener) :
 	 - the environment variable itself servers as a Python module name; that module, when imported, should include
 	 the 'index' dictionary to map URI-s to cached files.
 	 
-	For example, if the cached environment variable is C{cached_profiles}", then
+	For example, if the cached environment variable is C{cached_profiles}, then
 	
-	 - the environment variable C{cached_profiles" may give C{/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles}
-	 - the module C{/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles/cached_profile.py} is (dynamically) imported
-	 - the index dictionary in that profile may contain the entry::
-	"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html" : "cc.html"
-	
-	meaning that if the requested URI is::
-	"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html"
-	
-	the class loads the following local file instead::
-	/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles/cc.html
+	 - the environment variable C{cached_profiles} may be set to C{"/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles"}
+	 - the module C{"/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles/cached_profile.py"} is (dynamically) imported
+	 - the index dictionary in that profile may contain the entry:
+	  C{"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html":"cc.html"}, meaning that if the requested URI is: C{"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html"} then the class loads the following local file instead: C{"/Users/ivan/W3C/WWW/2007/08/pyRdfa/profiles/cc.html"}
 	
 	Furthermore, the class may be initialized with additional (HTTP) Accept headers. This means that if the
 	index dictionary does not contain an entry for the incoming URI, suffixes for the content types in the Accept
-	headers will be used to check again (in case that content type is known). Ie, if the requested URI is::
-	"http://www.w3.org/2007/08/pyRdfa/profiles/cc"
-	
-	and the additonal accept header includes 'text/html' then the::
-	"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html"
-	
+	headers will be used to check again (in case that content type is known). Ie, if the requested URI is: C{"http://www.w3.org/2007/08/pyRdfa/profiles/cc"}
+	and the additonal accept header includes 'text/html' then the: C{"http://www.w3.org/2007/08/pyRdfa/profiles/cc.html"}
 	is also checked. This is a crude local imitation of HTTP content negotiation.
 	
 	Obviously, if the cache mechanism fails at any place in finding a local copy, the superclass, ie, a proper
@@ -182,7 +172,7 @@ class CachedURIOpener(URIOpener) :
 	loaded_modules = {}
 	def __init__(self, uri, additional_headers = {}, cached_env = "") :
 		"""
-		@param name: URL to be opened
+		@param uri: URL to be opened
 		@keyword additional_headers: additional HTTP request headers to be added to the call
 		@keyword cached_env: the environment variable name the directs the caching
 		"""

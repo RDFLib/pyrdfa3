@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-
-L{Options} class: collect the possible options that govern the parsing possibilities. The module also includes the L{ProcessorGraph} class that handles the… processor graph, per RDFa 1.1 (i.e., the graph containing errors and warnings).
+L{Options} class: collect the possible options that govern the parsing possibilities. The module also includes the L{ProcessorGraph} class that handles the… processor graph, per RDFa 1.1 (i.e., the graph containing errors and warnings). 
 
 @summary: RDFa parser (distiller)
 @requires: U{RDFLib<http://rdflib.net>}
-@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing; note possible dependecies on Python's version on the project's web site
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
-
 """
 
 """
-$Id: Options.py,v 1.10 2010-10-29 16:30:22 ivan Exp $ $Date: 2010-10-29 16:30:22 $
+$Id: Options.py,v 1.11 2010-11-02 14:56:35 ivan Exp $ $Date: 2010-11-02 14:56:35 $
 """
 
 import sys, datetime
@@ -46,10 +43,6 @@ class ProcessorGraph :
 	error messages, and informational messages.
 	"""
 	def __init__(self) :
-		"""
-		@param warnings: whether a graph should effectively be set up, or whether this
-		should just be an empty shell for the various calls to work (without effect)
-		"""
 		self.graph = Graph()
 		self.graph.bind("dcterm", ns_dc)
 		self.graph.bind("pyrdfa", ns_distill)
@@ -103,7 +96,7 @@ class Options :
 	@ivar output_processor_graph: whether the 'processor' graph should be returned to the user
 	@type output_processor_graph: Boolean
 	@ivar processor_graph: the 'processor' Graph
-	@type processor_graph: L{CommentGraph}
+	@type processor_graph: L{ProcessorGraph}
 	@ivar transformers: extra transformers
 	@type transformers: list
 	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml_rdfa, but it can be HostLanguage.rdfa_core and HostLanguage.html_rdfa

@@ -9,19 +9,29 @@ and the U{XHTML+RDFa1.1<http://www.w3.org/TR/2010/xhtml-rdfa>} documents.
 This package can also be downloaded U{as a compressed tar file<http://dev.w3.org/2004/PythonLib-IH/dist/pyRdfa.tar.gz>}. The
 distribution also includes the CGI front-end and a separate utility script to be run locally.
 
-
 (Simple) Usage
 ==============
+From a Python file, expecting an RDF/XML pretty printed output::
+ from pyRdfa import pyRdfa
+ print pyRdfa().rdf_from_source('filename')
+
+Other output formats (eg, turtle) are also possible. Eg, to produce Turtle output, one could use::
+ from pyRdfa import pyRdfa
+ print pyRdfa().rdf_from_source('filename', outputFormat='turtle')
+
+It is also possible to embed an RDFa processing. Eg, using::
+ from pyRdfa import pyRdfa
+ print pyRdfa().graph_from_source('filename') 
 
 From a Python file, expecting an RDF/XML pretty printed output::
  from pyRdfa import pyRdfa
  print pyRdfa().rdf_from_source('filename')
 
-Other output formats (eg, turtle) are also possible. Eg, to produce Turtle output, one could use:
+Other output formats (eg, turtle) are also possible. Eg, to produce Turtle output, one could use::
  from pyRdfa import pyRdfa
  print pyRdfa().rdf_from_source('filename', outputFormat='turtle')
 
-It is also possible to embed an RDFa processing. Eg, using:
+It is also possible to embed an RDFa processing. Eg, using::
  from pyRdfa import pyRdfa
  print pyRdfa().graph_from_source('filename')
 
@@ -54,7 +64,7 @@ if extra warnings are required, the code may be::
  options = Options(output_processor_graph=True)
  print pyRdfa(options=options).rdf_from_source('filename')
  
-See the description of the L{Options<Options.Options>} class for the details.
+See the description of the L{Options} class for the details.
 
 Transformers
 ============
@@ -115,11 +125,13 @@ to find the content type by
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
-@var builtInTransformers: list of built-in transformers that are unconditionally executed.
+@var builtInTransformers: List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
+@var CACHED_PROFILES_ID: Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<Utils.CachedURIOpener>} for details
+@var rdfa_current_version: Current "official" version of RDFa that this package implements by default. This can be changed at the invocation of the package
 """
 
 """
-$Id: __init__.py,v 1.25 2010-10-29 16:30:22 ivan Exp $ $Date: 2010-10-29 16:30:22 $
+$Id: __init__.py,v 1.26 2010-11-02 14:56:36 ivan Exp $ $Date: 2010-11-02 14:56:36 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -160,8 +172,10 @@ import urlparse
 
 #: Namespace, in the RDFLib sense, for the rdfa vocabulary
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
+
 #: Namespace, in the RDFLib sense, for the XSD Datatypes
 ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
+
 #: Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
@@ -403,7 +417,6 @@ class pyRdfa :
 		@param graph: rdflib Graph instance. If None, a new one is created.
 		@param rdfOutput: whether exception should be turned into RDF and returned as part of the processor graph
 		@return: an RDF Graph
-		@return: an RDF Graph
 		@rtype: rdflib Graph instance
 		"""
 		def copyErrors(tog, options) :
@@ -634,7 +647,6 @@ def processURI(uri, outputFormat, form={}) :
 ################################################# Deprecated entry points, kept for backward compatibility... 
 def processFile(input, outputFormat="xml", options = None, base="", rdfOutput = False) :
 	"""The standard processing of an RDFa file.
-	This is a front end to the L{Processing function<_process>}, once the input file like object is identified.
 
 	@param input: input file name, URI, or file-like object. 
 	@keyword outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml" and "pretty-xml", as well as "turtle" and "n3" are synonyms.
@@ -673,7 +685,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.25  2010-10-29 16:30:22  ivan
+Revision 1.26  2010-11-02 14:56:36  ivan
+*** empty log message ***
+
+Revision 1.25  2010/10/29 16:30:22  ivan
 *** empty log message ***
 
 Revision 1.24  2010/10/26 14:32:10  ivan

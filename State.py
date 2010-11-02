@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.24 2010-10-29 16:30:22 ivan Exp $
-$Date: 2010-10-29 16:30:22 $
+$Id: State.py,v 1.25 2010-11-02 14:56:35 ivan Exp $
+$Date: 2010-11-02 14:56:35 $
 """
 
 import rdflib
@@ -58,7 +58,7 @@ class ExecutionContext :
 	URI references for RDFLib.
 	
 	@ivar options: reference to the overall options
-	@type options: L{Options.Options}
+	@type options: L{Options}
 	@ivar base: the 'base' URI
 	@ivar parsedBase: the parsed version of base, as produced by urlparse.urlsplit
 	@ivar defaultNS: default namespace (if defined via @xmlns) to be used for XML Literals
@@ -397,7 +397,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.24  2010-10-29 16:30:22  ivan
+Revision 1.25  2010-11-02 14:56:35  ivan
+*** empty log message ***
+
+Revision 1.24  2010/10/29 16:30:22  ivan
 *** empty log message ***
 
 Revision 1.23  2010/10/26 14:32:10  ivan

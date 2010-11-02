@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X the turtle and the RDF/XML serialization has some issues (bugs and ugly output). So the package's own serializers should be registered. On the other hand, in RDFLib 3.X this becomes unnecessary, it is better to keep to the library's own version. So this wrapper provides a subclass of RDFLib's Graph overriding the serialize method to register, if necessary, a different serializer and use that.
+Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X, the turtle and the RDF/XML serialization has some issues (bugs and ugly output). As a result, the package’s own serializers should be registered and used. On the other hand, in RDFLib 3.X this becomes unnecessary, it is better to keep to the library’s own version. This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register, if necessary, a different serializer and use that one.
+
+As an extra bonus, some bindings (in the RDFLib sense) are done automatically, to ensure a nicer output for widely used schemas…
 
 
 @summary: Shell around RDLib's Graph
 @requires: Python version 2.5 or up
 @requires: U{RDFLib<http://rdflib.net>}
-@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing; note possible dependecies on Python's version on the project's web site
-@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}. To make distribution easier this module (single file) is added to the distributed tarball.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
+@var _bindings: Default bindings. This is just for the beauty of things: bindings are added to the graph to make the output nicer. If this is not done, RDFlib defines prefixes like "_1:", "_2:" which is, though correct, ugly…
 """
 
 """
-$Id: MyGraph.py,v 1.2 2010-10-29 16:30:22 ivan Exp $ $Date: 2010-10-29 16:30:22 $
+$Id: MyGraph.py,v 1.3 2010-11-02 14:56:35 ivan Exp $ $Date: 2010-11-02 14:56:35 $
 
 """
 
@@ -49,7 +50,7 @@ _bindings = [
 #########################################################################################################
 class MyGraph(Graph) :
 	"""
-	Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X the turtle and the RDF/XML serialization has some issues (bugs and ugly output). So the package's own serializers should be registered. On the other hand, in RDFLib 3.X this becomes unnecessary, it is better to keep to the library's own version. So this wrapper provides a subclass of RDFLib's Graph overriding the serialize method to register, if necessary, a different serializer and use that.
+    Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X, the turtle and the RDF/XML serialization has some issues (bugs and ugly output). As a result, the package’s own serializers should be registered and used. On the other hand, in RDFLib 3.X this becomes unnecessary, it is better to keep to the library’s own version. This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register, if necessary, a different serializer and use that one.
 
 	@cvar xml_serializer_registered: flag to avoid duplicate registration for RDF/XML
 	@type xml_serializer_registered: boolean
@@ -106,7 +107,10 @@ class MyGraph(Graph) :
 
 """
 $Log: MyGraph.py,v $
-Revision 1.2  2010-10-29 16:30:22  ivan
+Revision 1.3  2010-11-02 14:56:35  ivan
+*** empty log message ***
+
+Revision 1.2  2010/10/29 16:30:22  ivan
 *** empty log message ***
 
 Revision 1.1  2010/10/29 15:39:13  ivan

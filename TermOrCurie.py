@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.4 2010-10-29 16:30:22 ivan Exp $
-$Date: 2010-10-29 16:30:22 $
+$Id: TermOrCurie.py,v 1.5 2010-11-02 14:56:36 ivan Exp $
+$Date: 2010-11-02 14:56:36 $
 """
 
 import re, sys
@@ -74,7 +74,7 @@ class ProfileRead :
 	"""
 	Wrapper around the "recursive" access to profile files. The main job of this class is to retrieve
 	term and prefix definitions as well as a default vocab value, by accessing an RDF file stored in a URI as given by the
-	values of the @profile attribute values. Each L{TermOrCURIE} class has one instance of this class.
+	values of the @profile attribute values. Each L{TermOrCurie} class has one instance of this class.
 	
 	(Beyond a better readability of the code, the main reason to put this into a separate class is to localize a caching mechanism that
 	ensures that the same vocabulary file is read only once.)
@@ -172,7 +172,7 @@ class ProfileRead :
 		
 		@param name: URI of the vocabulary file
 		@return: An RDFLib Graph instance; None if the dereferencing or the parsing was unsuccessful
-		@raise: FailedProfile if the profile document could not be dereferenced or is not a known media type. Note that this is caught higher up in the parser and that terminates processing on the whole subtree.
+		@raise FailedProfile: if the profile document could not be dereferenced or is not a known media type. Note that this is caught higher up in the parser and that terminates processing on the whole subtree.
 		"""
 		from pyRdfa import CACHED_PROFILES_ID, HTTPError, RDFaError
 		content = None
@@ -304,7 +304,6 @@ class TermOrCurie :
 	@ivar ns: namespace declarations, ie, mapping from prefixes to URIs
 	@type ns: dictionary
 	@ivar default_curie_uri: URI for a default CURIE
-	@ivar graph: the graph being processed
 	"""
 	def __init__(self, state, graph, inherited_state) :
 		"""Initialize the vocab bound to a specific state. 
@@ -558,7 +557,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.4  2010-10-29 16:30:22  ivan
+Revision 1.5  2010-11-02 14:56:36  ivan
+*** empty log message ***
+
+Revision 1.4  2010/10/29 16:30:22  ivan
 *** empty log message ***
 
 Revision 1.3  2010/10/26 14:32:10  ivan
