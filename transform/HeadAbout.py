@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: HeadAbout.py,v 1.1 2010-01-18 13:42:38 ivan Exp $
-$Date: 2010-01-18 13:42:38 $
+$Id: HeadAbout.py,v 1.2 2010-11-19 13:52:52 ivan Exp $
+$Date: 2010-11-19 13:52:52 $
 """
 
 def head_about_transform(html, options) :
@@ -23,10 +23,12 @@ def head_about_transform(html, options) :
 	@param options: invocation options
 	@type options: L{Options<pyRdfa.Options>}
 	"""
-	for top in html.getElementsByTagName("head") :
-		if not top.hasAttribute("about") :
-			top.setAttribute("about","")
-	for top in html.getElementsByTagName("body") :
-		if not top.hasAttribute("about") :
-			top.setAttribute("about","")
+	from pyRdfa.host import HostLanguage
+	if options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
+		for top in html.getElementsByTagName("head") :
+			if not top.hasAttribute("about") :
+				top.setAttribute("about","")
+		for top in html.getElementsByTagName("body") :
+			if not top.hasAttribute("about") :
+				top.setAttribute("about","")
 

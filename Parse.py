@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.11 2010-10-29 16:30:22 ivan Exp $
-$Date: 2010-10-29 16:30:22 $
+$Id: Parse.py,v 1.12 2010-11-19 13:52:45 ivan Exp $
+$Date: 2010-11-19 13:52:45 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -24,7 +24,7 @@ import sys
 from pyRdfa.State   		import ExecutionContext
 from pyRdfa.Literal 		import generate_literal
 from pyRdfa.EmbeddedRDF	 	import handle_embeddedRDF
-from pyRdfa.Utils			import HostLanguage
+from pyRdfa.host			import HostLanguage, host_dom_transforms, accept_embedded_rdf
 
 import rdflib
 from rdflib	import URIRef
@@ -88,8 +88,13 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	# This may add some triples to the target graph that does not originate from RDFa parsing
 	# If the function return TRUE, that means that an rdf:RDF has been found. No
 	# RDFa parsing should be done on that subtree, so we simply return...
-	if state.options.host_language == HostLanguage.rdfa_core and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
+	if state.options.host_language in accept_embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
 		return	
+
+	#---------------------------------------------------------------------------------
+	# calling the host specific massaging of the DOM
+	if state.options.host_language in host_dom_transforms and node.nodeType == node.ELEMENT_NODE :
+		for func in host_dom_transforms[state.options.host_language] : func(node, state)
 
 	#---------------------------------------------------------------------------------
 	# First, let us check whether there is anything to do at all. Ie,

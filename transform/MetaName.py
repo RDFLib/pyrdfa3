@@ -7,8 +7,8 @@ C{name} attribute values.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: MetaName.py,v 1.1 2010-01-18 13:42:38 ivan Exp $
-$Date: 2010-01-18 13:42:38 $
+@version: $Id: MetaName.py,v 1.2 2010-11-19 13:52:52 ivan Exp $
+$Date: 2010-11-19 13:52:52 $
 """
 
 def meta_transform(html, options) :
@@ -17,6 +17,10 @@ def meta_transform(html, options) :
 	@param options: invocation options
 	@type options: L{Options<pyRdfa.Options>}
 	"""
+	from pyRdfa.host import HostLanguage
+	if not( options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] ) :
+		return
+
 	for meta in html.getElementsByTagName("meta") :
 		if meta.hasAttribute("name") and not meta.hasAttribute("property") :
 			meta.setAttribute("property", meta.getAttribute("name"))

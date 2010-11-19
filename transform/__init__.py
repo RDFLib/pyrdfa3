@@ -12,10 +12,10 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.1 2010-01-18 13:42:38 ivan Exp $
-$Date: 2010-01-18 13:42:38 $
+$Id: __init__.py,v 1.2 2010-11-19 13:52:52 ivan Exp $
+$Date: 2010-11-19 13:52:52 $
 """
-__version__ = "1.0"
+__version__ = "3.0"
 
 
 

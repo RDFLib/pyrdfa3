@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: DefaultProfile.py,v 1.3 2010-11-02 14:56:46 ivan Exp $
-$Date: 2010-11-02 14:56:46 $
+$Id: DefaultProfile.py,v 1.4 2010-11-19 13:52:52 ivan Exp $
+$Date: 2010-11-19 13:52:52 $
 """
 
 def add_default_profile(top, options) :
@@ -23,7 +23,7 @@ def add_default_profile(top, options) :
 	@param options: invocation options
 	@type options: L{Options<pyRdfa.Options>}
 	"""
-	from pyRdfa.Utils import default_profiles
+	from pyRdfa.host import default_profiles
 	if options and (options.host_language in default_profiles) :
 		# otherwise this is meaningless...
 		prof = default_profiles[options.host_language]

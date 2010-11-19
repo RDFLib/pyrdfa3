@@ -11,7 +11,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.11 2010-11-02 14:56:35 ivan Exp $ $Date: 2010-11-02 14:56:35 $
+$Id: Options.py,v 1.12 2010-11-19 13:52:45 ivan Exp $ $Date: 2010-11-19 13:52:45 $
 """
 
 import sys, datetime
@@ -30,7 +30,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.Utils	import MediaTypes, HostLanguage, content_to_host_language
+from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language
 from pyRdfa			import ns_xsd, ns_distill
 
 from pyRdfa 		import RDFA_Error, RDFA_Warning, RDFA_Info
@@ -99,7 +99,7 @@ class Options :
 	@type processor_graph: L{ProcessorGraph}
 	@ivar transformers: extra transformers
 	@type transformers: list
-	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml_rdfa, but it can be HostLanguage.rdfa_core and HostLanguage.html_rdfa
+	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml, but it can be HostLanguage.rdfa_core and HostLanguage.html, or others...
 	@type host_language: integer (logically: an enumeration)
 	@ivar content_type: the content type of the host file. Default is None
 	@type content_type: string (logically: an enumeration)

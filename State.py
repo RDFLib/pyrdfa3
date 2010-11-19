@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.25 2010-11-02 14:56:35 ivan Exp $
-$Date: 2010-11-02 14:56:35 $
+$Id: State.py,v 1.26 2010-11-19 13:52:45 ivan Exp $
+$Date: 2010-11-19 13:52:45 $
 """
 
 import rdflib
@@ -35,7 +35,8 @@ else :
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
 from pyRdfa.Options		import Options
-from pyRdfa.Utils 		import quote_URI, HostLanguage
+from pyRdfa.Utils 		import quote_URI
+from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang
 from pyRdfa.TermOrCurie	import TermOrCurie
 from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
 
@@ -48,7 +49,7 @@ import urllib
 usual_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "geo", "gopher", "hdl", "http", "https", "imap",
 				 "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
 				 "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
-				 "stp", "svn", "svn+ssh", "telnet", "tel", "tv", "urn", "wais"
+				 "stp", "svn", "svn+ssh", "telnet", "tel", "tv", "urn", "wais", "javascript"
 				]
 
 #### Core Class definition
@@ -121,7 +122,7 @@ class ExecutionContext :
 			self.base			= inherited_state.base
 			self.options		= inherited_state.options
 			# for generic XML versions the xml:base attribute should be handled
-			if self.options.host_language == HostLanguage.rdfa_core and node.hasAttribute("xml:base") :
+			if self.options.host_language in accept_xml_base and node.hasAttribute("xml:base") :
 				self.base = node.getAttribute("xml:base")
 		else :
 			# this is the branch called from the very top
@@ -143,14 +144,12 @@ class ExecutionContext :
 
 			self.base = ""
 			# handle the base element case for HTML
-			if self.options.host_language in [ HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa ] :
+			if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
 				for bases in node.getElementsByTagName("base") :
 					if bases.hasAttribute("href") :
 						self.base = bases.getAttribute("href")
 						continue
-
-			# xml:base is not part of XHTML+RDFa, but it is a valid in core
-			if self.options.host_language == HostLanguage.rdfa_core and node.hasAttribute("xml:base") :
+			elif self.options.host_language in accept_xml_base and node.hasAttribute("xml:base") :
 				self.base = node.getAttribute("xml:base")		
 
 			# If no local setting for base occurs, the input argument has it
@@ -175,7 +174,7 @@ class ExecutionContext :
 		else :
 			self.lang = None
 			
-		if self.options.host_language in [ HostLanguage.xhtml_rdfa, HostLanguage.html_rdfa ] :
+		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
 			# we may have lang and xml:lang
 			if node.hasAttribute("lang") :
 				lang = node.getAttribute("lang").lower()
@@ -202,7 +201,7 @@ class ExecutionContext :
 		
 		else :
 			# this is a clear case, xml:lang is the only possible option...
-			if node.hasAttribute("xml:lang") :
+			if self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
 				self.lang = node.getAttribute("xml:lang").lower()
 				if len(self.lang) == 0 : self.lang = None
 			
@@ -397,7 +396,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.25  2010-11-02 14:56:35  ivan
+Revision 1.26  2010-11-19 13:52:45  ivan
+*** empty log message ***
+
+Revision 1.25  2010/11/02 14:56:35  ivan
 *** empty log message ***
 
 Revision 1.24  2010/10/29 16:30:22  ivan

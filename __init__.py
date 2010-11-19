@@ -114,6 +114,8 @@ to find the content type by
 
  - looking at the content type header as returned by an HTTP call; if unsuccessful or the invocation is done locally then
  - looking at the suffix of the URI or file name (.html and .xhtml are considered to be HTML5 and XHTML, respectively; otherwise XML is considered)
+ 
+See the variables in the "Utils" module if a new host language is added to the system. The current host language is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
 
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up
@@ -131,7 +133,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.26 2010-11-02 14:56:36 ivan Exp $ $Date: 2010-11-02 14:56:36 $
+$Id: __init__.py,v 1.27 2010-11-19 13:52:45 ivan Exp $ $Date: 2010-11-19 13:52:45 $
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
@@ -248,7 +250,8 @@ from pyRdfa.Parse						import parse_one_node
 from pyRdfa.Options						import Options
 from pyRdfa.transform.HeadAbout			import head_about_transform
 from pyRdfa.transform.DefaultProfile	import add_default_profile
-from pyRdfa.Utils						import URIOpener, MediaTypes, HostLanguage
+from pyRdfa.Utils						import URIOpener
+from pyRdfa.host 						import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
 
 #: Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<Utils.CachedURIOpener>} for details
 CACHED_PROFILES_ID = 'cached_profiles' 
@@ -324,7 +327,7 @@ class pyRdfa :
 					url_request 	  = URIOpener(name)
 					self.base 		  = url_request.location
 					if self.media_type == "" :
-						if url_request.content_type in [ MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml ] :
+						if url_request.content_type in content_to_host_language :
 							self.media_type = url_request.content_type
 						else :
 							self.media_type = MediaTypes.xml
@@ -333,12 +336,12 @@ class pyRdfa :
 				else :
 					self.base = name
 					if self.media_type == "" :
-						if name.endswith(".xhtml") :
-							self.media_type = MediaTypes.xhtml
-						elif name.endswith(".html") :
-							self.media_type = MediaTypes.html
-						else :
-							self.media_type = MediaTypes.xml
+						self.media_type = MediaTypes.xml
+						# see if the default should be overwritten
+						for suffix in preferred_suffixes :
+							if name.endswith(suffix) :
+								self.media_type = preferred_suffixes[suffix]
+								break
 						self.options.set_host_language(self.media_type)
 					return file(name)
 			else :
@@ -436,7 +439,7 @@ class pyRdfa :
 			msg = ""
 			
 			parser = None
-			if self.options.host_language == HostLanguage.html_rdfa :
+			if self.options.host_language == HostLanguage.html :
 				import warnings
 				warnings.filterwarnings("ignore", category=DeprecationWarning)
 				import html5lib
@@ -685,7 +688,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.26  2010-11-02 14:56:36  ivan
+Revision 1.27  2010-11-19 13:52:45  ivan
+*** empty log message ***
+
+Revision 1.26  2010/11/02 14:56:36  ivan
 *** empty log message ***
 
 Revision 1.25  2010/10/29 16:30:22  ivan

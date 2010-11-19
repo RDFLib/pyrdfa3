@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.5 2010-11-02 14:56:36 ivan Exp $
-$Date: 2010-11-02 14:56:36 $
+$Id: TermOrCurie.py,v 1.6 2010-11-19 13:52:45 ivan Exp $
+$Date: 2010-11-19 13:52:45 $
 """
 
 import re, sys
@@ -40,7 +40,8 @@ else :
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
 from pyRdfa.Options		import Options
-from pyRdfa.Utils 		import quote_URI, URIOpener, CachedURIOpener, MediaTypes, HostLanguage
+from pyRdfa.Utils 		import quote_URI, URIOpener, CachedURIOpener
+from pyRdfa.host 		import MediaTypes, HostLanguage
 from pyRdfa 			import FailedProfile
 from pyRdfa				import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa				import ns_rdfa
@@ -138,6 +139,7 @@ class ProfileRead :
 			else :
 				# this vocab value has not been seen yet...
 				graph = self._get_graph(prof)
+								
 				if graph == None :
 					continue
 				
@@ -557,7 +559,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.5  2010-11-02 14:56:36  ivan
+Revision 1.6  2010-11-19 13:52:45  ivan
+*** empty log message ***
+
+Revision 1.5  2010/11/02 14:56:36  ivan
 *** empty log message ***
 
 Revision 1.4  2010/10/29 16:30:22  ivan

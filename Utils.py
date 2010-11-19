@@ -2,7 +2,7 @@
 """
 Various utilities for pyRdfa.
 
-Most of the utilities are straightforward, except for the caching module whose usage that is described in the L{class description<CachedURIOpener>}. 
+Most of the utilities are straightforward, except for the caching module whose usage that is described in the L{class description<CachedURIOpener>}.
 
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -11,6 +11,8 @@ Most of the utilities are straightforward, except for the caching module whose u
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
+
+
 """
 
 """
@@ -26,51 +28,11 @@ if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import RDF as ns_rdf
 else :
 	from rdflib.RDF	import RDFNS  as ns_rdf
+	
+	
+#from pyRdfa.host import HostLanguage, MediaTypes, content_to_host_language, preferred_suffixes, default_profiles
 
-class HostLanguage :
-	"""An enumeration style class: recognized host language types for RDFa. Some processing details may also
-	depend on these host languages."""
-	(rdfa_core, xhtml_rdfa, html_rdfa) = range(0,3)
-	
-class MediaTypes :
-	"""An enumeration style class: some common media types (better have them at one place to avoid misstyping...)"""
-	rdfxml 	= 'application/rdf+xml'
-	turtle 	= 'text/turtle'
-	html	= 'text/html'
-	xhtml	= 'application/xhtml+xml'
-	svg		= 'application/svg+xml'
-	smil	= 'application/smil+xml'
-	xml		= 'application/xml'
-	nt		= 'text/plain'
-	
-#: mapping from (some) content types to RDFa host languages. This may control the exact processing or at least the default profile (see below)...
-content_to_host_language = {
-	MediaTypes.html		: HostLanguage.html_rdfa,
-	MediaTypes.xhtml	: HostLanguage.xhtml_rdfa,
-	MediaTypes.xml		: HostLanguage.rdfa_core,
-	MediaTypes.smil		: HostLanguage.rdfa_core,
-	MediaTypes.svg		: HostLanguage.rdfa_core,
-}
-	
-#: default profiles for some of the host languages
-default_profiles = {
-	HostLanguage.xhtml_rdfa	: "http://www.w3.org/1999/xhtml",
-	HostLanguage.html_rdfa 	: "http://www.w3.org/1999/xhtml",
-}
-
-#: mapping preferred suffixes to media types...
-preferred_suffixes = {
-	".rdf"		: MediaTypes.rdfxml,
-	".ttl"		: MediaTypes.turtle,
-	".n3"		: MediaTypes.turtle,
-	".owl"		: MediaTypes.rdfxml,
-	".html"		: MediaTypes.html,
-	".xhtml"	: MediaTypes.xhtml,
-	".svg"		: MediaTypes.svg,
-	".smil"		: MediaTypes.smil,
-	".xml"		: MediaTypes.xml,
-	".nt"		: MediaTypes.nt
-}
+from pyRdfa.host import HostLanguage, preferred_suffixes
 
 #########################################################################################################
 # Handling URIs
@@ -177,6 +139,7 @@ class CachedURIOpener(URIOpener) :
 		@keyword cached_env: the environment variable name the directs the caching
 		"""
 		resolved = False
+			
 		if cached_env in CachedURIOpener.loaded_modules :
 			# This module has already been imported once
 			(self.index, self.base) = CachedURIOpener.loaded_modules[cached_env]
@@ -289,6 +252,8 @@ class CachedURIOpener(URIOpener) :
 							break
 				return True
 			except :
+				import sys
+				(type,value,traceback) = sys.exc_info()
 				return False
 		else :
 			return False

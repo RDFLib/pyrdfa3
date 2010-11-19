@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: ContainersCollections.py,v 1.6 2010-11-02 14:56:46 ivan Exp $
-$Date: 2010-11-02 14:56:46 $
+$Id: ContainersCollections.py,v 1.7 2010-11-19 13:52:52 ivan Exp $
+$Date: 2010-11-19 13:52:52 $
 """
 
 import uuid
@@ -120,6 +120,12 @@ class CollectionsContainers :
 				parent.appendChild(type_node)
 				type_node.setAttribute("about", subject)
 				type_node.setAttribute("typeof", ctype)
+				
+		# Take care of a rare case: the node has a datatype property set to XMLLiteral. In this case nothing should be done!
+		if node.hasAttribute("datatype") :
+			val = node.getAttribute("datatype")
+			if val == str(ns_rdf["XMLLiteral"]) or val == "rdf:XMLLiteral" :
+				return
 				
 		if node.hasAttribute("resource") :
 			target = node.getAttribute("resource")
@@ -231,7 +237,10 @@ def containers_collections(html, option) :
 ############
 """
 $Log: ContainersCollections.py,v $
-Revision 1.6  2010-11-02 14:56:46  ivan
+Revision 1.7  2010-11-19 13:52:52  ivan
+*** empty log message ***
+
+Revision 1.6  2010/11/02 14:56:46  ivan
 *** empty log message ***
 
 Revision 1.5  2010/08/27 13:45:44  ivan
