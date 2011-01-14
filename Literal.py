@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.10 2010-10-29 16:30:22 ivan Exp $
-$Date: 2010-10-29 16:30:22 $
+$Id: Literal.py,v 1.11 2011-01-14 12:41:56 ivan Exp $
+$Date: 2011-01-14 12:41:56 $
 """
 
 import re
@@ -89,36 +89,19 @@ def generate_literal(node, graph, subject, state) :
 		@param Pnode: DOM Node
 		@return: string
 		"""
-		def collectPrefixes(prefixes, node) :
-			def addPf(prefx, string) :
-				pf = string.split(':')[0]
-				if pf != string and pf not in prefx : prefx.append(pf)
-			# end addPf
-				
-			# first the local name of the node
-			addPf(prefixes, node.tagName)
-			# get all the attributes and children
-			for child in node.childNodes :
-				if child.nodeType == node.ELEMENT_NODE :
-					collectPrefixes(prefixes, child)
-				elif child.nodeType == node.ATTRIBUTE_NODE :
-					addPf(prefixes, node.child.name)
-		# end collectPrefixes
 					
-		rc = ""
-		prefixes = []
-		for node in Pnode.childNodes :
-			if node.nodeType == node.ELEMENT_NODE :
-				collectPrefixes(prefixes,node)
-		
+		rc = ""		
 		for node in Pnode.childNodes:
 			if node.nodeType == node.TEXT_NODE:
 				rc = rc + __putBackEntities(node.data)
 			elif node.nodeType == node.ELEMENT_NODE :
 				# Decorate the element with namespaces and lang values
-				for prefix in prefixes :
-					if prefix in state.ns and not node.hasAttribute("xmlns:%s" % prefix) :
-						node.setAttribute("xmlns:%s" % prefix,"%s" % state.ns[prefix])
+				#for prefix in prefixes :
+				#	if prefix in state.term_or_curie.xmlns and not node.hasAttribute("xmlns:%s" % prefix) :
+				#		node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
+				for prefix in state.term_or_curie.xmlns :
+					if not node.hasAttribute("xmlns:%s" % prefix) :
+						node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
 				# Set the default namespace, if not done (and is available)
 				if not node.getAttribute("xmlns") and state.defaultNS != None :
 					node.setAttribute("xmlns",state.defaultNS)
@@ -196,3 +179,11 @@ def generate_literal(node, graph, subject, state) :
 
 	# return
 
+"""
+$Log: Literal.py,v $
+Revision 1.11  2011-01-14 12:41:56  ivan
+(1) only those namespaces are stored that are defined via xmlns (2) the optimization to store only used namespaces has been taken out, it would not work with CURIE type attribute values
+
+
+
+"""
