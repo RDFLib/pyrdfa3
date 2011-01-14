@@ -13,11 +13,13 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 
 @var XHTML_PREFIX: prefix for the XHTML vocabulary URI (set to 'xhv')
 @var XHTML_URI: URI prefix of the XHTML vocabulary
+@var ncname: Regular expression object for NCNAME
+@var xml_application_media_type: Regular expression object for a general XML application media type
 """
 
 """
-$Id: TermOrCurie.py,v 1.6 2010-11-19 13:52:45 ivan Exp $
-$Date: 2010-11-19 13:52:45 $
+$Id: TermOrCurie.py,v 1.7 2011-01-14 12:43:32 ivan Exp $
+$Date: 2011-01-14 12:43:32 $
 """
 
 import re, sys
@@ -46,24 +48,14 @@ from pyRdfa 			import FailedProfile
 from pyRdfa				import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa				import ns_rdfa
 
-#: Regular expression object for NCNAME
+# Regular expression object for NCNAME
 ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
 
-#: Regular expression object for a general XML application media type
+# Regular expression object for a general XML application media type
 xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
 
 XHTML_PREFIX = "xhv"
 XHTML_URI    = "http://www.w3.org/1999/xhtml/vocab#"
-
-# Predefined terms for XHTML
-# At the moment this is just hardcoded, we will see whether this can be handled as
-# some form of a default profile mechanism.
-_predefined_html_terms  = [
-	'alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
-	'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next',
-	'p3pv1', 'prev', 'role', 'section', 'subsection', 'start', 'license',
-	'up', 'last', 'stylesheet', 'first', 'top'
-]
 
 #### Managing blank nodes for CURIE-s: mapping from local names to blank nodes.
 _bnodes = {}
@@ -377,9 +369,13 @@ class TermOrCurie :
 		#-----------------------------------------------------------------
 		# the locally defined namespaces
 		dict = {}
+		# locally defined xmlns namespaces, necessary for correct XML Literal generation
+		xmlns_dict = {}
 				
 		# Add the namespaces defined via a @profile
-		for key in recursive_vocab.ns : dict[key] = recursive_vocab.ns[key]
+		for key in recursive_vocab.ns :
+			dict[key] = recursive_vocab.ns[key]
+			self.graph.bind(key, dict[key])
 
 		# Add the locally defined namespaces using the xmlns: syntax
 		# Note that the placement of this code means that the local definitions will override
@@ -405,7 +401,8 @@ class TermOrCurie :
 							pr = prefix.lower()
 						else :
 							pr = prefix
-						dict[pr] = ns
+						dict[pr]       = ns
+						xmlns_dict[pr] = ns
 						self.graph.bind(pr,ns)
 
 		# Add the locally defined namespaces using the @prefix syntax
@@ -415,7 +412,8 @@ class TermOrCurie :
 			if pr != None :
 				# separator character is whitespace
 				pr_list = pr.strip().split()
-				for i in range(0, len(pr_list), 2) :
+				# range(0, len(pr_list), 2) 
+				for i in range(len(pr_list) - 2, -1, -2) :
 					prefix = pr_list[i]
 					# see if there is a URI at all
 					if i == len(pr_list) - 1 :
@@ -435,15 +433,14 @@ class TermOrCurie :
 							#something to be done here
 							self.default_curie_uri = uri
 						elif prefix == "_" :
-							state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr, IncorrectPrefixDefinition)				
+							state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr, IncorrectPrefixDefinition)
 						else :
 							# last check: is the prefix an NCNAME?
 							if ncname.match(prefix) :
 								real_prefix = prefix.lower()
 								# This extra check is necessary to allow for a left-to-right priority
-								if real_prefix not in dict :
-									dict[real_prefix] = uri
-									self.graph.bind(real_prefix,uri)
+								dict[real_prefix] = uri
+								self.graph.bind(real_prefix,uri)
 							else :
 								state.options.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
 
@@ -460,6 +457,17 @@ class TermOrCurie :
 				for key in dict								: self.ns[key] = dict[key]
 			else :
 				self.ns = dict
+		
+		# the xmlns prefixes have to be stored separately, again for XML Literal generation	
+		self.xmlns = {}
+		if len(xmlns_dict) == 0 and inherited_state :
+			self.xmlns = inherited_state.term_or_curie.xmlns
+		else :
+			if inherited_state :
+				for key in inherited_state.term_or_curie.xmlns	: self.xmlns[key] = inherited_state.term_or_curie.xmlns[key]
+				for key in xmlns_dict							: self.xmlns[key] = xmlns_dict[key]
+			else :
+				self.xmlns = xmlns_dict
 	# end __init__
 
 	def CURIE_to_URI(self, val) :
@@ -559,29 +567,12 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.6  2010-11-19 13:52:45  ivan
-*** empty log message ***
+Revision 1.7  2011-01-14 12:43:32  ivan
+xmlns values are stored separately for a proper generation of XML Literals
 
-Revision 1.5  2010/11/02 14:56:36  ivan
-*** empty log message ***
-
-Revision 1.4  2010/10/29 16:30:22  ivan
-*** empty log message ***
-
-Revision 1.3  2010/10/26 14:32:10  ivan
-*** empty log message ***
 
 Revision 1.2  2010/09/03 13:12:51  ivan
 Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class
-
-Revision 1.1  2010/09/03 13:04:47  ivan
-*** empty log message ***
-
-Revision 1.16  2010/08/25 11:23:55  ivan
-*** empty log message ***
-
-Revision 1.15  2010/08/14 06:13:33  ivan
-*** empty log message ***
 
 Revision 1.14  2010/07/27 13:19:19  ivan
 Changed the profile term/prefix management to take care of all the errors and ignore entries with errors altogether
