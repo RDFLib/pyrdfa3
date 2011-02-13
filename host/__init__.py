@@ -24,12 +24,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.1 2010-11-19 13:52:32 ivan Exp $
-$Date: 2010-11-19 13:52:32 $
+$Id: __init__.py,v 1.2 2011-02-13 16:35:40 ivan Exp $
+$Date: 2011-02-13 16:35:40 $
 """
 __version__ = "3.0"
 
-from pyRdfa.host.Atom import add_entry_type
+from pyRdfa.host.Atom import atom_add_entry_type
 
 class HostLanguage :
 	"""An enumeration style class: recognized host language types for RDFa. Some processing details may depend on these host languages."""
@@ -50,6 +50,7 @@ class MediaTypes :
 	smil	= 'application/smil+xml'
 	atom	= 'application/atom+xml'
 	xml		= 'application/xml'
+	xmlt	= 'text/xml'
 	nt		= 'text/plain'
 	
 # mapping from (some) content types to RDFa host languages. This may control the exact processing or at least the default profile (see below)...
@@ -57,6 +58,7 @@ content_to_host_language = {
 	MediaTypes.html		: HostLanguage.html,
 	MediaTypes.xhtml	: HostLanguage.xhtml,
 	MediaTypes.xml		: HostLanguage.rdfa_core,
+	MediaTypes.xmlt		: HostLanguage.rdfa_core,
 	MediaTypes.smil		: HostLanguage.smil,
 	MediaTypes.svg		: HostLanguage.svg,
 	MediaTypes.atom		: HostLanguage.atom,
@@ -78,10 +80,13 @@ preferred_suffixes = {
 }
 	
 # default profiles for some of the host languages
+# URI-s to be updated!!!!
+rdfa_default_profile = "http://www.w3.org/2007/08/pyRdfa/profiles/sw-prefixes.ttl"
+
 default_profiles = {
 	HostLanguage.xhtml	: "http://www.w3.org/1999/xhtml/vocab",
 	HostLanguage.html 	: "http://www.w3.org/1999/xhtml/vocab",
-	HostLanguage.atom	: "http://www.w3.org/2010/rdfa/atom_profile"
+	#HostLanguage.atom	: "http://www.w3.org/2010/rdfa/atom_profile"
 }
 
 accept_xml_base		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg, HostLanguage.smil ]
@@ -89,5 +94,5 @@ accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg
 accept_embedded_rdf	= [ HostLanguage.svg ]
 
 host_dom_transforms = {
-	HostLanguage.atom : [add_entry_type]
+	HostLanguage.atom : [atom_add_entry_type]
 }
