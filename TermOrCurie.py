@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.7 2011-01-14 12:43:32 ivan Exp $
-$Date: 2011-01-14 12:43:32 $
+$Id: TermOrCurie.py,v 1.8 2011-03-08 10:49:50 ivan Exp $
+$Date: 2011-03-08 10:49:50 $
 """
 
 import re, sys
@@ -41,12 +41,13 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.Options		import Options
-from pyRdfa.Utils 		import quote_URI, URIOpener, CachedURIOpener
-from pyRdfa.host 		import MediaTypes, HostLanguage
-from pyRdfa 			import FailedProfile
-from pyRdfa				import IncorrectProfileDefinition, IncorrectPrefixDefinition
-from pyRdfa				import ns_rdfa
+from pyRdfa.Options			import Options
+from pyRdfa.Utils 			import quote_URI, URIOpener
+from pyRdfa.host 			import MediaTypes, HostLanguage, predefined_1_0_rel
+from pyRdfa.ProfileCache	import CachedProfile
+from pyRdfa 				import FailedProfile
+from pyRdfa					import IncorrectProfileDefinition, IncorrectPrefixDefinition
+from pyRdfa					import ns_rdfa
 
 # Regular expression object for NCNAME
 ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
@@ -69,9 +70,6 @@ class ProfileRead :
 	term and prefix definitions as well as a default vocab value, by accessing an RDF file stored in a URI as given by the
 	values of the @profile attribute values. Each L{TermOrCurie} class has one instance of this class.
 	
-	(Beyond a better readability of the code, the main reason to put this into a separate class is to localize a caching mechanism that
-	ensures that the same vocabulary file is read only once.)
-	
 	@ivar terms: collection of all term mappings
 	@type terms: dictionary
 	@ivar ns: namespace mapping
@@ -82,20 +80,19 @@ class ProfileRead :
 	@type profile_cache: dictionary
 	@cvar excluded_profiles: list of profiles that are known to be used for other purposes but are either not dereferencable or do not contain RDFa information
 	@type excluded_profiles: array of URI-s
-	"""
-	profile_cache = {}
-	profile_stack = []
-	
+	"""	
 	excluded_profiles = [
 		"http://www.w3.org/2005/11/profile",
-		"http://www.w3.org/2003/g/data-view"
+		"http://www.w3.org/2003/g/data-view",
+		"http://ns.inria.fr/grddl/rdfa/",
+		"http://microformats.org/profile/hcalendar"
 	]
 	
 	def __init__(self, state) :
 		"""
 		@param state: the state behind this term mapping
 		@type state: L{State.ExecutionContext}
-		"""
+		"""		
 		self.state = state
 
 		# This is to store the local terms
@@ -109,171 +106,35 @@ class ProfileRead :
 			return
 		
 		# see what the @profile gives us...
-		# The right-most URI has a lower priority, so we have to go in reverse order
 		profs = self.state.getURI("profile")
-		profs.reverse()
+		# There was a persion when right-most URI had a lower priority, so we had to go in reverse order
+		# kept it in the code for now, in case this is refersed again... for the time being the rule is
+		# that the rightmost has a higher priority, ie, we simply have to go in normal order
+		# At some point this comment has to be removed...
+		# profs.reverse()
 		for profuriref in profs :
 			prof = str(profuriref)
 
 			# jump over the excluded profiles
 			if prof in self.excluded_profiles : continue
 			
-			# avoid infinite recursion here...
-			if prof in ProfileRead.profile_stack :
-				# That one has already been done, danger of recursion:-(
-				continue
-			else :
-				ProfileRead.profile_stack.append(prof)
-
-			# check the cache...
-			if prof in ProfileRead.profile_cache :
-				(self.terms, self.ns, self.vocabulary) = ProfileRead.profile_cache[prof]
-			else :
-				# this vocab value has not been seen yet...
-				graph = self._get_graph(prof)
-								
-				if graph == None :
-					continue
+			# Get the profile data
+			data = CachedProfile(prof, self.state.options, report = False)
+			
+			# Merge the profile data with the overall definition
+			if data.vocabulary != "" :
+				self.vocabulary = data.vocabulary
 				
-				# Find the vocabulary first
-				voc_defs = [ uri for uri in graph.objects(None,ns_rdfa["vocabulary"]) ]				
-				# if the array is bigger than 1, this means several vocabulary definitions have been added
-				# which is not acceptable...
-				if len(voc_defs) == 1 :
-					self.vocabulary = str(voc_defs[0])
-				elif len(voc_defs) > 1 :
-					self.state.options.add_warning("Two or more default vocabularies URIs defined in the profile; ignored", IncorrectProfileDefinition, prof)
-					
-				self._find_terms(graph, prof, "term")
-				self._find_terms(graph, prof, "prefix")
-				
-				# store the cache value, avoid re-reading again...
-				ProfileRead.profile_cache[prof] = (self.terms, self.ns, self.vocabulary)
-
-			# Remove infinite anti-recursion measure
-			ProfileRead.profile_stack.pop()
-			
-	def _get_graph(self, name) :
-		"""
-		Parse the vocabulary file, and return an RDFLib Graph. The URI's content type is checked and either one of
-		RDFLib's parsers is invoked (for the Turtle, RDF/XML, and N Triple cases) or a separate RDFa processing is invoked
-		on the RDFa content.
-		
-		Opening of the file is made via the L{Caching URI Opener<Utils.CachedURIOpener>} that implements a local cache.
-		This level does not know about the details of caching.
-		
-		THe Accept header of the HTTP request gives a preference to Turtle, followed by HTML (RDFa), and then RDF/XML in case content negotiation is used.
-		
-		@param name: URI of the vocabulary file
-		@return: An RDFLib Graph instance; None if the dereferencing or the parsing was unsuccessful
-		@raise FailedProfile: if the profile document could not be dereferenced or is not a known media type. Note that this is caught higher up in the parser and that terminates processing on the whole subtree.
-		"""
-		from pyRdfa import CACHED_PROFILES_ID, HTTPError, RDFaError
-		content = None
-		try :
-			content = CachedURIOpener(name,
-									  {'Accept' : 'text/html;q=0.8, application/xhtml+xml;q=0.8, text/turtle;q=1.0, application/rdf+xml;q=0.7'},
-									  CACHED_PROFILES_ID)
-
-		except HTTPError, e :
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, e.msg), name, http_code = e.http_code)
-		except RDFaError, e :
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, e.msg), name)
-		except Exception, e :
-			(type,value,traceback) = sys.exc_info()
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (name, value), name)		
-				
-		if content.content_type == MediaTypes.turtle :
-			try :
-				retval = Graph()
-				retval.parse(content.data, format="n3")
-				return retval
-			except :
-				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse Turtle content content at <%s> (%s)" % (name,value), name)
-		elif content.content_type == MediaTypes.rdfxml :
-			try :
-				retval = Graph()
-				retval.parse(content.data)
-				return retval
-			except :
-				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse RDF/XML content at <%s> (%s)" % (name,value), name)
-		elif content.content_type == MediaTypes.nt :
-			try :
-				retval = Graph()
-				retval.parse(content.data, format="nt")
-				return retval
-			except :
-				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse N-Triple content at <%s> (%s)" % (name,value), name)
-		elif content.content_type in [MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml] or xml_application_media_type.match(content.content_type) != None :
-			try :
-				from pyRdfa import pyRdfa
-				options = Options()
-				return pyRdfa(options).graph_from_source(content.data)
-			except :
-				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse RDFa content at <%s> (%s)" % (name,value), name)
-		else :
-			raise FailedProfile("Unrecognized media type for the vocabulary file <%s>: '%s'" % (name, content.content_type), name)
-			
-	def _find_terms(self, graph, prof, term_or_prefix) :
-		"""
-		Extract the term/prefix definitions from the graph and fill in the necessary dictionaries. A load
-		of possible warnings are checked and handled.
-		@param graph: the graph to extract the triplets from
-		@param prof: URI of the profile file, to be added to warnings
-		@param term_or_prefix: the string "term" or "prefix"
-		"""
-		opposite_term_or_prefix = ((term_or_prefix == "term") and "prefix") or "term"
-			
-		# Note the usage of frozenset: it removes duplicates
-		for term in frozenset([ term for term in graph.objects(None, ns_rdfa[term_or_prefix]) ]) :
-			e_tuple = (term_or_prefix, term)
-			
-			# check if the term is really a literal and and and NCNAME
-			# that is an error
-			if not isinstance(term, Literal) :
-				self.state.options.add_warning("Non Literal %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
-				continue
-			# check of the term is really a valid Literal, ie, an NCNAME
-			if ncname.match(term) == None :
-				self.state.options.add_warning("Non NCNAME %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
-				continue
-			
-			# find all the subjects for a specific term. If there are more than one, that is an error
-			subjs = [ subj for subj in graph.subjects(ns_rdfa[term_or_prefix],term) ]
-			if len(subjs) != 1 :
-				self.state.options.add_warning("The %s '%s' is defined twice; ignored" % e_tuple, IncorrectProfileDefinition, prof)
-				continue
-			
-			# we got THE subject!
-			subj = subjs[0]
-			
-			# check if the same subj has been used for several term definitions
-			if len([ oterm for oterm in graph.objects(subj,ns_rdfa[term_or_prefix]) ]) != 1 :
-				self.state.options.add_warning("Same subject is used for several %s definion (including '%s'); ignored" % e_tuple, IncorrectProfileDefinition, prof)
-				continue
-			# check if the same subj has been used for prefix definion, too; if so, that is an error
-			if len([pr for pr in graph.objects(subj,ns_rdfa[opposite_term_or_prefix])]) != 0 :
-				# if we get here, the same subject has been reused, which is not allowed
-				self.state.options.add_warning("Same subject is used for both %s and %s ('%s' and '%s'); ignored" % (term_or_prefix, opposite_term_or_prefix, term, pr), IncorrectProfileDefinition, prof)
-				continue
-				
-			# The subject is also kosher, we can get the uris
-			uris = [ uri for uri in graph.objects(subj,ns_rdfa["uri"]) ]
-			if len(uris) == 0 :
-				self.state.options.add_warning("No URI defined for %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
-			elif len(uris) > 1 :
-				self.state.options.add_warning("More than one URIs defined for %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, prof)
-			else :
-				# got it...
-				if term_or_prefix == "term" :
-					self.terms[str(term)] = URIRef(uris[0])
+			for key in data.terms :
+				if not isinstance(data.terms[key],URIRef) :
+					self.terms[key] = URIRef(data.terms[key])
 				else :
-					self.ns[str(term).lower()] = Namespace(quote_URI(uris[0], self.state.options))
-				
+					self.terms[key] = data.terms[key]
+			for key in data.ns :
+				if not isinstance(data.ns[key], Namespace) :
+					self.ns[key] = Namespace(data.ns[key])
+				else :
+					self.ns[key] = data.ns[key]
 
 ##################################################################################################################
 
@@ -314,8 +175,11 @@ class TermOrCurie :
 		# --------------------------------------------------------------------------------
 		# Set the default CURIE URI
 		if inherited_state == None :
+			# This is the top level...
+			# AFAIK there is no default setting for the URI-s
+			# self.default_curie_uri = None
 			self.default_curie_uri = Namespace(XHTML_URI)
-			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)
+			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)				
 		else :
 			self.default_curie_uri = inherited_state.term_or_curie.default_curie_uri
 
@@ -352,10 +216,15 @@ class TermOrCurie :
 		if inherited_state is None :
 			# this is the vocabulary belonging to the top level of the tree!
 			self.terms = {}
-			# HTML, for example, has its own set of predefined terms. But those are defined via the profile mechanism, too
-			# and cached by this implementation, so it is not making us loose time
-			for key in recursive_vocab.terms :
-				self.terms[key] = recursive_vocab.terms[key]
+			if state.rdfa_version >= "1.1" :
+				# Simply get the terms defined by the default vocabularies. There is no need for merging
+				for key in recursive_vocab.terms :
+					self.terms[key] = recursive_vocab.terms[key]
+			else :
+				# The terms are hardwired...
+				for key in predefined_1_0_rel :
+					self.terms[key] = URIRef(XHTML_URI + key)
+				self.graph.bind(XHTML_PREFIX, XHTML_URI)
 		else :
 			if len(recursive_vocab.terms) == 0 :
 				# just refer to the inherited terms
@@ -438,7 +307,6 @@ class TermOrCurie :
 							# last check: is the prefix an NCNAME?
 							if ncname.match(prefix) :
 								real_prefix = prefix.lower()
-								# This extra check is necessary to allow for a left-to-right priority
 								dict[real_prefix] = uri
 								self.graph.bind(real_prefix,uri)
 							else :
@@ -501,7 +369,10 @@ class TermOrCurie :
 			
 			# first possibility: empty prefix
 			if len(prefix) == 0 :
-				return self.default_curie_uri[reference]
+				if self.default_curie_uri :
+					return self.default_curie_uri[reference]
+				else :
+					return None
 			else :
 				# prefix is non-empty; can be a bnode
 				if prefix == "_" :
@@ -519,7 +390,7 @@ class TermOrCurie :
 							return retval
 				# check if the prefix is a valid NCNAME
 				elif ncname.match(prefix) :
-					# see if there is a binding for this:
+					# see if there is a binding for this:					
 					if prefix in self.ns :
 						# yep, a binding has been defined!
 						if len(reference) == 0 :
@@ -567,7 +438,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.7  2011-01-14 12:43:32  ivan
+Revision 1.8  2011-03-08 10:49:50  ivan
+*** empty log message ***
+
+Revision 1.7  2011/01/14 12:43:32  ivan
 xmlns values are stored separately for a proper generation of XML Literals
 
 

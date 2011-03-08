@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.11 2011-01-14 12:41:56 ivan Exp $
-$Date: 2011-01-14 12:41:56 $
+$Id: Literal.py,v 1.12 2011-03-08 10:49:49 ivan Exp $
+$Date: 2011-03-08 10:49:49 $
 """
 
 import re
@@ -40,7 +40,7 @@ def __putBackEntities(str) :
 
 #### The real meat...
 def generate_literal(node, graph, subject, state) :
-	"""Generate the literal the C{@property}, taking into account datatype, etc.
+	"""Generate the literal, taking into account datatype, etc.
 	Note: this method is called only if the C{@property} is indeed present, no need to check. 
 	
 	This method is an encoding of the algorithm documented
@@ -181,7 +181,10 @@ def generate_literal(node, graph, subject, state) :
 
 """
 $Log: Literal.py,v $
-Revision 1.11  2011-01-14 12:41:56  ivan
+Revision 1.12  2011-03-08 10:49:49  ivan
+*** empty log message ***
+
+Revision 1.11  2011/01/14 12:41:56  ivan
 (1) only those namespaces are stored that are defined via xmlns (2) the optimization to store only used namespaces has been taken out, it would not work with CURIE type attribute values
 
 

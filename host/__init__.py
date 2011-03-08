@@ -15,31 +15,64 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 
 @var content_to_host_language: a dictionary mapping a media type to a host language
 @var preferred_suffixes: mapping from preferred suffixes for media types; used if the file is local, ie, there is not HTTP return value for the media type. It corresponds to the preferred suffix in the media type registration
-@var default_profiles: mapping from host languages to default profiles
+@var default_profiles: mapping from host languages to list of default profiles
 @var accept_xml_base: list of host languages that accept the xml:base attribute for base setting
 @var accept_xml_lang: list of host languages that accept the xml:lang attribute for language setting. Note that XHTML and HTML have some special rules, and those are hard coded...
 @var accept_embedded_rdf: list of host languages that might also include RDF data using an embedded RDF/XML (e.g., SVG). That RDF data is merged with the output
 @var host_dom_transforms: dictionary mapping a host language to an array of methods that are invoked at the beginning of the parsing process for a specific node. That function can do a last minute change on that DOM node, eg, adding or modifying an attribute. The method's signature is (node, state), where node is the DOM node, and state is the L{Execution context<pyRdfa.State.ExecutionContext>}.
-
+@var predefined_1_0_rel: terms that are hardcoded for HTML+RDF1.0 and replace the default profile for that version
+@var beautifying_prefixes: this is really just to make the output more attractive: for each media type a dictionary of prefix-URI pairs that can be used to make the terms look better...
 """
 
 """
-$Id: __init__.py,v 1.2 2011-02-13 16:35:40 ivan Exp $
-$Date: 2011-02-13 16:35:40 $
+$Id: __init__.py,v 1.3 2011-03-08 10:49:58 ivan Exp $
+$Date: 2011-03-08 10:49:58 $
 """
 __version__ = "3.0"
 
 from pyRdfa.host.Atom import atom_add_entry_type
 
 class HostLanguage :
-	"""An enumeration style class: recognized host language types for RDFa. Some processing details may depend on these host languages."""
+	"""An enumeration style class: recognized host language types for this processor of RDFa. Some processing details may depend on these host languages. "rdfa_core" is the default Host Language is nothing else is defined."""
 	rdfa_core 	= "RDFa Core"
 	xhtml		= "XHTML+RDFa"
 	html		= "HTML5+RDFa"
 	atom		= "Atom+RDFa"
 	svg			= "SVG+RDFa"
-	smil		= "SMIL+RDFa"
 	
+# default profiles for host languages
+default_profiles = {
+	HostLanguage.xhtml		: ["http://www.w3.org/profile/rdfa-1.1", "http://www.w3.org/profile/html-rdfa-1.1"],
+	HostLanguage.html 		: ["http://www.w3.org/profile/rdfa-1.1", "http://www.w3.org/profile/html-rdfa-1.1"],
+	HostLanguage.rdfa_core 	: ["http://www.w3.org/profile/rdfa-1.1"],
+	HostLanguage.atom	 	: ["http://www.w3.org/profile/rdfa-1.1"],
+	HostLanguage.svg	 	: ["http://www.w3.org/profile/rdfa-1.1"],
+}
+
+beautifying_prefixes = {
+	HostLanguage.xhtml	: {
+		"xhv" : "http://www.w3.org/1999/xhtml/vocab#"
+	},
+	HostLanguage.html	: {
+		"xhv" : "http://www.w3.org/1999/xhtml/vocab#"
+	},	
+}
+
+
+accept_xml_base		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
+accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
+accept_embedded_rdf	= [ HostLanguage.svg ]
+
+host_dom_transforms = {
+	HostLanguage.atom : [atom_add_entry_type]
+}
+
+predefined_1_0_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
+'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next', 'p3pv1', 'prev',
+'role', 'section', 'subsection', 'start', 'license', 'up', 'last', 'stylesheet', 'first', 'top']
+
+# ----------------------------------------------------------------------------------------------------------
+		
 class MediaTypes :
 	"""An enumeration style class: some common media types (better have them at one place to avoid misstyping...)"""
 	rdfxml 	= 'application/rdf+xml'
@@ -59,7 +92,7 @@ content_to_host_language = {
 	MediaTypes.xhtml	: HostLanguage.xhtml,
 	MediaTypes.xml		: HostLanguage.rdfa_core,
 	MediaTypes.xmlt		: HostLanguage.rdfa_core,
-	MediaTypes.smil		: HostLanguage.smil,
+	MediaTypes.smil		: HostLanguage.rdfa_core,
 	MediaTypes.svg		: HostLanguage.svg,
 	MediaTypes.atom		: HostLanguage.atom,
 }
@@ -79,20 +112,3 @@ preferred_suffixes = {
 	".atom"		: MediaTypes.atom
 }
 	
-# default profiles for some of the host languages
-# URI-s to be updated!!!!
-rdfa_default_profile = "http://www.w3.org/2007/08/pyRdfa/profiles/sw-prefixes.ttl"
-
-default_profiles = {
-	HostLanguage.xhtml	: "http://www.w3.org/1999/xhtml/vocab",
-	HostLanguage.html 	: "http://www.w3.org/1999/xhtml/vocab",
-	#HostLanguage.atom	: "http://www.w3.org/2010/rdfa/atom_profile"
-}
-
-accept_xml_base		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg, HostLanguage.smil ]
-accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg, HostLanguage.smil ]
-accept_embedded_rdf	= [ HostLanguage.svg ]
-
-host_dom_transforms = {
-	HostLanguage.atom : [atom_add_entry_type]
-}

@@ -4,7 +4,6 @@ Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X, the turt
 
 As an extra bonus, some bindings (in the RDFLib sense) are done automatically, to ensure a nicer output for widely used schemas…
 
-
 @summary: Shell around RDLib's Graph
 @requires: Python version 2.5 or up
 @requires: U{RDFLib<http://rdflib.net>}
@@ -17,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: MyGraph.py,v 1.3 2010-11-02 14:56:35 ivan Exp $ $Date: 2010-11-02 14:56:35 $
+$Id: MyGraph.py,v 1.4 2011-03-08 10:49:49 ivan Exp $ $Date: 2011-03-08 10:49:49 $
 
 """
 
@@ -36,7 +35,7 @@ from rdflib	import Namespace
 _xml_serializer_name	= "my-rdfxml"
 _turtle_serializer_name	= "my-turtle"
 
-#: Default bindings. This is just for the beauty of things: bindings are added to the graph to make the output nicer. If this is not done, RDFlib defines prefixes like "_1:", "_2:" which is, though correct, ugly...
+# Default bindings. This is just for the beauty of things: bindings are added to the graph to make the output nicer. If this is not done, RDFlib defines prefixes like "_1:", "_2:" which is, though correct, ugly...
 _bindings = [	
 	("foaf", "http://xmlns.com/foaf/0.1/"),
 	("xsd",  "http://www.w3.org/2001/XMLSchema#"),
@@ -94,6 +93,7 @@ class MyGraph(Graph) :
 			elif format == "nt" :
 				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :
+				retval =""
 				return Graph.serialize(self, format="n3")
 		else :
 			if format == "xml" or format == "pretty-xml" :
@@ -107,7 +107,10 @@ class MyGraph(Graph) :
 
 """
 $Log: MyGraph.py,v $
-Revision 1.3  2010-11-02 14:56:35  ivan
+Revision 1.4  2011-03-08 10:49:49  ivan
+*** empty log message ***
+
+Revision 1.3  2010/11/02 14:56:35  ivan
 *** empty log message ***
 
 Revision 1.2  2010/10/29 16:30:22  ivan

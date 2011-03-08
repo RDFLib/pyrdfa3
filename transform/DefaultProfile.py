@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Simple transfomer: Add a default @profile value, depending on the media type of the source. The
-mapping is defined in L{pyRdfa.Utils.default_profiles}.
+mapping is defined in L{pyRdfa.host.default_profiles}.
 
 @summary: Add a top "about" to <head> and <body>
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -13,24 +13,26 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: DefaultProfile.py,v 1.4 2010-11-19 13:52:52 ivan Exp $
-$Date: 2010-11-19 13:52:52 $
+$Id: DefaultProfile.py,v 1.5 2011-03-08 10:50:15 ivan Exp $
+$Date: 2011-03-08 10:50:15 $
 """
 
-def add_default_profile(top, options) :
+def add_default_profile(node, options) :
 	"""
-	@param top: a DOM node for the top level element
+	@param node: a DOM node for the top level element
 	@param options: invocation options
 	@type options: L{Options<pyRdfa.Options>}
-	"""
+	"""	
 	from pyRdfa.host import default_profiles
-	if options and (options.host_language in default_profiles) :
-		# otherwise this is meaningless...
-		prof = default_profiles[options.host_language]
-		if not top.hasAttribute("profile") :
-			top.setAttribute("profile",prof)
-		else :
-			dprofs = top.getAttribute("profile").strip()
-			# maybe it is already there, so avoid adding it twice:
-			if not (len(dprofs.split()) == 1 and dprofs == prof) :
-				top.setAttribute("profile",prof + " " + dprofs)
+	if options and options.host_language in default_profiles :
+		list_of_profiles = default_profiles[options.host_language]
+		if len(list_of_profiles) > 0 : 
+			proftxt = ""
+			for pr in list_of_profiles :
+				proftxt += pr + " "
+			# Modify the dom
+			if node.hasAttribute("profile") :
+				dprofs = node.getAttribute("profile").strip()
+				node.setAttribute("profile",proftxt + dprofs)
+			else :
+				node.setAttribute("profile",proftxt.strip())

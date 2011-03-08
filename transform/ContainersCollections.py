@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: ContainersCollections.py,v 1.7 2010-11-19 13:52:52 ivan Exp $
-$Date: 2010-11-19 13:52:52 $
+$Id: ContainersCollections.py,v 1.8 2011-03-08 10:50:14 ivan Exp $
+$Date: 2011-03-08 10:50:14 $
 """
 
 import uuid
@@ -35,7 +35,13 @@ _trigger_Lst = "::List"
 _trigger_mb  = "::member"
 
 class BIDs :
-	"""Class to handle the collection and the generation of unique blank node identifiers"""
+	"""Class to handle the collection and the generation of unique blank node identifiers.
+	
+	@ivar bids: set of Blank node id-s
+	@ivar bidnum: the integer used to create a new id
+	@ivar latestbid: the latest id that has been generated
+	
+	"""
 	def __init__(self, html) :
 		"""
 		@param html: the top level DOM node
@@ -45,7 +51,7 @@ class BIDs :
 		self.latestbid = ""
 		def collect(node) :
 			"""Check and collect the possible bnode id-s in the file that might occur in CURIE-s. The
-			function is called recursively on each node. The L{_bids} variable is filled with the initial values.
+			function is called recursively on each node. The L{bids} variable is filled with the initial values.
 			@param node: a DOM element node
 			"""
 			def suspect(val) :
@@ -64,7 +70,7 @@ class BIDs :
 		
 	def new_id(self) :
 		"""Generate a new value that can be used as a bnode id...
-		@return: a string of the form _:XXXX where XXXX is unique (ie, not yet stored in the L{_bids} array).
+		@return: a string of the form _:XXXX where XXXX is unique (ie, not yet stored in the L{bids} set).
 		"""
 		while True :
 			# Eventually that should succeed...
@@ -237,7 +243,10 @@ def containers_collections(html, option) :
 ############
 """
 $Log: ContainersCollections.py,v $
-Revision 1.7  2010-11-19 13:52:52  ivan
+Revision 1.8  2011-03-08 10:50:14  ivan
+*** empty log message ***
+
+Revision 1.7  2010/11/19 13:52:52  ivan
 *** empty log message ***
 
 Revision 1.6  2010/11/02 14:56:46  ivan

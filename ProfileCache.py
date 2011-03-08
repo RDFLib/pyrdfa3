@@ -52,7 +52,6 @@ from pyRdfa			import ns_rdfa
 from pyRdfa			import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa			import ProfileCachingError, ProfileCachingInfo
 from pyRdfa 		import FailedProfile
-from pyRdfa			import CACHE_DIR_VAR
 
 # Regular expression object for a general XML application media type
 xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
@@ -209,6 +208,7 @@ class CachedProfileIndex :
 		"""
 		Find the profile cache directory.
 		"""
+		from pyRdfa	import CACHE_DIR_VAR
 		if CACHE_DIR_VAR in os.environ :
 			return os.environ[CACHE_DIR_VAR]
 		else :

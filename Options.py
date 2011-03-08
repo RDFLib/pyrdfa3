@@ -11,7 +11,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.12 2010-11-19 13:52:45 ivan Exp $ $Date: 2010-11-19 13:52:45 $
+$Id: Options.py,v 1.13 2011-03-08 10:49:49 ivan Exp $ $Date: 2011-03-08 10:49:49 $
 """
 
 import sys, datetime
@@ -74,15 +74,15 @@ class ProcessorGraph :
 		if context :
 			if not isinstance(context,URIRef) :
 				context = URIRef(context)
-			self.graph.add((bnode, ns_distill["context"], context))
+			self.graph.add((bnode, ns_rdfa["context"], context))
 		return bnode
 	
 	def add_http_context(self, subj, http_code) :
 		self.graph.bind("ht",ns_ht)
 		bnode = BNode()
-		self.graph.add((subj, ns_distill["context"], bnode))
+		self.graph.add((subj, ns_rdfa["context"], bnode))
 		self.graph.add((bnode, ns_rdf["type"], ns_ht["Response"]))
-		self.graph.add((bnode, ns_ht["sc"], URIRef("http://www.w3.org/2008/http-statusCodes/statusCode%s" % http_code)))
+		self.graph.add((bnode, ns_ht["responseCode"], URIRef("http://www.w3.org/2006/http#%s" % http_code)))
 
 
 class Options :
@@ -159,7 +159,7 @@ class Options :
 		"""
 		return self.processor_graph.add_triples(txt, RDFA_Warning, warning_type, context)
 
-	def add_info(self, txt, info_type=None) :
+	def add_info(self, txt, info_type=None, context=None) :
 		"""Add an informational comment to the processor graph.
 		@param txt: the information text. 
 		@keyword info_type: Info Class

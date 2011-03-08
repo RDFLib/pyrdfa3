@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.26 2010-11-19 13:52:45 ivan Exp $
-$Date: 2010-11-19 13:52:45 $
+$Id: State.py,v 1.27 2011-03-08 10:49:49 ivan Exp $
+$Date: 2011-03-08 10:49:49 $
 """
 
 import rdflib
@@ -36,7 +36,8 @@ else :
 
 from pyRdfa.Options		import Options
 from pyRdfa.Utils 		import quote_URI
-from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang
+from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang, beautifying_prefixes
+
 from pyRdfa.TermOrCurie	import TermOrCurie
 from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
 
@@ -45,11 +46,11 @@ import random
 import urlparse
 import urllib
 
-#: list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
-usual_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "geo", "gopher", "hdl", "http", "https", "imap",
+# list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
+usual_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "git", "geo", "gopher", "hdl", "http", "https", "imap",
 				 "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
 				 "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
-				 "stp", "svn", "svn+ssh", "telnet", "tel", "tv", "urn", "wais", "javascript"
+				 "stp", "svn", "svn+ssh", "tag", "telnet", "tel", "tv", "urn", "wais", "javascript"
 				]
 
 #### Core Class definition
@@ -70,11 +71,13 @@ class ExecutionContext :
 	@type node: DOM node instance
 	@ivar rdfa_version: RDFa version of the content
 	@type rdfa_version: String
+	@cvar _list: list of attributes that allow for lists of values and should be treated as such
+	@cvar _resource_type: dictionary; mapping table from attribute name to the exact method to retrieve the URI(s). Is initialized at first run
 	"""
 
-	#: list of attributes that allow for lists of values and should be treated as such	
+	# list of attributes that allow for lists of values and should be treated as such	
 	_list = [ "profile", "rel", "rev", "property", "typeof" ]
-	#: mapping table from attribute name to the exact method to retrieve the URI(s).
+	# mapping table from attribute name to the exact method to retrieve the URI(s).
 	_resource_type = {}
 	
 	def __init__(self, node, graph, inherited_state=None, base="", options=None, rdfa_version = None) :
@@ -132,8 +135,16 @@ class ExecutionContext :
 			if rdfa_version is not None :
 				self.rdfa_version = rdfa_version
 			else :
-				from pyRdfa import rdfa_current_version
+				from pyRdfa import rdfa_current_version				
 				self.rdfa_version = rdfa_current_version
+				# This value can be overwritten by a @version attribute
+				if node.hasAttribute("version") :
+					top_version = node.getAttribute("version")
+					if top_version.find("RDFa 1.0") != -1 :
+						self.rdfa_version = "1.0"
+					elif top_version.find("RDFa 1.1") != -1 :
+						self.rdfa_version = "1.1"
+						
 			
 			# this is just to play safe. I believe this should actually not happen...
 			if options == None :
@@ -150,7 +161,13 @@ class ExecutionContext :
 						self.base = bases.getAttribute("href")
 						continue
 			elif self.options.host_language in accept_xml_base and node.hasAttribute("xml:base") :
-				self.base = node.getAttribute("xml:base")		
+				self.base = node.getAttribute("xml:base")
+				
+			# Perform an extra beautification in RDFLib
+			if self.options.host_language in beautifying_prefixes :
+				dict = beautifying_prefixes[self.options.host_language]
+				for key in dict :
+					graph.bind(key,dict[key])
 
 			# If no local setting for base occurs, the input argument has it
 			if self.base == "" :
@@ -191,14 +208,17 @@ class ExecutionContext :
 				# this has priority
 				if len(xmllang) != 0 :
 					self.lang = xmllang
+				else :
+					self.lang = None
 			elif lang != None :
 				if len(lang) != 0 :
 					self.lang = lang
+				else :
+					self.lang = None
 				
 			# check a posible warning (error?), too
 			if lang != None and xmllang != None and lang != xmllang :
-				self.options.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))			
-		
+				self.options.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))
 		else :
 			# this is a clear case, xml:lang is the only possible option...
 			if self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
@@ -223,8 +243,7 @@ class ExecutionContext :
 		@type val: string
 		@return: an RDFLib URIRef instance
 		"""
-
-		def check_create_URIRef(uri) :
+		def create_URIRef(uri, check = True) :
 			"""
 			Mini helping function: it checks whether a uri is using a usual scheme before a URIRef is created. In case
 			there is something unusual, a warning is generated (though the URIRef is created nevertheless)
@@ -232,12 +251,32 @@ class ExecutionContext :
 			@return: an RDFLib URIRef instance
 			"""
 			val = uri.strip()
-			if urlparse.urlsplit(val)[0] not in usual_schemes :
+			if check and urlparse.urlsplit(val)[0] not in usual_schemes :
 				self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 			return URIRef(val)
 
+		def join(base, v, check = True) :
+			"""
+			Mini helping function: it makes a urljoin for the paths. Based on the python library, but
+			that one has a bug: in some cases it
+			swallows the '#' or '?' character at the end. This is clearly a problem with
+			Semantic Web URI-s, so this is checked, too
+			@param base: base URI string
+			@param v: local part
+			@return: an RDFLib URIRef instance
+			"""
+			joined = urlparse.urljoin(base, v)
+			try :
+				if v[-1] != joined[-1] :
+					return create_URIRef(joined + v[-1], check)
+				else :
+					return create_URIRef(joined, check)
+			except :
+				return create_URIRef(joined, check)
+
 		if val == "" :
 			return URIRef(self.base)
+			
 
 		# fall back on good old traditional URI-s.
 		# To be on the safe side, let us use the Python libraries
@@ -246,25 +285,19 @@ class ExecutionContext :
 			# The following call is just to be sure that some pathological cases when
 			# the ':' _does_ appear in the URI but not in a scheme position is taken
 			# care of properly...
+			
 			key = urlparse.urlsplit(val)[0]
 			if key == "" :
 				# relative URI, to be combined with local file name:
-				return URIRef(self.base + val.strip())
+				return join(self.base, val, check = False)
 			else :
-				return check_create_URIRef(val)
+				return create_URIRef(val)
 		else :
 			# Trust the python library...
 			# Well, not quite:-) there is what is, in my view, a bug in the urljoin; in some cases it
 			# swallows the '#' or '?' character at the end. This is clearly a problem with
-			# Semantic Web URI-s
-			joined = urlparse.urljoin(self.base, val)
-			try :
-				if val[-1] != joined[-1] :
-					return check_create_URIRef(joined + val[-1])
-				else :
-					return check_create_URIRef(joined)
-			except :
-				return check_create_URIRef(joined)
+			# Semantic Web URI-s			
+			return join(self.base, val)
 	# end _URI
 
 	def _CURIEorURI(self, val) :
@@ -288,7 +321,6 @@ class ExecutionContext :
 			else :
 				val = val[1:-1]
 				safe_curie = True
-				
 		# There is a branch here depending on whether we are in 1.1 or 1.0 mode
 		if self.rdfa_version >= "1.1" :
 			retval = self.term_or_curie.CURIE_to_URI(val)
@@ -396,17 +428,9 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.26  2010-11-19 13:52:45  ivan
+Revision 1.27  2011-03-08 10:49:49  ivan
 *** empty log message ***
 
-Revision 1.25  2010/11/02 14:56:35  ivan
-*** empty log message ***
-
-Revision 1.24  2010/10/29 16:30:22  ivan
-*** empty log message ***
-
-Revision 1.23  2010/10/26 14:32:10  ivan
-*** empty log message ***
 
 Revision 1.22  2010/09/03 13:13:36  ivan
 Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class

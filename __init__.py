@@ -128,17 +128,19 @@ See the variables in the "Utils" module if a new host language is added to the s
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
 @var builtInTransformers: List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
-@var CACHED_PROFILES_ID: Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<Utils.CachedURIOpener>} for details
+@var CACHE_DIR_VAR: Environment variable used to characterize cache directories for RDFa profiles in case the default setting does not work or is not appropriate. See the L{caching mechanism description<ProfileCache>} for details
 @var rdfa_current_version: Current "official" version of RDFa that this package implements by default. This can be changed at the invocation of the package
 """
 
 """
-$Id: __init__.py,v 1.27 2010-11-19 13:52:45 ivan Exp $ $Date: 2010-11-19 13:52:45 $
+$Id: __init__.py,v 1.28 2011-03-08 10:49:50 ivan Exp $ $Date: 2011-03-08 10:49:50 $
+
+Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
 Thanks to Peter Mika who was probably my most prolific tester and bug reporter...
 
 Thanks to Sergio Fernandez to amend the list of non-escaped characters for URI-s (ie, hunted down the necessary steps
-as a reaction to his practical problem)
+as a reaction to his practical problem).
 
 Thanks to Wojciech Polak, who suggested (and provided some example code) to add the feature of
 using external file-like objects as input, too (the main usage being to use stdin).
@@ -147,7 +149,7 @@ Thanks to Elias Torrez, who provided with the idea and patches to interface to t
 
 """
 
-__version__ = "3.0"
+__version__ = "3.0.1"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -172,13 +174,13 @@ from pyRdfa.MyGraph import MyGraph as Graph
 import xml.dom.minidom
 import urlparse
 
-#: Namespace, in the RDFLib sense, for the rdfa vocabulary
+# Namespace, in the RDFLib sense, for the rdfa vocabulary
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
 
-#: Namespace, in the RDFLib sense, for the XSD Datatypes
+# Namespace, in the RDFLib sense, for the XSD Datatypes
 ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
 
-#: Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
+# Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
 debug = True
@@ -231,17 +233,19 @@ class pyRdfaError(Exception) :
 	pass
 
 # Error and Warning classes
-RDFA_Error					= ns_distill["Error"]
-RDFA_Warning				= ns_distill["Warning"]
-RDFA_Info					= ns_distill["Information"]
-NonConformantMarkup			= ns_distill["NonConformantMarkup"]
-ProfileReferenceError		= ns_distill["ProfileReferenceError"]
-UnresolvablePrefix			= ns_distill["InvalidCurie"]
-UnresolvableTerm			= ns_distill["InvalidTerm"]
+RDFA_Error					= ns_rdfa["Error"]
+RDFA_Warning				= ns_rdfa["Warning"]
+RDFA_Info					= ns_rdfa["Information"]
+NonConformantMarkup			= ns_rdfa["DocumentError"]
+ProfileReferenceError		= ns_rdfa["ProfileReferenceError"]
+UnresolvablePrefix			= ns_rdfa["UnresolvedCURIE"]
+UnresolvableTerm			= ns_rdfa["UnresolvedTerm"]
 
 FileReferenceError			= ns_distill["FileReferenceError"]
 IncorrectProfileDefinition 	= ns_distill["IncorrectProfileDefinition"]
 IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
+ProfileCachingError			= ns_distill["ProfileCachingError"]
+ProfileCachingInfo			= ns_distill["ProfileCachingInfo"]
 
 #############################################################################################
 
@@ -253,13 +257,13 @@ from pyRdfa.transform.DefaultProfile	import add_default_profile
 from pyRdfa.Utils						import URIOpener
 from pyRdfa.host 						import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
 
-#: Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<Utils.CachedURIOpener>} for details
-CACHED_PROFILES_ID = 'cached_profiles' 
+# Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<ProfileCache>} for details
+CACHE_DIR_VAR		= "PyRdfaCacheDir"
 
-#: current "official" version of RDFa that this package implements. This can be changed at the invocation of the package
+# current "official" version of RDFa that this package implements. This can be changed at the invocation of the package
 rdfa_current_version	= "1.1"
 
-#: List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
+# List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
 	head_about_transform,
 	add_default_profile
@@ -378,11 +382,11 @@ class pyRdfa :
 	
 		# get the DOM tree
 		topElement = dom.documentElement
-	
+		
 		# Perform the built-in and external transformations on the HTML tree. 
 		for trans in self.options.transformers + builtInTransformers :
 			trans(topElement, self.options)
-	
+		
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
 		try :
@@ -432,12 +436,10 @@ class pyRdfa :
 					tog.bind(k,ns)
 			options.reset_processor_graph()
 			return tog
-		
 		try :
 			# First, open the source...
 			input = self._get_input(name)
 			msg = ""
-			
 			parser = None
 			if self.options.host_language == HostLanguage.html :
 				import warnings
@@ -447,17 +449,17 @@ class pyRdfa :
 				parse = parser.parse
 			else :
 				# in other cases an XML parser has to be used
-				parse = xml.dom.minidom.parse			
+				parse = xml.dom.minidom.parse
 			dom = parse(input)
-	
 			return self.graph_from_DOM(dom, graph)
 		except FailedSource, f :
 			if not rdfOutput : raise f
 			self.options.add_error(f.msg, FileReferenceError, name)
 			return copyErrors(graph, self.options)
-		except Exception :
-			if not rdfOutput : raise
-			(type, value, traceback) = sys.exc_info()
+		except Exception, e :
+			(a,b,c) = sys.exc_info()
+			sys.excepthook(a,b,c)
+			#if not rdfOutput : raise e
 			return copyErrors(graph, self.options)
 	
 	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
@@ -688,7 +690,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.27  2010-11-19 13:52:45  ivan
+Revision 1.28  2011-03-08 10:49:50  ivan
+*** empty log message ***
+
+Revision 1.27  2010/11/19 13:52:45  ivan
 *** empty log message ***
 
 Revision 1.26  2010/11/02 14:56:36  ivan
