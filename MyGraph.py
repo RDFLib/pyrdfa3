@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: MyGraph.py,v 1.4 2011-03-08 10:49:49 ivan Exp $ $Date: 2011-03-08 10:49:49 $
+$Id: MyGraph.py,v 1.5 2011-03-11 13:08:18 ivan Exp $ $Date: 2011-03-11 13:08:18 $
 
 """
 
@@ -49,47 +49,71 @@ _bindings = [
 #########################################################################################################
 class MyGraph(Graph) :
 	"""
-    Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X, the turtle and the RDF/XML serialization has some issues (bugs and ugly output). As a result, the package’s own serializers should be registered and used. On the other hand, in RDFLib 3.X this becomes unnecessary, it is better to keep to the library’s own version. This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register, if necessary, a different serializer and use that one.
+    Wrapper around RDFLib's Graph object. The issue is that the serializers in RDFLib are buggy:-(
+	
+	In RDFLib 2.X both the Turtle and the RDF/XML serializations have issues (bugs and ugly output). In RDFLib 3.X
+	the Turtle serialization seems to be fine, but the RDF/XML has problems:-(
+	
+     This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register,
+	 if necessary, a different serializer and use that one.
 
-	@cvar xml_serializer_registered: flag to avoid duplicate registration for RDF/XML
-	@type xml_serializer_registered: boolean
-	@cvar turtle_serializer_registered: flag to avoid duplicate registration for Turtle
-	@type turtle_serializer_registered: boolean
+	@cvar xml_serializer_registered_2: flag to avoid duplicate registration for RDF/XML for rdflib 2.*
+	@type xml_serializer_registered_2: boolean
+	@cvar xml_serializer_registered_3: flag to avoid duplicate registration for RDF/XML for rdflib 3.*
+	@type xml_serializer_registered_3: boolean
+	@cvar turtle_serializer_registered_2: flag to avoid duplicate registration for Turtle for rdflib 2.*
+	@type turtle_serializer_registered_2: boolean
 	"""
-	xml_serializer_registered		= False
-	turtle_serializer_registered	= False
+	xml_serializer_registered_2		= False
+	xml_serializer_registered_3		= False
+	turtle_serializer_registered_2	= False
 	
 	def __init__(self) :
 		Graph.__init__(self)
 		for (prefix,uri) in _bindings :
 			self.bind(prefix,Namespace(uri))
+
+	def _register_XML_serializer_3(self) :
+		"""The default XML Serializer of RDFLib 3.X is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer_3>} is
+		registered in RDFlib and used in the rest of the package. 
+		"""
+		if not MyGraph.xml_serializer_registered_3 :
+			from rdflib.plugin import register
+			from rdflib.serializer import Serializer
+			register(_xml_serializer_name, Serializer,
+					 "pyRdfa.serializers.PrettyXMLSerializer_3", "PrettyXMLSerializer")
+			MyGraph.xml_serializer_registered_3 = True
 				
-	def _register_XML_serializer(self) :
-		"""The default XML Serializer of RDFLib 2.X is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer>} is
+	def _register_XML_serializer_2(self) :
+		"""The default XML Serializer of RDFLib 2.X is buggy, mainly when handling lists.
+		An L{own version<serializers.PrettyXMLSerializer>} is
 		registered in RDFlib and used in the rest of the package. This is not used for RDFLib 3.X.
 		"""
-		if not MyGraph.xml_serializer_registered :
+		if not MyGraph.xml_serializer_registered_2 :
 			from rdflib.plugin import register
 			from rdflib.syntax import serializer, serializers
-			register(_xml_serializer_name, serializers.Serializer, "pyRdfa.serializers.PrettyXMLSerializer", "PrettyXMLSerializer")
-			MyGraph.xml_serializer_registered = True
+			register(_xml_serializer_name, serializers.Serializer,
+					 "pyRdfa.serializers.PrettyXMLSerializer", "PrettyXMLSerializer")
+			MyGraph.xml_serializer_registered_2 = True
 
-	def _register_Turtle_serializer(self) :
+	def _register_Turtle_serializer_2(self) :
 		"""The default Turtle Serializers of RDFLib 2.X is buggy and not very nice as far as the output is concerned.
 		An L{own version<serializers.TurtleSerializer>} is registered in RDFLib and used in the rest of the package.
 		This is not used for RDFLib 3.X.
 		"""
-		if not MyGraph.turtle_serializer_registered :
+		if not MyGraph.turtle_serializer_registered_2 :
 			from rdflib.plugin import register
 			from rdflib.syntax import serializer, serializers
-			register(_turtle_serializer_name, serializers.Serializer, "pyRdfa.serializers.TurtleSerializer", "TurtleSerializer")
-			MyGraph.turtle_serialzier_registered = True
+			register(_turtle_serializer_name, serializers.Serializer,
+					 "pyRdfa.serializers.TurtleSerializer", "TurtleSerializer")
+			MyGraph.turtle_serialzier_registered_2 = True
 		
 	def serialize(self, format = "xml") :
 		if rdflib.__version__ >= "3.0.0" :
 			# this is the easy case
 			if format == "xml" or format == "pretty-xml" :
-				return Graph.serialize(self, format="pretty-xml")
+				self._register_XML_serializer_3()
+				return Graph.serialize(self, format=_xml_serializer_name)
 			elif format == "nt" :
 				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :
@@ -97,17 +121,20 @@ class MyGraph(Graph) :
 				return Graph.serialize(self, format="n3")
 		else :
 			if format == "xml" or format == "pretty-xml" :
-				self._register_XML_serializer()
+				self._register_XML_serializer_2()
 				return Graph.serialize(self, format=_xml_serializer_name)
 			elif format == "nt" :
 				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :
-				self._register_Turtle_serializer()
+				self._register_Turtle_serializer_2()
 				return Graph.serialize(self, format=_turtle_serializer_name)
 
 """
 $Log: MyGraph.py,v $
-Revision 1.4  2011-03-08 10:49:49  ivan
+Revision 1.5  2011-03-11 13:08:18  ivan
+*** empty log message ***
+
+Revision 1.4  2011/03/08 10:49:49  ivan
 *** empty log message ***
 
 Revision 1.3  2010/11/02 14:56:35  ivan
