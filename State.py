@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.27 2011-03-08 10:49:49 ivan Exp $
-$Date: 2011-03-08 10:49:49 $
+$Id: State.py,v 1.28 2011-03-11 11:37:13 ivan Exp $
+$Date: 2011-03-11 11:37:13 $
 """
 
 import rdflib
@@ -95,6 +95,17 @@ class ExecutionContext :
 		@keyword options: invocation options, and references to warning graphs
 		@type options: L{Options<pyRdfa.Options>}
 		"""
+		def remove_frag_id(uri) :
+			"""
+			The fragment ID for self.base must be removed
+			"""
+			try :
+				# To be on the safe side:-)
+				t = urlparse.urlparse(uri)
+				return urlparse.urlunparse((t[0],t[1],t[2],t[3],t[4],""))
+			except :
+				return uri
+			
 		# This is, conceptually, an additional class initialization, but it must be done run time, otherwise import errors show up
 		if len(	ExecutionContext._resource_type ) == 0 :	
 			ExecutionContext._resource_type = {
@@ -126,7 +137,7 @@ class ExecutionContext :
 			self.options		= inherited_state.options
 			# for generic XML versions the xml:base attribute should be handled
 			if self.options.host_language in accept_xml_base and node.hasAttribute("xml:base") :
-				self.base = node.getAttribute("xml:base")
+				self.base = remove_frag_id(node.getAttribute("xml:base"))
 		else :
 			# this is the branch called from the very top
 			
@@ -158,10 +169,10 @@ class ExecutionContext :
 			if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
 				for bases in node.getElementsByTagName("base") :
 					if bases.hasAttribute("href") :
-						self.base = bases.getAttribute("href")
+						self.base = remove_frag_id(bases.getAttribute("href"))
 						continue
 			elif self.options.host_language in accept_xml_base and node.hasAttribute("xml:base") :
-				self.base = node.getAttribute("xml:base")
+				self.base = remove_frag_id(node.getAttribute("xml:base"))
 				
 			# Perform an extra beautification in RDFLib
 			if self.options.host_language in beautifying_prefixes :
@@ -174,7 +185,7 @@ class ExecutionContext :
 				self.base = base	
 								
 		#-----------------------------------------------------------------
-		# this will be used repeatedly, better store it once and for all...
+		# this will be used repeatedly, better store it once and for all...		
 		self.parsedBase = urlparse.urlsplit(self.base)
 
 		#-----------------------------------------------------------------
@@ -275,6 +286,7 @@ class ExecutionContext :
 				return create_URIRef(joined, check)
 
 		if val == "" :
+			# The fragment ID must be removed...
 			return URIRef(self.base)
 			
 
@@ -428,7 +440,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.27  2011-03-08 10:49:49  ivan
+Revision 1.28  2011-03-11 11:37:13  ivan
+*** empty log message ***
+
+Revision 1.27  2011/03/08 10:49:49  ivan
 *** empty log message ***
 
 
