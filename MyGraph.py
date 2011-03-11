@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: MyGraph.py,v 1.6 2011-03-11 14:12:12 ivan Exp $ $Date: 2011-03-11 14:12:12 $
+$Id: MyGraph.py,v 1.7 2011-03-11 14:30:39 ivan Exp $ $Date: 2011-03-11 14:30:39 $
 
 """
 
@@ -112,9 +112,9 @@ class MyGraph(Graph) :
 		if rdflib.__version__ >= "3.0.0" :
 			# this is the easy case
 			if format == "xml" or format == "pretty-xml" :
-				return Graph.serialize(self, format="pretty-xml")
-				#self._register_XML_serializer_3()
-				#return Graph.serialize(self, format=_xml_serializer_name)
+				#return Graph.serialize(self, format="pretty-xml")
+				self._register_XML_serializer_3()
+				return Graph.serialize(self, format=_xml_serializer_name)
 			elif format == "nt" :
 				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :
@@ -132,7 +132,10 @@ class MyGraph(Graph) :
 
 """
 $Log: MyGraph.py,v $
-Revision 1.6  2011-03-11 14:12:12  ivan
+Revision 1.7  2011-03-11 14:30:39  ivan
+*** empty log message ***
+
+Revision 1.6  2011/03/11 14:12:12  ivan
 *** empty log message ***
 
 Revision 1.5  2011/03/11 13:08:18  ivan
