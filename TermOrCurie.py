@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.8 2011-03-08 10:49:50 ivan Exp $
-$Date: 2011-03-08 10:49:50 $
+$Id: TermOrCurie.py,v 1.9 2011-03-11 11:56:32 ivan Exp $
+$Date: 2011-03-11 11:56:32 $
 """
 
 import re, sys
@@ -351,7 +351,13 @@ class TermOrCurie :
 		@return: URIRef of a URI or None.
 		"""
 		# Just to be on the safe side:
-		if val == "" or val == ":" : return None
+		if val == "" :
+			return None
+		elif val == ":" :
+			if self.default_curie_uri :
+				return URIRef(self.default_curie_uri)
+			else :
+				return None
 		
 		# See if this is indeed a valid CURIE, ie, it can be split by a colon
 		curie_split = val.split(':',1)
@@ -438,7 +444,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.8  2011-03-08 10:49:50  ivan
+Revision 1.9  2011-03-11 11:56:32  ivan
+':' is a valid CURIE...
+
+Revision 1.8  2011/03/08 10:49:50  ivan
 *** empty log message ***
 
 Revision 1.7  2011/01/14 12:43:32  ivan
