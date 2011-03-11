@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.9 2011-03-11 11:56:32 ivan Exp $
-$Date: 2011-03-11 11:56:32 $
+$Id: TermOrCurie.py,v 1.10 2011-03-11 12:17:38 ivan Exp $
+$Date: 2011-03-11 12:17:38 $
 """
 
 import re, sys
@@ -295,6 +295,9 @@ class TermOrCurie :
 					if prefix[-1] != ':' :
 						state.options.add_warning("Invalid prefix declaration '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
 						continue
+					elif prefix == ":" :
+						state.options.add_warning("Default prefix cannot be changed (in '%s')" % pr, IncorrectPrefixDefinition)
+						continue						
 					else :
 						prefix = prefix[:-1]
 						uri    = Namespace(quote_URI(value, state.options))
@@ -444,7 +447,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.9  2011-03-11 11:56:32  ivan
+Revision 1.10  2011-03-11 12:17:38  ivan
+default prefix cannot be changed
+
+Revision 1.9  2011/03/11 11:56:32  ivan
 ':' is a valid CURIE...
 
 Revision 1.8  2011/03/08 10:49:50  ivan
