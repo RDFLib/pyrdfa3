@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.12 2011-03-08 10:49:49 ivan Exp $
-$Date: 2011-03-08 10:49:49 $
+$Id: Literal.py,v 1.13 2011-03-11 12:25:05 ivan Exp $
+$Date: 2011-03-11 12:25:05 $
 """
 
 import re
@@ -173,15 +173,17 @@ def generate_literal(node, graph, subject, state) :
 					object = Literal(_get_literal(node), lang=lang)
 
 	# The object may be empty, for example in an ill-defined <meta> element...
-	if object != "" :
-		for prop in props :
-			graph.add((subject,prop,object))
+	for prop in props :
+		graph.add((subject,prop,object))
 
 	# return
 
 """
 $Log: Literal.py,v $
-Revision 1.12  2011-03-08 10:49:49  ivan
+Revision 1.13  2011-03-11 12:25:05  ivan
+empty literal is allowed if the children are empty
+
+Revision 1.12  2011/03/08 10:49:49  ivan
 *** empty log message ***
 
 Revision 1.11  2011/01/14 12:41:56  ivan
