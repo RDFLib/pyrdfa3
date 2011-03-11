@@ -12,18 +12,23 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.13 2011-03-11 12:25:05 ivan Exp $
-$Date: 2011-03-11 12:25:05 $
+$Id: Literal.py,v 1.14 2011-03-11 14:12:12 ivan Exp $
+$Date: 2011-03-11 14:12:12 $
 """
 
 import re
 
 import rdflib
+from rdflib	import BNode
 from rdflib	import Literal, URIRef, Namespace
 if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import RDF as ns_rdf
 else :
 	from rdflib.RDF	import RDFNS as ns_rdf
+
+from pyRdfa	import IncorrectBlankNodeUsage
+
+
 XMLLiteral = ns_rdf["XMLLiteral"]
 
 #from pyRdfa.uri import url_regexp, registered_schemes
@@ -174,13 +179,19 @@ def generate_literal(node, graph, subject, state) :
 
 	# The object may be empty, for example in an ill-defined <meta> element...
 	for prop in props :
-		graph.add((subject,prop,object))
+		if not isinstance(prop,BNode) :
+			graph.add((subject,prop,object))
+		else :
+			state.options.add_warning("Blank node in property position is not allowed: [element '%s']" % node.nodeName, IncorrectBlankNodeUsage)
 
 	# return
 
 """
 $Log: Literal.py,v $
-Revision 1.13  2011-03-11 12:25:05  ivan
+Revision 1.14  2011-03-11 14:12:12  ivan
+*** empty log message ***
+
+Revision 1.13  2011/03/11 12:25:05  ivan
 empty literal is allowed if the children are empty
 
 Revision 1.12  2011/03/08 10:49:49  ivan

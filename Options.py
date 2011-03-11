@@ -11,7 +11,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Options.py,v 1.13 2011-03-08 10:49:49 ivan Exp $ $Date: 2011-03-08 10:49:49 $
+$Id: Options.py,v 1.14 2011-03-11 14:12:12 ivan Exp $ $Date: 2011-03-11 14:12:12 $
 """
 
 import sys, datetime
@@ -31,7 +31,7 @@ else :
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
 from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language
-from pyRdfa			import ns_xsd, ns_distill
+from pyRdfa			import ns_xsd, ns_distill, ns_rdfa
 
 from pyRdfa 		import RDFA_Error, RDFA_Warning, RDFA_Info
 

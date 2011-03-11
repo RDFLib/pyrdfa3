@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.28 2011-03-11 11:37:13 ivan Exp $
-$Date: 2011-03-11 11:37:13 $
+$Id: State.py,v 1.29 2011-03-11 14:12:13 ivan Exp $
+$Date: 2011-03-11 14:12:13 $
 """
 
 import rdflib
@@ -440,8 +440,11 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.28  2011-03-11 11:37:13  ivan
+Revision 1.29  2011-03-11 14:12:13  ivan
 *** empty log message ***
+
+Revision 1.28  2011/03/11 11:37:13  ivan
+Remove the fragment id from the base value
 
 Revision 1.27  2011/03/08 10:49:49  ivan
 *** empty log message ***

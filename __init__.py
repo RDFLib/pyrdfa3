@@ -133,7 +133,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.28 2011-03-08 10:49:50 ivan Exp $ $Date: 2011-03-08 10:49:50 $
+$Id: __init__.py,v 1.29 2011-03-11 14:12:13 ivan Exp $ $Date: 2011-03-11 14:12:13 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -246,6 +246,7 @@ IncorrectProfileDefinition 	= ns_distill["IncorrectProfileDefinition"]
 IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
 ProfileCachingError			= ns_distill["ProfileCachingError"]
 ProfileCachingInfo			= ns_distill["ProfileCachingInfo"]
+IncorrectBlankNodeUsage     = ns_distill["IncorrectBlankNodeUsage"]
 
 #############################################################################################
 
@@ -508,9 +509,7 @@ def processURI(uri, outputFormat, form={}) :
 	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header shoudl be used
 
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
-	@param outputFormat: serialization formats, as understood by RDFLib. Note that though "turtle" is
-	a possible parameter value, some versions of the RDFLib turtle generation does funny (though legal) things with
-	namespaces, defining unusual and unwanted prefixes...
+	@param outputFormat: serialization formats, as understood by RDFLib. 
 	@param form: extra call options (from the CGI call) to set up the local options
 	@type form: cgi FieldStorage instance
 	@return: serialized graph
@@ -540,6 +539,10 @@ def processURI(uri, outputFormat, form={}) :
 			media_type = MediaTypes.xhtml
 		elif form.getfirst("host_language").lower() == "html" :
 			media_type = MediaTypes.html
+		elif form.getfirst("host_language").lower() == "svg" :
+			media_type = MediaTypes.svg
+		elif form.getfirst("host_language").lower() == "atom" :
+			media_type = MediaTypes.atom
 		else :
 			media_type = MediaTypes.xml
 	else :
@@ -690,7 +693,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.28  2011-03-08 10:49:50  ivan
+Revision 1.29  2011-03-11 14:12:13  ivan
+*** empty log message ***
+
+Revision 1.28  2011/03/08 10:49:50  ivan
 *** empty log message ***
 
 Revision 1.27  2010/11/19 13:52:45  ivan

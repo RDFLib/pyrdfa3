@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.12 2010-11-19 13:52:45 ivan Exp $
-$Date: 2010-11-19 13:52:45 $
+$Id: Parse.py,v 1.13 2011-03-11 14:12:12 ivan Exp $
+$Date: 2011-03-11 14:12:12 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -40,7 +40,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa import FailedProfile, ProfileReferenceError
+from pyRdfa import IncorrectBlankNodeUsage, FailedProfile, ProfileReferenceError
 
 #######################################################################
 # Function to check whether one of a series of attributes
@@ -169,17 +169,27 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	# the (possible) incomplete triples are collected, to be forwarded to the children
 	incomplete_triples  = []
 	for prop in state.getURI("rel") :
-		theTriple = (current_subject,prop,current_object)
-		if current_object != None :
-			graph.add(theTriple)
+		if not isinstance(prop,BNode) :
+			theTriple = (current_subject,prop,current_object)
+			if current_object != None :
+				graph.add(theTriple)
+			else :
+				incomplete_triples.append(theTriple)
 		else :
-			incomplete_triples.append(theTriple)
+			state.options.add_warning("Blank node in rel position is not allowed: [element '%s']" % node.nodeName, IncorrectBlankNodeUsage)
+
 	for prop in state.getURI("rev") :
-		theTriple = (current_object,prop,current_subject)
-		if current_object != None :
-			graph.add(theTriple)
+		if not isinstance(prop,BNode) :
+			theTriple = (current_object,prop,current_subject)
+			if current_object != None :
+				graph.add(theTriple)
+			else :
+				incomplete_triples.append(theTriple)
 		else :
-			incomplete_triples.append(theTriple)
+			state.options.add_warning("Blank node in rev position is not allowed: [element '%s']" % node.nodeName, IncorrectBlankNodeUsage)
+
+
+
 
 	# ----------------------------------------------------------------------
 	# Generation of the literal values. The newSubject is the subject
