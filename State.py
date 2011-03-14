@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.29 2011-03-11 14:12:13 ivan Exp $
-$Date: 2011-03-11 14:12:13 $
+$Id: State.py,v 1.30 2011-03-14 12:34:37 ivan Exp $
+$Date: 2011-03-14 12:34:37 $
 """
 
 import rdflib
@@ -140,7 +140,6 @@ class ExecutionContext :
 				self.base = remove_frag_id(node.getAttribute("xml:base"))
 		else :
 			# this is the branch called from the very top
-			
 			# get the version
 			# If the version has been set explicitly, that wins!
 			if rdfa_version is not None :
@@ -155,6 +154,8 @@ class ExecutionContext :
 						self.rdfa_version = "1.0"
 					elif top_version.find("RDFa 1.1") != -1 :
 						self.rdfa_version = "1.1"
+
+			print "Final, %s" % self.rdfa_version
 						
 			
 			# this is just to play safe. I believe this should actually not happen...
@@ -440,7 +441,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.29  2011-03-11 14:12:13  ivan
+Revision 1.30  2011-03-14 12:34:37  ivan
+*** empty log message ***
+
+Revision 1.29  2011/03/11 14:12:13  ivan
 *** empty log message ***
 
 Revision 1.28  2011/03/11 11:37:13  ivan

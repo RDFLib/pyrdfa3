@@ -133,7 +133,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.29 2011-03-11 14:12:13 ivan Exp $ $Date: 2011-03-11 14:12:13 $
+$Id: __init__.py,v 1.30 2011-03-14 12:34:37 ivan Exp $ $Date: 2011-03-14 12:34:37 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -149,7 +149,7 @@ Thanks to Elias Torrez, who provided with the idea and patches to interface to t
 
 """
 
-__version__ = "3.0.1"
+__version__ = "3.0.2"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -308,7 +308,7 @@ class pyRdfa :
 		if rdfa_version is not None :
 			self.rdfa_version = rdfa_version
 		else :
-			self.rdfa_version = rdfa_current_version
+			self.rdfa_version = None
 		
 	def _get_input(self, name) :
 		"""
@@ -693,7 +693,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.29  2011-03-11 14:12:13  ivan
+Revision 1.30  2011-03-14 12:34:37  ivan
+*** empty log message ***
+
+Revision 1.29  2011/03/11 14:12:13  ivan
 *** empty log message ***
 
 Revision 1.28  2011/03/08 10:49:50  ivan
