@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.30 2011-03-14 12:34:37 ivan Exp $
-$Date: 2011-03-14 12:34:37 $
+$Id: State.py,v 1.31 2011-03-14 12:41:10 ivan Exp $
+$Date: 2011-03-14 12:41:10 $
 """
 
 import rdflib
@@ -153,10 +153,7 @@ class ExecutionContext :
 					if top_version.find("RDFa 1.0") != -1 :
 						self.rdfa_version = "1.0"
 					elif top_version.find("RDFa 1.1") != -1 :
-						self.rdfa_version = "1.1"
-
-			print "Final, %s" % self.rdfa_version
-						
+						self.rdfa_version = "1.1"						
 			
 			# this is just to play safe. I believe this should actually not happen...
 			if options == None :
@@ -441,7 +438,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.30  2011-03-14 12:34:37  ivan
+Revision 1.31  2011-03-14 12:41:10  ivan
+*** empty log message ***
+
+Revision 1.30  2011/03/14 12:34:37  ivan
 *** empty log message ***
 
 Revision 1.29  2011/03/11 14:12:13  ivan
