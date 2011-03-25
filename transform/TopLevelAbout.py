@@ -13,11 +13,11 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: HeadAbout.py,v 1.2 2010-11-19 13:52:52 ivan Exp $
-$Date: 2010-11-19 13:52:52 $
+$Id: TopLevelAbout.py,v 1.1 2011-03-25 11:52:13 ivan Exp $
+$Date: 2011-03-25 11:52:13 $
 """
 
-def head_about_transform(html, options) :
+def head_about_transform(root, options) :
 	"""
 	@param html: a DOM node for the top level html element
 	@param options: invocation options
@@ -25,10 +25,10 @@ def head_about_transform(html, options) :
 	"""
 	from pyRdfa.host import HostLanguage
 	if options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
-		for top in html.getElementsByTagName("head") :
+		for top in root.getElementsByTagName("head") :
 			if not top.hasAttribute("about") :
 				top.setAttribute("about","")
-		for top in html.getElementsByTagName("body") :
+		for top in root.getElementsByTagName("body") :
 			if not top.hasAttribute("about") :
 				top.setAttribute("about","")
 
