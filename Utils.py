@@ -75,11 +75,18 @@ class URIOpener :
 			
 			if URIOpener.CONTENT_TYPE in self.headers :
 				# The call below will remove the possible media type parameters, like charset settings
-				self.content_type = httpheader.content_type(self.headers[URIOpener.CONTENT_TYPE]).media_type
+				ct = httpheader.content_type(self.headers[URIOpener.CONTENT_TYPE])
+				self.content_type = ct.media_type
+				if 'charset' in ct.parmdict :
+					self.charset = ct.parmdict['charset']
+				else :
+					self.charset = None
+				# print
 			else :
 				# check if the suffix can be used for the content type; this may be important
 				# for file:// type URI or if the server is not properly set up to return the right
 				# mime type
+				self.charset = None
 				self.content_type = ""
 				for suffix in preferred_suffixes.keys() :
 					if name.endswith(suffix) :
@@ -142,7 +149,7 @@ def quote_URI(uri, options = None) :
 	
 #########################################################################################################
 	
-def _create_file_name(uri) :
+def create_file_name(uri) :
 	"""
 	Create a suitable file name from an (absolute) URI. Used, eg, for the generation of a file name for a cached profile.
 	"""
@@ -152,7 +159,17 @@ def _create_file_name(uri) :
 	return final_uri.replace(' ','_').replace('%','_').replace('-','_').replace('+','_').replace('/','_').replace('?','_').replace(':','_').replace('=','_').replace('#','_')
 
 #########################################################################################################
+def has_one_of_attributes(node,*args) :
+	"""
+	Check whether one of the listed attributes is present on a (DOM) node.
+	@param node: DOM element node
+	@param args: possible attribute names
+	@return: True or False
+	@rtype: Boolean
+	"""
+	return True in [ node.hasAttribute(attr) for attr in args ]
 
+#########################################################################################################
 def traverse_tree(node, func) :
 	"""Traverse the whole element tree, and perform the function C{func} on all the elements.
 	@param node: DOM element node
@@ -173,5 +190,13 @@ def dump(node) :
 
 	@param node: DOM node
 	"""
-	print node.toprettyxml(indent="", newl="")	
+	print node.toprettyxml(indent="", newl="")
+	
+	
+	
+##################
+# Testing
+if __name__ == '__main__':
+	u = URIOpener("http://www.ivan-herman.net/foaf.html")
+	print u.charset
 	

@@ -46,7 +46,7 @@ import httpheader
 
 from pyRdfa			import HTTPError, RDFaError
 from pyRdfa.host 	import MediaTypes, HostLanguage
-from pyRdfa.Utils	import _create_file_name, URIOpener, quote_URI
+from pyRdfa.Utils	import create_file_name, URIOpener, quote_URI
 from pyRdfa.Options	import Options
 from pyRdfa			import ns_rdfa
 from pyRdfa			import IncorrectProfileDefinition, IncorrectPrefixDefinition
@@ -109,16 +109,21 @@ class CachedProfileIndex :
 	@type options: L{Options.Options}
 	@ivar report: whether details on the caching should be reported
 	@type report: Boolean
+	@cvar profiles: File name used for the index in the cache directory
+	@cvar preference_path: Cache directories for the three major platforms (ie, mac, windows, unix)
+	@type preference_path: directory, keyed by "mac", "win", and "unix"
+	@cvar architectures: Various 'architectures' as returned by the python call, and their mapping on one of the major platforms. If an architecture is missing, it is considered to be "unix"
+	@type architectures: directory, mapping architectures to "mac", "win", or "unix"
 	"""
-	#: File Name used for the index in the cache directory
+	# File Name used for the index in the cache directory
 	profiles = "cache_index"
-	#: Cache directories for the three major platforms...
+	# Cache directories for the three major platforms...
 	preference_path = {
 		"mac"	: "Library/Application Support/pyRdfa-cache",
 		"win"	: "pyRdfa-cache",
 		"unix"	: ".pyRdfa-cache"
 	}
-	#: various architectures as returned by the python call, and their mapping on platorm. If an architecture is not here, it is considered as unix
+	# various architectures as returned by the python call, and their mapping on platorm. If an architecture is not here, it is considered as unix
 	architectures = {
 		"darwin"	: "mac",
 		"nt" 		: "win",
@@ -127,7 +132,6 @@ class CachedProfileIndex :
 	}
 	def __init__(self, options = None, report = False) :
 		"""
-		@param URI: real URI for the profile
 		@param options: the error handler (option) object to send warnings to
 		@type options: L{Options.Options}
 		@param report: whether details on the caching should be reported
@@ -242,9 +246,9 @@ class CachedProfile(CachedProfileIndex) :
 	@ivar URI: profile URI
 	@ivar filename: file name (not the complete path) of the cached version
 	@ivar creation_date: creation date of the cache
-	@type creation_date: L{datetime.datetime}
+	@type creation_date: datetime
 	@ivar expiration_date: expiration date of the cache
-	@type expiration_date: L{datetime.datetime}
+	@type expiration_date: datetime
 	@cvar runtime_cache : a run time cache for already 'seen' profiles. Apart from (marginally) speeding up processing, this also prevents recursion
 	@type runtime_cache : dictionary
 	"""
@@ -286,10 +290,10 @@ class CachedProfile(CachedProfileIndex) :
 			# This has never been cached before
 			if self.report: options.add_info("No cache exists, has to generate a new one for %s" % URI, ProfileCachingInfo)
 			
-			self._get_profile_data()
+			self._get_profile_data(newCache=True)
 			# Store all the cache data unless caching proves to be impossible
 			if self.caching :
-				self.filename = _create_file_name(self.uri)
+				self.filename = create_file_name(self.uri)
 				self._store_caches()
 		else :
 			(self.filename, self.creation_date, self.expiration_date) = profile_reference
@@ -309,22 +313,36 @@ class CachedProfile(CachedProfileIndex) :
 			else :
 				if self.report: options.add_info("Refreshing the cache for %s (ie, getting the graph)" % URI, ProfileCachingInfo)
 				# we have to refresh the graph
-				self._get_profile_data()
+				if self._get_profile_data(newCache=False) == None :
+					# bugger; the cache could not be refreshed, using the current one, and setting the cache artificially
+					# to be valid for the coming hour, hoping that the access issues will be resolved by then...
+					fname = os.path.join(self.app_data_dir, self.filename)
+					try :
+						(self.terms, self.ns, self.vocabulary) = tuple(_load(fname))
+						self.expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+					except Exception, e :
+						# what this means is that the caching becomes impossible ProfileCachingError
+						(type,value,traceback) = sys.exc_info()
+						sys.excepthook(type,value,traceback)
+						if self.report: options.add_info("Could not access the profile cache %s (%s)" % (value,fname), ProfileCachingError, URI)
 				self.creation_date = datetime.datetime.utcnow()
 				self._store_caches()
 
 		# Store the local cache to avoid indirection
 		CachedProfile.local_cache[URI] = (self.terms, self.ns, self.vocabulary)
 
-	def _get_profile_data(self) :
+	def _get_profile_data(self,newCache=True) :
 		"""Just a macro-like method: get the graph from the profile file with a URI, and then extract the
 		profile data (ie, add values to self.terms, self.ns, and self.vocabulary). The real work is done in the
-		L{_get_graph} and L{_extrac_profile_info} methods.
+		L{_get_graph} and L{_extract_profile_info} methods.
 		"""
-		g = self._get_graph()
-		self._extract_profile_info(g)
+		g = self._get_graph(newCache)
+		if g != None :
+			self._extract_profile_info(g)
+		else :
+			return None
 		
-	def _get_graph(self) :
+	def _get_graph(self,newCache) :
 		"""
 		Parse the vocabulary file, and return an RDFLib Graph. The URI's content type is checked and either one of
 		RDFLib's parsers is invoked (for the Turtle, RDF/XML, and N Triple cases) or a separate RDFa processing is invoked
@@ -335,18 +353,27 @@ class CachedProfile(CachedProfileIndex) :
 		@return: An RDFLib Graph instance; None if the dereferencing or the parsing was unsuccessful
 		@raise FailedProfile: if the profile document could not be dereferenced or is not a known media type. Note that this is caught higher up in the parser and that terminates processing on the whole subtree.
 		"""
+		def return_to_cache(msg) :
+			if newCache :
+				raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (self.uri, msg), self.uri)
+			else :
+				self.options.add_warning("Profile document <%s> could not be dereferenced (%s), using possibly outdated cache" % (self.uri, e.msg))
+		
 		content = None
 		try :
 			content = URIOpener(self.uri,
 							    {'Accept' : 'text/html;q=0.8, application/xhtml+xml;q=0.8, text/turtle;q=1.0, application/rdf+xml;q=0.7'})
 
 		except HTTPError, e :
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (self.uri, e.msg), self.uri, http_code = e.http_code)
+			return_to_cache(e.msg)
+			return None
 		except RDFaError, e :
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (self.uri, e.msg), self.uri)
+			return_to_cache(e.msg)
+			return None
 		except Exception, e :
 			(type,value,traceback) = sys.exc_info()
-			raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (self.uri, value), self.uri)
+			return_to_cache(value)
+			return None
 		
 		# Store the expiration date of the newly accessed data
 		self.expiration_date = content.expiration_date

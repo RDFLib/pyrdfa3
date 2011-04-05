@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-L{Options} class: collect the possible options that govern the parsing possibilities. The module also includes the L{ProcessorGraph} class that handles the… processor graph, per RDFa 1.1 (i.e., the graph containing errors and warnings). 
+L{Options} class: collect the possible options that govern the parsing possibilities. The module also includes the L{ProcessorGraph} class that handles the processor graph, per RDFa 1.1 (i.e., the graph containing errors and warnings). 
 
 @summary: RDFa parser (distiller)
 @requires: U{RDFLib<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
-U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
+U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 """
 
 """
-$Id: Options.py,v 1.14 2011-03-11 14:12:12 ivan Exp $ $Date: 2011-03-11 14:12:12 $
+$Id: Options.py,v 1.15 2011-04-05 06:37:22 ivan Exp $ $Date: 2011-04-05 06:37:22 $
 """
 
 import sys, datetime
@@ -32,7 +32,6 @@ else :
 
 from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language
 from pyRdfa			import ns_xsd, ns_distill, ns_rdfa
-
 from pyRdfa 		import RDFA_Error, RDFA_Warning, RDFA_Info
 
 ns_dc = Namespace("http://purl.org/dc/terms/")
@@ -84,7 +83,6 @@ class ProcessorGraph :
 		self.graph.add((bnode, ns_rdf["type"], ns_ht["Response"]))
 		self.graph.add((bnode, ns_ht["responseCode"], URIRef("http://www.w3.org/2006/http#%s" % http_code)))
 
-
 class Options :
 	"""Settable options. An instance of this class is stored in
 	the L{execution context<ExecutionContext>} of the parser.
@@ -125,7 +123,7 @@ class Options :
 	def set_host_language(self, content_type) :
 		"""
 		Set the host language for processing, based on the recognized types. What this means is that everything is considered to be
-		'core' RDFa, except if XHTML or HTML is used; indeed, no other language defined a deviation to core (yet…)
+		'core' RDFa, except if XHTML or HTML is used; indeed, no other language defined a deviation to core (yet...)
 		@param content_type: content type
 		@type content_type: string
 		"""

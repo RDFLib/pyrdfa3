@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.13 2011-03-11 14:12:12 ivan Exp $
-$Date: 2011-03-11 14:12:12 $
+$Id: Parse.py,v 1.14 2011-04-05 06:37:22 ivan Exp $
+$Date: 2011-04-05 06:37:22 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -41,19 +41,7 @@ else :
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
 from pyRdfa import IncorrectBlankNodeUsage, FailedProfile, ProfileReferenceError
-
-#######################################################################
-# Function to check whether one of a series of attributes
-# is part of the DOM Node
-def _has_one_of_attributes(node,*args) :
-	"""
-	Check whether one of the listed attributes is present on a (DOM) node.
-	@param node: DOM element node
-	@param args: possible attribute names
-	@return: True or False
-	@rtype: Boolean
-	"""
-	return True in [ node.hasAttribute(attr) for attr in args ]
+from pyRdfa.Utils import has_one_of_attributes
 
 #######################################################################
 def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
@@ -100,7 +88,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	# First, let us check whether there is anything to do at all. Ie,
 	# whether there is any relevant RDFa specific attribute on the element
 	#
-	if not _has_one_of_attributes(node, "href", "resource", "about", "property", "rel", "rev", "typeof", "src", "vocab", "profile", "prefix") :
+	if not has_one_of_attributes(node, "href", "resource", "about", "property", "rel", "rev", "typeof", "src", "vocab", "profile", "prefix") :
 		# nop, there is nothing to do here, just go down the tree and return...
 		for n in node.childNodes :
 			if n.nodeType == node.ELEMENT_NODE : parse_one_node(n, graph, parent_object, state, parent_incomplete_triples)
@@ -113,7 +101,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	current_subject = None
 	current_object  = None
 
-	if _has_one_of_attributes(node, "rel", "rev")  :
+	if has_one_of_attributes(node, "rel", "rev")  :
 		# in this case there is the notion of 'left' and 'right' of @rel/@rev
 		# in establishing the new Subject and the objectResource
 
@@ -187,8 +175,6 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 				incomplete_triples.append(theTriple)
 		else :
 			state.options.add_warning("Blank node in rev position is not allowed: [element '%s']" % node.nodeName, IncorrectBlankNodeUsage)
-
-
 
 
 	# ----------------------------------------------------------------------

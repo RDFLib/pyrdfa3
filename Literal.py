@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.14 2011-03-11 14:12:12 ivan Exp $
-$Date: 2011-03-11 14:12:12 $
+$Id: Literal.py,v 1.15 2011-04-05 06:37:22 ivan Exp $
+$Date: 2011-04-05 06:37:22 $
 """
 
 import re
@@ -79,7 +79,8 @@ def generate_literal(node, graph, subject, state) :
 				rc = rc + _get_literal(node)
 
 		# The decision of the group in February 2008 is not to normalize the result by default.
-		# This is reflected in the default value of the option
+		# This is reflected in the default value of the option		
+		
 		if state.options.space_preserve :
 			return rc
 		else :
@@ -170,7 +171,7 @@ def generate_literal(node, graph, subject, state) :
 				# element
 				if True in [ n.nodeType == node.ELEMENT_NODE for n in node.childNodes ] :
 					# yep, and XML Literal should be generated
-					object = Literal(_get_XML_literal(node),datatype=XMLLiteral)
+					object = Literal(_get_XML_literal(node), datatype=XMLLiteral)
 				else :
 					val = _get_literal(node)
 					# At this point, there might be entities in the string that are returned as real characters by the dom
@@ -188,7 +189,10 @@ def generate_literal(node, graph, subject, state) :
 
 """
 $Log: Literal.py,v $
-Revision 1.14  2011-03-11 14:12:12  ivan
+Revision 1.15  2011-04-05 06:37:22  ivan
+*** empty log message ***
+
+Revision 1.14  2011/03/11 14:12:12  ivan
 *** empty log message ***
 
 Revision 1.13  2011/03/11 12:25:05  ivan

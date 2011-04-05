@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: MyGraph.py,v 1.7 2011-03-11 14:30:39 ivan Exp $ $Date: 2011-03-11 14:30:39 $
+$Id: MyGraph.py,v 1.8 2011-04-05 06:37:22 ivan Exp $ $Date: 2011-04-05 06:37:22 $
 
 """
 
@@ -49,13 +49,13 @@ _bindings = [
 #########################################################################################################
 class MyGraph(Graph) :
 	"""
-    Wrapper around RDFLib's Graph object. The issue is that the serializers in RDFLib are buggy:-(
+	Wrapper around RDFLib's Graph object. The issue is that the serializers in RDFLib are buggy:-(
 	
 	In RDFLib 2.X both the Turtle and the RDF/XML serializations have issues (bugs and ugly output). In RDFLib 3.X
 	the Turtle serialization seems to be fine, but the RDF/XML has problems:-(
 	
-     This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register,
-	 if necessary, a different serializer and use that one.
+	This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register,
+	if necessary, a different serializer and use that one.
 
 	@cvar xml_serializer_registered_2: flag to avoid duplicate registration for RDF/XML for rdflib 2.*
 	@type xml_serializer_registered_2: boolean
@@ -107,8 +107,17 @@ class MyGraph(Graph) :
 			register(_turtle_serializer_name, serializers.Serializer,
 					 "pyRdfa.serializers.TurtleSerializer", "TurtleSerializer")
 			MyGraph.turtle_serialzier_registered_2 = True
+			
+	def add(self, (s,p,o)) :
+		"""Overriding the Graph's add method to filter out triples with possible None values. It may happen
+		in case, for example, a host language is not properly set up for the distiller"""
+		if s == None or p == None or o == None :
+			return
+		else :
+			Graph.add(self,(s,p,o))
 		
 	def serialize(self, format = "xml") :
+		"""Overriding the Graph's serialize method to adjust the output format"""
 		if rdflib.__version__ >= "3.0.0" :
 			# this is the easy case
 			if format == "xml" or format == "pretty-xml" :
@@ -132,7 +141,10 @@ class MyGraph(Graph) :
 
 """
 $Log: MyGraph.py,v $
-Revision 1.7  2011-03-11 14:30:39  ivan
+Revision 1.8  2011-04-05 06:37:22  ivan
+*** empty log message ***
+
+Revision 1.7  2011/03/11 14:30:39  ivan
 *** empty log message ***
 
 Revision 1.6  2011/03/11 14:12:12  ivan

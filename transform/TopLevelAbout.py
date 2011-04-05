@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Simple transfomer: the C{@about=""} is added to the C{<head>} and C{<body>} elements (unless something is already there).
+Simple transfomer: the C{@about=""} is added to the C{<head>} and C{<body>} elements (unless something is already there) for the HTML cases, and the root element for others.
 Note that this transformer is always invoked by the parser because this behaviour is mandated by the RDFa syntax.
 
-@summary: Add a top "about" to <head> and <body>
+@summary: Add a top "about" to <head> and <body> or root element
 @requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
@@ -13,22 +13,35 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TopLevelAbout.py,v 1.1 2011-03-25 11:52:13 ivan Exp $
-$Date: 2011-03-25 11:52:13 $
+$Id: TopLevelAbout.py,v 1.2 2011-04-05 06:37:57 ivan Exp $
+$Date: 2011-04-05 06:37:57 $
 """
 
-def head_about_transform(root, options) :
+def top_about(root, options) :
 	"""
-	@param html: a DOM node for the top level html element
+	@param root: a DOM node for the top level element
 	@param options: invocation options
 	@type options: L{Options<pyRdfa.Options>}
 	"""
+	def set_about(node) :
+		if has_one_of_attributes(node, "rel", "rev") :
+			if not has_one_of_attributes(top, "about", "src") :
+				node.setAttribute("about","")
+		else :
+			if not has_one_of_attributes(node, "href", "resource", "about", "src") :
+				node.setAttribute("about","")
+	
 	from pyRdfa.host import HostLanguage
+	from pyRdfa.Utils import has_one_of_attributes
+	
+	if not has_one_of_attributes(root, "about") :
+		root.setAttribute("about","")
+	
 	if options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
 		for top in root.getElementsByTagName("head") :
-			if not top.hasAttribute("about") :
-				top.setAttribute("about","")
+			if not has_one_of_attributes(top, "href", "resource", "about", "src") :
+				set_about(top)
 		for top in root.getElementsByTagName("body") :
-			if not top.hasAttribute("about") :
-				top.setAttribute("about","")
+			if not has_one_of_attributes(top, "href", "resource", "about", "src") :
+				set_about(top)
 

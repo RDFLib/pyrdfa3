@@ -119,9 +119,9 @@ See the variables in the "Utils" module if a new host language is added to the s
 
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up
-@requires: U{RDFLib<http://rdflib.net>}
-@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing; note possible dependecies on Python's version on the project's web site
-@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}. To make distribution easier this module (single file) is added to the distributed tarball.
+@requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a more readable output serialization.
+@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
+@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the distributed tarball.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -133,7 +133,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.30 2011-03-14 12:34:37 ivan Exp $ $Date: 2011-03-14 12:34:37 $
+$Id: __init__.py,v 1.31 2011-04-05 06:37:22 ivan Exp $ $Date: 2011-04-05 06:37:22 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -253,7 +253,7 @@ IncorrectBlankNodeUsage     = ns_distill["IncorrectBlankNodeUsage"]
 from pyRdfa.State						import ExecutionContext
 from pyRdfa.Parse						import parse_one_node
 from pyRdfa.Options						import Options
-from pyRdfa.transform.HeadAbout			import head_about_transform
+from pyRdfa.transform.TopLevelAbout		import top_about
 from pyRdfa.transform.DefaultProfile	import add_default_profile
 from pyRdfa.Utils						import URIOpener
 from pyRdfa.host 						import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
@@ -266,7 +266,7 @@ rdfa_current_version	= "1.1"
 
 # List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
-	head_about_transform,
+	top_about,
 	add_default_profile
 ]
 	
@@ -293,6 +293,8 @@ class pyRdfa :
 		@keyword rdfa_version: the RDFa version that should be used. If not set, the value of the global L{rdfa_current_version} variable is used
 		"""
 		self.base = base
+		
+		self.charset = None
 
 		# predefined content type
 		self.media_type = media_type
@@ -337,6 +339,7 @@ class pyRdfa :
 						else :
 							self.media_type = MediaTypes.xml
 						self.options.set_host_language(self.media_type)
+					self.charset = url_request.charset
 					return url_request.data
 				else :
 					self.base = name
@@ -346,6 +349,7 @@ class pyRdfa :
 						for suffix in preferred_suffixes :
 							if name.endswith(suffix) :
 								self.media_type = preferred_suffixes[suffix]
+								self.charset = 'utf-8'
 								break
 						self.options.set_host_language(self.media_type)
 					return file(name)
@@ -394,9 +398,9 @@ class pyRdfa :
 			state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
 			# The top level subject starts with the current document; this
 			# is used by the recursion
-			subject = URIRef(state.base)
+			#subject = URIRef(state.base)
 			# this function is the real workhorse
-			parse_one_node(topElement, default_graph, subject, state, [])
+			parse_one_node(topElement, default_graph, None, state, [])
 		except FailedProfile, f :
 			# This may occur if the top level @profile cannot be dereferenced, which stops the processing as a whole!
 			bnode = self.options.add_error(f.msg, ProfileReferenceError, f.context)
@@ -447,11 +451,21 @@ class pyRdfa :
 				warnings.filterwarnings("ignore", category=DeprecationWarning)
 				import html5lib
 				parser = html5lib.HTMLParser(tree=html5lib.treebuilders.getTreeBuilder("dom"))
-				parse = parser.parse
+				if self.charset :
+					# This means the HTTP header has provided a charset, or the
+					# file is a local file when we suppose it to be a utf-8
+					dom = parser.parse(input, encoding=self.charset)
+				else :
+					# No charset set. The HTMLLib parser tries to sniff into the
+					# the file to find a meta header for the charset; if that
+					# works, fine, other it falls back on window-...
+					dom = parser.parse(input)
+					
 			else :
 				# in other cases an XML parser has to be used
 				parse = xml.dom.minidom.parse
-			dom = parse(input)
+				dom = parse(input)
+			#dom = parse(input,encoding='utf-8')
 			return self.graph_from_DOM(dom, graph)
 		except FailedSource, f :
 			if not rdfOutput : raise f
@@ -693,7 +707,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.30  2011-03-14 12:34:37  ivan
+Revision 1.31  2011-04-05 06:37:22  ivan
+*** empty log message ***
+
+Revision 1.30  2011/03/14 12:34:37  ivan
 *** empty log message ***
 
 Revision 1.29  2011/03/11 14:12:13  ivan
