@@ -117,6 +117,29 @@ to find the content type by
  
 See the variables in the "Utils" module if a new host language is added to the system. The current host language is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
 
+Profiles
+========
+
+RDFa 1.1 has the notion of profiles, and client are advised to cache the content of those profiles to avoid making HTTP requests all the time. This module implements caching.
+
+Caching happens in a file system directory. The directory itself is determined by the platform the tool is used on, namely:
+ - On Windows, it is the 'pyRdfa-cache' subdirectory of the "%APPDATA%" environment variable (referring to the usual place for application data)
+ - On MacOS, it is the ~/Library/Application Data/pyRdfa-cache
+ - Otherwise, it is the ~/.pyRdfa-cache
+ 
+This automatic choise can be overridden by the 'CACHE_DIR_VAR' environment variable. 
+
+Caching can be read-only, ie, the setup might generate the caches off-line instead of letting the tool writing its own cache. This can be achieved by making the cache directory read only. The L{ProfileCache.offline_cache_generation} method can be used as an entry point for a separate process that generates the cache file.
+
+If the directories are neither readable nor writable, the profile files are retrieved via HTTP every time they are hit. This may slow down processing, it is advised to avoid such a setup for the package.
+
+The cache includes a separate index file and a file for each profile. Cache control is based upon the 'EXPIRES' header of a profile file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
+
+The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files (care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too!).
+
+Default profiles (i.e., http://www.w3.org/profile/rdfa-1.1 and http://www.w3.org/profile/html-rdfa-1.1) are treated just as any other profiles (there is a separate transformer that sets those for the host languages that define them). However, there is a possibility to speed those up by using the L{DefaultProfiles} module containing a "pythonized" version of the profile content. The L{built_in_default_profiles} flag in the package "True" to enable this possibility or can be set to "False" to rely on caching. Which version to choose depends on the maintenance and update policy of this package when deployed; if deployment makes it easy to update the L{DefaultProfiles.default_profiles}, then the built-in version is obviously faster. Note that the distribution includes a separate script called GenerateDefaultProfiles that can be used to generate the content of the L{DefaultProfiles} by possibly going through a caching mechanism once. 
+
+
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a more readable output serialization.
@@ -135,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.32 2011-04-20 11:02:21 ivan Exp $ $Date: 2011-04-20 11:02:21 $
+$Id: __init__.py,v 1.33 2011-04-20 11:27:52 ivan Exp $ $Date: 2011-04-20 11:27:52 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -719,7 +742,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.32  2011-04-20 11:02:21  ivan
+Revision 1.33  2011-04-20 11:27:52  ivan
+*** empty log message ***
+
+Revision 1.32  2011/04/20 11:02:21  ivan
 *** empty log message ***
 
 Revision 1.31  2011/04/05 06:37:22  ivan

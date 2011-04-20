@@ -2,24 +2,6 @@
 """
 Managing Profile Caching.
 
-RDFa 1.1 has the notion of profiles, and client are advised to cache the content of those profiles to avoid making HTTP requests
-all the time. This module implements caching.
-
-Caching happens in a file system directory. The directory itself is determined by the platform the tool is used on, namely:
- - On Windows, it is the 'pyRdfa-cache' subdirectory of the "%APPDATA%" environment variable (referring to the usual place for application data)
- - On MacOS, it is the ~/Library/Application Data/pyRdfa-cache
- - Otherwise, it is the ~/.pyRdfa-cache
- 
-This automatic choise can be overridden by the 'CACHE_DIR_VAR' environment variable.
-
-Caching can be read-only, ie, the setup might generate the caches off-line instead of letting the tool writing its own cache. This can be achieved by making the cache directory read only. The L{offline_cache_generation} method can be used as an entry point for a separate process that generates the cache file.
-
-The cache includes a separate index file and a file for each profile. Cache control is based upon the 'EXPIRES' header of a profile file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
-
-The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files (care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too!).
-
-Default profiles (i.e., http://www.w3.org/profile/rdfa-1.1 and http://www.w3.org/profile/html-rdfa-1.1) are treated just as any other profiles. However, there is a possibility to speed those up by using the L{DefaultProfiles} module that contains a "pythonized" version of the profile content. The built_in_default_profiles flag in the package head can be set to "True" to enable this possibility or can be set to "False" to rely on caching. Which version to choose depends on the maintenance and update policy of this package when deployed; if deployment makes it easy to update the L{DefaultProfile}, then the built-in version is obviously faster. Note that the distribution includes a separate script called GenerateDefaultProfiles that can be used to, well, generate the content of the L{DefaultProfile} by going through a caching mechanism once. 
-
 @summary: RDFa parser (distiller)
 @requires: U{RDFLib<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
@@ -54,6 +36,7 @@ from pyRdfa			import ns_rdfa
 from pyRdfa			import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa			import ProfileCachingError, ProfileCachingInfo
 from pyRdfa 		import FailedProfile
+import Options
 
 # Regular expression object for a general XML application media type
 xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
@@ -507,6 +490,10 @@ class CachedProfile(CachedProfileIndex) :
 ##############################################################################################################################################
 
 def offline_cache_generation(args) :
+	"""Generate a cache for the profile in args.
+	
+	@param args: array of profile URIs.
+	"""
 	class LocalOption :
 		def __init__(self) :
 			pass

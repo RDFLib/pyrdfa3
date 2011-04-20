@@ -11,15 +11,20 @@ vocabulary.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
-@var default_profiles: prefix for the XHTML vocabulary URI (set to 'xhv')
+@var default_profiles: dictionary for the default profiles; for each URI it points to an object containing the "ns" and "terms" dictionaries, as well as the "vocabulary" attribute.
 """
 
 """
-$Id: DefaultProfiles.py,v 1.1 2011-04-20 11:02:21 ivan Exp $
-$Date: 2011-04-20 11:02:21 $
+$Id: DefaultProfiles.py,v 1.2 2011-04-20 11:27:51 ivan Exp $
+$Date: 2011-04-20 11:27:51 $
 """
 
 class Wrapper :
+	"""Just an empty wrapper class around the three variables that the rest of the package looks for
+	@ivar ns: dictionary for namespace prefixes
+	@ivar terms: dictionary for terms
+	@ivar vocabulary: default vocabulary URI
+	"""
 	pass
 	
 default_profiles = {
