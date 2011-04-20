@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.31 2011-03-14 12:41:10 ivan Exp $
-$Date: 2011-03-14 12:41:10 $
+$Id: State.py,v 1.32 2011-04-20 11:02:21 ivan Exp $
+$Date: 2011-04-20 11:02:21 $
 """
 
 import rdflib
@@ -45,13 +45,6 @@ import re
 import random
 import urlparse
 import urllib
-
-# list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
-usual_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "git", "geo", "gopher", "hdl", "http", "https", "imap",
-				 "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
-				 "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
-				 "stp", "svn", "svn+ssh", "tag", "telnet", "tel", "tv", "urn", "wais", "javascript"
-				]
 
 #### Core Class definition
 class ExecutionContext :
@@ -259,8 +252,9 @@ class ExecutionContext :
 			@param uri: (absolute) URI string
 			@return: an RDFLib URIRef instance
 			"""
+			from pyRdfa	import uri_schemes
 			val = uri.strip()
-			if check and urlparse.urlsplit(val)[0] not in usual_schemes :
+			if check and urlparse.urlsplit(val)[0] not in uri_schemes :
 				self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 			return URIRef(val)
 
@@ -365,6 +359,7 @@ class ExecutionContext :
 		@type val: string
 		@return: an RDFLib URIRef instance or None
 		"""
+		from pyRdfa	import uri_schemes
 		# This case excludes the pure base, ie, the empty value
 		if val == "" :
 			return None
@@ -391,7 +386,7 @@ class ExecutionContext :
 					self.options.add_warning("Relative URI is not allowed in this position, or not a legal CURIE reference: [%s]" % val, UnresolvablePrefix)
 					return None
 				else :
-					if scheme not in usual_schemes :
+					if scheme not in uri_schemes :
 						self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
 					return URIRef(val)
 			else :
@@ -438,7 +433,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.31  2011-03-14 12:41:10  ivan
+Revision 1.32  2011-04-20 11:02:21  ivan
+*** empty log message ***
+
+Revision 1.31  2011/03/14 12:41:10  ivan
 *** empty log message ***
 
 Revision 1.30  2011/03/14 12:34:37  ivan

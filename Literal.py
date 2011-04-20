@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.15 2011-04-05 06:37:22 ivan Exp $
-$Date: 2011-04-05 06:37:22 $
+$Id: Literal.py,v 1.16 2011-04-20 11:02:21 ivan Exp $
+$Date: 2011-04-20 11:02:21 $
 """
 
 import re
@@ -30,9 +30,6 @@ from pyRdfa	import IncorrectBlankNodeUsage
 
 
 XMLLiteral = ns_rdf["XMLLiteral"]
-
-#from pyRdfa.uri import url_regexp, registered_schemes
-#uriexpression = re.compile(url_regexp)
 
 def __putBackEntities(str) :
 	"""Put 'back' entities for the '&','<', and '>' characters, to produce kosher XML string.
@@ -189,7 +186,10 @@ def generate_literal(node, graph, subject, state) :
 
 """
 $Log: Literal.py,v $
-Revision 1.15  2011-04-05 06:37:22  ivan
+Revision 1.16  2011-04-20 11:02:21  ivan
+*** empty log message ***
+
+Revision 1.15  2011/04/05 06:37:22  ivan
 *** empty log message ***
 
 Revision 1.14  2011/03/11 14:12:12  ivan

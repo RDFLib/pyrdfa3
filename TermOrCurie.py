@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.10 2011-03-11 12:17:38 ivan Exp $
-$Date: 2011-03-11 12:17:38 $
+$Id: TermOrCurie.py,v 1.11 2011-04-20 11:02:21 ivan Exp $
+$Date: 2011-04-20 11:02:21 $
 """
 
 import re, sys
@@ -47,7 +47,7 @@ from pyRdfa.host 			import MediaTypes, HostLanguage, predefined_1_0_rel
 from pyRdfa.ProfileCache	import CachedProfile
 from pyRdfa 				import FailedProfile
 from pyRdfa					import IncorrectProfileDefinition, IncorrectPrefixDefinition
-from pyRdfa					import ns_rdfa
+from pyRdfa					import ns_rdfa, built_in_default_profiles
 
 # Regular expression object for NCNAME
 ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
@@ -119,7 +119,15 @@ class ProfileRead :
 			if prof in self.excluded_profiles : continue
 			
 			# Get the profile data
-			data = CachedProfile(prof, self.state.options, report = False)
+			#
+			if built_in_default_profiles :
+				from DefaultProfiles import default_profiles
+				if prof in default_profiles :
+					data = default_profiles[prof]
+				else :
+					data = CachedProfile(prof, self.state.options, report = False)
+			else :
+					data = CachedProfile(prof, self.state.options, report = False)
 			
 			# Merge the profile data with the overall definition
 			if data.vocabulary != "" :
@@ -169,6 +177,12 @@ class TermOrCurie :
 		@param inherited_state: the state inherited by the current state. 'None' if this is the top level state.
 		@type inherited_state: L{State.ExecutionContext}
 		"""
+		def check_prefix(pr) :
+			from pyRdfa	import uri_schemes
+			if pr in uri_schemes :
+				# The prefix being defined is a registered URI scheme, better avoid it...
+				state.options.add_warning("The '%s' prefix is also a registered or widely used URI scheme; is this a mistake?" % pr)
+				
 		self.state	= state
 		self.graph	= graph
 		
@@ -273,6 +287,7 @@ class TermOrCurie :
 						dict[pr]       = ns
 						xmlns_dict[pr] = ns
 						self.graph.bind(pr,ns)
+						check_prefix(pr)
 
 		# Add the locally defined namespaces using the @prefix syntax
 		# this may override the definition in @profile and @xmlns
@@ -312,6 +327,12 @@ class TermOrCurie :
 								real_prefix = prefix.lower()
 								dict[real_prefix] = uri
 								self.graph.bind(real_prefix,uri)
+								# Additional warning: is this prefix overriding an existing xmlns statement with a different URI? if
+								# so, that may lead to discrepancies between an RDFa 1.0 and RDFa 1.1 run...
+								if (prefix in xmlns_dict and xmlns_dict[prefix] != uri) or (real_prefix in xmlns_dict and xmlns_dict[real_prefix] != uri) :
+									state.options.add_warning("@prefix setting for '%s' overrides the 'xmlns:%s' setting; may be a source of problem if same file is run through RDFa 1.0" % (real_prefix,real_prefix))
+								check_prefix(real_prefix)
+
 							else :
 								state.options.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
 
@@ -447,7 +468,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.10  2011-03-11 12:17:38  ivan
+Revision 1.11  2011-04-20 11:02:21  ivan
+*** empty log message ***
+
+Revision 1.10  2011/03/11 12:17:38  ivan
 default prefix cannot be changed
 
 Revision 1.9  2011/03/11 11:56:32  ivan

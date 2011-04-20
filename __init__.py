@@ -130,10 +130,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var builtInTransformers: List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 @var CACHE_DIR_VAR: Environment variable used to characterize cache directories for RDFa profiles in case the default setting does not work or is not appropriate. See the L{caching mechanism description<ProfileCache>} for details
 @var rdfa_current_version: Current "official" version of RDFa that this package implements by default. This can be changed at the invocation of the package
+@var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
+@var built_in_default_profiles: whether the built-in version of the default profile content should be used, or whether those should go through the same caching mechanism as all other profiles
 """
 
 """
-$Id: __init__.py,v 1.31 2011-04-05 06:37:22 ivan Exp $ $Date: 2011-04-05 06:37:22 $
+$Id: __init__.py,v 1.32 2011-04-20 11:02:21 ivan Exp $ $Date: 2011-04-20 11:02:21 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -183,7 +185,9 @@ ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
 # Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
-debug = True
+debug = False
+
+built_in_default_profiles = True
 
 #########################################################################################################
 
@@ -263,6 +267,14 @@ CACHE_DIR_VAR		= "PyRdfaCacheDir"
 
 # current "official" version of RDFa that this package implements. This can be changed at the invocation of the package
 rdfa_current_version	= "1.1"
+
+# list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
+uri_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "git", "geo", "gopher", "hdl", "http", "https", "imap",
+			   "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
+			   "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
+			   "stp", "svn", "svn+ssh", "tag", "telnet", "tel", "tv", "urn", "wais", "javascript"
+			  ]
+
 
 # List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
@@ -707,7 +719,10 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.31  2011-04-05 06:37:22  ivan
+Revision 1.32  2011-04-20 11:02:21  ivan
+*** empty log message ***
+
+Revision 1.31  2011/04/05 06:37:22  ivan
 *** empty log message ***
 
 Revision 1.30  2011/03/14 12:34:37  ivan

@@ -16,7 +16,9 @@ Caching can be read-only, ie, the setup might generate the caches off-line inste
 
 The cache includes a separate index file and a file for each profile. Cache control is based upon the 'EXPIRES' header of a profile file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
 
-The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files (care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too!). 
+The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files (care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too!).
+
+Default profiles (i.e., http://www.w3.org/profile/rdfa-1.1 and http://www.w3.org/profile/html-rdfa-1.1) are treated just as any other profiles. However, there is a possibility to speed those up by using the L{DefaultProfiles} module that contains a "pythonized" version of the profile content. The built_in_default_profiles flag in the package head can be set to "True" to enable this possibility or can be set to "False" to rely on caching. Which version to choose depends on the maintenance and update policy of this package when deployed; if deployment makes it easy to update the L{DefaultProfile}, then the built-in version is obviously faster. Note that the distribution includes a separate script called GenerateDefaultProfiles that can be used to, well, generate the content of the L{DefaultProfile} by going through a caching mechanism once. 
 
 @summary: RDFa parser (distiller)
 @requires: U{RDFLib<http://rdflib.net>}
