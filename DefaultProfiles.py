@@ -11,20 +11,15 @@ vocabulary.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
-@var default_profiles: dictionary for the default profiles; for each URI it points to an object containing the "ns" and "terms" dictionaries, as well as the "vocabulary" attribute.
+@var default_profiles: prefix for the XHTML vocabulary URI (set to 'xhv')
 """
 
 """
-$Id: DefaultProfiles.py,v 1.2 2011-04-20 11:27:51 ivan Exp $
-$Date: 2011-04-20 11:27:51 $
+$Id: DefaultProfiles.py,v 1.3 2011-04-28 09:39:05 ivan Exp $
+$Date: 2011-04-28 09:39:05 $
 """
 
 class Wrapper :
-	"""Just an empty wrapper class around the three variables that the rest of the package looks for
-	@ivar ns: dictionary for namespace prefixes
-	@ivar terms: dictionary for terms
-	@ivar vocabulary: default vocabulary URI
-	"""
 	pass
 	
 default_profiles = {
@@ -34,28 +29,23 @@ default_profiles = {
 
 default_profiles["http://www.w3.org/profile/rdfa-1.1"].ns = {
 	'owl'	: 'http://www.w3.org/2002/07/owl#',
-	'dbp-owl'	: 'http://dbpedia.org/ontology/',
-	'gr'	: 'http://purl.org/goodrelations/v1#',
 	'cc'	: 'http://creativecommons.org/ns#',
 	'grddl'	: 'http://www.w3.org/2003/g/data-view#',
 	'rif'	: 'http://www.w3.org/2007/rif#',
-	'dbp'	: 'http://dbpedia.org/property/',
 	'sioc'	: 'http://rdfs.org/sioc/ns#',
-	'dbr'	: 'http://dbpedia.org/resource/',
 	'skos'	: 'http://www.w3.org/2004/02/skos/core#',
 	'xml'	: 'http://www.w3.org/XML/1998/namespace',
 	'rdfs'	: 'http://www.w3.org/2000/01/rdf-schema#',
+	'rev'	: 'http://purl.org/stuff/rev#',
+	'contact'	: 'http://www.w3.org/2000/10/swap/pim/contact#',
 	'rdfa'	: 'http://www.w3.org/ns/rdfa#',
 	'dcterms'	: 'http://purl.org/dc/terms/',
 	'foaf'	: 'http://xmlns.com/foaf/0.1/',
-	'bibo'	: 'http://purl.org/ontology/bibo/',
 	'void'	: 'http://rdfs.org/ns/void#',
-	'v'	: 'http://rdf.data-vocabulary.org/#',
-	'doap'	: 'http://usefulinc.com/ns/doap#',
 	'dc'	: 'http://purl.org/dc/elements/1.1/',
+	'ical'	: 'http://www.w3.org/2002/12/cal/icaltzd#',
 	'geo'	: 'http://www.w3.org/2003/01/geo/wgs84_pos#',
 	'vcard'	: 'http://www.w3.org/2006/vcard/ns#',
-	'rss'	: 'http://purl.org/rss/1.0/',
 	'xmlns'	: 'http://www.w3.org/2000/xmlns/',
 	'wdrs'	: 'http://www.w3.org/2007/05/powder-s#',
 	'og'	: 'http://ogp.me/ns#',
@@ -63,9 +53,8 @@ default_profiles["http://www.w3.org/profile/rdfa-1.1"].ns = {
 	'rdf'	: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 	'xhv'	: 'http://www.w3.org/1999/xhtml/vocab#',
 	'xsd'	: 'http://www.w3.org/2001/XMLSchema#',
-	'cal'	: 'http://www.w3.org/2002/12/cal/ical#',
+	'v'	: 'http://rdf.data-vocabulary.org/#',
 	'skosxl'	: 'http://www.w3.org/2008/05/skos-xl#',
-	'sd'	: 'http://www.w3.org/ns/sparql-service-description#',
 }
 
 default_profiles["http://www.w3.org/profile/rdfa-1.1"].terms = {
@@ -85,7 +74,7 @@ default_profiles["http://www.w3.org/profile/html-rdfa-1.1"].terms = {
 	'index'	: 'http://www.w3.org/1999/xhtml/vocab#index',
 	'copyright'	: 'http://www.w3.org/1999/xhtml/vocab#copyright',
 	'bookmark'	: 'http://www.w3.org/1999/xhtml/vocab#bookmark',
-	'top'	: 'http://www.w3.org/1999/xhtml/vocab#top',
+	'section'	: 'http://www.w3.org/1999/xhtml/vocab#section',
 	'alternate'	: 'http://www.w3.org/1999/xhtml/vocab#alternate',
 	'next'	: 'http://www.w3.org/1999/xhtml/vocab#next',
 	'start'	: 'http://www.w3.org/1999/xhtml/vocab#start',
@@ -103,7 +92,7 @@ default_profiles["http://www.w3.org/profile/html-rdfa-1.1"].terms = {
 	'glossary'	: 'http://www.w3.org/1999/xhtml/vocab#glossary',
 	'up'	: 'http://www.w3.org/1999/xhtml/vocab#up',
 	'cite'	: 'http://www.w3.org/1999/xhtml/vocab#cite',
-	'section'	: 'http://www.w3.org/1999/xhtml/vocab#section',
+	'top'	: 'http://www.w3.org/1999/xhtml/vocab#top',
 	'first'	: 'http://www.w3.org/1999/xhtml/vocab#first',
 }
 

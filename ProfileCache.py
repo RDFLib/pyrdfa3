@@ -36,7 +36,7 @@ from pyRdfa			import ns_rdfa
 from pyRdfa			import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa			import ProfileCachingError, ProfileCachingInfo
 from pyRdfa 		import FailedProfile
-import Options
+#import Options
 
 # Regular expression object for a general XML application media type
 xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
@@ -390,10 +390,13 @@ class CachedProfile(CachedProfileIndex) :
 		elif content.content_type in [MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml] or xml_application_media_type.match(content.content_type) != None :
 			try :
 				from pyRdfa import pyRdfa
+				from pyRdfa.Options	import Options
 				options = Options()
 				return pyRdfa(options).graph_from_source(content.data)
 			except :
 				(type,value,traceback) = sys.exc_info()
+				print type
+				print value
 				raise FailedProfile("Could not parse RDFa content at <%s> (%s)" % (self.uri,value), self.uri)
 		else :
 			raise FailedProfile("Unrecognized media type for the vocabulary file <%s>: '%s'" % (self.uri, content.content_type), self.uri)

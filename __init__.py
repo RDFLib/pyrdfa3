@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.33 2011-04-20 11:27:52 ivan Exp $ $Date: 2011-04-20 11:27:52 $
+$Id: __init__.py,v 1.35 2011-04-28 09:39:59 ivan Exp $ $Date: 2011-04-28 09:39:59 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -742,7 +742,13 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.33  2011-04-20 11:27:52  ivan
+Revision 1.35  2011-04-28 09:39:59  ivan
+*** empty log message ***
+
+Revision 1.34  2011/04/28 09:39:06  ivan
+*** empty log message ***
+
+Revision 1.33  2011/04/20 11:27:52  ivan
 *** empty log message ***
 
 Revision 1.32  2011/04/20 11:02:21  ivan
