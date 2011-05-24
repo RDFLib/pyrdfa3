@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Built-in version of the default profile contents. The code may use this directly instead of caching the
@@ -15,8 +14,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: DefaultProfiles.py,v 1.3 2011-04-28 09:39:05 ivan Exp $
-$Date: 2011-04-28 09:39:05 $
+$Id: DefaultProfiles.py,v 1.4 2011-05-24 14:10:57 ivan Exp $
+$Date: 2011-05-24 14:10:57 $
 """
 
 class Wrapper :
@@ -29,6 +28,8 @@ default_profiles = {
 
 default_profiles["http://www.w3.org/profile/rdfa-1.1"].ns = {
 	'owl'	: 'http://www.w3.org/2002/07/owl#',
+	'gr'	: 'http://purl.org/goodrelations/v1#',
+	'ctag'	: 'http://commontag.org/ns#',
 	'cc'	: 'http://creativecommons.org/ns#',
 	'grddl'	: 'http://www.w3.org/2003/g/data-view#',
 	'rif'	: 'http://www.w3.org/2007/rif#',
@@ -37,14 +38,11 @@ default_profiles["http://www.w3.org/profile/rdfa-1.1"].ns = {
 	'xml'	: 'http://www.w3.org/XML/1998/namespace',
 	'rdfs'	: 'http://www.w3.org/2000/01/rdf-schema#',
 	'rev'	: 'http://purl.org/stuff/rev#',
-	'contact'	: 'http://www.w3.org/2000/10/swap/pim/contact#',
 	'rdfa'	: 'http://www.w3.org/ns/rdfa#',
 	'dcterms'	: 'http://purl.org/dc/terms/',
 	'foaf'	: 'http://xmlns.com/foaf/0.1/',
 	'void'	: 'http://rdfs.org/ns/void#',
-	'dc'	: 'http://purl.org/dc/elements/1.1/',
 	'ical'	: 'http://www.w3.org/2002/12/cal/icaltzd#',
-	'geo'	: 'http://www.w3.org/2003/01/geo/wgs84_pos#',
 	'vcard'	: 'http://www.w3.org/2006/vcard/ns#',
 	'xmlns'	: 'http://www.w3.org/2000/xmlns/',
 	'wdrs'	: 'http://www.w3.org/2007/05/powder-s#',
@@ -82,7 +80,7 @@ default_profiles["http://www.w3.org/profile/html-rdfa-1.1"].terms = {
 	'role'	: 'http://www.w3.org/1999/xhtml/vocab#role',
 	'subsection'	: 'http://www.w3.org/1999/xhtml/vocab#subsection',
 	'prev'	: 'http://www.w3.org/1999/xhtml/vocab#prev',
-	'transformation'	: 'http://www.w3.org/2003/g/data-view#transformation',
+	'cite'	: 'http://www.w3.org/1999/xhtml/vocab#cite',
 	'appendix'	: 'http://www.w3.org/1999/xhtml/vocab#appendix',
 	'itsRules'	: 'http://www.w3.org/1999/xhtml/vocab#itsRules',
 	'icon'	: 'http://www.w3.org/1999/xhtml/vocab#icon',
@@ -91,7 +89,7 @@ default_profiles["http://www.w3.org/profile/html-rdfa-1.1"].terms = {
 	'license'	: 'http://www.w3.org/1999/xhtml/vocab#license',
 	'glossary'	: 'http://www.w3.org/1999/xhtml/vocab#glossary',
 	'up'	: 'http://www.w3.org/1999/xhtml/vocab#up',
-	'cite'	: 'http://www.w3.org/1999/xhtml/vocab#cite',
+	'transformation'	: 'http://www.w3.org/2003/g/data-view#transformation',
 	'top'	: 'http://www.w3.org/1999/xhtml/vocab#top',
 	'first'	: 'http://www.w3.org/1999/xhtml/vocab#first',
 }

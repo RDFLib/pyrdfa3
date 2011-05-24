@@ -124,7 +124,7 @@ RDFa 1.1 has the notion of profiles, and client are advised to cache the content
 
 Caching happens in a file system directory. The directory itself is determined by the platform the tool is used on, namely:
  - On Windows, it is the 'pyRdfa-cache' subdirectory of the "%APPDATA%" environment variable (referring to the usual place for application data)
- - On MacOS, it is the ~/Library/Application Data/pyRdfa-cache
+ - On MacOS, it is the ~/Library/Application Support/pyRdfa-cache
  - Otherwise, it is the ~/.pyRdfa-cache
  
 This automatic choise can be overridden by the 'CACHE_DIR_VAR' environment variable. 
@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.34 2011-04-28 09:39:06 ivan Exp $ $Date: 2011-04-28 09:39:06 $
+$Id: __init__.py,v 1.36 2011-05-24 14:11:09 ivan Exp $ $Date: 2011-05-24 14:11:09 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -210,7 +210,7 @@ ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
 debug = False
 
-built_in_default_profiles = False
+built_in_default_profiles = True
 
 #########################################################################################################
 
@@ -292,12 +292,37 @@ CACHE_DIR_VAR		= "PyRdfaCacheDir"
 rdfa_current_version	= "1.1"
 
 # list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
-uri_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "git", "geo", "gopher", "hdl", "http", "https", "imap",
-			   "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
-			   "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
-			   "stp", "svn", "svn+ssh", "tag", "telnet", "tel", "tv", "urn", "wais", "javascript"
-			  ]
+#uri_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "git", "geo", "gopher", "hdl", "http", "https", "imap",
+#			   "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
+#			   "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
+#			   "stp", "svn", "svn+ssh", "tag", "telnet", "tel", "tv", "urn", "wais", "javascript"
+#			  ]
 
+
+# I removed schemes that would not appear as a prefix anyway, like iris.beep
+registered_iana_schemes = [
+	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","dns","fax","ftp","geo","go",
+	"gopher","h323","http","https","iax","icap","im","imap","info","ipp","iris","ldap",
+	"mailto","mid","modem","msrp","msrps","mupdate","news","nfs","nntp","opaquelocktoken",
+	"pop","pres","rstp","service","shttp","sieve","sip","snmp","soap","tag",
+	"tel","telnet","thismessage","tn3270","tip","tv","urn","vemmi","xmpp",
+]
+
+historical_iana_schemes = [
+	"mailserver", "prospero", "snews", "videotex", "wais",
+]
+
+provisional_iana_schemes = [
+	"afs", "dtn", "dvb", "icon", "ipn", "jps", "oid", "pack", "rsync", "ws", "wss",
+]
+
+
+other_used_schemes = [
+	"doi", "file", "git",  "hdl", "isbn", "javascript", "ldap", "lsid", "mms", "mstp", 
+	"rtmp", "rtspu", "sftp", "sips", "sms", "snmp", "stp", "svn", 
+]
+
+uri_schemes = registered_iana_schemes + historical_iana_schemes + provisional_iana_schemes + other_used_schemes
 
 # List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
@@ -493,7 +518,7 @@ class pyRdfa :
 				else :
 					# No charset set. The HTMLLib parser tries to sniff into the
 					# the file to find a meta header for the charset; if that
-					# works, fine, other it falls back on window-...
+					# works, fine, otherwise it falls back on window-...
 					dom = parser.parse(input)
 					
 			else :
@@ -742,7 +767,13 @@ def parseRDFa(dom, base, graph = None, options=None) :
 ###################################################################################################
 """
 $Log: __init__.py,v $
-Revision 1.34  2011-04-28 09:39:06  ivan
+Revision 1.36  2011-05-24 14:11:09  ivan
+*** empty log message ***
+
+Revision 1.35  2011/04/28 09:39:59  ivan
+*** empty log message ***
+
+Revision 1.34  2011/04/28 09:39:06  ivan
 *** empty log message ***
 
 Revision 1.33  2011/04/20 11:27:52  ivan
