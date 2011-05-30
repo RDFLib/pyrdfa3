@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.36 2011-05-24 14:11:09 ivan Exp $ $Date: 2011-05-24 14:11:09 $
+$Id: __init__.py,v 1.37 2011-05-30 12:28:35 ivan Exp $ $Date: 2011-05-30 12:28:35 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -291,14 +291,6 @@ CACHE_DIR_VAR		= "PyRdfaCacheDir"
 # current "official" version of RDFa that this package implements. This can be changed at the invocation of the package
 rdfa_current_version	= "1.1"
 
-# list of 'usual' URI schemes; if a URI does not fall into these, a warning may be issued (can be the source of a bug)
-#uri_schemes = ["data", "dns", "doi", "fax", "file", "ftp", "git", "geo", "gopher", "hdl", "http", "https", "imap",
-#			   "isbn", "ldap", "lsid", "mailto", "mid", "mms", "mstp", "news", "nntp", "prospero", "rsync",
-#			   "rtmp", "rtsp", "rtspu", "sftp", "shttp", "sip", "sips", "sieve", "sms", "snmp", "snews",
-#			   "stp", "svn", "svn+ssh", "tag", "telnet", "tel", "tv", "urn", "wais", "javascript"
-#			  ]
-
-
 # I removed schemes that would not appear as a prefix anyway, like iris.beep
 registered_iana_schemes = [
 	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","dns","fax","ftp","geo","go",
@@ -315,7 +307,6 @@ historical_iana_schemes = [
 provisional_iana_schemes = [
 	"afs", "dtn", "dvb", "icon", "ipn", "jps", "oid", "pack", "rsync", "ws", "wss",
 ]
-
 
 other_used_schemes = [
 	"doi", "file", "git",  "hdl", "isbn", "javascript", "ldap", "lsid", "mms", "mstp", 
@@ -422,17 +413,19 @@ class pyRdfa :
 	####################################################################################################################
 	# Externally used methods
 	#
-	def graph_from_DOM(self, dom, graph = None) :
+	def graph_from_DOM(self, dom, graph = None, pgraph = None) :
 		"""
 		Extract the RDF Graph from a DOM tree. This is where the real meat happens. All other methods get down to this
 		one, eventually (eg, after opening a URI and parsing it into a DOM)
 		@param dom: a DOM Node element, the top level entry node for the whole tree (to make it clear, a dom.documentElement is used to initiate processing)
 		@keyword graph: an RDF Graph (if None, than a new one is created)
 		@type graph: rdflib Graph instance. If None, a new one is created.
+		@keyword pgraph: an RDF Graph to hold (possibly) the processor graph content
+		@type graph: rdflib Graph instance or None
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance
 		"""
-		def copyGraph(tog,fromg) :
+		def copyGraph(tog, fromg) :
 			for t in fromg :
 				tog.add(t)
 			for k,ns in fromg.namespaces() :
@@ -471,23 +464,30 @@ class pyRdfa :
 		if self.options.output_default_graph :
 			copyGraph(graph, default_graph)
 			if self.options.output_processor_graph :
-				copyGraph(graph, self.options.processor_graph.graph)
+				if pgraph != None :
+					copyGraph(pgraph, self.options.processor_graph.graph)
+				else :					
+					copyGraph(graph, self.options.processor_graph.graph)
 		elif self.options.output_processor_graph :
-			copyGraph(graph, self.options.processor_graph.graph)
+			if pgraph != None :
+				copyGraph(pgraph, self.options.processor_graph.graph)
+			else :
+				copyGraph(graph, self.options.processor_graph.graph)
 
 		# this is necessary if several DOM trees are handled in a row...
 		self.options.reset_processor_graph()
 
 		return graph
 	
-	def graph_from_source(self, name, graph = None, rdfOutput = False) :
+	def graph_from_source(self, name, graph = None, rdfOutput = False, pgraph = None) :
 		"""
 		Extract an RDF graph from an RDFa source. The source is parsed, the RDF extracted, and the RDFa Graph is
 		returned. This is a front-end to the L{pyRdfa.graph_from_DOM} method.
 				
 		@param name: a URI, a file name, or a file-like object
 		@param graph: rdflib Graph instance. If None, a new one is created.
-		@param rdfOutput: whether exception should be turned into RDF and returned as part of the processor graph
+		@param pgraph: rdflib Graph instance for the processor graph. If None, a new one is created.
+		@param rdfOutput: whether exceptions should be turned into RDF and returned as part of the processor graph
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance
 		"""
@@ -526,7 +526,7 @@ class pyRdfa :
 				parse = xml.dom.minidom.parse
 				dom = parse(input)
 			#dom = parse(input,encoding='utf-8')
-			return self.graph_from_DOM(dom, graph)
+			return self.graph_from_DOM(dom, graph, pgraph)
 		except FailedSource, f :
 			if not rdfOutput : raise f
 			self.options.add_error(f.msg, FileReferenceError, name)
@@ -765,51 +765,4 @@ def parseRDFa(dom, base, graph = None, options=None) :
 	return pyRdfa(options, base).graph_from_DOM(graph)
 
 ###################################################################################################
-"""
-$Log: __init__.py,v $
-Revision 1.36  2011-05-24 14:11:09  ivan
-*** empty log message ***
 
-Revision 1.35  2011/04/28 09:39:59  ivan
-*** empty log message ***
-
-Revision 1.34  2011/04/28 09:39:06  ivan
-*** empty log message ***
-
-Revision 1.33  2011/04/20 11:27:52  ivan
-*** empty log message ***
-
-Revision 1.32  2011/04/20 11:02:21  ivan
-*** empty log message ***
-
-Revision 1.31  2011/04/05 06:37:22  ivan
-*** empty log message ***
-
-Revision 1.30  2011/03/14 12:34:37  ivan
-*** empty log message ***
-
-Revision 1.29  2011/03/11 14:12:13  ivan
-*** empty log message ***
-
-Revision 1.28  2011/03/08 10:49:50  ivan
-*** empty log message ***
-
-Revision 1.27  2010/11/19 13:52:45  ivan
-*** empty log message ***
-
-Revision 1.26  2010/11/02 14:56:36  ivan
-*** empty log message ***
-
-Revision 1.25  2010/10/29 16:30:22  ivan
-*** empty log message ***
-
-Revision 1.24  2010/10/26 14:32:10  ivan
-*** empty log message ***
-
-Revision 1.23  2010/08/25 11:22:19  ivan
-Adaptation to the new collection/container approach
-
-Revision 1.22  2010/07/26 13:27:52  ivan
-testing the log entry part
-
-"""
