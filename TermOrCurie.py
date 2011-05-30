@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.11 2011-04-20 11:02:21 ivan Exp $
-$Date: 2011-04-20 11:02:21 $
+$Id: TermOrCurie.py,v 1.12 2011-05-30 14:49:55 ivan Exp $
+$Date: 2011-05-30 14:49:55 $
 """
 
 import re, sys
@@ -181,7 +181,7 @@ class TermOrCurie :
 			from pyRdfa	import uri_schemes
 			if pr in uri_schemes :
 				# The prefix being defined is a registered URI scheme, better avoid it...
-				state.options.add_warning("The '%s' prefix is also a registered or widely used URI scheme; is this a mistake?" % pr)
+				state.options.add_warning("Definition for the '%s' prefix, that is also a registered or a widely used URI scheme; is this a mistake?" % pr)
 				
 		self.state	= state
 		self.graph	= graph
@@ -269,10 +269,11 @@ class TermOrCurie :
 				# yep, there is a namespace setting
 				prefix = attr.localName
 				if prefix != "" : # exclude the top level xmlns setting...
+					state.options.add_warning("The usage of 'xmlns' for prefix definition is deprecated; please use the 'prefix' attribute instead (definition for 'xmlns:%s')" % prefix, IncorrectPrefixDefinition)
 					if prefix == "_" :
-						state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed", IncorrectPrefixDefinition)
+						state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed as a prefix definition", IncorrectPrefixDefinition)
 					elif prefix.find(':') != -1 :
-						state.options.add_warning("The character ':' is not valid in a CURIE Prefix", IncorrectPrefixDefinition)
+						state.options.add_warning("The character ':' is not valid in a CURIE Prefix, and cannot be used in a prefix definition", IncorrectPrefixDefinition)
 					else :					
 						# quote the URI, ie, convert special characters into %.. This is
 						# true, for example, for spaces
@@ -301,7 +302,7 @@ class TermOrCurie :
 					prefix = pr_list[i]
 					# see if there is a URI at all
 					if i == len(pr_list) - 1 :
-						state.options.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
+						state.options.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr))
 						break
 					else :
 						value = pr_list[i+1]
@@ -468,7 +469,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.11  2011-04-20 11:02:21  ivan
+Revision 1.12  2011-05-30 14:49:55  ivan
+*** empty log message ***
+
+Revision 1.11  2011/04/20 11:02:21  ivan
 *** empty log message ***
 
 Revision 1.10  2011/03/11 12:17:38  ivan

@@ -447,7 +447,7 @@ class CachedProfile(CachedProfileIndex) :
 			# find all the subjects for a specific term. If there are more than one, that is an error
 			subjs = [ subj for subj in graph.subjects(ns_rdfa[term_or_prefix],term) ]
 			if len(subjs) != 1 :
-				self.options.add_warning("The %s '%s' is defined twice; ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
+				self.options.add_warning("The %s '%s' is defined twice; both are ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
 				continue
 			
 			# we got THE subject!

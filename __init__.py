@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.37 2011-05-30 12:28:35 ivan Exp $ $Date: 2011-05-30 12:28:35 $
+$Id: __init__.py,v 1.38 2011-05-30 14:49:55 ivan Exp $ $Date: 2011-05-30 14:49:55 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -343,8 +343,7 @@ class pyRdfa :
 		@keyword media_type: explicit setting of the preferred media type (a.k.a. content type) of the the RDFa source
 		@keyword rdfa_version: the RDFa version that should be used. If not set, the value of the global L{rdfa_current_version} variable is used
 		"""
-		self.base = base
-		
+		self.base    = base
 		self.charset = None
 
 		# predefined content type
@@ -420,7 +419,7 @@ class pyRdfa :
 		@param dom: a DOM Node element, the top level entry node for the whole tree (to make it clear, a dom.documentElement is used to initiate processing)
 		@keyword graph: an RDF Graph (if None, than a new one is created)
 		@type graph: rdflib Graph instance. If None, a new one is created.
-		@keyword pgraph: an RDF Graph to hold (possibly) the processor graph content
+		@keyword pgraph: an RDF Graph to hold (possibly) the processor graph content. If None, and the error/warning triples are to be generated, they will be added to the returned graph. Otherwise they are stored in this graph.
 		@type graph: rdflib Graph instance or None
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance
@@ -486,7 +485,7 @@ class pyRdfa :
 				
 		@param name: a URI, a file name, or a file-like object
 		@param graph: rdflib Graph instance. If None, a new one is created.
-		@param pgraph: rdflib Graph instance for the processor graph. If None, a new one is created.
+		@param pgraph: rdflib Graph instance for the processor graph. If None, and the error/warning triples are to be generated, they will be added to the returned graph. Otherwise they are stored in this graph.
 		@param rdfOutput: whether exceptions should be turned into RDF and returned as part of the processor graph
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance

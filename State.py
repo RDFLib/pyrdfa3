@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.32 2011-04-20 11:02:21 ivan Exp $
-$Date: 2011-04-20 11:02:21 $
+$Id: State.py,v 1.33 2011-05-30 14:49:55 ivan Exp $
+$Date: 2011-05-30 14:49:55 $
 """
 
 import rdflib
@@ -255,7 +255,7 @@ class ExecutionContext :
 			from pyRdfa	import uri_schemes
 			val = uri.strip()
 			if check and urlparse.urlsplit(val)[0] not in uri_schemes :
-				self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
+				self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake, e.g., by using an undefined CURIE prefix?" % val.strip())
 			return URIRef(val)
 
 		def join(base, v, check = True) :
@@ -333,7 +333,7 @@ class ExecutionContext :
 				# The rule says that then the whole value should be considered as a URI
 				# except if it was part of a safe CURIE. In that case it should be ignored...
 				if safe_curie :
-					self.options.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]" % val, UnresolvablePrefix)
+					self.options.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]; value is ignored" % val, UnresolvablePrefix)
 					return None
 				else :
 					return self._URI(val)
@@ -383,11 +383,11 @@ class ExecutionContext :
 				scheme = urlparse.urlsplit(val)[0]
 				if scheme == "" :
 					# bug; there should be no relative URIs here
-					self.options.add_warning("Relative URI is not allowed in this position, or not a legal CURIE reference: [%s]" % val, UnresolvablePrefix)
+					self.options.add_warning("Either relative URI is not allowed in this position, or not a legal CURIE reference: [%s]" % val, UnresolvablePrefix)
 					return None
 				else :
 					if scheme not in uri_schemes :
-						self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake?" % val.strip())
+						self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake, e.g., by using an undefined CURIE prefix?" % val.strip())
 					return URIRef(val)
 			else :
 				# rdfa 1.0 case
@@ -433,7 +433,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.32  2011-04-20 11:02:21  ivan
+Revision 1.33  2011-05-30 14:49:55  ivan
+*** empty log message ***
+
+Revision 1.32  2011/04/20 11:02:21  ivan
 *** empty log message ***
 
 Revision 1.31  2011/03/14 12:41:10  ivan
