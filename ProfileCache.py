@@ -36,6 +36,24 @@ from pyRdfa			import ns_rdfa
 from pyRdfa			import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa			import ProfileCachingError, ProfileCachingInfo
 from pyRdfa 		import FailedProfile
+
+from pyRdfa import err_no_blank_node
+from pyRdfa import err_outdated_cache
+from pyRdfa import err_unreachable_profile
+from pyRdfa import err_unparsable_Turtle_profile
+from pyRdfa import err_unparsable_xml_profile
+from pyRdfa import err_unparsable_ntriples_profile
+from pyRdfa import err_unparsable_rdfa_profile
+from pyRdfa import err_unrecognised_profile_type
+from pyRdfa import err_more_vocab_URI_in_profile
+from pyRdfa import err_non_literal_in_profile
+from pyRdfa import err_non_ncname_in_profile
+from pyRdfa import err_double_def_in_profile
+from pyRdfa import err_same_subj_1_in_profile
+from pyRdfa import err_same_subj_2_in_profile
+from pyRdfa import err_no_URI_defined_in_profile
+from pyRdfa import err_more_URI_defined_in_profile
+
 #import Options
 
 # Regular expression object for a general XML application media type
@@ -264,7 +282,7 @@ class CachedProfile(CachedProfileIndex) :
 		except Exception, e :
 			# what this means is that the caching becomes impossible ProfileCachingError
 			(type,value,traceback) = sys.exc_info()
-			if self.report: options.add_warning("Could not access the profile cache area %s" % value, ProfileCachingError, URI)
+			if self.report: options.add_info("Could not access the profile cache area %s" % value, ProfileCachingError, URI)
 			profile_reference	= None
 			self.caching		= False
 
@@ -340,9 +358,9 @@ class CachedProfile(CachedProfileIndex) :
 		"""
 		def return_to_cache(msg) :
 			if newCache :
-				raise FailedProfile("Profile document <%s> could not be dereferenced (%s)" % (self.uri, msg), self.uri)
+				raise FailedProfile(err_unreachable_profile % self.uri, self.uri)
 			else :
-				self.options.add_warning("Profile document <%s> could not be dereferenced (%s), using possibly outdated cache" % (self.uri, e.msg))
+				self.options.add_warning(err_outdated_cache % self.uri)
 		
 		content = None
 		try :
@@ -370,7 +388,7 @@ class CachedProfile(CachedProfileIndex) :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse Turtle content content at <%s> (%s)" % (self.uri,value), self.uri)
+				raise FailedProfile(err_unparsable_Turtle_profile % (self.uri,value), self.uri)
 		elif content.content_type == MediaTypes.rdfxml :
 			try :
 				retval = Graph()
@@ -378,7 +396,7 @@ class CachedProfile(CachedProfileIndex) :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse RDF/XML content at <%s> (%s)" % (self.uri,value), self.uri)
+				raise FailedProfile(err_unparsable_Turtle_profile % (self.uri,value), self.uri)
 		elif content.content_type == MediaTypes.nt :
 			try :
 				retval = Graph()
@@ -386,7 +404,7 @@ class CachedProfile(CachedProfileIndex) :
 				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				raise FailedProfile("Could not parse N-Triple content at <%s> (%s)" % (self.uri,value), self.uri)
+				raise FailedProfile(err_unparsable_ntriples_profile % (self.uri,value), self.uri)
 		elif content.content_type in [MediaTypes.xhtml, MediaTypes.html, MediaTypes.xml] or xml_application_media_type.match(content.content_type) != None :
 			try :
 				from pyRdfa import pyRdfa
@@ -397,9 +415,9 @@ class CachedProfile(CachedProfileIndex) :
 				(type,value,traceback) = sys.exc_info()
 				print type
 				print value
-				raise FailedProfile("Could not parse RDFa content at <%s> (%s)" % (self.uri,value), self.uri)
+				raise FailedProfile(err_unparsable_rdfa_profile % (self.uri,value), self.uri)
 		else :
-			raise FailedProfile("Unrecognized media type for the vocabulary file <%s>: '%s'" % (self.uri, content.content_type), self.uri)
+			raise FailedProfile(err_unrecognised_profile_type % (self.uri, content.content_type), self.uri)
 
 	def _extract_profile_info(self, graph) :
 		"""
@@ -415,7 +433,7 @@ class CachedProfile(CachedProfileIndex) :
 		if len(voc_defs) == 1 :
 			self.vocabulary = str(voc_defs[0])
 		elif len(voc_defs) > 1 :
-			self.state.options.add_warning("Two or more default vocabularies URIs defined in the profile; ignored", IncorrectProfileDefinition, self.uri)
+			self.state.options.add_warning(err_more_vocab_URI_in_profile, IncorrectProfileDefinition, self.uri)
 			
 		self._find_terms(graph,"term")
 		self._find_terms(graph,"prefix")
@@ -437,17 +455,17 @@ class CachedProfile(CachedProfileIndex) :
 			# check if the term is really a literal and and and NCNAME
 			# that is an error
 			if not isinstance(term, Literal) :
-				self.options.add_warning("Non Literal %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
+				self.options.add_warning(err_non_literal_in_profile % e_tuple, IncorrectProfileDefinition, self.uri)
 				continue
 			# check of the term is really a valid literal, ie, an NCNAME
 			if ncname.match(term) == None :
-				self.options.add_warning("Non NCNAME %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
+				self.options.add_warning(err_non_ncname_in_profile % e_tuple, IncorrectProfileDefinition, self.uri)
 				continue
 			
 			# find all the subjects for a specific term. If there are more than one, that is an error
 			subjs = [ subj for subj in graph.subjects(ns_rdfa[term_or_prefix],term) ]
 			if len(subjs) != 1 :
-				self.options.add_warning("The %s '%s' is defined twice; both are ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
+				self.options.add_warning(err_double_def_in_profile % e_tuple, IncorrectProfileDefinition, self.uri)
 				continue
 			
 			# we got THE subject!
@@ -455,20 +473,20 @@ class CachedProfile(CachedProfileIndex) :
 			
 			# check if the same subj has been used for several term definitions
 			if len([ oterm for oterm in graph.objects(subj,ns_rdfa[term_or_prefix]) ]) != 1 :
-				self.options.add_warning("Same subject is used for several %s definion (including '%s'); ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
+				self.options.add_warning(err_same_subj_1_in_profile % e_tuple, IncorrectProfileDefinition, self.uri)
 				continue
 			# check if the same subj has been used for prefix definion, too; if so, that is an error
 			if len([pr for pr in graph.objects(subj,ns_rdfa[opposite_term_or_prefix])]) != 0 :
 				# if we get here, the same subject has been reused, which is not allowed
-				self.options.add_warning("Same subject is used for both %s and %s ('%s' and '%s'); ignored" % (term_or_prefix, opposite_term_or_prefix, term, pr), IncorrectProfileDefinition, self.uri)
+				self.options.add_warning(err_same_subj_2_in_profile % (term_or_prefix, opposite_term_or_prefix, term, pr), IncorrectProfileDefinition, self.uri)
 				continue
 				
 			# The subject is also kosher, we can get the uris
 			uris = [ uri for uri in graph.objects(subj,ns_rdfa["uri"]) ]
 			if len(uris) == 0 :
-				self.options.add_warning("No URI defined for %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
+				self.options.add_warning(err_no_URI_defined_in_profile % e_tuple, IncorrectProfileDefinition, self.uri)
 			elif len(uris) > 1 :
-				self.options.add_warning("More than one URIs defined for %s '%s'; ignored" % e_tuple, IncorrectProfileDefinition, self.uri)
+				self.options.add_warning(err_more_URI_defined_in_profile % e_tuple, IncorrectProfileDefinition, self.uri)
 			else :
 				if term_or_prefix == "term" :
 					self.terms[unicode(term)] = unicode(uris[0])

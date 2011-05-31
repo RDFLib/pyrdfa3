@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Parse.py,v 1.14 2011-04-05 06:37:22 ivan Exp $
-$Date: 2011-04-05 06:37:22 $
+$Id: Parse.py,v 1.15 2011-05-31 12:41:36 ivan Exp $
+$Date: 2011-05-31 12:41:36 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -40,7 +40,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa import IncorrectBlankNodeUsage, FailedProfile, ProfileReferenceError
+from pyRdfa import IncorrectBlankNodeUsage, FailedProfile, ProfileReferenceError, err_no_blank_node
 from pyRdfa.Utils import has_one_of_attributes
 
 #######################################################################
@@ -66,7 +66,8 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	try :
 		state = ExecutionContext(node, graph, inherited_state=incoming_state)
 	except FailedProfile, f :
-		bnode = incoming_state.options.add_error(f.msg, ProfileReferenceError, f.context)
+		# Per specification this should result in forgetting all the subtree for RDFa processing!
+		bnode = incoming_state.options.add_error(f.msg, ProfileReferenceError, f.context, node=node.nodeName)
 		if f.http_code :
 			incoming_state.options.processor_graph.add_http_context(bnode, f.http_code)
 		return
@@ -164,7 +165,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 			else :
 				incomplete_triples.append(theTriple)
 		else :
-			state.options.add_warning("Blank node in rel position is not allowed: [element '%s']" % node.nodeName, IncorrectBlankNodeUsage)
+			state.options.add_warning(err_no_blank_node % "rel", warning_type=IncorrectBlankNodeUsage, node=node.nodeName)
 
 	for prop in state.getURI("rev") :
 		if not isinstance(prop,BNode) :
@@ -174,8 +175,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 			else :
 				incomplete_triples.append(theTriple)
 		else :
-			state.options.add_warning("Blank node in rev position is not allowed: [element '%s']" % node.nodeName, IncorrectBlankNodeUsage)
-
+			state.options.add_warning(err_no_blank_node % "rev", warning_type=IncorrectBlankNodeUsage, node=node.nodeName)
 
 	# ----------------------------------------------------------------------
 	# Generation of the literal values. The newSubject is the subject

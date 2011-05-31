@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: Options.py,v 1.15 2011-04-05 06:37:22 ivan Exp $ $Date: 2011-04-05 06:37:22 $
+$Id: Options.py,v 1.16 2011-05-31 12:41:36 ivan Exp $ $Date: 2011-05-31 12:41:36 $
 """
 
 import sys, datetime
@@ -47,7 +47,7 @@ class ProcessorGraph :
 		self.graph.bind("pyrdfa", ns_distill)
 		self.graph.bind("rdf", ns_rdf)
 		
-	def add_triples(self, msg, top_class, info_class, context) :
+	def add_triples(self, msg, top_class, info_class, context, node) :
 		"""
 		Add an error structure to the processor graph: a bnode with a number of predicates. The structure
 		follows U{the processor graph vocabulary<http://www.w3.org/2010/02/rdfa/wiki/Processor_Graph_Vocabulary>} as described
@@ -60,15 +60,22 @@ class ProcessorGraph :
 		@type info_class: URIRef
 		@param context: An additional information added, if not None, as an object with rdfa:context as a predicate
 		@type context: either an URIRef or a URI String (an URIRef will be created in the second case)
+		@param node: The node's element name that contains the error
+		@type node: string
 		@return: the bnode that serves as a subject for the errors. The caller may add additional information
 		@rtype: BNode
 		"""
 		bnode = BNode()
 		
+		if node != None:
+			full_msg = "[In element '%s'] %s" % (node, msg)
+		else :
+			full_msg = msg
+		
 		self.graph.add((bnode, ns_rdf["type"], top_class))
 		if info_class :
 			self.graph.add((bnode, ns_rdf["type"], info_class))
-		self.graph.add((bnode, ns_dc["description"], Literal(msg)))
+		self.graph.add((bnode, ns_dc["description"], Literal(full_msg)))
 		self.graph.add((bnode, ns_dc["date"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
 		if context :
 			if not isinstance(context,URIRef) :
@@ -147,7 +154,7 @@ class Options :
 		"""
 		self.processor_graph.graph.remove((None,None,None))
 
-	def add_warning(self, txt, warning_type=None, context=None) :
+	def add_warning(self, txt, warning_type=None, context=None, node=None) :
 		"""Add a warning to the processor graph.
 		@param txt: the warning text. 
 		@keyword warning_type: Warning Class
@@ -155,9 +162,9 @@ class Options :
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
 		"""
-		return self.processor_graph.add_triples(txt, RDFA_Warning, warning_type, context)
+		return self.processor_graph.add_triples(txt, RDFA_Warning, warning_type, context, node)
 
-	def add_info(self, txt, info_type=None, context=None) :
+	def add_info(self, txt, info_type=None, context=None, node=None) :
 		"""Add an informational comment to the processor graph.
 		@param txt: the information text. 
 		@keyword info_type: Info Class
@@ -165,9 +172,9 @@ class Options :
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
 		"""
-		return self.processor_graph.add_triples(txt, RDFA_Info, info_type, context)
+		return self.processor_graph.add_triples(txt, RDFA_Info, info_type, context, node)
 
-	def add_error(self, txt, err_type=None, context=None) :
+	def add_error(self, txt, err_type=None, context=None, node=None) :
 		"""Add an error  to the processor graph.
 		@param txt: the information text. 
 		@keyword err_type: Error Class
@@ -175,5 +182,5 @@ class Options :
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
 		"""
-		return self.processor_graph.add_triples(txt, RDFA_Error, err_type, context)
+		return self.processor_graph.add_triples(txt, RDFA_Error, err_type, context, node)
 

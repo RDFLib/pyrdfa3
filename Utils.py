@@ -139,11 +139,12 @@ def quote_URI(uri, options = None) :
 	@param options: 
 	@type options: L{Options<pyRdfa.Options>}
 	"""
+	from pyRdfa import err_unusual_char_in_URI
 	suri = uri.strip()
 	for c in _warnChars :
 		if suri.find(c) != -1 :
 			if options != None :
-				options.add_warning('Unusual character in uri: %s; possible error?' % suri)
+				options.add_warning(err_unusual_char_in_URI % suri)
 			break
 	return urllib.quote(suri, _unquotedChars)
 	

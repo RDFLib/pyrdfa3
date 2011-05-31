@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.38 2011-05-30 14:49:55 ivan Exp $ $Date: 2011-05-30 14:49:55 $
+$Id: __init__.py,v 1.39 2011-05-31 12:41:36 ivan Exp $ $Date: 2011-05-31 12:41:36 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -259,7 +259,7 @@ class pyRdfaError(Exception) :
 	RDFa specification"""
 	pass
 
-# Error and Warning classes
+# Error and Warning RDFS classes
 RDFA_Error					= ns_rdfa["Error"]
 RDFA_Warning				= ns_rdfa["Warning"]
 RDFA_Info					= ns_rdfa["Information"]
@@ -274,6 +274,49 @@ IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
 ProfileCachingError			= ns_distill["ProfileCachingError"]
 ProfileCachingInfo			= ns_distill["ProfileCachingInfo"]
 IncorrectBlankNodeUsage     = ns_distill["IncorrectBlankNodeUsage"]
+
+# Error message texts
+err_no_blank_node					= "Blank node in %s position is not allowed; ignored"
+
+err_outdated_cache  				= "Profile document <%s> could not be dereferenced; using possibly outdated cache"
+err_unreachable_profile  			= "Profile document <%s> could not be dereferenced; the subtree is ignored"
+err_unparsable_Turtle_profile 		= "Could not parse profile in Turtle at <%s> (%s); the subtree is ignored"
+err_unparsable_xml_profile 			= "Could not parse profile in RDF/XML at <%s> (%s); the subtree is ignored"
+err_unparsable_ntriples_profile 	= "Could not parse profile in N-Triple at <%s> (%s); the subtree is ignored"
+err_unparsable_rdfa_profile 		= "Could not parse profile in N-Triple at <%s> (%s); the subtree is ignored"
+err_unrecognised_profile_type		= "Unrecognized media type for the profile file <%s>: '%s'; the subtree is ignored"
+err_more_vocab_URI_in_profile		= "Two or more default vocabularies URIs defined in the profile; ignored"
+err_non_literal_in_profile			= "Non Literal %s '%s' in profile definition; ignored"
+err_non_ncname_in_profile			= "Non NCNAME %s '%s' in profile definition; ignored"
+err_double_def_in_profile			= "The %s '%s' is defined twice in the profile definition; both are ignored"
+err_same_subj_1_in_profile			= "Same subject is used for several %s definion (including '%s') in the profile; all ignored"
+err_same_subj_2_in_profile			= "Same subject is used for both %s and %s ('%s' and '%s') in the profile; all ignored"
+err_no_URI_defined_in_profile		= "No URI defined for %s '%s' in the profile; ignored"
+err_more_URI_defined_in_profile		= "More than one URIs defined for %s '%s' in the profile; ignored"
+
+err_redefining_URI_as_prefix		= "'%s' a registered or a widely used URI scheme, but is defined as a prefix here; is this a mistake?"
+err_xmlns_deprecated				= "The usage of 'xmlns' for prefix definition is deprecated; please use the 'prefix' attribute instead (definition for '%s')"
+err_bnode_local_prefix				= "The '_' local CURIE prefix is reserved for blank nodes, and cannot be defined as a prefix"
+err_col_local_prefix				= "The character ':' is not valid in a CURIE Prefix, and cannot be used in a prefix definition (definition for '%s')"
+err_missing_URI_prefix				= "Missing URI in prefix declaration for '%s' (in '%s')"
+err_invalid_prefix					= "Invalid prefix declaration '%s' (in '%s')"
+err_no_default_prefix				= "Default prefix cannot be changed (in '%s')"
+err_prefix_and_xmlns				= "@prefix setting for '%s' overrides the 'xmlns:%s' setting; may be a source of problem if same file is run through RDFa 1.0"
+err_non_ncname_prefix				= "Non NCNAME '%s' in prefix definition (in '%s'); ignored"
+
+err_lang							= "Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)"
+err_URI_scheme						= "Unusual URI scheme used in <%s>; may that be a mistake, e.g., by using an undefined CURIE prefix?"
+err_illegal_safe_CURIE				= "Illegal safe CURIE: %s; ignored"
+err_no_CURIE_in_safe_CURIE			= "Safe CURIE is used, but the value does not correspond to a defined CURIE: [%s]; ignored"
+err_undefined_terms					= "'%s' is used as a term, but has not been defined as such; ignored"
+err_non_legal_CURIE_ref				= "Relative URI is not allowed in this position (or not a legal CURIE reference) '%s'; ignored"
+err_undefined_CURIE					= "Undefined CURIE: '%s'; ignored"
+
+err_unusual_char_in_URI				= "Unusual character in uri: %s; possible error?"
+
+
+
+
 
 #############################################################################################
 

@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.33 2011-05-30 14:49:55 ivan Exp $
-$Date: 2011-05-30 14:49:55 $
+$Id: State.py,v 1.34 2011-05-31 12:41:36 ivan Exp $
+$Date: 2011-05-31 12:41:36 $
 """
 
 import rdflib
@@ -40,6 +40,14 @@ from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang, beauti
 
 from pyRdfa.TermOrCurie	import TermOrCurie
 from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
+
+from pyRdfa import err_lang							
+from pyRdfa import err_URI_scheme						
+from pyRdfa import err_illegal_safe_CURIE				
+from pyRdfa import err_no_CURIE_in_safe_CURIE			
+from pyRdfa import err_undefined_terms					
+from pyRdfa import err_non_legal_CURIE_ref				
+from pyRdfa import err_undefined_CURIE					
 
 import re
 import random
@@ -220,7 +228,7 @@ class ExecutionContext :
 				
 			# check a posible warning (error?), too
 			if lang != None and xmllang != None and lang != xmllang :
-				self.options.add_warning("Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)" % (xmllang, lang))
+				self.options.add_warning(err_lang % (xmllang, lang), node=self.node.nodeName)
 		else :
 			# this is a clear case, xml:lang is the only possible option...
 			if self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
@@ -255,7 +263,7 @@ class ExecutionContext :
 			from pyRdfa	import uri_schemes
 			val = uri.strip()
 			if check and urlparse.urlsplit(val)[0] not in uri_schemes :
-				self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake, e.g., by using an undefined CURIE prefix?" % val.strip())
+				self.options.add_warning(err_URI_scheme % val.strip(), node=self.node.nodeName)
 			return URIRef(val)
 
 		def join(base, v, check = True) :
@@ -320,7 +328,7 @@ class ExecutionContext :
 			# Is checked below, and that is why the safe_curie flag is necessary
 			if val[-1] != ']' :
 				# that is certainly forbidden: an incomplete safe CURIE
-				self.options.add_warning("Illegal safe CURIE: %s" % val, UnresolvablePrefix)
+				self.options.add_warning(err_illegal_safe_CURIE % val, UnresolvablePrefix, node=self.node.nodeName)
 				return None
 			else :
 				val = val[1:-1]
@@ -333,7 +341,7 @@ class ExecutionContext :
 				# The rule says that then the whole value should be considered as a URI
 				# except if it was part of a safe CURIE. In that case it should be ignored...
 				if safe_curie :
-					self.options.add_warning("Safe CURIE was used but value does not correspond to a defined CURIE: [%s]; value is ignored" % val, UnresolvablePrefix)
+					self.options.add_warning(err_no_CURIE_in_safe_CURIE % val, UnresolvablePrefix, node=self.node.nodeName)
 					return None
 				else :
 					return self._URI(val)
@@ -369,7 +377,7 @@ class ExecutionContext :
 			# This is a term, must be handled as such...
 			retval = self.term_or_curie.term_to_URI(val)
 			if not retval :
-				self.options.add_warning("Unresolvable term: %s" % val, UnresolvableTerm)
+				self.options.add_warning(err_undefined_terms % val, UnresolvableTerm, node=self.node.nodeName)
 				return None
 			else :
 				return retval
@@ -383,15 +391,15 @@ class ExecutionContext :
 				scheme = urlparse.urlsplit(val)[0]
 				if scheme == "" :
 					# bug; there should be no relative URIs here
-					self.options.add_warning("Either relative URI is not allowed in this position, or not a legal CURIE reference: [%s]" % val, UnresolvablePrefix)
+					self.options.add_warning(err_non_legal_CURIE_ref % val, UnresolvablePrefix, node=self.node.nodeName)
 					return None
 				else :
 					if scheme not in uri_schemes :
-						self.options.add_warning("Unusual URI scheme used <%s>; may that be a mistake, e.g., by using an undefined CURIE prefix?" % val.strip())
+						self.options.add_warning(err_URI_scheme % val.strip(), node=self.node.nodeName)
 					return URIRef(val)
 			else :
 				# rdfa 1.0 case
-				self.options.add_warning("CURIE was used but value does not correspond to a defined CURIE: %s" % val.strip(), UnresolvablePrefix)
+				self.options.add_warning(err_undefined_CURIE % val.strip(), UnresolvablePrefix, node=self.node.nodeName)
 				return None
 	# end _TERMorCURIEorAbsURI
 
@@ -433,7 +441,10 @@ class ExecutionContext :
 ####################
 """
 $Log: State.py,v $
-Revision 1.33  2011-05-30 14:49:55  ivan
+Revision 1.34  2011-05-31 12:41:36  ivan
+*** empty log message ***
+
+Revision 1.33  2011/05/30 14:49:55  ivan
 *** empty log message ***
 
 Revision 1.32  2011/04/20 11:02:21  ivan

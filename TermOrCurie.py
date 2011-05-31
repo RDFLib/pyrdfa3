@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.12 2011-05-30 14:49:55 ivan Exp $
-$Date: 2011-05-30 14:49:55 $
+$Id: TermOrCurie.py,v 1.13 2011-05-31 12:41:36 ivan Exp $
+$Date: 2011-05-31 12:41:36 $
 """
 
 import re, sys
@@ -48,6 +48,16 @@ from pyRdfa.ProfileCache	import CachedProfile
 from pyRdfa 				import FailedProfile
 from pyRdfa					import IncorrectProfileDefinition, IncorrectPrefixDefinition
 from pyRdfa					import ns_rdfa, built_in_default_profiles
+
+from pyRdfa import err_redefining_URI_as_prefix		
+from pyRdfa import err_xmlns_deprecated				
+from pyRdfa import err_bnode_local_prefix				
+from pyRdfa import err_col_local_prefix				
+from pyRdfa import err_missing_URI_prefix				
+from pyRdfa import err_invalid_prefix					
+from pyRdfa import err_no_default_prefix				
+from pyRdfa import err_prefix_and_xmlns				
+from pyRdfa import err_non_ncname_prefix				
 
 # Regular expression object for NCNAME
 ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
@@ -181,7 +191,7 @@ class TermOrCurie :
 			from pyRdfa	import uri_schemes
 			if pr in uri_schemes :
 				# The prefix being defined is a registered URI scheme, better avoid it...
-				state.options.add_warning("Definition for the '%s' prefix, that is also a registered or a widely used URI scheme; is this a mistake?" % pr)
+				state.options.add_warning(err_redefining_URI_as_prefix % pr, node=state.node.nodeName)
 				
 		self.state	= state
 		self.graph	= graph
@@ -269,11 +279,12 @@ class TermOrCurie :
 				# yep, there is a namespace setting
 				prefix = attr.localName
 				if prefix != "" : # exclude the top level xmlns setting...
-					state.options.add_warning("The usage of 'xmlns' for prefix definition is deprecated; please use the 'prefix' attribute instead (definition for 'xmlns:%s')" % prefix, IncorrectPrefixDefinition)
+					if state.rdfa_version >= "1.1" :
+						state.options.add_warning(err_xmlns_deprecated % prefix, IncorrectPrefixDefinition, node=state.node.nodeName)
 					if prefix == "_" :
-						state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed as a prefix definition", IncorrectPrefixDefinition)
+						state.options.add_warning(err_bnode_local_prefix, IncorrectPrefixDefinition, node=state.node.nodeName)
 					elif prefix.find(':') != -1 :
-						state.options.add_warning("The character ':' is not valid in a CURIE Prefix, and cannot be used in a prefix definition", IncorrectPrefixDefinition)
+						state.options.add_warning(err_col_local_prefix % prefix, IncorrectPrefixDefinition, node=state.node.nodeName)
 					else :					
 						# quote the URI, ie, convert special characters into %.. This is
 						# true, for example, for spaces
@@ -302,17 +313,17 @@ class TermOrCurie :
 					prefix = pr_list[i]
 					# see if there is a URI at all
 					if i == len(pr_list) - 1 :
-						state.options.add_warning("Missing URI in prefix declaration for '%s' (in '%s')" % (prefix,pr))
+						state.options.add_warning(err_missing_URI_prefix % (prefix,pr), node=state.node.nodeName)
 						break
 					else :
 						value = pr_list[i+1]
 					
 					# see if the value of prefix is o.k., ie, there is a ':' at the end
 					if prefix[-1] != ':' :
-						state.options.add_warning("Invalid prefix declaration '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
+						state.options.add_warning(err_invalid_prefix % (prefix,pr), IncorrectPrefixDefinition, node=state.node.nodeName)
 						continue
 					elif prefix == ":" :
-						state.options.add_warning("Default prefix cannot be changed (in '%s')" % pr, IncorrectPrefixDefinition)
+						state.options.add_warning(err_no_default_prefix % pr, IncorrectPrefixDefinition, node=state.node.nodeName)
 						continue						
 					else :
 						prefix = prefix[:-1]
@@ -321,7 +332,7 @@ class TermOrCurie :
 							#something to be done here
 							self.default_curie_uri = uri
 						elif prefix == "_" :
-							state.options.add_warning("The '_' local CURIE prefix is reserved for blank nodes, and cannot be changed (in '%s')" % pr, IncorrectPrefixDefinition)
+							state.options.add_warning(err_bnode_local_prefix, IncorrectPrefixDefinition, node=state.node.nodeName)
 						else :
 							# last check: is the prefix an NCNAME?
 							if ncname.match(prefix) :
@@ -331,11 +342,11 @@ class TermOrCurie :
 								# Additional warning: is this prefix overriding an existing xmlns statement with a different URI? if
 								# so, that may lead to discrepancies between an RDFa 1.0 and RDFa 1.1 run...
 								if (prefix in xmlns_dict and xmlns_dict[prefix] != uri) or (real_prefix in xmlns_dict and xmlns_dict[real_prefix] != uri) :
-									state.options.add_warning("@prefix setting for '%s' overrides the 'xmlns:%s' setting; may be a source of problem if same file is run through RDFa 1.0" % (real_prefix,real_prefix))
+									state.options.add_warning(err_prefix_and_xmlns % (real_prefix,real_prefix), node=state.node.nodeName)
 								check_prefix(real_prefix)
 
 							else :
-								state.options.add_warning("Invalid prefix declaration (must be an NCNAME) '%s' (in '%s')" % (prefix,pr), IncorrectPrefixDefinition)
+								state.options.add_warning(err_non_ncname_prefix % (prefix,pr), IncorrectPrefixDefinition, node=state.node.nodeName)
 
 		# See if anything has been collected at all.
 		# If not, the namespaces of the incoming state is
@@ -469,7 +480,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.12  2011-05-30 14:49:55  ivan
+Revision 1.13  2011-05-31 12:41:36  ivan
+*** empty log message ***
+
+Revision 1.12  2011/05/30 14:49:55  ivan
 *** empty log message ***
 
 Revision 1.11  2011/04/20 11:02:21  ivan

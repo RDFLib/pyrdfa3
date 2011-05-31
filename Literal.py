@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.16 2011-04-20 11:02:21 ivan Exp $
-$Date: 2011-04-20 11:02:21 $
+$Id: Literal.py,v 1.17 2011-05-31 12:41:36 ivan Exp $
+$Date: 2011-05-31 12:41:36 $
 """
 
 import re
@@ -26,7 +26,7 @@ if rdflib.__version__ >= "3.0.0" :
 else :
 	from rdflib.RDF	import RDFNS as ns_rdf
 
-from pyRdfa	import IncorrectBlankNodeUsage
+from pyRdfa	import IncorrectBlankNodeUsage, err_no_blank_node 
 
 
 XMLLiteral = ns_rdf["XMLLiteral"]
@@ -180,13 +180,16 @@ def generate_literal(node, graph, subject, state) :
 		if not isinstance(prop,BNode) :
 			graph.add((subject,prop,object))
 		else :
-			state.options.add_warning("Blank node in property position is not allowed: [element '%s']" % node.nodeName, IncorrectBlankNodeUsage)
+			state.options.add_warning(no_blank_node % "property", warning_type=IncorrectBlankNodeUsage, node=node.nodeName)
 
 	# return
 
 """
 $Log: Literal.py,v $
-Revision 1.16  2011-04-20 11:02:21  ivan
+Revision 1.17  2011-05-31 12:41:36  ivan
+*** empty log message ***
+
+Revision 1.16  2011/04/20 11:02:21  ivan
 *** empty log message ***
 
 Revision 1.15  2011/04/05 06:37:22  ivan
