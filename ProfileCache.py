@@ -268,7 +268,7 @@ class CachedProfile(CachedProfileIndex) :
 
 		if URI in CachedProfile.local_cache :
 			(self.terms, self.ns, self.vocabulary) = CachedProfile.local_cache[URI]
-			if (options != None) and report: options.add_info("Reading local cache for %s" % URI, ProfileCachingInfo)
+			if (options != None) and report: options.add_info("Reading local cache for %s (this profile has already been read at least once in this run)" % URI, ProfileCachingInfo)
 			return
 
 		try :
@@ -284,23 +284,25 @@ class CachedProfile(CachedProfileIndex) :
 
 		# Get the stake in the ground in the local cache to avoid recursion on the same profile file
 		CachedProfile.local_cache[URI] = ({},{},"")
-		
+
 		if profile_reference == None :
 			# This has never been cached before
-			if self.report: options.add_info("No cache exists, has to generate a new one for %s" % URI, ProfileCachingInfo)
+			if self.report: options.add_info("No cache exists for %s, generating one" % URI, ProfileCachingInfo)
 			
-			self._get_profile_data(newCache=True)
+			self._get_profile_data(newCache = True)
 			# Store all the cache data unless caching proves to be impossible
 			if self.caching :
 				self.filename = create_file_name(self.uri)
 				self._store_caches()
+			if self.report:
+				options.add_info("Generated a cache for %s, with an expiration date of %s" % (URI,self.expiration_date), ProfileCachingInfo, URI)
 		else :
 			(self.filename, self.creation_date, self.expiration_date) = profile_reference
-			if self.report: options.add_info("Got a cache for %s, expiring on %s" % (URI,self.expiration_date), ProfileCachingInfo)
+			if self.report: options.add_info("Found a cache for %s, expiring on %s" % (URI,self.expiration_date), ProfileCachingInfo)
 			# Check if the expiration date is still away
-			if datetime.datetime.utcnow() <= self.expiration_date :
+			if options.bypass_profile_cache == False and datetime.datetime.utcnow() <= self.expiration_date :
 				# We are fine, we can just extract the data from the cache and we're done
-				if self.report: options.add_info("Just extracting the data from the cache for %s" % URI, ProfileCachingInfo)
+				if self.report: options.add_info("Cache for %s is still valid; extracting the data" % URI, ProfileCachingInfo)
 				fname = os.path.join(self.app_data_dir, self.filename)
 				try :
 					(self.terms, self.ns, self.vocabulary) = tuple(_load(fname))
@@ -310,11 +312,17 @@ class CachedProfile(CachedProfileIndex) :
 					sys.excepthook(type,value,traceback)
 					if self.report: options.add_info("Could not access the profile cache %s (%s)" % (value,fname), ProfileCachingError, URI)
 			else :
-				if self.report: options.add_info("Refreshing the cache for %s (ie, getting the graph)" % URI, ProfileCachingInfo)
+				if self.report :
+					if options.bypass_profile_cache == True :
+						options.add_info("Time check is bypassed; refreshing the cache for %s" % URI, ProfileCachingInfo)
+					else :
+						options.add_info("Cache timeout; refreshing the cache for %s" % URI, ProfileCachingInfo)
 				# we have to refresh the graph
-				if self._get_profile_data(newCache=False) == None :
+				if self._get_profile_data(newCache = False) == False :
 					# bugger; the cache could not be refreshed, using the current one, and setting the cache artificially
 					# to be valid for the coming hour, hoping that the access issues will be resolved by then...
+					if self.report:
+						options.add_info("Could not refresh profile cache for %s, using the old cache, extended its expiration time by an hour (network problems?)" % URI, ProfileCachingError, URI)
 					fname = os.path.join(self.app_data_dir, self.filename)
 					try :
 						(self.terms, self.ns, self.vocabulary) = tuple(_load(fname))
@@ -325,12 +333,15 @@ class CachedProfile(CachedProfileIndex) :
 						sys.excepthook(type,value,traceback)
 						if self.report: options.add_info("Could not access the profile cache %s (%s)" % (value,fname), ProfileCachingError, URI)
 				self.creation_date = datetime.datetime.utcnow()
+				if self.report:
+					options.add_info("Generated a new cache for %s, with an expiration date of %s" % (URI,self.expiration_date), ProfileCachingInfo, URI)
+					
 				self._store_caches()
 
 		# Store the local cache to avoid indirection
 		CachedProfile.local_cache[URI] = (self.terms, self.ns, self.vocabulary)
 
-	def _get_profile_data(self,newCache=True) :
+	def _get_profile_data(self, newCache = True) :
 		"""Just a macro-like method: get the graph from the profile file with a URI, and then extract the
 		profile data (ie, add values to self.terms, self.ns, and self.vocabulary). The real work is done in the
 		L{_get_graph} and L{_extract_profile_info} methods.
@@ -338,8 +349,9 @@ class CachedProfile(CachedProfileIndex) :
 		g = self._get_graph(newCache)
 		if g != None :
 			self._extract_profile_info(g)
+			return True
 		else :
-			return None
+			return False
 		
 	def _get_graph(self,newCache) :
 		"""
@@ -376,7 +388,7 @@ class CachedProfile(CachedProfileIndex) :
 		
 		# Store the expiration date of the newly accessed data
 		self.expiration_date = content.expiration_date
-				
+						
 		if content.content_type == MediaTypes.turtle :
 			try :
 				retval = Graph()
@@ -406,11 +418,10 @@ class CachedProfile(CachedProfileIndex) :
 				from pyRdfa import pyRdfa
 				from pyRdfa.Options	import Options
 				options = Options()
-				return pyRdfa(options).graph_from_source(content.data)
+				retval = pyRdfa(options).graph_from_source(content.data)
+				return retval
 			except :
 				(type,value,traceback) = sys.exc_info()
-				print type
-				print value
 				raise FailedProfile(err_unparsable_rdfa_profile % (self.uri,value), self.uri)
 		else :
 			raise FailedProfile(err_unrecognised_profile_type % (self.uri, content.content_type), self.uri)

@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.40 2011-06-13 11:01:31 ivan Exp $ $Date: 2011-06-13 11:01:31 $
+$Id: __init__.py,v 1.41 2011-06-13 14:03:20 ivan Exp $ $Date: 2011-06-13 14:03:20 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -283,7 +283,7 @@ err_unreachable_profile  			= "Profile document <%s> could not be dereferenced; 
 err_unparsable_Turtle_profile 		= "Could not parse profile in Turtle at <%s> (%s); the subtree is ignored"
 err_unparsable_xml_profile 			= "Could not parse profile in RDF/XML at <%s> (%s); the subtree is ignored"
 err_unparsable_ntriples_profile 	= "Could not parse profile in N-Triple at <%s> (%s); the subtree is ignored"
-err_unparsable_rdfa_profile 		= "Could not parse profile in N-Triple at <%s> (%s); the subtree is ignored"
+err_unparsable_rdfa_profile 		= "Could not parse profile in RDFa at <%s> (%s); the subtree is ignored"
 err_unrecognised_profile_type		= "Unrecognized media type for the profile file <%s>: '%s'; the subtree is ignored"
 err_more_vocab_URI_in_profile		= "Two or more default vocabularies URIs defined in the profile; ignored"
 err_non_literal_in_profile			= "Non Literal %s '%s' in profile definition; ignored"
