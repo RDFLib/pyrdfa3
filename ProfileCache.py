@@ -66,7 +66,7 @@ import cPickle as pickle
 # Protocol to be used for pickle files. 0 is good for debug, it stores the data in ASCII; 1 is better for deployment,
 # it stores data in binary format. Care should be taken for consistency; when changing from 0 to 1 or back, all
 # cached data should be removed/regenerated, otherwise mess may occur...
-_Pickle_Protocol = 1
+_Pickle_Protocol = 0
 
 # If I could rely on python 2.5 or 2.6 (or higher) I could use the with...as... idiom for what is below, it
 # is indeed nicer. But I cannot...
