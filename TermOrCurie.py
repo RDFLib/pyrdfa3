@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.13 2011-05-31 12:41:36 ivan Exp $
-$Date: 2011-05-31 12:41:36 $
+$Id: TermOrCurie.py,v 1.14 2011-06-13 11:01:31 ivan Exp $
+$Date: 2011-06-13 11:01:31 $
 """
 
 import re, sys
@@ -135,9 +135,9 @@ class ProfileRead :
 				if prof in default_profiles :
 					data = default_profiles[prof]
 				else :
-					data = CachedProfile(prof, self.state.options, report = False)
+					data = CachedProfile(prof, self.state.options)
 			else :
-					data = CachedProfile(prof, self.state.options, report = False)
+					data = CachedProfile(prof, self.state.options)
 			
 			# Merge the profile data with the overall definition
 			if data.vocabulary != "" :
@@ -480,7 +480,10 @@ class TermOrCurie :
 #########################
 """
 $Log: TermOrCurie.py,v $
-Revision 1.13  2011-05-31 12:41:36  ivan
+Revision 1.14  2011-06-13 11:01:31  ivan
+*** empty log message ***
+
+Revision 1.13  2011/05/31 12:41:36  ivan
 *** empty log message ***
 
 Revision 1.12  2011/05/30 14:49:55  ivan

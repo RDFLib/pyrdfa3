@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.39 2011-05-31 12:41:36 ivan Exp $ $Date: 2011-05-31 12:41:36 $
+$Id: __init__.py,v 1.40 2011-06-13 11:01:31 ivan Exp $ $Date: 2011-06-13 11:01:31 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -622,7 +622,9 @@ def processURI(uri, outputFormat, form={}) :
 	 - C{extras=[true|false]} means that extra, built-in transformers are executed on the DOM tree prior to RDFa processing. Default: false. Alternatively, a finer granurality can be used with the following options:
 	  - C{extras-meta=[true|false]}: the @name attribute for metas are converted into @property for further processing
 	  - C{extras-cc=[true|false]}: containers and collections are generated. See L{transform.ContainersCollections} for further details.
-	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header shoudl be used
+	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header should be used
+	 - C{prof-cache-report=[true|false]} : whether profile caching details should be reported
+	 - C{prof-cache-bypass=[true|false]} : whether profile caches have to be regenerated every time
 
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
 	@param outputFormat: serialization formats, as understood by RDFLib. 
@@ -703,11 +705,26 @@ def processURI(uri, outputFormat, form={}) :
 		space_preserve = False
 	else :
 		space_preserve = True
+		
+	if "prof-cache-report" in form.keys() and form.getfirst("prof-cache-report").lower() == "true" :
+		profile_cache_report = True
+		# The output graph should be expanded artificially in this case!
+		output_processor_graph = True
+	else :
+		profile_cache_report = False
+		
+	if "prof-cache-bypass" in form.keys() and form.getfirst("prof-cache-bypass").lower() == "true" :
+		bypass_profile_cache = True
+	else :
+		bypass_profile_cache = False
 
 	options = Options(output_default_graph = output_default_graph,
 					  output_processor_graph = output_processor_graph,
 					  space_preserve=space_preserve,
-					  transformers=transformers)
+					  transformers=transformers,
+					  profile_cache_report=profile_cache_report,
+					  bypass_profile_cache=bypass_profile_cache
+					  )
 	processor = pyRdfa(options = options, base = base, media_type = media_type, rdfa_version = rdfa_version)
 	
 	

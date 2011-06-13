@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: Options.py,v 1.16 2011-05-31 12:41:36 ivan Exp $ $Date: 2011-05-31 12:41:36 $
+$Id: Options.py,v 1.17 2011-06-13 11:01:30 ivan Exp $ $Date: 2011-06-13 11:01:30 $
 """
 
 import sys, datetime
@@ -104,12 +104,16 @@ class Options :
 	@type processor_graph: L{ProcessorGraph}
 	@ivar transformers: extra transformers
 	@type transformers: list
+	@ivar profile_cache_report: whether the details of profile caching process should be reported as information (mainly for debug)
+	@type profile_cache_report: Boolean
+	@ivar bypass_profile_cache: whether the caching checks of profiles should be by-passed, ie, if caches should be generated regardless of the stored date (important for profile development)
+	@type profile_cache_report: Boolean
 	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml, but it can be HostLanguage.rdfa_core and HostLanguage.html, or others...
 	@type host_language: integer (logically: an enumeration)
 	@ivar content_type: the content type of the host file. Default is None
 	@type content_type: string (logically: an enumeration)
 	"""
-	def __init__(self, output_default_graph = True, output_processor_graph = False, space_preserve = True, transformers=[]) :
+	def __init__(self, output_default_graph = True, output_processor_graph = False, space_preserve = True, transformers=[], profile_cache_report = False, bypass_profile_cache = False) :
 		"""
 		@keyword space_preserve: whether plain literals should preserve spaces at output or not
 		@type space_preserve: Boolean
@@ -126,6 +130,8 @@ class Options :
 		self.output_default_graph	= output_default_graph
 		self.output_processor_graph	= output_processor_graph
 		self.host_language 			= HostLanguage.rdfa_core
+		self.profile_cache_report	= profile_cache_report
+		self.bypass_profile_cache	= bypass_profile_cache
 			
 	def set_host_language(self, content_type) :
 		"""

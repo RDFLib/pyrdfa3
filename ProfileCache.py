@@ -133,15 +133,13 @@ class CachedProfileIndex :
 		"win32"		: "win",
 		"cygwin"	: "win"
 	}
-	def __init__(self, options = None, report = False) :
+	def __init__(self, options = None) :
 		"""
 		@param options: the error handler (option) object to send warnings to
 		@type options: L{Options.Options}
-		@param report: whether details on the caching should be reported
-		@type report: Boolean
 		"""
 		self.options = options
-		self.report  = (options != None) and report
+		self.report  = (options != None) and options.profile_cache_report
 		
 		# This is where the cache files should be
 		self.app_data_dir	= self._give_preference_path()
@@ -256,13 +254,11 @@ class CachedProfile(CachedProfileIndex) :
 	@type runtime_cache : dictionary
 	"""
 	local_cache = {}
-	def __init__(self, URI, options = None, report = False) :
+	def __init__(self, URI, options = None) :
 		"""
 		@param URI: real URI for the profile
 		@param options: the error handler (option) object to send warnings to
 		@type options: L{Options.Options}
-		@param report: whether details on the caching should be reported
-		@type report: Boolean
 		"""
 		# First see if this particular profile has been handled before. If yes, it is extracted and everything
 		# else can be forgotten. 
@@ -276,7 +272,7 @@ class CachedProfile(CachedProfileIndex) :
 			return
 
 		try :
-			CachedProfileIndex.__init__(self, options, report)
+			CachedProfileIndex.__init__(self, options)
 			profile_reference 	= self.get_ref(URI)
 			self.caching 		= True
 		except Exception, e :
@@ -517,7 +513,8 @@ def offline_cache_generation(args) :
 	"""
 	class LocalOption :
 		def __init__(self) :
-			pass
+			self.profile_cache_report = True
+
 		def pr(self, wae, txt, warning_type, context) :
 			print "===="
 			if warning_type != None : print warning_type
