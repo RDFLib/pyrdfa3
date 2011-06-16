@@ -14,8 +14,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: DefaultProfiles.py,v 1.4 2011-05-24 14:10:57 ivan Exp $
-$Date: 2011-05-24 14:10:57 $
+$Id: DefaultProfiles.py,v 1.5 2011-06-16 16:06:00 ivan Exp $
+$Date: 2011-06-16 16:06:00 $
 """
 
 class Wrapper :
@@ -39,7 +39,7 @@ default_profiles["http://www.w3.org/profile/rdfa-1.1"].ns = {
 	'rdfs'	: 'http://www.w3.org/2000/01/rdf-schema#',
 	'rev'	: 'http://purl.org/stuff/rev#',
 	'rdfa'	: 'http://www.w3.org/ns/rdfa#',
-	'dcterms'	: 'http://purl.org/dc/terms/',
+	'dc'	: 'http://purl.org/dc/terms/',
 	'foaf'	: 'http://xmlns.com/foaf/0.1/',
 	'void'	: 'http://rdfs.org/ns/void#',
 	'ical'	: 'http://www.w3.org/2002/12/cal/icaltzd#',
