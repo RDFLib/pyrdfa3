@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.1 2011-08-12 10:04:26 ivan Exp $ $Date: 2011-08-12 10:04:26 $
+$Id: options.py,v 1.2 2011-08-12 11:26:15 ivan Exp $ $Date: 2011-08-12 11:26:15 $
 """
 
 import sys, datetime
@@ -126,7 +126,7 @@ class Options :
 					   vocab_cache_report = False,
 					   bypass_vocab_cache = False,
 					   hturtle = False,
-					   rdfa_sem = False,
+					   vocab_expansion = False,
 					   vocab_cache = False) :
 		"""
 		@keyword space_preserve: whether plain literals should preserve spaces at output or not
@@ -147,7 +147,7 @@ class Options :
 		self.vocab_cache_report		= vocab_cache_report
 		self.bypass_vocab_cache		= bypass_vocab_cache
 		self.hturtle				= hturtle
-		self.rdfa_sem				= rdfa_sem
+		self.vocab_expansion		= vocab_expansion
 		self.vocab_cache			= vocab_cache
 			
 	def set_host_language(self, content_type) :

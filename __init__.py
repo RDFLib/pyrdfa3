@@ -117,10 +117,21 @@ to find the content type by
  
 See the variables in the "utils" module if a new host language is added to the system. The current host language is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
 
-Profiles
-========
+Vocabularies
+============
 
-RDFa 1.1 has the notion of profiles, and client are advised to cache the content of those profiles to avoid making HTTP requests all the time. This module implements caching.
+RDFa 1.1 has the notion of vocabulary files (using the @vocab attribute) that may be used to expand the generated RDF graph. Expansion is based on some very simply RDF Schema statements on sub properties and sub classes.
+
+pyRdfa implements this feature, although it does not do this by default. The extra vocab-expansion parameter should be used for this extra step, for example::
+ options = Options(vocab_expansion=True)
+ print pyRdfa(options=options).rdf_from_source('filename')
+
+The triples in the vocabulary files themselves (i.e., the small ontology in RDF Schemas) are removed from the result, leaving the inferred property and type relationships only, additionally to the "core" RDF content.
+
+Vocabulary caching
+------------------
+
+By default, pyRdfa fetches the vocabulary files each time their URI is met as a @vocab attribute value. However, by using the extra option "vocab_cache=True", the system perfoms caching of these files to avoid making HTTP requests all the time. 
 
 Caching happens in a file system directory. The directory itself is determined by the platform the tool is used on, namely:
  - On Windows, it is the 'pyRdfa-cache' subdirectory of the "%APPDATA%" environment variable (referring to the usual place for application data)
@@ -129,16 +140,13 @@ Caching happens in a file system directory. The directory itself is determined b
  
 This automatic choise can be overridden by the 'CACHE_DIR_VAR' environment variable. 
 
-Caching can be read-only, ie, the setup might generate the caches off-line instead of letting the tool writing its own cache. This can be achieved by making the cache directory read only. The L{ProfileCache.offline_cache_generation} method can be used as an entry point for a separate process that generates the cache file.
+Caching can be set to be read-only, i.e., the setup might generate the caches off-line instead of letting the tool writing its own cache when operating, e.g., as a service on the Web. This can be achieved by making the cache directory read only. 
 
 If the directories are neither readable nor writable, the profile files are retrieved via HTTP every time they are hit. This may slow down processing, it is advised to avoid such a setup for the package.
 
-The cache includes a separate index file and a file for each profile. Cache control is based upon the 'EXPIRES' header of a profile file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
+The cache includes a separate index file and a file for each profile. Cache control is based upon the 'EXPIRES' header of a vocabulary file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
 
-The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files (care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too!).
-
-Default profiles (i.e., http://www.w3.org/profile/rdfa-1.1 and http://www.w3.org/profile/html-rdfa-1.1) are treated just as any other profiles (there is a separate transformer that sets those for the host languages that define them). However, there is a possibility to speed those up by using the L{defaultprofiles} module containing a "pythonized" version of the profile content. The L{built_in_default_profiles} flag in the package "True" to enable this possibility or can be set to "False" to rely on caching. Which version to choose depends on the maintenance and update policy of this package when deployed; if deployment makes it easy to update the L{defaultprofiles.default_profiles}, then the built-in version is obviously faster. Note that the distribution includes a separate script called GenerateDefaultProfiles that can be used to generate the content of the L{defaultprofiles} by possibly going through a caching mechanism once. 
-
+(The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files; care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too.)
 
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up
@@ -151,14 +159,13 @@ Default profiles (i.e., http://www.w3.org/profile/rdfa-1.1 and http://www.w3.org
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 
 @var builtInTransformers: List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
-@var CACHE_DIR_VAR: Environment variable used to characterize cache directories for RDFa profiles in case the default setting does not work or is not appropriate. See the L{caching mechanism description<ProfileCache>} for details
+@var CACHE_DIR_VAR: Environment variable used to define cache directories for RDFa vocabularies in case the default setting does not work or is not appropriate. 
 @var rdfa_current_version: Current "official" version of RDFa that this package implements by default. This can be changed at the invocation of the package
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
-@var built_in_default_profiles: whether the built-in version of the default profile content should be used, or whether those should go through the same caching mechanism as all other profiles
 """
 
 """
-$Id: __init__.py,v 1.42 2011-08-12 10:01:54 ivan Exp $ $Date: 2011-08-12 10:01:54 $
+$Id: __init__.py,v 1.43 2011-08-12 11:26:15 ivan Exp $ $Date: 2011-08-12 11:26:15 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -424,7 +431,7 @@ class pyRdfa :
 		@keyword graph: an RDF Graph (if None, than a new one is created)
 		@type graph: rdflib Graph instance. If None, a new one is created.
 		@keyword pgraph: an RDF Graph to hold (possibly) the processor graph content. If None, and the error/warning triples are to be generated, they will be added to the returned graph. Otherwise they are stored in this graph.
-		@type graph: rdflib Graph instance or None
+		@type pgraph: rdflib Graph instance or None
 		@return: an RDF Graph
 		@rtype: rdflib Graph instance
 		"""
@@ -458,7 +465,7 @@ class pyRdfa :
 		parse_one_node(topElement, default_graph, None, state, [])
 		
 		# If the RDFS expansion has to be made, here is the place...
-		if self.options.rdfa_sem :
+		if self.options.vocab_expansion :
 			from pyRdfa.rdfs.process import process_rdfa_sem
 			process_rdfa_sem(default_graph, self.options)
 	
@@ -665,7 +672,7 @@ def processURI(uri, outputFormat, form={}) :
 	space_preserve     = "space-preserve" in form.keys() and form.getfirst("space-preserve").lower() == "false"
 	vocab_cache_report = "vocab-cache-report" in form.keys() and form.getfirst("vocab-cache-report").lower() == "true"
 	bypass_vocab_cache = "vocab-cache-bypass" in form.keys() and form.getfirst("vocab-cache-bypass").lower() == "true"
-	rdfa_sem           = "vocab-expansion" in form.keys() and form.getfirst("vocab-expansion").lower() == "true"
+	vocab_expansion    = "vocab-expansion" in form.keys() and form.getfirst("vocab-expansion").lower() == "true"
 	vocab_cache        = "vocab-cache" in form.keys() and form.getfirst("vocab-cache").lower() == "true" 
 	if vocab_cache_report : output_processor_graph = True
 
@@ -675,7 +682,7 @@ def processURI(uri, outputFormat, form={}) :
 					  transformers=transformers,
 					  vocab_cache_report=vocab_cache_report,
 					  bypass_vocab_cache=bypass_vocab_cache,
-					  rdfa_sem=rdfa_sem,
+					  vocab_expansion=vocab_expansion,
 					  vocab_cache=vocab_cache
 					  )
 	processor = pyRdfa(options = options, base = base, media_type = media_type, rdfa_version = rdfa_version)

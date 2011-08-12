@@ -7,8 +7,8 @@ by U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>}.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: embeddedRDF.py,v 1.1 2011-08-12 10:01:54 ivan Exp $
-$Date: 2011-08-12 10:01:54 $
+@version: $Id: embeddedRDF.py,v 1.2 2011-08-12 11:26:15 ivan Exp $
+$Date: 2011-08-12 11:26:15 $
 """
 
 from StringIO	 import StringIO
@@ -19,8 +19,8 @@ def handle_embeddedRDF(node, graph, state) :
 	"""
 	Handles embedded RDF. There are two possibilities:
 	
-	- the file is one of the XML dialects that allow for an embedded RDF/XML portion. See the host description for those (a typical example is SVG). This is a standard feature, always enabled.
-	- the file is HTML and there is a turtle portion in the <script> element with type text/turtle. This is a non-standard options that has to be enabled globally via an option...
+	 - the file is one of the XML dialects that allow for an embedded RDF/XML portion. See the host description for those (a typical example is SVG). This is a standard feature, always enabled.
+	 - the file is HTML and there is a turtle portion in the <script> element with type text/turtle. This is a non-standard options that has to be enabled globally via an option...
 	
 	
 	@param node: a DOM node for the top level xml element

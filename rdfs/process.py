@@ -13,7 +13,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: process.py,v 1.1 2011-08-12 10:04:58 ivan Exp $ $Date: 2011-08-12 10:04:58 $
+$Id: process.py,v 1.2 2011-08-12 11:26:22 ivan Exp $ $Date: 2011-08-12 11:26:22 $
 
 """
 
@@ -138,8 +138,18 @@ subClassOf		= ns_rdfs["subClassOf"]
 subPropertyOf	= ns_rdfs["subPropertyOf"]
 
 class MiniRDFS :
+	"""
+	Class implementing the simple RDFS Reasoning required by RDFa in managing vocabulary files. This is done via
+	a forward chaining process (in the L{closure} method) using a few simple rules as defined by the RDF Semantics
+	specification.
+	
+	@ivar graph: the graph that has to be expanded
+	@ivar added_triples: each cycle collects the triples that are to be added to the graph eventually.
+	@type added_triples: a set, to ensure the unicity of triples being added
+	"""
 	def __init__(self, graph) :
-		self.graph = graph
+		self.graph         = graph
+		self.added_triples = None
 
 	def closure(self) :
 		"""
@@ -148,9 +158,6 @@ class MiniRDFS :
 		   The processing rules store new triples via the L{separate method<store_triple>} which stores
 		   them in the L{added_triples<added_triples>} array. If that array is emtpy at the end of a cycle,
 		   it means that the whole process can be stopped.
-
-		   If required, the relevant axiomatic triples are added to the graph before processing in cycles. Similarly
-		   the exchange of literals against bnodes is also done in this step (and restored after all cycles are over).
 		"""
 
 		# Go cyclically through all rules until no change happens
@@ -177,7 +184,7 @@ class MiniRDFS :
 	def store_triple(self, t) :
 		"""
 		In contrast to its name, this does not yet add anything to the graph itself, it just stores the tuple in an
-		L{internal set<Core.added_triples>}. (It is important for this to be a set: some of the rules in the various closures may
+		L{internal set<added_triples>}. (It is important for this to be a set: some of the rules in the various closures may
 		generate the same tuples several times.) Before adding the tuple to the set, the method checks whether
 		the tuple is in the final graph already (if yes, it is not added to the set).
 
@@ -196,7 +203,6 @@ class MiniRDFS :
 		"""
 			Go through the RDFS entailement rules rdf1, rdfs4-rdfs12, by extending the graph.
 			@param t: a triple (in the form of a tuple)
-			@param cycle_num: which cycle are we in, starting with 1. Can be used for some (though minor) optimization.
 		"""
 		s,p,o = t
 		if p == subPropertyOf :
