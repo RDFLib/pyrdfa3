@@ -12,15 +12,15 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Atom.py,v 1.2 2011-02-13 16:35:40 ivan Exp $
-$Date: 2011-02-13 16:35:40 $
+$Id: atom.py,v 1.1 2011-08-12 10:05:55 ivan Exp $
+$Date: 2011-08-12 10:05:55 $
 """
 
 def atom_add_entry_type(node, state) :
 	"""
 	@param node: the current node that could be modified
 	@param state: current state
-	@type state: L{Execution context<pyRdfa.State.ExecutionContext>}
+	@type state: L{Execution context<pyRdfa.state.ExecutionContext>}
 	"""
 	if node.tagName == "entry" and node.hasAttribute("typeof") == False :
 		node.setAttribute("typeof","")

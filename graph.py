@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: MyGraph.py,v 1.8 2011-04-05 06:37:22 ivan Exp $ $Date: 2011-04-05 06:37:22 $
+$Id: graph.py,v 1.1 2011-08-12 10:01:54 ivan Exp $ $Date: 2011-08-12 10:01:54 $
 
 """
 
@@ -74,26 +74,26 @@ class MyGraph(Graph) :
 			self.bind(prefix,Namespace(uri))
 
 	def _register_XML_serializer_3(self) :
-		"""The default XML Serializer of RDFLib 3.X is buggy, mainly when handling lists. An L{own version<serializers.PrettyXMLSerializer_3>} is
+		"""The default XML Serializer of RDFLib 3.X is buggy, mainly when handling lists. An L{own version<serializers.prettyXMLserializer_3>} is
 		registered in RDFlib and used in the rest of the package. 
 		"""
 		if not MyGraph.xml_serializer_registered_3 :
 			from rdflib.plugin import register
 			from rdflib.serializer import Serializer
 			register(_xml_serializer_name, Serializer,
-					 "pyRdfa.serializers.PrettyXMLSerializer_3", "PrettyXMLSerializer")
+					 "pyRdfa.serializers.prettyXMLserializer_3", "PrettyXMLSerializer")
 			MyGraph.xml_serializer_registered_3 = True
 				
 	def _register_XML_serializer_2(self) :
 		"""The default XML Serializer of RDFLib 2.X is buggy, mainly when handling lists.
-		An L{own version<serializers.PrettyXMLSerializer>} is
+		An L{own version<serializers.prettyXMLserializer>} is
 		registered in RDFlib and used in the rest of the package. This is not used for RDFLib 3.X.
 		"""
 		if not MyGraph.xml_serializer_registered_2 :
 			from rdflib.plugin import register
 			from rdflib.syntax import serializer, serializers
 			register(_xml_serializer_name, serializers.Serializer,
-					 "pyRdfa.serializers.PrettyXMLSerializer", "PrettyXMLSerializer")
+					 "pyRdfa.serializers.prettyXMLserializer", "PrettyXMLSerializer")
 			MyGraph.xml_serializer_registered_2 = True
 
 	def _register_Turtle_serializer_2(self) :
@@ -105,7 +105,7 @@ class MyGraph(Graph) :
 			from rdflib.plugin import register
 			from rdflib.syntax import serializer, serializers
 			register(_turtle_serializer_name, serializers.Serializer,
-					 "pyRdfa.serializers.TurtleSerializer", "TurtleSerializer")
+					 "pyRdfa.serializers.turtleserializer", "TurtleSerializer")
 			MyGraph.turtle_serialzier_registered_2 = True
 			
 	def add(self, (s,p,o)) :
@@ -114,7 +114,7 @@ class MyGraph(Graph) :
 		if s == None or p == None or o == None :
 			return
 		else :
-			Graph.add(self,(s,p,o))
+			Graph.add(self, (s,p,o))
 		
 	def serialize(self, format = "xml") :
 		"""Overriding the Graph's serialize method to adjust the output format"""
@@ -140,8 +140,11 @@ class MyGraph(Graph) :
 				return Graph.serialize(self, format=_turtle_serializer_name)
 
 """
-$Log: MyGraph.py,v $
-Revision 1.8  2011-04-05 06:37:22  ivan
+$Log: graph.py,v $
+Revision 1.1  2011-08-12 10:01:54  ivan
+*** empty log message ***
+
+Revision 1.8  2011/04/05 06:37:22  ivan
 *** empty log message ***
 
 Revision 1.7  2011/03/11 14:30:39  ivan

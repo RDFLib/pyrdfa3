@@ -12,12 +12,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: ContainersCollections.py,v 1.8 2011-03-08 10:50:14 ivan Exp $
-$Date: 2011-03-08 10:50:14 $
+$Id: containerscollections.py,v 1.1 2011-08-12 10:10:33 ivan Exp $
+$Date: 2011-08-12 10:10:33 $
 """
 
 import uuid
-from pyRdfa.Utils import traverse_tree, dump
+from pyRdfa.utils import traverse_tree, dump
 
 import rdflib
 from rdflib	import Namespace
@@ -242,8 +242,11 @@ def containers_collections(html, option) :
 	
 ############
 """
-$Log: ContainersCollections.py,v $
-Revision 1.8  2011-03-08 10:50:14  ivan
+$Log: containerscollections.py,v $
+Revision 1.1  2011-08-12 10:10:33  ivan
+*** empty log message ***
+
+Revision 1.8  2011/03/08 10:50:14  ivan
 *** empty log message ***
 
 Revision 1.7  2010/11/19 13:52:52  ivan

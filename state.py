@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: State.py,v 1.35 2011-08-12 10:01:05 ivan Exp $
-$Date: 2011-08-12 10:01:05 $
+$Id: state.py,v 1.1 2011-08-12 10:04:27 ivan Exp $
+$Date: 2011-08-12 10:04:27 $
 """
 
 import rdflib
@@ -443,8 +443,11 @@ class ExecutionContext :
 
 ####################
 """
-$Log: State.py,v $
-Revision 1.35  2011-08-12 10:01:05  ivan
+$Log: state.py,v $
+Revision 1.1  2011-08-12 10:04:27  ivan
+*** empty log message ***
+
+Revision 1.35  2011/08/12 10:01:05  ivan
 *** empty log message ***
 
 Revision 1.34  2011/05/31 12:41:36  ivan

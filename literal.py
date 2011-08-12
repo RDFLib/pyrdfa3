@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: Literal.py,v 1.18 2011-08-12 10:01:05 ivan Exp $
-$Date: 2011-08-12 10:01:05 $
+$Id: literal.py,v 1.1 2011-08-12 10:04:01 ivan Exp $
+$Date: 2011-08-12 10:04:01 $
 """
 
 import re
@@ -188,8 +188,11 @@ def generate_literal(node, graph, subject, state) :
 	# return
 
 """
-$Log: Literal.py,v $
-Revision 1.18  2011-08-12 10:01:05  ivan
+$Log: literal.py,v $
+Revision 1.1  2011-08-12 10:04:01  ivan
+*** empty log message ***
+
+Revision 1.18  2011/08/12 10:01:05  ivan
 *** empty log message ***
 
 Revision 1.17  2011/05/31 12:41:36  ivan

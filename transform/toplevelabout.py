@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TopLevelAbout.py,v 1.2 2011-04-05 06:37:57 ivan Exp $
-$Date: 2011-04-05 06:37:57 $
+$Id: toplevelabout.py,v 1.1 2011-08-12 10:10:33 ivan Exp $
+$Date: 2011-08-12 10:10:33 $
 """
 
 def top_about(root, options) :
@@ -32,7 +32,7 @@ def top_about(root, options) :
 				node.setAttribute("about","")
 	
 	from pyRdfa.host import HostLanguage
-	from pyRdfa.Utils import has_one_of_attributes
+	from pyRdfa.utils import has_one_of_attributes
 	
 	if not has_one_of_attributes(root, "about") :
 		root.setAttribute("about","")

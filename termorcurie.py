@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Management of vocabularies, terms, and their mapping to URI-s. The main class of this module (L{TermOrCurie}) is,
-conceptually, part of the overall state of processing at a node (L{State.ExecutionContext}) but putting it into a separate
+conceptually, part of the overall state of processing at a node (L{state.ExecutionContext}) but putting it into a separate
 module makes it easider to maintain.
 
 @summary: Management of vocabularies, terms, and their mapping to URI-s.
@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: TermOrCurie.py,v 1.14 2011-06-13 11:01:31 ivan Exp $
-$Date: 2011-06-13 11:01:31 $
+$Id: termorcurie.py,v 1.1 2011-08-12 10:01:54 ivan Exp $
+$Date: 2011-08-12 10:01:54 $
 """
 
 import re, sys
@@ -41,13 +41,11 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.Options			import Options
-from pyRdfa.Utils 			import quote_URI, URIOpener
+from pyRdfa.options			import Options
+from pyRdfa.utils 			import quote_URI, URIOpener
 from pyRdfa.host 			import MediaTypes, HostLanguage, predefined_1_0_rel
-from pyRdfa.ProfileCache	import CachedProfile
-from pyRdfa 				import FailedProfile
-from pyRdfa					import IncorrectProfileDefinition, IncorrectPrefixDefinition
-from pyRdfa					import ns_rdfa, built_in_default_profiles
+from pyRdfa					import IncorrectPrefixDefinition, RDFA_VOCAB
+from pyRdfa					import ns_rdfa
 
 from pyRdfa import err_redefining_URI_as_prefix		
 from pyRdfa import err_xmlns_deprecated				
@@ -74,11 +72,10 @@ _empty_bnode = BNode()
 
 ####
 
-class ProfileRead :
+class DefaultProfile :
 	"""
-	Wrapper around the "recursive" access to profile files. The main job of this class is to retrieve
-	term and prefix definitions as well as a default vocab value, by accessing an RDF file stored in a URI as given by the
-	values of the @profile attribute values. Each L{TermOrCurie} class has one instance of this class.
+	Get the default profile values. In most cases this class has an empty content, except for the
+	top level (in case of RDFa 1.1). Each L{TermOrCurie} class has one instance of this class.
 	
 	@ivar terms: collection of all term mappings
 	@type terms: dictionary
@@ -86,22 +83,14 @@ class ProfileRead :
 	@type ns: dictionary
 	@ivar vocabulary: default vocabulary
 	@type vocabulary: string
-	@cvar profile_cache: cache, maps a URI on a (terms,ns) tuple
-	@type profile_cache: dictionary
-	@cvar excluded_profiles: list of profiles that are known to be used for other purposes but are either not dereferencable or do not contain RDFa information
-	@type excluded_profiles: array of URI-s
 	"""	
-	excluded_profiles = [
-		"http://www.w3.org/2005/11/profile",
-		"http://www.w3.org/2003/g/data-view",
-		"http://ns.inria.fr/grddl/rdfa/",
-		"http://microformats.org/profile/hcalendar"
-	]
 	
-	def __init__(self, state) :
+	def __init__(self, state, top_level) :
 		"""
 		@param state: the state behind this term mapping
-		@type state: L{State.ExecutionContext}
+		@type state: L{state.ExecutionContext}
+		@param top_level : whether this is the top node of the DOM tree (the only place where default profiles are handled)
+		@type top_level : boolean
 		"""		
 		self.state = state
 
@@ -112,47 +101,24 @@ class ProfileRead :
 		# Default vocabulary
 		self.vocabulary = None
 		
-		if state.rdfa_version < "1.1" :
+		if state.rdfa_version < "1.1" or top_level == False :
 			return
 		
-		# see what the @profile gives us...
-		profs = self.state.getURI("profile")
-		# There was a persion when right-most URI had a lower priority, so we had to go in reverse order
-		# kept it in the code for now, in case this is refersed again... for the time being the rule is
-		# that the rightmost has a higher priority, ie, we simply have to go in normal order
-		# At some point this comment has to be removed...
-		# profs.reverse()
-		for profuriref in profs :
-			prof = str(profuriref)
-
-			# jump over the excluded profiles
-			if prof in self.excluded_profiles : continue
-			
-			# Get the profile data
-			#
-			if built_in_default_profiles :
-				from DefaultProfiles import default_profiles
-				if prof in default_profiles :
-					data = default_profiles[prof]
-				else :
-					data = CachedProfile(prof, self.state.options)
-			else :
-					data = CachedProfile(prof, self.state.options)
+		from defaultprofiles	import default_profiles as profile_data
+		from host 				import default_profiles as profile_ids
+		
+		for id in profile_ids[state.options.host_language] :
+			# This gives the id of a default profile, valid for this media type:
+			data = profile_data[id]
 			
 			# Merge the profile data with the overall definition
 			if data.vocabulary != "" :
-				self.vocabulary = data.vocabulary
-				
+				self.vocabulary = data.vocabulary				
 			for key in data.terms :
-				if not isinstance(data.terms[key],URIRef) :
-					self.terms[key] = URIRef(data.terms[key])
-				else :
-					self.terms[key] = data.terms[key]
+				self.terms[key] = URIRef(data.terms[key])
 			for key in data.ns :
-				if not isinstance(data.ns[key], Namespace) :
-					self.ns[key] = Namespace(data.ns[key])
-				else :
-					self.ns[key] = data.ns[key]
+				self.ns[key] = Namespace(data.ns[key])
+
 
 ##################################################################################################################
 
@@ -160,7 +126,7 @@ class TermOrCurie :
 	"""
 	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI (typical
 	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
-	"state", instance of L{State.ExecutionContext}. Profile definitions are managed at initialization time.
+	"state", instance of L{state.ExecutionContext}. Profile definitions are managed at initialization time.
 	
 	(In fact, this class is, conceptually, part of the overall state at a node, and has been separated here for an
 	easier maintenance.)
@@ -169,7 +135,7 @@ class TermOrCurie :
 	from the "parent".
 	
 	@ivar state: State to which this instance belongs
-	@type state: L{State.ExecutionContext}
+	@type state: L{state.ExecutionContext}
 	@ivar graph: The RDF Graph under generation
 	@type graph: rdflib.Graph
 	@ivar terms: mapping from terms to URI-s
@@ -181,11 +147,11 @@ class TermOrCurie :
 	def __init__(self, state, graph, inherited_state) :
 		"""Initialize the vocab bound to a specific state. 
 		@param state: the state to which this vocab instance belongs to
-		@type state: L{State.ExecutionContext}
+		@type state: L{state.ExecutionContext}
 		@param graph: the RDF graph being worked on
 		@type graph: rdflib.Graph
 		@param inherited_state: the state inherited by the current state. 'None' if this is the top level state.
-		@type inherited_state: L{State.ExecutionContext}
+		@type inherited_state: L{state.ExecutionContext}
 		"""
 		def check_prefix(pr) :
 			from pyRdfa	import uri_schemes
@@ -197,20 +163,18 @@ class TermOrCurie :
 		self.graph	= graph
 		
 		# --------------------------------------------------------------------------------
+		# This is set to non-void only on the top level and in the case of 1.1
+		default_vocab = DefaultProfile(self.state, inherited_state == None)
+		
 		# Set the default CURIE URI
 		if inherited_state == None :
 			# This is the top level...
 			# AFAIK there is no default setting for the URI-s
 			# self.default_curie_uri = None
 			self.default_curie_uri = Namespace(XHTML_URI)
-			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)				
+			self.graph.bind(XHTML_PREFIX, self.default_curie_uri)
 		else :
 			self.default_curie_uri = inherited_state.term_or_curie.default_curie_uri
-
-		# --------------------------------------------------------------------------------
-		# Get the recursive definitions, if any
-		# Note that if the underlying file is 1.0 version, the returned structure will be, essentially, empty
-		recursive_vocab = ProfileRead(self.state)
 		
 		# --------------------------------------------------------------------------------
 		# Set the default term URI
@@ -225,13 +189,14 @@ class TermOrCurie :
 				self.default_term_uri = inherited_state.term_or_curie.default_term_uri
 				
 			# see if the profile has defined a default profile:
-			if recursive_vocab.vocabulary :
-				self.default_term_uri = recursive_vocab.vocabulary
+			if default_vocab.vocabulary :
+				self.default_term_uri = default_vocab.vocabulary
 				
 			# see if there is local vocab
 			def_term_uri = self.state.getURI("vocab")
 			if def_term_uri :			
 				self.default_term_uri = def_term_uri
+				self.graph.add((URIRef(self.state.base),RDFA_VOCAB,URIRef(def_term_uri)))
 		else :
 			self.default_term_uri = None
 		
@@ -242,22 +207,16 @@ class TermOrCurie :
 			self.terms = {}
 			if state.rdfa_version >= "1.1" :
 				# Simply get the terms defined by the default vocabularies. There is no need for merging
-				for key in recursive_vocab.terms :
-					self.terms[key] = recursive_vocab.terms[key]
+				for key in default_vocab.terms :
+					self.terms[key] = default_vocab.terms[key]
 			else :
 				# The terms are hardwired...
 				for key in predefined_1_0_rel :
 					self.terms[key] = URIRef(XHTML_URI + key)
 				self.graph.bind(XHTML_PREFIX, XHTML_URI)
 		else :
-			if len(recursive_vocab.terms) == 0 :
-				# just refer to the inherited terms
-				self.terms = inherited_state.term_or_curie.terms
-			else :
-				self.terms = {}
-				# tried to use python's 'update' operation for the dictionary and it failed. Why???
-				for key in inherited_state.term_or_curie.terms 	: self.terms[key] = inherited_state.term_or_curie.terms[key]
-				for key in recursive_vocab.terms 				: self.terms[key] = recursive_vocab.terms[key]
+			# just refer to the inherited terms
+			self.terms = inherited_state.term_or_curie.terms
 
 		#-----------------------------------------------------------------
 		# the locally defined namespaces
@@ -265,9 +224,9 @@ class TermOrCurie :
 		# locally defined xmlns namespaces, necessary for correct XML Literal generation
 		xmlns_dict = {}
 				
-		# Add the namespaces defined via a @profile
-		for key in recursive_vocab.ns :
-			dict[key] = recursive_vocab.ns[key]
+		# Add the namespaces defined via a default profile
+		for key in default_vocab.ns :
+			dict[key] = default_vocab.ns[key]
 			self.graph.bind(key, dict[key])
 
 		# Add the locally defined namespaces using the xmlns: syntax
@@ -479,8 +438,11 @@ class TermOrCurie :
 		
 #########################
 """
-$Log: TermOrCurie.py,v $
-Revision 1.14  2011-06-13 11:01:31  ivan
+$Log: termorcurie.py,v $
+Revision 1.1  2011-08-12 10:01:54  ivan
+*** empty log message ***
+
+Revision 1.14  2011/06/13 11:01:31  ivan
 *** empty log message ***
 
 Revision 1.13  2011/05/31 12:41:36  ivan

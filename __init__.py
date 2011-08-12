@@ -75,7 +75,7 @@ add additional 'services' without distoring the core code of RDFa processing.
 
 Some transformations are included in the package and can be used at invocation. These are:
 
- - Special syntax to generate collections or containers. See the description of L{transform.ContainersCollections} for further details.
+ - Special syntax to generate collections or containers. See the description of L{transform.containerscollections} for further details.
  - The 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
  - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
  - Implementing the Dublin Core dialect to include DC statements from the header.  See L{transform.DublinCore} for further details.
@@ -115,7 +115,7 @@ to find the content type by
  - looking at the content type header as returned by an HTTP call; if unsuccessful or the invocation is done locally then
  - looking at the suffix of the URI or file name (.html and .xhtml are considered to be HTML5 and XHTML, respectively; otherwise XML is considered)
  
-See the variables in the "Utils" module if a new host language is added to the system. The current host language is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
+See the variables in the "utils" module if a new host language is added to the system. The current host language is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
 
 Profiles
 ========
@@ -137,7 +137,7 @@ The cache includes a separate index file and a file for each profile. Cache cont
 
 The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files (care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too!).
 
-Default profiles (i.e., http://www.w3.org/profile/rdfa-1.1 and http://www.w3.org/profile/html-rdfa-1.1) are treated just as any other profiles (there is a separate transformer that sets those for the host languages that define them). However, there is a possibility to speed those up by using the L{DefaultProfiles} module containing a "pythonized" version of the profile content. The L{built_in_default_profiles} flag in the package "True" to enable this possibility or can be set to "False" to rely on caching. Which version to choose depends on the maintenance and update policy of this package when deployed; if deployment makes it easy to update the L{DefaultProfiles.default_profiles}, then the built-in version is obviously faster. Note that the distribution includes a separate script called GenerateDefaultProfiles that can be used to generate the content of the L{DefaultProfiles} by possibly going through a caching mechanism once. 
+Default profiles (i.e., http://www.w3.org/profile/rdfa-1.1 and http://www.w3.org/profile/html-rdfa-1.1) are treated just as any other profiles (there is a separate transformer that sets those for the host languages that define them). However, there is a possibility to speed those up by using the L{defaultprofiles} module containing a "pythonized" version of the profile content. The L{built_in_default_profiles} flag in the package "True" to enable this possibility or can be set to "False" to rely on caching. Which version to choose depends on the maintenance and update policy of this package when deployed; if deployment makes it easy to update the L{defaultprofiles.default_profiles}, then the built-in version is obviously faster. Note that the distribution includes a separate script called GenerateDefaultProfiles that can be used to generate the content of the L{defaultprofiles} by possibly going through a caching mechanism once. 
 
 
 @summary: RDFa parser (distiller)
@@ -158,7 +158,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.41 2011-06-13 14:03:20 ivan Exp $ $Date: 2011-06-13 14:03:20 $
+$Id: __init__.py,v 1.42 2011-08-12 10:01:54 ivan Exp $ $Date: 2011-08-12 10:01:54 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -194,13 +194,17 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.MyGraph import MyGraph as Graph
+from pyRdfa.graph import MyGraph as Graph
 
 import xml.dom.minidom
 import urlparse
 
 # Namespace, in the RDFLib sense, for the rdfa vocabulary
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
+
+# Vocabulary terms for vocab reporting
+RDFA_SOURCE = ns_rdfa["Source"]
+RDFA_VOCAB  = ns_rdfa["hasVocab"]
 
 # Namespace, in the RDFLib sense, for the XSD Datatypes
 ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
@@ -209,8 +213,6 @@ ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
 debug = False
-
-built_in_default_profiles = True
 
 #########################################################################################################
 
@@ -223,15 +225,6 @@ class RDFaError(Exception) :
 	def __init__(self, msg) :
 		self.msg = msg
 		Exception.__init__(self)
-
-class FailedProfile(RDFaError) :
-	"""Raised when @profile references cannot be properly dereferenced. It does not add any new functionality to the
-	Exception class."""
-	def __init__(self, msg, context, http_code = None) :
-		self.msg 		= msg
-		self.context	= context
-		self.http_code 	= http_code
-		RDFaError.__init__(self, msg)
 
 class FailedSource(RDFaError) :
 	"""Raised when the original source cannot be accessed. It does not add any new functionality to the
@@ -264,35 +257,15 @@ RDFA_Error					= ns_rdfa["Error"]
 RDFA_Warning				= ns_rdfa["Warning"]
 RDFA_Info					= ns_rdfa["Information"]
 NonConformantMarkup			= ns_rdfa["DocumentError"]
-ProfileReferenceError		= ns_rdfa["ProfileReferenceError"]
 UnresolvablePrefix			= ns_rdfa["UnresolvedCURIE"]
 UnresolvableTerm			= ns_rdfa["UnresolvedTerm"]
 
 FileReferenceError			= ns_distill["FileReferenceError"]
-IncorrectProfileDefinition 	= ns_distill["IncorrectProfileDefinition"]
 IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
-ProfileCachingError			= ns_distill["ProfileCachingError"]
-ProfileCachingInfo			= ns_distill["ProfileCachingInfo"]
 IncorrectBlankNodeUsage     = ns_distill["IncorrectBlankNodeUsage"]
 
 # Error message texts
 err_no_blank_node					= "Blank node in %s position is not allowed; ignored"
-
-err_outdated_cache  				= "Profile document <%s> could not be dereferenced; using possibly outdated cache"
-err_unreachable_profile  			= "Profile document <%s> could not be dereferenced; the subtree is ignored"
-err_unparsable_Turtle_profile 		= "Could not parse profile in Turtle at <%s> (%s); the subtree is ignored"
-err_unparsable_xml_profile 			= "Could not parse profile in RDF/XML at <%s> (%s); the subtree is ignored"
-err_unparsable_ntriples_profile 	= "Could not parse profile in N-Triple at <%s> (%s); the subtree is ignored"
-err_unparsable_rdfa_profile 		= "Could not parse profile in RDFa at <%s> (%s); the subtree is ignored"
-err_unrecognised_profile_type		= "Unrecognized media type for the profile file <%s>: '%s'; the subtree is ignored"
-err_more_vocab_URI_in_profile		= "Two or more default vocabularies URIs defined in the profile; ignored"
-err_non_literal_in_profile			= "Non Literal %s '%s' in profile definition; ignored"
-err_non_ncname_in_profile			= "Non NCNAME %s '%s' in profile definition; ignored"
-err_double_def_in_profile			= "The %s '%s' is defined twice in the profile definition; both are ignored"
-err_same_subj_1_in_profile			= "Same subject is used for several %s definion (including '%s') in the profile; all ignored"
-err_same_subj_2_in_profile			= "Same subject is used for both %s and %s ('%s' and '%s') in the profile; all ignored"
-err_no_URI_defined_in_profile		= "No URI defined for %s '%s' in the profile; ignored"
-err_more_URI_defined_in_profile		= "More than one URIs defined for %s '%s' in the profile; ignored"
 
 err_redefining_URI_as_prefix		= "'%s' a registered or a widely used URI scheme, but is defined as a prefix here; is this a mistake?"
 err_xmlns_deprecated				= "The usage of 'xmlns' for prefix definition is deprecated; please use the 'prefix' attribute instead (definition for '%s')"
@@ -314,18 +287,13 @@ err_undefined_CURIE					= "Undefined CURIE: '%s'; ignored"
 
 err_unusual_char_in_URI				= "Unusual character in uri: %s; possible error?"
 
-
-
-
-
 #############################################################################################
 
-from pyRdfa.State						import ExecutionContext
-from pyRdfa.Parse						import parse_one_node
-from pyRdfa.Options						import Options
-from pyRdfa.transform.TopLevelAbout		import top_about
-from pyRdfa.transform.DefaultProfile	import add_default_profile
-from pyRdfa.Utils						import URIOpener
+from pyRdfa.state						import ExecutionContext
+from pyRdfa.parse						import parse_one_node
+from pyRdfa.options						import Options
+from pyRdfa.transform.toplevelabout		import top_about
+from pyRdfa.utils						import URIOpener
 from pyRdfa.host 						import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
 
 # Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<ProfileCache>} for details
@@ -360,8 +328,7 @@ uri_schemes = registered_iana_schemes + historical_iana_schemes + provisional_ia
 
 # List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
-	top_about,
-	add_default_profile
+	top_about
 ]
 	
 #########################################################################################################
@@ -371,12 +338,6 @@ class pyRdfa :
 	@ivar options: an instance of the L{Options} class
 	@ivar media_type: the preferred default media type, possibly set at initialization
 	@ivar base: the base value, possibly set at initialization
-	@ivar xml_serializer_registered: the package uses its own RDF/XML serializer instead of the one of RDFLib 2.X, that was buggy. This must be registered once to RDFLib 2.X; note used for RDFLib 3.X.
-	@type xml_serializer_registered: boolean
-	@ivar turtle_serializer_registered: the package uses its own Turtle serializer instead of the one of RDFLib 2.X, that was buggy. This must be registered once to RDFLib 2.X; note used for RDFLib 3.X.
-	@type turtle_serializer_registered: boolean
-	@ivar xml_serializer_name: the name to use to refer to the built-in RDF/XML serializer
-	@ivar turtle_serializer_name: the name to use to refer to the built-in Turtle serializer
 	"""
 	def __init__(self, options = None, base = "", media_type = "", rdfa_version = None) :
 		"""
@@ -413,7 +374,7 @@ class pyRdfa :
 		
 		If the media type has not been set explicitly at initialization of this instance,
 		the method also sets the media_type based on the HTTP GET response or the suffix of the file. See
-		L{Utils.preferred_suffixes} for the suffix to media type mapping. 
+		L{utils.preferred_suffixes} for the suffix to media type mapping. 
 		
 		@param name: identifier of the input source
 		@type name: string or a file-like object
@@ -489,18 +450,17 @@ class pyRdfa :
 		
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
-		try :
-			state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
-			# The top level subject starts with the current document; this
-			# is used by the recursion
-			#subject = URIRef(state.base)
-			# this function is the real workhorse
-			parse_one_node(topElement, default_graph, None, state, [])
-		except FailedProfile, f :
-			# This may occur if the top level @profile cannot be dereferenced, which stops the processing as a whole!
-			bnode = self.options.add_error(f.msg, ProfileReferenceError, f.context)
-			if f.http_code :
-				self.options.processor_graph.add_http_context(bnode, f.http_code)
+		state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
+		# The top level subject starts with the current document; this
+		# is used by the recursion
+		#subject = URIRef(state.base)
+		# this function is the real workhorse
+		parse_one_node(topElement, default_graph, None, state, [])
+		
+		# If the RDFS expansion has to be made, here is the place...
+		if self.options.rdfa_sem :
+			from pyRdfa.rdfs.process import process_rdfa_sem
+			process_rdfa_sem(default_graph, self.options)
 	
 		# What should be returned depends on the way the options have been set up
 		if self.options.output_default_graph :
@@ -621,10 +581,10 @@ def processURI(uri, outputFormat, form={}) :
 	 - C{rfa-version} provides the RDFa version that should be used for distilling. The string should be of the form "1.0", "1.1", etc. Default is the highest version the current package implements.
 	 - C{extras=[true|false]} means that extra, built-in transformers are executed on the DOM tree prior to RDFa processing. Default: false. Alternatively, a finer granurality can be used with the following options:
 	  - C{extras-meta=[true|false]}: the @name attribute for metas are converted into @property for further processing
-	  - C{extras-cc=[true|false]}: containers and collections are generated. See L{transform.ContainersCollections} for further details.
+	  - C{extras-cc=[true|false]}: containers and collections are generated. See L{transform.containerscollections} for further details.
 	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header should be used
-	 - C{prof-cache-report=[true|false]} : whether profile caching details should be reported
-	 - C{prof-cache-bypass=[true|false]} : whether profile caches have to be regenerated every time
+	 - C{vocab-cache-report=[true|false]} : whether vocab caching details should be reported
+	 - C{vocab-cache-bypass=[true|false]} : whether vocab caches have to be regenerated every time
 
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
 	@param outputFormat: serialization formats, as understood by RDFLib. 
@@ -668,15 +628,15 @@ def processURI(uri, outputFormat, form={}) :
 		
 	transformers = []
 	if "extras" in form.keys() and form.getfirst("extras").lower() == "true" :
-		from pyRdfa.transform.MetaName              	import meta_transform
+		from pyRdfa.transform.metaname              	import meta_transform
 		from pyRdfa.transform.OpenID                	import OpenID_transform
 		from pyRdfa.transform.DublinCore            	import DC_transform
-		from pyRdfa.transform.ContainersCollections		import containers_collections
+		from pyRdfa.transform.containerscollections		import containers_collections
 		transformers = [containers_collections, OpenID_transform, DC_transform, meta_transform]
 	else :
 		if "extra-meta" in form.keys() and form.getfirst("extra-meta").lower() == "true" :
-			from pyRdfa.transform.MetaName import meta_transform
-			transformers.append(MetaName)
+			from pyRdfa.transform.metaname import meta_transform
+			transformers.append(metaname)
 		if "extra-openid" in form.keys() and form.getfirst("extra-openid").lower() == "true" :
 			from pyRdfa.transform.OpenID import OpenID_transform
 			transformers.append(OpenID_transform)
@@ -684,11 +644,11 @@ def processURI(uri, outputFormat, form={}) :
 			from pyRdfa.transform.DublinCore import DC_transform
 			transformers.append(DC_transform)
 		if "extra-cc" in form.keys() and form.getfirst("extra-cc").lower() == "true" :
-			from pyRdfa.transform.ContainersCollections import containers_collections
+			from pyRdfa.transform.containerscollections import containers_collections
 			transformers.append(containers_collections)
 		# This is here only for backward compatibility
 		if "extra-li" in form.keys() and form.getfirst("extra-li").lower() == "true" :
-			from pyRdfa.transform.ContainersCollections import containers_collections
+			from pyRdfa.transform.containerscollections import containers_collections
 			transformers.append(containers_collections)
 
 	output_default_graph 	= True
@@ -701,32 +661,24 @@ def processURI(uri, outputFormat, form={}) :
 		elif a == "processor,default" or a == "default,processor" :
 			output_processor_graph 	= True
 
-	if "space-preserve" in form.keys() and form.getfirst("space-preserve").lower() == "false" :
-		space_preserve = False
-	else :
-		space_preserve = True
 		
-	if "prof-cache-report" in form.keys() and form.getfirst("prof-cache-report").lower() == "true" :
-		profile_cache_report = True
-		# The output graph should be expanded artificially in this case!
-		output_processor_graph = True
-	else :
-		profile_cache_report = False
-		
-	if "prof-cache-bypass" in form.keys() and form.getfirst("prof-cache-bypass").lower() == "true" :
-		bypass_profile_cache = True
-	else :
-		bypass_profile_cache = False
+	space_preserve     = "space-preserve" in form.keys() and form.getfirst("space-preserve").lower() == "false"
+	vocab_cache_report = "vocab-cache-report" in form.keys() and form.getfirst("vocab-cache-report").lower() == "true"
+	bypass_vocab_cache = "vocab-cache-bypass" in form.keys() and form.getfirst("vocab-cache-bypass").lower() == "true"
+	rdfa_sem           = "vocab-expansion" in form.keys() and form.getfirst("vocab-expansion").lower() == "true"
+	vocab_cache        = "vocab-cache" in form.keys() and form.getfirst("vocab-cache").lower() == "true" 
+	if vocab_cache_report : output_processor_graph = True
 
 	options = Options(output_default_graph = output_default_graph,
 					  output_processor_graph = output_processor_graph,
 					  space_preserve=space_preserve,
 					  transformers=transformers,
-					  profile_cache_report=profile_cache_report,
-					  bypass_profile_cache=bypass_profile_cache
+					  vocab_cache_report=vocab_cache_report,
+					  bypass_vocab_cache=bypass_vocab_cache,
+					  rdfa_sem=rdfa_sem,
+					  vocab_cache=vocab_cache
 					  )
 	processor = pyRdfa(options = options, base = base, media_type = media_type, rdfa_version = rdfa_version)
-	
 	
 	# Decide the output format; the issue is what should happen in case of a top level error like an inaccessibility of
 	# the html source: should a graph be returned or an HTML page with an error message?
