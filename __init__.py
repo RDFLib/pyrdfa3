@@ -165,7 +165,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.43 2011-08-12 11:26:15 ivan Exp $ $Date: 2011-08-12 11:26:15 $
+$Id: __init__.py,v 1.44 2011-09-01 11:06:13 ivan Exp $ $Date: 2011-09-01 11:06:13 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -210,8 +210,8 @@ import urlparse
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
 
 # Vocabulary terms for vocab reporting
-RDFA_SOURCE = ns_rdfa["Source"]
-RDFA_VOCAB  = ns_rdfa["hasVocab"]
+RDFA_SOURCE_PRED = ns_rdfa["hasSource"]
+RDFA_VOCAB       = ns_rdfa["usesVocabulary"]
 
 # Namespace, in the RDFLib sense, for the XSD Datatypes
 ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
@@ -266,6 +266,7 @@ RDFA_Info					= ns_rdfa["Information"]
 NonConformantMarkup			= ns_rdfa["DocumentError"]
 UnresolvablePrefix			= ns_rdfa["UnresolvedCURIE"]
 UnresolvableTerm			= ns_rdfa["UnresolvedTerm"]
+VocabReferenceError			= ns_rdfa["VocabReferenceError"]
 
 FileReferenceError			= ns_distill["FileReferenceError"]
 IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
@@ -354,8 +355,12 @@ class pyRdfa :
 		@keyword media_type: explicit setting of the preferred media type (a.k.a. content type) of the the RDFa source
 		@keyword rdfa_version: the RDFa version that should be used. If not set, the value of the global L{rdfa_current_version} variable is used
 		"""
-		self.base    = base
-		self.charset = None
+		self.base			= base
+		if base == "" :
+			self.required_base = None
+		else :
+			self.required_base	= base
+		self.charset 		= None
 
 		# predefined content type
 		self.media_type = media_type
@@ -401,9 +406,14 @@ class pyRdfa :
 							self.media_type = MediaTypes.xml
 						self.options.set_host_language(self.media_type)
 					self.charset = url_request.charset
+					if self.required_base == None :
+						self.required_base = name
 					return url_request.data
 				else :
 					self.base = name
+					# Creating a File URI for this thing
+					if self.required_base == None :
+						self.required_base = "file://" + os.path.join(os.getcwd(),name)
 					if self.media_type == "" :
 						self.media_type = MediaTypes.xml
 						# see if the default should be overwritten
@@ -463,6 +473,9 @@ class pyRdfa :
 		#subject = URIRef(state.base)
 		# this function is the real workhorse
 		parse_one_node(topElement, default_graph, None, state, [])
+
+		# Vocab reporting triple
+		default_graph.add((URIRef(''), RDFA_SOURCE_PRED, URIRef(self.required_base)))
 		
 		# If the RDFS expansion has to be made, here is the place...
 		if self.options.vocab_expansion :

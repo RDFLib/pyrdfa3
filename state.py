@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.1 2011-08-12 10:04:27 ivan Exp $
-$Date: 2011-08-12 10:04:27 $
+$Id: state.py,v 1.2 2011-09-01 11:06:13 ivan Exp $
+$Date: 2011-09-01 11:06:13 $
 """
 
 import rdflib
@@ -39,7 +39,7 @@ from pyRdfa.utils 		import quote_URI
 from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang, beautifying_prefixes
 
 from pyRdfa.termorcurie	import TermOrCurie
-from pyRdfa				import UnresolvablePrefix, UnresolvableTerm, RDFA_SOURCE
+from pyRdfa				import UnresolvablePrefix, UnresolvableTerm, RDFA_SOURCE_PRED
 
 from pyRdfa import err_lang							
 from pyRdfa import err_URI_scheme						
@@ -176,9 +176,6 @@ class ExecutionContext :
 			if self.base == "" :
 				self.base = base
 				
-			# Vocab reporting triple
-			graph.add((URIRef(self.base),ns_rdf["type"],RDFA_SOURCE))
-
 			# Perform an extra beautification in RDFLib
 			if self.options.host_language in beautifying_prefixes :
 				dict = beautifying_prefixes[self.options.host_language]
@@ -444,7 +441,10 @@ class ExecutionContext :
 ####################
 """
 $Log: state.py,v $
-Revision 1.1  2011-08-12 10:04:27  ivan
+Revision 1.2  2011-09-01 11:06:13  ivan
+*** empty log message ***
+
+Revision 1.1  2011/08/12 10:04:27  ivan
 *** empty log message ***
 
 Revision 1.35  2011/08/12 10:01:05  ivan

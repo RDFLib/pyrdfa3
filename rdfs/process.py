@@ -13,7 +13,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: process.py,v 1.2 2011-08-12 11:26:22 ivan Exp $ $Date: 2011-08-12 11:26:22 $
+$Id: process.py,v 1.3 2011-09-01 11:06:21 ivan Exp $ $Date: 2011-09-01 11:06:21 $
 
 """
 
@@ -51,6 +51,8 @@ from pyRdfa.rdfs import err_unparsable_ntriples_vocab
 from pyRdfa.rdfs import err_unparsable_rdfa_vocab
 from pyRdfa.rdfs import err_unrecognised_vocab_type
 
+from pyRdfa import VocabReferenceError
+
 from pyRdfa.rdfs.cache import CachedVocab
 
 #############################################################################################################
@@ -69,9 +71,9 @@ def return_graph(uri, options, newCache = False) :
 	"""
 	def return_to_cache(msg) :
 		if newCache :
-			options.add_warning(err_unreachable_vocab % uri)
+			options.add_warning(err_unreachable_vocab % uri, warning_type=VocabReferenceError)
 		else :
-			options.add_warning(err_outdated_cache % uri)
+			options.add_warning(err_outdated_cache % uri, warning_type=VocabReferenceError)
 	
 	retval 			= None
 	expiration_date = None
@@ -232,16 +234,12 @@ def process_rdfa_sem(graph, options) :
 	"""
 	# 1. collect the vocab URI-s
 	vocabs = set()
-	from pyRdfa import RDFA_VOCAB, RDFA_SOURCE
+	from pyRdfa import RDFA_VOCAB
 	for ((s,p,v)) in graph.triples((None,RDFA_VOCAB,None)) :
 		vocabs.add((str(v)))
 		
-	if len(vocabs) == 0 :
-		# Nothing to do here; the unnecessary vocab announcement triple is also removed from the graph
-		for t in graph.triples((None,ns_rdf["type"],RDFA_SOURCE)) :
-			graph.remove(t)
-	else :
-		# 2. get all the vocab graphs, and merge them with the original graph
+	if len(vocabs) >= 0 :
+		# 2. get all the vocab graphs
 		vocab_graph = Graph()
 		for uri in vocabs :
 			if options.vocab_cache :
@@ -251,9 +249,15 @@ def process_rdfa_sem(graph, options) :
 			if v_graph != None :
 				for t in v_graph :
 					vocab_graph.add(t)
-					graph.add(t)
-					
-		# 3. get the graph expanded through RDFS
+				
+		# 3. Get the closure of the vocab graph; this will take care of local subproperty, etc, statements
+		MiniRDFS(vocab_graph).closure()
+		
+		# 4. Now get the vocab graph content added to the default graph
+		for t in vocab_graph :
+			graph.add(t)
+						
+		# 5. get the graph expanded through RDFS
 		MiniRDFS(graph).closure()
 		
 		# 4. clean up the graph by removing the schema triples
