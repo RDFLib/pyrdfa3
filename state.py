@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.2 2011-09-01 11:06:13 ivan Exp $
-$Date: 2011-09-01 11:06:13 $
+$Id: state.py,v 1.3 2011-09-16 12:26:02 ivan Exp $
+$Date: 2011-09-16 12:26:02 $
 """
 
 import rdflib
@@ -39,7 +39,7 @@ from pyRdfa.utils 		import quote_URI
 from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang, beautifying_prefixes
 
 from pyRdfa.termorcurie	import TermOrCurie
-from pyRdfa				import UnresolvablePrefix, UnresolvableTerm, RDFA_SOURCE_PRED
+from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
 
 from pyRdfa import err_lang							
 from pyRdfa import err_URI_scheme						
@@ -68,6 +68,8 @@ class ExecutionContext :
 	@ivar lang: language tag (possibly None)
 	@ivar term_or_curie: vocabulary management class instance
 	@type term_or_curie: L{termorcurie.TermOrCurie}
+	@ivar list_mapping: dictionary of arrays, containing a list of URIs key-ed via properties for lists
+	@ivar setting_subject: whether the element with that state sets the subject down the line via @resource or @href
 	@ivar node: the node to which this state belongs
 	@type node: DOM node instance
 	@ivar rdfa_version: RDFa version of the content
@@ -132,9 +134,13 @@ class ExecutionContext :
 		# At the moment, it is invoked with a 'None' at the top level of parsing, that is
 		# when the <base> element is looked for (for the HTML cases, that is)
 		if inherited_state :
-			self.rdfa_version	= inherited_state.rdfa_version
-			self.base			= inherited_state.base
-			self.options		= inherited_state.options
+			self.rdfa_version		= inherited_state.rdfa_version
+			self.base				= inherited_state.base
+			self.options			= inherited_state.options
+			self.setting_subject    = inherited_state.setting_subject
+						
+			self.list_mapping 		= inherited_state.list_mapping
+			
 			# for generic XML versions the xml:base attribute should be handled
 			if self.options.host_language in accept_xml_base and node.hasAttribute("xml:base") :
 				self.base = remove_frag_id(node.getAttribute("xml:base"))
@@ -142,6 +148,9 @@ class ExecutionContext :
 			# this is the branch called from the very top
 			# get the version
 			# If the version has been set explicitly, that wins!
+			self.setting_subject = False
+			
+			self.list_mapping = {}
 			if rdfa_version is not None :
 				self.rdfa_version = rdfa_version
 			else :
@@ -437,45 +446,24 @@ class ExecutionContext :
 			retval = func(self, val.strip())
 		return retval
 	# end getURI
+	
+	# -----------------------------------------------------------------------------------------------
+	def reset_list_mapping(self) :
+		"""
+		Reset, ie, create a new empty dictionary for the list mapping.
+		"""
+		self.list_mapping = {}
+		
+	def add_to_list_mapping(self, property, resource) :
+		"""Add a new property-resource on the list mapping structure. The latter is a dictionary of arrays;
+		if the array does not exist yet, it will be created on the fly.
+		
+		@param property: the property URI, used as a key in the dictionary
+		@param resource: the resource to be added to the relevant array in the dictionary.
+		"""
+		if property in self.list_mapping :
+			self.list_mapping[property].append(resource)
+		else :
+			self.list_mapping[property] = [ resource ]
 
 ####################
-"""
-$Log: state.py,v $
-Revision 1.2  2011-09-01 11:06:13  ivan
-*** empty log message ***
-
-Revision 1.1  2011/08/12 10:04:27  ivan
-*** empty log message ***
-
-Revision 1.35  2011/08/12 10:01:05  ivan
-*** empty log message ***
-
-Revision 1.34  2011/05/31 12:41:36  ivan
-*** empty log message ***
-
-Revision 1.33  2011/05/30 14:49:55  ivan
-*** empty log message ***
-
-Revision 1.32  2011/04/20 11:02:21  ivan
-*** empty log message ***
-
-Revision 1.31  2011/03/14 12:41:10  ivan
-*** empty log message ***
-
-Revision 1.30  2011/03/14 12:34:37  ivan
-*** empty log message ***
-
-Revision 1.29  2011/03/11 14:12:13  ivan
-*** empty log message ***
-
-Revision 1.28  2011/03/11 11:37:13  ivan
-Remove the fragment id from the base value
-
-Revision 1.27  2011/03/08 10:49:49  ivan
-*** empty log message ***
-
-
-Revision 1.22  2010/09/03 13:13:36  ivan
-Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class
-
-"""

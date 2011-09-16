@@ -75,7 +75,6 @@ add additional 'services' without distoring the core code of RDFa processing.
 
 Some transformations are included in the package and can be used at invocation. These are:
 
- - Special syntax to generate collections or containers. See the description of L{transform.containerscollections} for further details.
  - The 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
  - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
  - Implementing the Dublin Core dialect to include DC statements from the header.  See L{transform.DublinCore} for further details.
@@ -165,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.44 2011-09-01 11:06:13 ivan Exp $ $Date: 2011-09-01 11:06:13 $
+$Id: __init__.py,v 1.45 2011-09-16 12:26:02 ivan Exp $ $Date: 2011-09-16 12:26:02 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -210,7 +209,6 @@ import urlparse
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
 
 # Vocabulary terms for vocab reporting
-RDFA_SOURCE_PRED = ns_rdfa["hasSource"]
 RDFA_VOCAB       = ns_rdfa["usesVocabulary"]
 
 # Namespace, in the RDFLib sense, for the XSD Datatypes
@@ -473,9 +471,6 @@ class pyRdfa :
 		#subject = URIRef(state.base)
 		# this function is the real workhorse
 		parse_one_node(topElement, default_graph, None, state, [])
-
-		# Vocab reporting triple
-		default_graph.add((URIRef(''), RDFA_SOURCE_PRED, URIRef(self.required_base)))
 		
 		# If the RDFS expansion has to be made, here is the place...
 		if self.options.vocab_expansion :
@@ -601,7 +596,6 @@ def processURI(uri, outputFormat, form={}) :
 	 - C{rfa-version} provides the RDFa version that should be used for distilling. The string should be of the form "1.0", "1.1", etc. Default is the highest version the current package implements.
 	 - C{extras=[true|false]} means that extra, built-in transformers are executed on the DOM tree prior to RDFa processing. Default: false. Alternatively, a finer granurality can be used with the following options:
 	  - C{extras-meta=[true|false]}: the @name attribute for metas are converted into @property for further processing
-	  - C{extras-cc=[true|false]}: containers and collections are generated. See L{transform.containerscollections} for further details.
 	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header should be used
 	 - C{vocab-cache-report=[true|false]} : whether vocab caching details should be reported
 	 - C{vocab-cache-bypass=[true|false]} : whether vocab caches have to be regenerated every time
@@ -651,8 +645,7 @@ def processURI(uri, outputFormat, form={}) :
 		from pyRdfa.transform.metaname              	import meta_transform
 		from pyRdfa.transform.OpenID                	import OpenID_transform
 		from pyRdfa.transform.DublinCore            	import DC_transform
-		from pyRdfa.transform.containerscollections		import containers_collections
-		transformers = [containers_collections, OpenID_transform, DC_transform, meta_transform]
+		transformers = [OpenID_transform, DC_transform, meta_transform]
 	else :
 		if "extra-meta" in form.keys() and form.getfirst("extra-meta").lower() == "true" :
 			from pyRdfa.transform.metaname import meta_transform
@@ -663,13 +656,6 @@ def processURI(uri, outputFormat, form={}) :
 		if "extra-dc" in form.keys() and form.getfirst("extra-dc").lower() == "true" :
 			from pyRdfa.transform.DublinCore import DC_transform
 			transformers.append(DC_transform)
-		if "extra-cc" in form.keys() and form.getfirst("extra-cc").lower() == "true" :
-			from pyRdfa.transform.containerscollections import containers_collections
-			transformers.append(containers_collections)
-		# This is here only for backward compatibility
-		if "extra-li" in form.keys() and form.getfirst("extra-li").lower() == "true" :
-			from pyRdfa.transform.containerscollections import containers_collections
-			transformers.append(containers_collections)
 
 	output_default_graph 	= True
 	output_processor_graph 	= False

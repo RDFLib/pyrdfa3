@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.2 2011-09-01 11:06:13 ivan Exp $
-$Date: 2011-09-01 11:06:13 $
+$Id: parse.py,v 1.3 2011-09-16 12:26:02 ivan Exp $
+$Date: 2011-09-16 12:26:02 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -74,7 +74,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		return	
 
 	#---------------------------------------------------------------------------------
-	# calling the host specific massaging of the DOM
+	# calling the host language specific massaging of the DOM
 	if state.options.host_language in host_dom_transforms and node.nodeType == node.ELEMENT_NODE :
 		for func in host_dom_transforms[state.options.host_language] : func(node, state)
 
@@ -94,6 +94,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	# of the @rel/@rev attributes
 	current_subject = None
 	current_object  = None
+	new_collection  = False
 
 	if has_one_of_attributes(node, "rel", "rev")  :
 		# in this case there is the notion of 'left' and 'right' of @rel/@rev
@@ -102,7 +103,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		# set first the subject
 		if node.hasAttribute("about") :
 			current_subject = state.getURI("about")
-		elif node.hasAttribute("src") :
+		elif state.rdfa_version < "1.1" and node.hasAttribute("src") :
 			current_subject = state.getURI("src")
 		elif node.hasAttribute("typeof") :
 			current_subject = BNode()
@@ -111,38 +112,55 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 		# we have to be careful here, not use only an 'else'
 		if current_subject == None :
 			current_subject = parent_object
+		else :
+			state.reset_list_mapping()
+			new_collection  = True
 
 		# set the object resource
 		if node.hasAttribute("resource") :
 			current_object = state.getURI("resource")
 		elif node.hasAttribute("href") :
 			current_object = state.getURI("href")
+		elif state.rdfa_version >= "1.1" and node.hasAttribute("src") :
+			current_object = state.getURI("src")
+		state.setting_subject = (current_object != None)
 	else :
 		# in this case all the various 'resource' setting attributes
 		# behave identically, though they also have their own priority
 		if node.hasAttribute("about") :
 			current_subject = state.getURI("about")
-		elif node.hasAttribute("src") :
+		elif  state.rdfa_version < "1.1" and node.hasAttribute("src") :
 			current_subject = state.getURI("src")
 		elif node.hasAttribute("resource") :
 			current_subject = state.getURI("resource")
 		elif node.hasAttribute("href") :
 			current_subject = state.getURI("href")
+		elif  state.rdfa_version >= "1.1" and node.hasAttribute("src") :
+			current_subject = state.getURI("src")
 		elif node.hasAttribute("typeof") :
 			current_subject = BNode()
 
 		# get_URI_ref may return None in case of an illegal CURIE, so
 		# we have to be careful here, not use only an 'else'
+		state.setting_subject = (current_object != None)
 		if current_subject == None :
 			current_subject = parent_object
+		else :
+			state.reset_list_mapping()
+			new_collection  = True
 
 		# in this case no non-literal triples will be generated, so the
-		# only role of the current_objectResource is to be transferred to
+		# only role of the current_object Resource is to be transferred to
 		# the children node
 		current_object = current_subject
+		
+	# Last step, related to the subject setting by somebody else higher up and list management
+	if new_collection == False and incoming_state.setting_subject == True :
+			state.reset_list_mapping()
+			new_collection  = True
 
 	# ---------------------------------------------------------------------
-	## The possible typeof indicates a number of type statements on the newSubject
+	## The possible typeof indicates a number of type statements on the new Subject
 	for defined_type in state.getURI("typeof") :
 		graph.add((current_subject, ns_rdf["type"], defined_type))
 
@@ -152,11 +170,17 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	incomplete_triples  = []
 	for prop in state.getURI("rel") :
 		if not isinstance(prop,BNode) :
-			theTriple = (current_subject,prop,current_object)
-			if current_object != None :
-				graph.add(theTriple)
+			if state.rdfa_version >= "1.1" and node.hasAttribute("inlist") :
+				if current_object != None :
+					state.add_to_list_mapping(prop, current_object)
+				else :
+					incomplete_triples.append((None, prop, None))
 			else :
-				incomplete_triples.append(theTriple)
+				theTriple = (current_subject, prop, current_object)
+				if current_object != None :
+					graph.add(theTriple)
+				else :
+					incomplete_triples.append(theTriple)
 		else :
 			state.options.add_warning(err_no_blank_node % "rel", warning_type=IncorrectBlankNodeUsage, node=node.nodeName)
 
@@ -195,9 +219,28 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	# ---------------------------------------------------------------------
 	# At this point, the parent's incomplete triples may be completed
 	for (s,p,o) in parent_incomplete_triples :
-		if s == None : s = current_subject
-		if o == None : o = current_subject
-		graph.add((s,p,o))
+		if s == None and o == None :
+			# This is an encoded version of a hanging rel for a collection:
+			incoming_state.add_to_list_mapping( p, current_subject )
+		else :
+			if s == None : s = current_subject
+			if o == None : o = current_subject
+			graph.add((s,p,o))
+
+	# Generate the lists, if any...	
+	if state.rdfa_version >= "1.1" and new_collection and len(state.list_mapping) != 0 :
+		for prop in state.list_mapping :
+			heads = [ (BNode(), r) for r in state.list_mapping[prop] ]
+			if len(heads) == 0 :
+				# should not happen, though
+				continue
+			for (b,r) in heads :
+				graph.add( (b, ns_rdf["first"], r) )
+			for i in range(0, len(heads)-1) :
+				graph.add( (heads[i][0], ns_rdf["rest"], heads[i+1][0]) )
+				
+			graph.add( (heads[-1][0], ns_rdf["rest"], ns_rdf["nil"]) )
+			graph.add( (current_subject, prop, heads[0][0]) )
 
 	# -------------------------------------------------------------------
 	# This should be it...

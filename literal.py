@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: literal.py,v 1.1 2011-08-12 10:04:01 ivan Exp $
-$Date: 2011-08-12 10:04:01 $
+$Id: literal.py,v 1.2 2011-09-16 12:26:02 ivan Exp $
+$Date: 2011-09-16 12:26:02 $
 """
 
 import re
@@ -181,41 +181,11 @@ def generate_literal(node, graph, subject, state) :
 	# The object may be empty, for example in an ill-defined <meta> element...
 	for prop in props :
 		if not isinstance(prop,BNode) :
-			graph.add((subject,prop,object))
+			if state.rdfa_version >= "1.1" and node.hasAttribute("inlist") :
+				state.add_to_list_mapping(prop, object)
+			else :			
+				graph.add( (subject,prop,object) )
 		else :
 			state.options.add_warning(no_blank_node % "property", warning_type=IncorrectBlankNodeUsage, node=node.nodeName)
 
 	# return
-
-"""
-$Log: literal.py,v $
-Revision 1.1  2011-08-12 10:04:01  ivan
-*** empty log message ***
-
-Revision 1.18  2011/08/12 10:01:05  ivan
-*** empty log message ***
-
-Revision 1.17  2011/05/31 12:41:36  ivan
-*** empty log message ***
-
-Revision 1.16  2011/04/20 11:02:21  ivan
-*** empty log message ***
-
-Revision 1.15  2011/04/05 06:37:22  ivan
-*** empty log message ***
-
-Revision 1.14  2011/03/11 14:12:12  ivan
-*** empty log message ***
-
-Revision 1.13  2011/03/11 12:25:05  ivan
-empty literal is allowed if the children are empty
-
-Revision 1.12  2011/03/08 10:49:49  ivan
-*** empty log message ***
-
-Revision 1.11  2011/01/14 12:41:56  ivan
-(1) only those namespaces are stored that are defined via xmlns (2) the optimization to store only used namespaces has been taken out, it would not work with CURIE type attribute values
-
-
-
-"""
