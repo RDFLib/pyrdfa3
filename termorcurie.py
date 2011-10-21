@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.1 2011-08-12 10:01:54 ivan Exp $
-$Date: 2011-08-12 10:01:54 $
+$Id: termorcurie.py,v 1.2 2011-10-21 15:25:37 ivan Exp $
+$Date: 2011-10-21 15:25:37 $
 """
 
 import re, sys
@@ -72,9 +72,9 @@ _empty_bnode = BNode()
 
 ####
 
-class DefaultProfile :
+class InitialContext :
 	"""
-	Get the default profile values. In most cases this class has an empty content, except for the
+	Get the initial context values. In most cases this class has an empty content, except for the
 	top level (in case of RDFa 1.1). Each L{TermOrCurie} class has one instance of this class.
 	
 	@ivar terms: collection of all term mappings
@@ -89,7 +89,7 @@ class DefaultProfile :
 		"""
 		@param state: the state behind this term mapping
 		@type state: L{state.ExecutionContext}
-		@param top_level : whether this is the top node of the DOM tree (the only place where default profiles are handled)
+		@param top_level : whether this is the top node of the DOM tree (the only place where initial contexts are handled)
 		@type top_level : boolean
 		"""		
 		self.state = state
@@ -104,14 +104,14 @@ class DefaultProfile :
 		if state.rdfa_version < "1.1" or top_level == False :
 			return
 		
-		from defaultprofiles	import default_profiles as profile_data
-		from host 				import default_profiles as profile_ids
-		
-		for id in profile_ids[state.options.host_language] :
-			# This gives the id of a default profile, valid for this media type:
-			data = profile_data[id]
+		from initialcontext		import initial_context  as context_data
+		from host 				import initial_contexts as context_ids
+		print 
+		for id in context_ids[state.options.host_language] :
+			# This gives the id of a initial context, valid for this media type:
+			data = context_data[id]
 			
-			# Merge the profile data with the overall definition
+			# Merge the context data with the overall definition
 			if data.vocabulary != "" :
 				self.vocabulary = data.vocabulary				
 			for key in data.terms :
@@ -126,7 +126,7 @@ class TermOrCurie :
 	"""
 	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI (typical
 	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
-	"state", instance of L{state.ExecutionContext}. Profile definitions are managed at initialization time.
+	"state", instance of L{state.ExecutionContext}. Context definitions are managed at initialization time.
 	
 	(In fact, this class is, conceptually, part of the overall state at a node, and has been separated here for an
 	easier maintenance.)
@@ -164,7 +164,7 @@ class TermOrCurie :
 		
 		# --------------------------------------------------------------------------------
 		# This is set to non-void only on the top level and in the case of 1.1
-		default_vocab = DefaultProfile(self.state, inherited_state == None)
+		default_vocab = InitialContext(self.state, inherited_state == None)
 		
 		# Set the default CURIE URI
 		if inherited_state == None :
@@ -188,7 +188,7 @@ class TermOrCurie :
 			else :
 				self.default_term_uri = inherited_state.term_or_curie.default_term_uri
 				
-			# see if the profile has defined a default profile:
+			# see if the initial context has defined a default vocabulary:
 			if default_vocab.vocabulary :
 				self.default_term_uri = default_vocab.vocabulary
 				
@@ -201,7 +201,7 @@ class TermOrCurie :
 			self.default_term_uri = None
 		
 		# --------------------------------------------------------------------------------
-		# The simpler case: terms, adding those that have been defined by a possible @profile file
+		# The simpler case: terms, adding those that have been defined by a possible initial context
 		if inherited_state is None :
 			# this is the vocabulary belonging to the top level of the tree!
 			self.terms = {}
@@ -224,14 +224,12 @@ class TermOrCurie :
 		# locally defined xmlns namespaces, necessary for correct XML Literal generation
 		xmlns_dict = {}
 				
-		# Add the namespaces defined via a default profile
+		# Add the namespaces defined via a initial context
 		for key in default_vocab.ns :
 			dict[key] = default_vocab.ns[key]
 			self.graph.bind(key, dict[key])
 
 		# Add the locally defined namespaces using the xmlns: syntax
-		# Note that the placement of this code means that the local definitions will override
-		# the effects of a @profile, but these will be overriden by a possible @prefix
 		for i in range(0, state.node.attributes.length) :
 			attr = state.node.attributes.item(i)
 			if attr.name.find('xmlns:') == 0 :	
@@ -261,7 +259,7 @@ class TermOrCurie :
 						check_prefix(pr)
 
 		# Add the locally defined namespaces using the @prefix syntax
-		# this may override the definition in @profile and @xmlns
+		# this may override the definition @xmlns
 		if state.rdfa_version >= "1.1" and state.node.hasAttribute("prefix") :
 			pr = state.node.getAttribute("prefix")
 			if pr != None :
@@ -407,7 +405,7 @@ class TermOrCurie :
 
 	def term_to_URI(self, term) :
 		"""A term to URI mapping, where term is a simple string and the corresponding
-		URI is defined via the @profile or the @vocab (ie, default term uri) mechanism. Returns None if term is not defined
+		URI is defined via the @vocab (ie, default term uri) mechanism. Returns None if term is not defined
 		@param term: string
 		@return: an RDFLib URIRef instance (or None)
 		"""
@@ -435,42 +433,3 @@ class TermOrCurie :
 
 		# If it got here, it is all wrong...
 		return None
-		
-#########################
-"""
-$Log: termorcurie.py,v $
-Revision 1.1  2011-08-12 10:01:54  ivan
-*** empty log message ***
-
-Revision 1.14  2011/06/13 11:01:31  ivan
-*** empty log message ***
-
-Revision 1.13  2011/05/31 12:41:36  ivan
-*** empty log message ***
-
-Revision 1.12  2011/05/30 14:49:55  ivan
-*** empty log message ***
-
-Revision 1.11  2011/04/20 11:02:21  ivan
-*** empty log message ***
-
-Revision 1.10  2011/03/11 12:17:38  ivan
-default prefix cannot be changed
-
-Revision 1.9  2011/03/11 11:56:32  ivan
-':' is a valid CURIE...
-
-Revision 1.8  2011/03/08 10:49:50  ivan
-*** empty log message ***
-
-Revision 1.7  2011/01/14 12:43:32  ivan
-xmlns values are stored separately for a proper generation of XML Literals
-
-
-Revision 1.2  2010/09/03 13:12:51  ivan
-Renamed CURIE to TermOrCurie everywhere, as a better name to reflect the functionality of the class
-
-Revision 1.14  2010/07/27 13:19:19  ivan
-Changed the profile term/prefix management to take care of all the errors and ignore entries with errors altogether
-
-"""

@@ -3,7 +3,7 @@
 Host language sub-package for the pyRdfa package. It contains variables and possible modules necessary to manage various RDFa
 host languages.
 
-This module may have to be modified if a new host language is added to the system. In many cases the rdfa_core as a host language is enough, because there is no need for a special processing. However, some host languages may require a default profile, or their value may control some transformations, in which case additional data have to be added to this module. This module header contains all tables and arrays to be adapted, and the module content may contain specific transformation methods.
+This module may have to be modified if a new host language is added to the system. In many cases the rdfa_core as a host language is enough, because there is no need for a special processing. However, some host languages may require an initial context, or their value may control some transformations, in which case additional data have to be added to this module. This module header contains all tables and arrays to be adapted, and the module content may contain specific transformation methods.
 
 
 @summary: RDFa Transformer package
@@ -15,18 +15,18 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 
 @var content_to_host_language: a dictionary mapping a media type to a host language
 @var preferred_suffixes: mapping from preferred suffixes for media types; used if the file is local, ie, there is not HTTP return value for the media type. It corresponds to the preferred suffix in the media type registration
-@var default_profiles: mapping from host languages to list of default profiles
+@var initial_contexts: mapping from host languages to list of initial contexts
 @var accept_xml_base: list of host languages that accept the xml:base attribute for base setting
 @var accept_xml_lang: list of host languages that accept the xml:lang attribute for language setting. Note that XHTML and HTML have some special rules, and those are hard coded...
 @var accept_embedded_rdf: list of host languages that might also include RDF data using an embedded RDF/XML (e.g., SVG). That RDF data is merged with the output
 @var host_dom_transforms: dictionary mapping a host language to an array of methods that are invoked at the beginning of the parsing process for a specific node. That function can do a last minute change on that DOM node, eg, adding or modifying an attribute. The method's signature is (node, state), where node is the DOM node, and state is the L{Execution context<pyRdfa.state.ExecutionContext>}.
-@var predefined_1_0_rel: terms that are hardcoded for HTML+RDF1.0 and replace the default profile for that version
+@var predefined_1_0_rel: terms that are hardcoded for HTML+RDF1.0 and replace the initial context for that version
 @var beautifying_prefixes: this is really just to make the output more attractive: for each media type a dictionary of prefix-URI pairs that can be used to make the terms look better...
 """
 
 """
-$Id: __init__.py,v 1.4 2011-08-12 10:06:08 ivan Exp $
-$Date: 2011-08-12 10:06:08 $
+$Id: __init__.py,v 1.5 2011-10-21 15:25:43 ivan Exp $
+$Date: 2011-10-21 15:25:43 $
 """
 __version__ = "3.0"
 
@@ -40,13 +40,13 @@ class HostLanguage :
 	atom		= "Atom+RDFa"
 	svg			= "SVG+RDFa"
 	
-# default profiles for host languages
-default_profiles = {
-	HostLanguage.xhtml		: ["http://www.w3.org/profile/rdfa-1.1", "http://www.w3.org/profile/html-rdfa-1.1"],
-	HostLanguage.html 		: ["http://www.w3.org/profile/rdfa-1.1", "http://www.w3.org/profile/html-rdfa-1.1"],
-	HostLanguage.rdfa_core 	: ["http://www.w3.org/profile/rdfa-1.1"],
-	HostLanguage.atom	 	: ["http://www.w3.org/profile/rdfa-1.1"],
-	HostLanguage.svg	 	: ["http://www.w3.org/profile/rdfa-1.1"],
+# initial contexts for host languages
+initial_contexts = {
+	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"],
+	HostLanguage.html 		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"],
+	HostLanguage.rdfa_core 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.atom	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.svg	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 }
 
 beautifying_prefixes = {
@@ -86,7 +86,7 @@ class MediaTypes :
 	xmlt	= 'text/xml'
 	nt		= 'text/plain'
 	
-# mapping from (some) content types to RDFa host languages. This may control the exact processing or at least the default profile (see below)...
+# mapping from (some) content types to RDFa host languages. This may control the exact processing or at least the initial context (see below)...
 content_to_host_language = {
 	MediaTypes.html		: HostLanguage.html,
 	MediaTypes.xhtml	: HostLanguage.xhtml,

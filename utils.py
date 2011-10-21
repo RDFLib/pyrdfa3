@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.1 2011-08-12 10:01:54 ivan Exp $
-$Date: 2011-08-12 10:01:54 $
+$Id: utils.py,v 1.2 2011-10-21 15:25:37 ivan Exp $
+$Date: 2011-10-21 15:25:37 $
 """
 import os, os.path, sys, imp, datetime
 import urllib, urlparse, urllib2
@@ -152,7 +152,7 @@ def quote_URI(uri, options = None) :
 	
 def create_file_name(uri) :
 	"""
-	Create a suitable file name from an (absolute) URI. Used, eg, for the generation of a file name for a cached profile.
+	Create a suitable file name from an (absolute) URI. Used, eg, for the generation of a file name for a cached vocabulary file.
 	"""
 	suri = uri.strip()
 	final_uri = urllib.quote(suri,_unquotedChars)

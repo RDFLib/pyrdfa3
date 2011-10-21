@@ -141,9 +141,9 @@ This automatic choise can be overridden by the 'CACHE_DIR_VAR' environment varia
 
 Caching can be set to be read-only, i.e., the setup might generate the caches off-line instead of letting the tool writing its own cache when operating, e.g., as a service on the Web. This can be achieved by making the cache directory read only. 
 
-If the directories are neither readable nor writable, the profile files are retrieved via HTTP every time they are hit. This may slow down processing, it is advised to avoid such a setup for the package.
+If the directories are neither readable nor writable, the vocabulary files are retrieved via HTTP every time they are hit. This may slow down processing, it is advised to avoid such a setup for the package.
 
-The cache includes a separate index file and a file for each profile. Cache control is based upon the 'EXPIRES' header of a vocabulary file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
+The cache includes a separate index file and a file for each vocabulary file. Cache control is based upon the 'EXPIRES' header of a vocabulary file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
 
 (The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files; care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too.)
 
@@ -164,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.45 2011-09-16 12:26:02 ivan Exp $ $Date: 2011-09-16 12:26:02 $
+$Id: __init__.py,v 1.46 2011-10-21 15:25:37 ivan Exp $ $Date: 2011-10-21 15:25:37 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -180,7 +180,7 @@ Thanks to Elias Torrez, who provided with the idea and patches to interface to t
 
 """
 
-__version__ = "3.0.2"
+__version__ = "3.0.3"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -302,7 +302,7 @@ from pyRdfa.transform.toplevelabout		import top_about
 from pyRdfa.utils						import URIOpener
 from pyRdfa.host 						import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
 
-# Environment variable used to characterize cache directories for RDFa profiles. See the L{caching mechanism description<ProfileCache>} for details
+# Environment variable used to characterize cache directories for RDFa vocabulary files. 
 CACHE_DIR_VAR		= "PyRdfaCacheDir"
 
 # current "official" version of RDFa that this package implements. This can be changed at the invocation of the package

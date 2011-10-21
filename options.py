@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.2 2011-08-12 11:26:15 ivan Exp $ $Date: 2011-08-12 11:26:15 $
+$Id: options.py,v 1.3 2011-10-21 15:25:37 ivan Exp $ $Date: 2011-10-21 15:25:37 $
 """
 
 import sys, datetime
@@ -104,7 +104,7 @@ class Options :
 	@type processor_graph: L{ProcessorGraph}
 	@ivar transformers: extra transformers
 	@type transformers: list
-	@ivar vocab_cache_report: whether the details of profile caching process should be reported as information (mainly for debug)
+	@ivar vocab_cache_report: whether the details of vocabulary file caching process should be reported as information (mainly for debug)
 	@type vocab_cache_report: Boolean
 	@ivar bypass_vocab_cache: whether the caching checks of vocabs should be by-passed, ie, if caches should be generated regardless of the stored date (important for vocab development)
 	@type bypass_vocab_cache: Boolean
