@@ -25,12 +25,13 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.5 2011-10-21 15:25:43 ivan Exp $
-$Date: 2011-10-21 15:25:43 $
+$Id: __init__.py,v 1.6 2011-11-14 14:02:57 ivan Exp $
+$Date: 2011-11-14 14:02:57 $
 """
 __version__ = "3.0"
 
-from pyRdfa.host.atom import atom_add_entry_type
+from pyRdfa.host.atom  import atom_add_entry_type
+from pyRdfa.host.html5 import html5_extra_attributes
 
 class HostLanguage :
 	"""An enumeration style class: recognized host language types for this processor of RDFa. Some processing details may depend on these host languages. "rdfa_core" is the default Host Language is nothing else is defined."""
@@ -64,7 +65,8 @@ accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg
 accept_embedded_rdf	= [ HostLanguage.svg, HostLanguage.html, HostLanguage.xhtml ]
 
 host_dom_transforms = {
-	HostLanguage.atom : [atom_add_entry_type]
+	HostLanguage.atom : [atom_add_entry_type],
+	HostLanguage.html : [html5_extra_attributes]
 }
 
 predefined_1_0_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',

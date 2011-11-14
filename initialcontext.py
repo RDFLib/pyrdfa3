@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Built-in version of the initial contexts. 
+Built-in version of the initial contexts for RDFa Core, and RDFa + HTML
 
 @summary: Management of vocabularies, terms, and their mapping to URI-s.
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: initialcontext.py,v 1.1 2011-10-21 15:25:37 ivan Exp $
-$Date: 2011-10-21 15:25:37 $
+$Id: initialcontext.py,v 1.2 2011-11-14 14:02:48 ivan Exp $
+$Date: 2011-11-14 14:02:48 $
 """
 
 class Wrapper :
@@ -43,7 +43,6 @@ initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
 	'void'		: 'http://rdfs.org/ns/void#',
 	'ical'		: 'http://www.w3.org/2002/12/cal/icaltzd#',
 	'vcard'		: 'http://www.w3.org/2006/vcard/ns#',
-	'xmlns'		: 'http://www.w3.org/2000/xmlns/',
 	'wdrs'		: 'http://www.w3.org/2007/05/powder-s#',
 	'og'		: 'http://ogp.me/ns#',
 	'wdr'		: 'http://www.w3.org/2007/05/powder#',
@@ -63,7 +62,6 @@ initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].vocabulary = ""
 
 initial_context["http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"].ns = {
 }
-
 
 initial_context["http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"].vocabulary = ""
 

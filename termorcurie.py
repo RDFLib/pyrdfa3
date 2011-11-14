@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.2 2011-10-21 15:25:37 ivan Exp $
-$Date: 2011-10-21 15:25:37 $
+$Id: termorcurie.py,v 1.3 2011-11-14 14:02:48 ivan Exp $
+$Date: 2011-11-14 14:02:48 $
 """
 
 import re, sys
@@ -106,7 +106,6 @@ class InitialContext :
 		
 		from initialcontext		import initial_context  as context_data
 		from host 				import initial_contexts as context_ids
-		print 
 		for id in context_ids[state.options.host_language] :
 			# This gives the id of a initial context, valid for this media type:
 			data = context_data[id]

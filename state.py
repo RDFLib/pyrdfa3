@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.3 2011-09-16 12:26:02 ivan Exp $
-$Date: 2011-09-16 12:26:02 $
+$Id: state.py,v 1.4 2011-11-14 14:02:48 ivan Exp $
+$Date: 2011-11-14 14:02:48 $
 """
 
 import rdflib
@@ -53,6 +53,12 @@ import re
 import random
 import urlparse
 import urllib
+from types import *
+
+class ListStructure :
+	def __init__(self) :
+		self.mapping = {}
+		self.origin	  = None
 
 #### Core Class definition
 class ExecutionContext :
@@ -137,20 +143,18 @@ class ExecutionContext :
 			self.rdfa_version		= inherited_state.rdfa_version
 			self.base				= inherited_state.base
 			self.options			= inherited_state.options
-			self.setting_subject    = inherited_state.setting_subject
 						
 			self.list_mapping 		= inherited_state.list_mapping
+			self.new_list			= False
 			
 			# for generic XML versions the xml:base attribute should be handled
 			if self.options.host_language in accept_xml_base and node.hasAttribute("xml:base") :
 				self.base = remove_frag_id(node.getAttribute("xml:base"))
 		else :
-			# this is the branch called from the very top
-			# get the version
-			# If the version has been set explicitly, that wins!
-			self.setting_subject = False
+			# this is the branch called from the very top			
+			self.list_mapping = ListStructure()
+			self.new_list	  = True
 			
-			self.list_mapping = {}
 			if rdfa_version is not None :
 				self.rdfa_version = rdfa_version
 			else :
@@ -447,12 +451,46 @@ class ExecutionContext :
 		return retval
 	# end getURI
 	
+	def getResource(self, *args) :
+		"""Get single resources from several different attributes. The first one that returns a valid URI wins.
+		@param args: variable list of attribute names, or a single attribute being a list itself.
+		@return: an RDFLib URIRef instance (or None) :
+		"""
+		if len(args) == 0 :
+			return None
+		if isinstance(args[0], TupleType) or isinstance(args[0],ListType) :
+			rargs = args[0]
+		else :
+			rargs = args
+			
+		for resource in rargs :
+			uri = self.getURI(resource)
+			if uri != None : return uri
+		return None
+	
 	# -----------------------------------------------------------------------------------------------
-	def reset_list_mapping(self) :
+	def reset_list_mapping(self, origin=None) :
 		"""
 		Reset, ie, create a new empty dictionary for the list mapping.
 		"""
-		self.list_mapping = {}
+		self.list_mapping = ListStructure()
+		if origin: self.set_list_origin(origin)
+		self.new_list = True
+
+	def list_empty(self) :
+		return len(self.list_mapping.mapping) == 0
+		
+	def get_list_props(self) :
+		return self.list_mapping.mapping.keys()
+		
+	def get_list_value(self,prop) :
+		return self.list_mapping.mapping[prop]
+		
+	def set_list_origin(self, origin) :
+		self.list_mapping.origin = origin
+		
+	def get_list_origin(self) :
+		return self.list_mapping.origin
 		
 	def add_to_list_mapping(self, property, resource) :
 		"""Add a new property-resource on the list mapping structure. The latter is a dictionary of arrays;
@@ -461,9 +499,9 @@ class ExecutionContext :
 		@param property: the property URI, used as a key in the dictionary
 		@param resource: the resource to be added to the relevant array in the dictionary.
 		"""
-		if property in self.list_mapping :
-			self.list_mapping[property].append(resource)
+		if property in self.list_mapping.mapping :
+			self.list_mapping.mapping[property].append(resource)
 		else :
-			self.list_mapping[property] = [ resource ]
+			self.list_mapping.mapping[property] = [ resource ]
 
 ####################

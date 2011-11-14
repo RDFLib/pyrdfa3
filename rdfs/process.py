@@ -13,7 +13,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: process.py,v 1.3 2011-09-01 11:06:21 ivan Exp $ $Date: 2011-09-01 11:06:21 $
+$Id: process.py,v 1.4 2011-11-14 14:03:08 ivan Exp $ $Date: 2011-11-14 14:03:08 $
 
 """
 
@@ -81,7 +81,7 @@ def return_graph(uri, options, newCache = False) :
 	
 	try :
 		content = URIOpener(uri,
-							{'Accept' : 'text/html;q=0.8, application/xhtml+xml;q=0.8, text/turtle;q=1.0, application/rdf+xml;q=0.7'})
+							{'Accept' : 'text/html;q=0.8, application/xhtml+xml;q=0.8, text/turtle;q=1.0, application/rdf+xml;q=0.9'})
 
 	except HTTPError, e :
 		return_to_cache(e.msg)

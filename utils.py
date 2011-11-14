@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.2 2011-10-21 15:25:37 ivan Exp $
-$Date: 2011-10-21 15:25:37 $
+$Id: utils.py,v 1.3 2011-11-14 14:02:48 ivan Exp $
+$Date: 2011-11-14 14:02:48 $
 """
 import os, os.path, sys, imp, datetime
 import urllib, urlparse, urllib2
@@ -30,6 +30,7 @@ else :
 	from rdflib.RDF	import RDFNS  as ns_rdf
 
 from pyRdfa.host import HostLanguage, preferred_suffixes
+from types import *
 
 #########################################################################################################
 # Handling URIs
@@ -168,7 +169,14 @@ def has_one_of_attributes(node,*args) :
 	@return: True or False
 	@rtype: Boolean
 	"""
-	return True in [ node.hasAttribute(attr) for attr in args ]
+	if len(args) == 0 :
+		return None
+	if isinstance(args[0], TupleType) or isinstance(args[0],ListType) :
+		rargs = args[0]
+	else :
+		rargs = args
+	
+	return True in [ node.hasAttribute(attr) for attr in rargs ]
 
 #########################################################################################################
 def traverse_tree(node, func) :

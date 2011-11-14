@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.3 2011-10-21 15:25:37 ivan Exp $ $Date: 2011-10-21 15:25:37 $
+$Id: options.py,v 1.4 2011-11-14 14:02:48 ivan Exp $ $Date: 2011-11-14 14:02:48 $
 """
 
 import sys, datetime
@@ -119,15 +119,15 @@ class Options :
 	@ivar content_type: the content type of the host file. Default is None
 	@type content_type: string (logically: an enumeration)
 	"""
-	def __init__(self, output_default_graph = True,
+	def __init__(self, output_default_graph   = True,
 					   output_processor_graph = False,
-					   space_preserve = True,
-					   transformers=[],
-					   vocab_cache_report = False,
-					   bypass_vocab_cache = False,
-					   hturtle = False,
-					   vocab_expansion = False,
-					   vocab_cache = False) :
+					   space_preserve         = True,
+					   transformers           = [],
+					   vocab_cache_report     = False,
+					   bypass_vocab_cache     = False,
+					   hturtle                = False,
+					   vocab_expansion        = False,
+					   vocab_cache            = False) :
 		"""
 		@keyword space_preserve: whether plain literals should preserve spaces at output or not
 		@type space_preserve: Boolean

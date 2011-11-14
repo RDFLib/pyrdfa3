@@ -93,7 +93,7 @@ class CachedVocabIndex :
 	
 	Every time the index is changed, the index is put back (via pickle) to the directory.
 	
-	@ivar app_data_dir: directory for the profile cache directory
+	@ivar app_data_dir: directory for the vocabulary cache directory
 	@ivar index_fname: the full path of the index file on the disc
 	@ivar indeces: the in-memory version of the index (a directory mapping URI-s to tuples)
 	@ivar options: the error handler (option) object to send warnings to
@@ -164,9 +164,9 @@ class CachedVocabIndex :
 				try :
 					_dump(self.indeces, self.index_fname)
 				except Exception, e:
-					if self.report: options.add_info("Could not create the profile index %s" % e.msg, VocabCachingInfo)
+					if self.report: options.add_info("Could not create the vocabulary index %s" % e.msg, VocabCachingInfo)
 			else :
-				if self.report: options.add_info("Profile cache directory is not writeable", VocabCachingInfo)				
+				if self.report: options.add_info("Vocabulary cache directory is not writeable", VocabCachingInfo)				
 				self.cache_writeable	= False	
 				
 	def add_ref(self, uri, vocab_reference) :
@@ -225,18 +225,18 @@ class CachedVocab(CachedVocabIndex) :
 	on the disc (in pickled form)
 	
 	@ivar graph: the RDF graph
-	@ivar URI: profile URI
+	@ivar URI: vocabulary URI
 	@ivar filename: file name (not the complete path) of the cached version
 	@ivar creation_date: creation date of the cache
 	@type creation_date: datetime
 	@ivar expiration_date: expiration date of the cache
 	@type expiration_date: datetime
-	@cvar runtime_cache : a run time cache for already 'seen' profiles. Apart from (marginally) speeding up processing, this also prevents recursion
+	@cvar runtime_cache : a run time cache for already 'seen' vocabulary files. Apart from (marginally) speeding up processing, this also prevents recursion
 	@type runtime_cache : dictionary
 	"""
 	def __init__(self, URI, options = None) :
 		"""
-		@param URI: real URI for the profile
+		@param URI: real URI for the vocabulary file
 		@param options: the error handler (option) object to send warnings to
 		@type options: L{options.Options}
 		"""
@@ -253,7 +253,7 @@ class CachedVocab(CachedVocabIndex) :
 		except Exception, e :
 			# what this means is that the caching becomes impossible through some system error...
 			(type,value,traceback) = sys.exc_info()
-			if self.report: options.add_info("Could not access the profile cache area %s" % value, VocabCachingInfo, URI)
+			if self.report: options.add_info("Could not access the vocabulary cache area %s" % value, VocabCachingInfo, URI)
 			vocab_reference		= None
 			self.caching		= False
 
@@ -294,7 +294,7 @@ class CachedVocab(CachedVocabIndex) :
 					# bugger; the cache could not be refreshed, using the current one, and setting the cache artificially
 					# to be valid for the coming hour, hoping that the access issues will be resolved by then...
 					if self.report:
-						options.add_info("Could not refresh profile cache for %s, using the old cache, extended its expiration time by an hour (network problems?)" % URI, VocabCachingInfo, URI)
+						options.add_info("Could not refresh vocabulary cache for %s, using the old cache, extended its expiration time by an hour (network problems?)" % URI, VocabCachingInfo, URI)
 					fname = os.path.join(self.app_data_dir, self.filename)
 					try :
 						self.graph = _load(fname)
@@ -303,7 +303,7 @@ class CachedVocab(CachedVocabIndex) :
 						# what this means is that the caching becomes impossible VocabCachingInfo
 						(type,value,traceback) = sys.exc_info()
 						sys.excepthook(type,value,traceback)
-						if self.report: options.add_info("Could not access the profile cache %s (%s)" % (value,fname), VocabCachingInfo, URI)
+						if self.report: options.add_info("Could not access the vocabulary cache %s (%s)" % (value,fname), VocabCachingInfo, URI)
 				self.creation_date = datetime.datetime.utcnow()
 				if self.report:
 					options.add_info("Generated a new cache for %s, with an expiration date of %s" % (URI,self.expiration_date), VocabCachingInfo, URI)
@@ -319,7 +319,7 @@ class CachedVocab(CachedVocabIndex) :
 		"""Called if the creation date, etc, have been refreshed or new, and
 		all content must be put into a cache file
 		"""
-		# Store the cached version of the profile
+		# Store the cached version of the vocabulary file
 		fname = os.path.join(self.app_data_dir, self.filename)
 		try :
 			_dump(self.graph, fname)
@@ -332,9 +332,9 @@ class CachedVocab(CachedVocabIndex) :
 #########################################################################################################################################
 
 def offline_cache_generation(args) :
-	"""Generate a cache for the profile in args.
+	"""Generate a cache for the vocabulary in args.
 	
-	@param args: array of profile URIs.
+	@param args: array of vocabulary URIs.
 	"""
 	class LocalOption :
 		def __init__(self) :
