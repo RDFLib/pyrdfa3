@@ -7,8 +7,8 @@ C{name} attribute values.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: lite.py,v 1.1 2011-11-14 14:03:34 ivan Exp $
-$Date: 2011-11-14 14:03:34 $
+@version: $Id: lite.py,v 1.2 2011-11-15 10:03:21 ivan Exp $
+$Date: 2011-11-15 10:03:21 $
 """
 
 non_lite_attributes = ["resource","inlist","datatype","rev", "rel"]
@@ -20,7 +20,13 @@ def lite_prune(top, options) :
 	@type options: L{Options<pyRdfa.Options>}
 	"""
 	def generate_warning(node, attr) :
-		options.add_warning("Attribute %s is not used in RDFa Lite, ignored (element <%s>)" % (attr,node.tagName))
+		if attr == "rel" :
+			msg = "Attribute @rel is not used in RDFa Lite, ignored (consider using @property)"
+		elif attr == "resource" :
+			msg = "Attribute @resource is not used in RDFa Lite, ignored (consider using a <link> element with @href)"
+		else :
+			msg = "Attribute @%s is not used in RDFa Lite, ignored" % attr
+		options.add_warning(msg, node=node)
 
 	def remove_attrs(node) :
 		# first the @content; this has a special treatment
@@ -32,8 +38,7 @@ def lite_prune(top, options) :
 				if node.hasAttribute(attr) :
 					generate_warning(node, attr)
 					node.removeAttribute(attr)
-					
-	
+
 	remove_attrs(top)
 	for n in top.childNodes :
 		if n.nodeType == top.ELEMENT_NODE :

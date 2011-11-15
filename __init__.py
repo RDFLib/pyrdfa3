@@ -164,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.47 2011-11-14 14:02:48 ivan Exp $ $Date: 2011-11-14 14:02:48 $
+$Id: __init__.py,v 1.48 2011-11-15 10:03:12 ivan Exp $ $Date: 2011-11-15 10:03:12 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -466,6 +466,10 @@ class pyRdfa :
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
 		state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
+		
+		# This may have changed if the state setting detected an explicit version information:
+		self.rdfa_version = state.rdfa_version
+		
 		# The top level subject starts with the current document; this
 		# is used by the recursion
 		#subject = URIRef(state.base)

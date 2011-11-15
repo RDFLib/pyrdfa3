@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.4 2011-11-14 14:02:48 ivan Exp $ $Date: 2011-11-14 14:02:48 $
+$Id: options.py,v 1.5 2011-11-15 10:03:13 ivan Exp $ $Date: 2011-11-15 10:03:13 $
 """
 
 import sys, datetime
@@ -68,7 +68,10 @@ class ProcessorGraph :
 		bnode = BNode()
 		
 		if node != None:
-			full_msg = "[In element '%s'] %s" % (node, msg)
+			try :
+				full_msg = "[In element '%s'] %s" % (node.nodeName, msg)
+			except :
+				full_msg = "[In element '%s'] %s" % (node, msg)
 		else :
 			full_msg = msg
 		
@@ -168,7 +171,7 @@ class Options :
 		output processor graph                 : %s
 		output default graph                   : %s
 		host language                          : %s
-		accept hturtle:                        : %s
+		accept embedded turtle                 : %s
 		perfom semantic postprocessing         : %s
 		cache vocabulary graphs                : %s
 		"""

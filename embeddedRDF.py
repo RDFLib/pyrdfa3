@@ -7,13 +7,13 @@ by U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>}.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: embeddedRDF.py,v 1.3 2011-11-14 14:02:48 ivan Exp $
-$Date: 2011-11-14 14:02:48 $
+@version: $Id: embeddedRDF.py,v 1.4 2011-11-15 10:03:13 ivan Exp $
+$Date: 2011-11-15 10:03:13 $
 """
 
 from StringIO	 import StringIO
 from pyRdfa.host import HostLanguage
-import re
+import re, sys
 
 def handle_embeddedRDF(node, graph, state) :
 	"""
@@ -58,14 +58,26 @@ def handle_embeddedRDF(node, graph, state) :
 				prefixes = _get_prefixes_in_turtle()
 				content  = _get_literal(node)
 				rdf = StringIO(prefixes + content)
-				graph.parse(rdf, format="n3", publicID = state.base)
+				try :
+					graph.parse(rdf, format="n3", publicID = state.base)
+				except :
+					(type,value,traceback) = sys.exc_info()
+					state.options.add_error("Embedded Turtle content could not be parsed (problems with %s?); ignored" % value)
+			return True
+		else :
+			return False
 	else :
 		# This is the embedded RDF/XML case in XML based languages
 		if node.localName == "RDF" and node.namespaceURI == "http://www.w3.org/1999/02/22-rdf-syntax-ns#" :
 			node.setAttribute("xml:base",state.base)
 			rdf = StringIO(node.toxml())
-			graph.parse(rdf)
+			try :
+				graph.parse(rdf)
+			except :
+				(type,value,traceback) = sys.exc_info()
+				state.options.add_error("Embedded RDF/XML content could not parsed (problems with %s?); ignored" % value)
 			return True
 		else :
 			return False
+	return False
 
