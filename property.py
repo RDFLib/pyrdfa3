@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.1 2011-11-11 12:50:59 ivan Exp $
-$Date: 2011-11-11 12:50:59 $
+$Id: property.py,v 1.2 2011-11-15 12:19:01 ivan Exp $
+$Date: 2011-11-15 12:19:01 $
 """
 
 import re
@@ -60,11 +60,12 @@ class ProcessProperty :
 				
 		#########################################################################		
 		# See if the target is _not_ a literal
-		irirefs = ("resource", "href", "src")
-		noiri   = ("content", "datatype", "rel", "rev")
+		irirefs      = ("resource", "href", "src")
+		noiri        = ("content", "datatype", "rel", "rev")
+		notypediri   = ("content", "datatype", "rel", "rev", "about")
 		if has_one_of_attributes(self.node, irirefs) and not has_one_of_attributes(self.node, noiri) :
 			object = self.state.getResource(irirefs)
-		elif has_one_of_attributes(self.node, "typeof") and not has_one_of_attributes(self.node, noiri) and self.typed_resource != None :
+		elif has_one_of_attributes(self.node, "typeof") and not has_one_of_attributes(self.node, notypediri) and self.typed_resource != None :
 			object = self.typed_resource
 		else :
 			# We have to generate a literal indeed.

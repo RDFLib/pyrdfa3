@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.4 2011-11-14 14:02:48 ivan Exp $
-$Date: 2011-11-14 14:02:48 $
+$Id: parse.py,v 1.5 2011-11-15 12:18:52 ivan Exp $
+$Date: 2011-11-15 12:18:52 $
 
 Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
 is stopped (on the whole subtree)
@@ -168,7 +168,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 		else :
 			state.reset_list_mapping(origin = current_subject)
 
-		if node.hasAttribute("typeof") :
+		if typed_resource == None and node.hasAttribute("typeof") :
 			typed_resource = state.getResource("resource", "href", "src")
 			if typed_resource == None :
 				typed_resource = BNode()
