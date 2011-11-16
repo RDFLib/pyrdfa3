@@ -7,8 +7,8 @@ by U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>}.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: embeddedRDF.py,v 1.5 2011-11-16 15:51:06 ivan Exp $
-$Date: 2011-11-16 15:51:06 $
+@version: $Id: embeddedRDF.py,v 1.6 2011-11-16 15:53:21 ivan Exp $
+$Date: 2011-11-16 15:53:21 $
 """
 
 from StringIO	 import StringIO
@@ -58,7 +58,6 @@ def handle_embeddedRDF(node, graph, state) :
 				#prefixes = _get_prefixes_in_turtle()
 				#content  = _get_literal(node)
 				#rdf = StringIO(prefixes + content)
-				prefixes = _get_prefixes_in_turtle()
 				content  = _get_literal(node)
 				rdf = StringIO(content)
 				try :
