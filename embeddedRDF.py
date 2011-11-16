@@ -7,8 +7,8 @@ by U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>}.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: embeddedRDF.py,v 1.4 2011-11-15 10:03:13 ivan Exp $
-$Date: 2011-11-15 10:03:13 $
+@version: $Id: embeddedRDF.py,v 1.5 2011-11-16 15:51:06 ivan Exp $
+$Date: 2011-11-16 15:51:06 $
 """
 
 from StringIO	 import StringIO
@@ -31,12 +31,12 @@ def handle_embeddedRDF(node, graph, state) :
 	@return: whether an RDF/XML content has been detected or not. If TRUE, the RDFa processing should not occur on the node and its descendents. 
 	@rtype: Boolean
 	"""
-	def _get_prefixes_in_turtle() :
-		retval = ""
-		for key in state.term_or_curie.ns :
-			retval += "@prefix %s: <%s> .\n" % (key, state.term_or_curie.ns[key])
-		retval += '\n'
-		return retval
+	#def _get_prefixes_in_turtle() :
+	#	retval = ""
+	#	for key in state.term_or_curie.ns :
+	#		retval += "@prefix %s: <%s> .\n" % (key, state.term_or_curie.ns[key])
+	#	retval += '\n'
+	#	return retval
 	
 	def _get_literal(Pnode):
 		"""
@@ -55,9 +55,12 @@ def handle_embeddedRDF(node, graph, state) :
 	if state.options.host_language in [HostLanguage.html, HostLanguage.xhtml, HostLanguage.svg] :
 		if state.options.hturtle == True and node.nodeName.lower() == "script" :
 			if node.hasAttribute("type") and node.getAttribute("type") == "text/turtle" :
+				#prefixes = _get_prefixes_in_turtle()
+				#content  = _get_literal(node)
+				#rdf = StringIO(prefixes + content)
 				prefixes = _get_prefixes_in_turtle()
 				content  = _get_literal(node)
-				rdf = StringIO(prefixes + content)
+				rdf = StringIO(content)
 				try :
 					graph.parse(rdf, format="n3", publicID = state.base)
 				except :
