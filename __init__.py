@@ -164,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.48 2011-11-15 10:03:12 ivan Exp $ $Date: 2011-11-15 10:03:12 $
+$Id: __init__.py,v 1.49 2011-11-18 08:42:34 ivan Exp $ $Date: 2011-11-18 08:42:34 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -180,7 +180,7 @@ Thanks to Elias Torrez, who provided with the idea and patches to interface to t
 
 """
 
-__version__ = "3.0.3"
+__version__ = "3.0.4"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'

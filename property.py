@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.2 2011-11-15 12:19:01 ivan Exp $
-$Date: 2011-11-15 12:19:01 $
+$Id: property.py,v 1.3 2011-11-18 08:42:34 ivan Exp $
+$Date: 2011-11-18 08:42:34 $
 """
 
 import re
@@ -78,7 +78,7 @@ class ProcessProperty :
 				if dt != "" :
 					datatype = self.state.getURI("datatype")
 		
-			if self.state.lang != None :
+			if self.state.lang != None and self.state.supress_lang == False :
 				lang = self.state.lang
 			else :
 				lang = ''

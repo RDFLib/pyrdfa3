@@ -261,9 +261,8 @@ class CachedVocab(CachedVocabIndex) :
 			# This has never been cached before
 			if self.report: options.add_info("No cache exists for %s, generating one" % URI, VocabCachingInfo)
 			
-			self._get_vocab_data(newCache = True)
 			# Store all the cache data unless caching proves to be impossible
-			if self.caching :
+			if self._get_vocab_data(newCache = True) and self.caching :
 				self.filename = create_file_name(self.uri)
 				self._store_caches()
 				if self.report:
@@ -312,8 +311,9 @@ class CachedVocab(CachedVocabIndex) :
 
 	def _get_vocab_data(self, newCache = True) :
 		"""Just a macro like function to get the data to be cached"""		
-		from pyRdfa.rdfs.process	import return_graph
+		from pyRdfa.rdfs.process import return_graph
 		(self.graph, self.expiration_date) = return_graph(self.uri, self.options, newCache)
+		return self.graph != None
 
 	def _store_caches(self) :
 		"""Called if the creation date, etc, have been refreshed or new, and

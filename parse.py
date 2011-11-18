@@ -12,11 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.5 2011-11-15 12:18:52 ivan Exp $
-$Date: 2011-11-15 12:18:52 $
-
-Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
-is stopped (on the whole subtree)
+$Id: parse.py,v 1.6 2011-11-18 08:42:34 ivan Exp $
+$Date: 2011-11-18 08:42:34 $
 """
 
 import sys

@@ -14,12 +14,13 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var XHTML_PREFIX: prefix for the XHTML vocabulary URI (set to 'xhv')
 @var XHTML_URI: URI prefix of the XHTML vocabulary
 @var ncname: Regular expression object for NCNAME
+@var termname: Regular expression object for a term
 @var xml_application_media_type: Regular expression object for a general XML application media type
 """
 
 """
-$Id: termorcurie.py,v 1.3 2011-11-14 14:02:48 ivan Exp $
-$Date: 2011-11-14 14:02:48 $
+$Id: termorcurie.py,v 1.4 2011-11-18 08:42:35 ivan Exp $
+$Date: 2011-11-18 08:42:35 $
 """
 
 import re, sys
@@ -58,7 +59,10 @@ from pyRdfa import err_prefix_and_xmlns
 from pyRdfa import err_non_ncname_prefix				
 
 # Regular expression object for NCNAME
-ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
+ncname   = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
+
+# Regular expression object for term name
+termname = re.compile("^[A-Za-z]([A-Za-z0-9._-]|/)*$")
 
 # Regular expression object for a general XML application media type
 xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
@@ -410,7 +414,7 @@ class TermOrCurie :
 		"""
 		if len(term) == 0 : return None
 
-		if ncname.match(term) :
+		if termname.match(term) :
 			# It is a valid NCNAME
 			# the algorithm is: first make a case sensitive match; if that fails than make a case insensive one
 			# The first is easy, the second one is a little bit more convoluted

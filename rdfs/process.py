@@ -13,7 +13,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: process.py,v 1.4 2011-11-14 14:03:08 ivan Exp $ $Date: 2011-11-14 14:03:08 $
+$Id: process.py,v 1.5 2011-11-18 08:42:42 ivan Exp $ $Date: 2011-11-18 08:42:42 $
 
 """
 
@@ -37,7 +37,9 @@ if rdflib.__version__ >= "3.0.0" :
 else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
-	from rdflib.Graph import Graph	
+	from rdflib.Graph import Graph
+	
+ns_owl = Namespace("http://www.w3.org/2002/07/owl#")
 	
 from pyRdfa.host import MediaTypes
 	
@@ -54,6 +56,7 @@ from pyRdfa.rdfs import err_unrecognised_vocab_type
 from pyRdfa import VocabReferenceError
 
 from pyRdfa.rdfs.cache import CachedVocab
+from pyRdfa import HTTPError, RDFaError
 
 #############################################################################################################
 
@@ -62,12 +65,12 @@ def return_graph(uri, options, newCache = False) :
 	RDFLib's parsers is invoked (for the Turtle, RDF/XML, and N Triple cases) or a separate RDFa processing is invoked
 	on the RDFa content.
 			
-	The Accept header of the HTTP request gives a preference to Turtle, followed by HTML (RDFa), and then RDF/XML in case content negotiation is used.
+	The Accept header of the HTTP request gives a preference to Turtle, followed by RDF/XML and then HTML (RDFa), in case content negotiation is used.
 	
 	@param uri: URI for the graph
 	@param options: used as a place where warnings can be sent
 	@param newCache: in case this is used with caching, whether a new cache is generated; that modifies the warning text
-	@return: An RDFLib Graph instance; None if the dereferencing or the parsing was unsuccessful
+	@return: A tuple consisting of an RDFLib Graph instance and an expiration date); None if the dereferencing or the parsing was unsuccessful
 	"""
 	def return_to_cache(msg) :
 		if newCache :
@@ -82,17 +85,16 @@ def return_graph(uri, options, newCache = False) :
 	try :
 		content = URIOpener(uri,
 							{'Accept' : 'text/html;q=0.8, application/xhtml+xml;q=0.8, text/turtle;q=1.0, application/rdf+xml;q=0.9'})
-
 	except HTTPError, e :
 		return_to_cache(e.msg)
-		return None
+		return (None,None)
 	except RDFaError, e :
 		return_to_cache(e.msg)
-		return None
+		return (None,None)
 	except Exception, e :
 		(type,value,traceback) = sys.exc_info()
 		return_to_cache(value)
-		return None
+		return (None,None)
 	
 	# Store the expiration date of the newly accessed data
 	expiration_date = content.expiration_date
@@ -133,15 +135,17 @@ def return_graph(uri, options, newCache = False) :
 	return (retval, expiration_date)
 	
 ############################################################################################
-type 			= ns_rdf["type"]
-Property 		= ns_rdf["Property"]
-Class 			= ns_rdfs["Class"]
-subClassOf		= ns_rdfs["subClassOf"]
-subPropertyOf	= ns_rdfs["subPropertyOf"]
+type 				= ns_rdf["type"]
+Property 			= ns_rdf["Property"]
+Class 				= ns_rdfs["Class"]
+subClassOf			= ns_rdfs["subClassOf"]
+subPropertyOf		= ns_rdfs["subPropertyOf"]
+equivalentProperty	= ns_owl["equivalentProperty"]
+equivalentClass 	= ns_owl["equivalentClass"]
 
-class MiniRDFS :
+class MiniOWL :
 	"""
-	Class implementing the simple RDFS Reasoning required by RDFa in managing vocabulary files. This is done via
+	Class implementing the simple OWL RL Reasoning required by RDFa in managing vocabulary files. This is done via
 	a forward chaining process (in the L{closure} method) using a few simple rules as defined by the RDF Semantics
 	specification.
 	
@@ -149,9 +153,10 @@ class MiniRDFS :
 	@ivar added_triples: each cycle collects the triples that are to be added to the graph eventually.
 	@type added_triples: a set, to ensure the unicity of triples being added
 	"""
-	def __init__(self, graph) :
-		self.graph         = graph
-		self.added_triples = None
+	def __init__(self, graph, schema_semantics = False) :
+		self.graph         		= graph
+		self.added_triples 		= None
+		self.schema_semantics 	= schema_semantics
 
 	def closure(self) :
 		"""
@@ -203,25 +208,51 @@ class MiniRDFS :
 
 	def rules(self, t) :
 		"""
-			Go through the RDFS entailement rules rdf1, rdfs4-rdfs12, by extending the graph.
+			Go through the OWL-RL entailement rules prp-spo1, prp-eqp1, prp-eqp2, cax-sco, cax-eqc1, and cax-eqc2 by extending the graph.
 			@param t: a triple (in the form of a tuple)
 		"""
 		s,p,o = t
-		if p == subPropertyOf :
-			# rdfs5
-			for Z,Y,xxx in self.graph.triples((o, subPropertyOf, None)) :
-				self.store_triple((s,subPropertyOf,xxx))
-			# rdfs7
-			for zzz,Z,www in self.graph.triples((None, s, None)) :
-				self.store_triple((zzz, o, www))
-		if p == subClassOf :
-			# rdfs9
-			for vvv,Y,Z in self.graph.triples((None, type, s)) :
-				self.store_triple((vvv, type, o))
-			# rdfs11
-			for Z,Y,xxx in self.graph.triples((o, subClassOf, None)) :
-				self.store_triple((s, subClassOf, xxx))
-
+		if self.schema_semantics :
+			# extra resonings on the vocabulary only to reduce the overall load by reducing the expected number of chaining cycles
+			if p == subPropertyOf :
+				for Z,Y,xxx in self.graph.triples((o, subPropertyOf, None)) :
+					self.store_triple((s,subPropertyOf,xxx))  
+			elif p == equivalentProperty :
+				for Z,Y,xxx in self.graph.triples((o, equivalentProperty, None)) :
+					self.store_triple((s,equivalentProperty,xxx))  
+				for xxx,Y,Z in self.graph.triples((None, equivalentProperty, s)) :
+					self.store_triple((xxx,equivalentProperty,o))  
+			elif p == subClassOf :
+				for Z,Y,xxx in self.graph.triples((o, subClassOf, None)) :
+					self.store_triple((s,subClassOf,xxx))
+			elif p == equivalentClass :
+				for Z,Y,xxx in self.graph.triples((o, equivalentClass, None)) :
+					self.store_triple((s,equivalentClass,xxx))  
+				for xxx,Y,Z in self.graph.triples((None, equivalentClass, s)) :
+					self.store_triple((xxx,equivalentClass,o))  
+		else :
+			if p == subPropertyOf :
+				# prp-spo1
+				for zzz,Z,www in self.graph.triples((None, s, None)) :
+					self.store_triple((zzz, o, www))
+			elif p == equivalentProperty :
+				# prp-eqp1
+				for zzz,Z,www in self.graph.triples((None, s, None)) :
+					self.store_triple((zzz, o, www))
+				# prp-eqp2
+				for zzz,Z,www in self.graph.triples((None, o, None)) :
+					self.store_triple((zzz, s, www))					
+			elif p == subClassOf :
+				# cax-sco
+				for vvv,Y,Z in self.graph.triples((None, type, s)) :
+					self.store_triple((vvv, type, o))
+			elif p == equivalentClass :
+				# cax-eqc1
+				for vvv,Y,Z in self.graph.triples((None, type, s)) :
+					self.store_triple((vvv, type, o))
+				# cax-eqc2
+				for vvv,Y,Z in self.graph.triples((None, type, o)) :
+					self.store_triple((vvv, type, s))
 
 ########################################################################################################
 
@@ -251,14 +282,16 @@ def process_rdfa_sem(graph, options) :
 					vocab_graph.add(t)
 				
 		# 3. Get the closure of the vocab graph; this will take care of local subproperty, etc, statements
-		MiniRDFS(vocab_graph).closure()
+		# Strictly speaking this is not necessary, but will speed up processing, because it may save chaining cycles on the
+		# real graph
+		MiniOWL(vocab_graph, schema_semantics = True).closure()
 		
 		# 4. Now get the vocab graph content added to the default graph
 		for t in vocab_graph :
 			graph.add(t)
 						
 		# 5. get the graph expanded through RDFS
-		MiniRDFS(graph).closure()
+		MiniOWL(graph).closure()
 		
 		# 4. clean up the graph by removing the schema triples
 		for t in vocab_graph : graph.remove(t)

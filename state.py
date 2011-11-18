@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.4 2011-11-14 14:02:48 ivan Exp $
-$Date: 2011-11-14 14:02:48 $
+$Id: state.py,v 1.5 2011-11-18 08:42:35 ivan Exp $
+$Date: 2011-11-18 08:42:35 $
 """
 
 import rdflib
@@ -80,6 +80,8 @@ class ExecutionContext :
 	@type node: DOM node instance
 	@ivar rdfa_version: RDFa version of the content
 	@type rdfa_version: String
+	@ivar supress_lang: in some cases, the effect of the lang attribute should be supressed for the given node, although it should be inherited down below (example: @value attribute of the data element in HTML5)
+	@type supress_lang: Boolean
 	@cvar _list: list of attributes that allow for lists of values and should be treated as such
 	@cvar _resource_type: dictionary; mapping table from attribute name to the exact method to retrieve the URI(s). Is initialized at first run
 	"""
@@ -213,6 +215,8 @@ class ExecutionContext :
 			self.lang = inherited_state.lang
 		else :
 			self.lang = None
+			
+		self.supress_lang = False
 			
 		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
 			# we may have lang and xml:lang
@@ -385,8 +389,8 @@ class ExecutionContext :
 		if val == "" :
 			return None
 		
-		from termorcurie import ncname
-		if ncname.match(val) :
+		from termorcurie import ncname, termname
+		if termname.match(val) :
 			# This is a term, must be handled as such...
 			retval = self.term_or_curie.term_to_URI(val)
 			if not retval :
