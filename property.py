@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Implementation of the Literal handling. Details of the algorithm are described on
-U{RDFa Task Force's wiki page<http://www.w3.org/2006/07/SWD/wiki/RDFa/LiteralObject>}.
+Implementation of the C{@property} value handling.
+
+RDFa 1.0 and RDFa 1.1 are fairly different. RDFa 1.0 generates only literals, see
+U{RDFa Task Force's wiki page<http://www.w3.org/2006/07/SWD/wiki/RDFa/LiteralObject>} for the details.
+On the other hand, RDFa 1.1, beyond literals, can also generate URI references. Hence the duplicate method in the L{ProcessProperty} class, one for RDFa 1.0 and the other for RDFa 1.1.
 
 @summary: RDFa Literal generation
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -12,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.3 2011-11-18 08:42:34 ivan Exp $
-$Date: 2011-11-18 08:42:34 $
+$Id: property.py,v 1.4 2011-11-22 16:58:12 ivan Exp $
+$Date: 2011-11-22 16:58:12 $
 """
 
 import re
@@ -50,6 +53,9 @@ class ProcessProperty :
 		self.typed_resource = typed_resource
 		
 	def generate(self) :
+		"""
+		Common entry point for the RDFa 1.0 and RDFa 1.1 versions; bifurcates based on the RDFa version, as retrieved from the state object.
+		"""
 		if self.state.rdfa_version >= "1.1" :
 			self.generate_1_1()
 		else :
@@ -64,11 +70,14 @@ class ProcessProperty :
 		noiri        = ("content", "datatype", "rel", "rev")
 		notypediri   = ("content", "datatype", "rel", "rev", "about")
 		if has_one_of_attributes(self.node, irirefs) and not has_one_of_attributes(self.node, noiri) :
+			# @href/@resource/@src takes the lead here...
 			object = self.state.getResource(irirefs)
 		elif has_one_of_attributes(self.node, "typeof") and not has_one_of_attributes(self.node, notypediri) and self.typed_resource != None :
+			# a @typeof creates a special branch in case the typed resource was set during parsing
 			object = self.typed_resource
 		else :
-			# We have to generate a literal indeed.
+			# We have to generate a literal
+			
 			# Get, if exists, the value of @datatype
 			datatype = ''
 			dtset    = False
@@ -78,6 +87,10 @@ class ProcessProperty :
 				if dt != "" :
 					datatype = self.state.getURI("datatype")
 		
+			# Supress lange is set in case some elements explicitly want to supress the effect of language
+			# There were discussions, for example, that the <time> element should do so. Although,
+			# after all, this was reversed, the functionality is kept in the code in case another
+			# element might need it...
 			if self.state.lang != None and self.state.supress_lang == False :
 				lang = self.state.lang
 			else :
@@ -96,7 +109,7 @@ class ProcessProperty :
 				# see if there *is* a datatype (even if it is empty!)
 				if dtset :
 					if datatype == XMLLiteral :
-						object = Literal(self._get_XML_literal(self.node),datatype=XMLLiteral)
+						object = Literal(self._get_XML_literal(self.node), datatype=XMLLiteral)
 					else :
 						object = self._create_Literal(self._get_literal(self.node), datatype=datatype, lang=lang)
 				else :
@@ -105,7 +118,7 @@ class ProcessProperty :
 		if object != None :
 			for prop in self.state.getURI("property") :
 				if not isinstance(prop, BNode) :
-					if self.state.rdfa_version >= "1.1" and self.node.hasAttribute("inlist") :
+					if self.node.hasAttribute("inlist") :
 						self.state.add_to_list_mapping(prop, object)
 					else :			
 						self.graph.add( (self.subject, prop, object) )
@@ -113,7 +126,6 @@ class ProcessProperty :
 					self.state.options.add_warning(no_blank_node % "property", warning_type=IncorrectBlankNodeUsage, node=self.node.nodeName)
 	
 		# return
-
 
 	def generate_1_0(self) :
 		"""Generate the property object, 1.0 version"""
@@ -176,8 +188,8 @@ class ProcessProperty :
 	
 	
 	def _putBackEntities(self, str) :
-		"""Put 'back' entities for the '&','<', and '>' characters, to produce kosher XML string.
-		Used by XML Literal
+		"""Put 'back' entities for the '&','<', and '>' characters, to produce a kosher XML string.
+		Used by the XML Literal extraction.
 		@param str: string to be converted
 		@return: string with entities
 		@rtype: string
