@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.5 2011-11-15 10:03:13 ivan Exp $ $Date: 2011-11-15 10:03:13 $
+$Id: options.py,v 1.6 2011-11-22 13:09:43 ivan Exp $ $Date: 2011-11-22 13:09:43 $
 """
 
 import sys, datetime
@@ -109,8 +109,8 @@ class Options :
 	@type transformers: list
 	@ivar vocab_cache_report: whether the details of vocabulary file caching process should be reported as information (mainly for debug)
 	@type vocab_cache_report: Boolean
-	@ivar bypass_vocab_cache: whether the caching checks of vocabs should be by-passed, ie, if caches should be generated regardless of the stored date (important for vocab development)
-	@type bypass_vocab_cache: Boolean
+	@ivar refresh_vocab_cache: whether the caching checks of vocabs should be by-passed, ie, if caches should be re-generated regardless of the stored date (important for vocab development)
+	@type refresh_vocab_cache: Boolean
 	@ivar hturtle: whether hturtle (ie, turtle in an HTML script element) should be extracted and added to the final graph. This is a non-standard option...
 	@type hturtle: Boolean
 	@ivar rdfa_sem: whether the @vocab elements should be expanded and a mini-RDFS processing should be done on the merged graph
@@ -126,11 +126,11 @@ class Options :
 					   output_processor_graph = False,
 					   space_preserve         = True,
 					   transformers           = [],
-					   vocab_cache_report     = False,
-					   bypass_vocab_cache     = False,
-					   hturtle                = False,
+					   hturtle                = True,
 					   vocab_expansion        = False,
-					   vocab_cache            = False) :
+					   vocab_cache            = True,
+					   vocab_cache_report     = False,
+					   refresh_vocab_cache    = False) :
 		"""
 		@keyword space_preserve: whether plain literals should preserve spaces at output or not
 		@type space_preserve: Boolean
@@ -148,7 +148,7 @@ class Options :
 		self.output_processor_graph	= output_processor_graph
 		self.host_language 			= HostLanguage.rdfa_core
 		self.vocab_cache_report		= vocab_cache_report
-		self.bypass_vocab_cache		= bypass_vocab_cache
+		self.refresh_vocab_cache	= refresh_vocab_cache
 		self.hturtle				= hturtle
 		self.vocab_expansion		= vocab_expansion
 		self.vocab_cache			= vocab_cache

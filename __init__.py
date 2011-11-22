@@ -11,31 +11,27 @@ distribution also includes the CGI front-end and a separate utility script to be
 
 (Simple) Usage
 ==============
-From a Python file, expecting an RDF/XML pretty printed output::
+From a Python file, expecting a Turtle output::
  from pyRdfa import pyRdfa
  print pyRdfa().rdf_from_source('filename')
 
-Other output formats (eg, turtle) are also possible. Eg, to produce Turtle output, one could use::
+Other output formats (eg, Turtle) are also possible. Eg, to produce RDF/XML output, one could use::
  from pyRdfa import pyRdfa
- print pyRdfa().rdf_from_source('filename', outputFormat='turtle')
+ print pyRdfa().rdf_from_source('filename', outputFormat='pretty-xml')
 
 It is also possible to embed an RDFa processing. Eg, using::
  from pyRdfa import pyRdfa
  print pyRdfa().graph_from_source('filename') 
 
-From a Python file, expecting an RDF/XML pretty printed output::
+From a Python file, expecting a Turtle output::
  from pyRdfa import pyRdfa
  print pyRdfa().rdf_from_source('filename')
-
-Other output formats (eg, turtle) are also possible. Eg, to produce Turtle output, one could use::
- from pyRdfa import pyRdfa
- print pyRdfa().rdf_from_source('filename', outputFormat='turtle')
 
 It is also possible to embed an RDFa processing. Eg, using::
  from pyRdfa import pyRdfa
  print pyRdfa().graph_from_source('filename')
 
-will return an RDFLib.Graph object instead of a serialization thereof. See the the description of the
+returns an RDFLib.Graph object instead of a serialization thereof. See the the description of the
 L{pyRdfa class<pyRdfa.pyRdfa>} for further possible entry points details.
 
 There is also, as part of this module, a L{separate entry for CGI calls<processURI>}.
@@ -54,14 +50,14 @@ Options
 
 The package also implements some optional features that are not part of the RDFa recommendations. At the moment these are:
 
- - extra warnings and information (eg, possibly erronous CURIE-s) are created as a “processor graph”. There user options to determine whether this graph should be added to the output or not, or even whether that should be the only option.
  - possibility for plain literals to be normalized in terms of white spaces. Default: false. (The RDFa specification requires keeping the white spaces and leave applications to normalize them, if needed)
- - extra, built-in transformers are executed on the DOM tree prior to RDFa processing (see below)
-
+ - inclusion of Turtle-in-HTML or Turtle-in-SVG, as U{defined by the RDF Working Group<http://www.w3.org/TR/turtle/>}: Turtle content enclosed in a C{script} element and typed as C{text/turtle} is parsed and added to the output graph. Default: true.
+ - extra, built-in transformers are executed on the DOM tree prior to RDFa processing (see below). These transformers can be provided by the end user.
+ 
 Options are collected in an instance of the L{Options} class and passed to the processing functions as an extra argument. Eg,
-if extra warnings are required, the code may be::
- from pyRdfa import processFile, Options
- options = Options(output_processor_graph=True)
+to include the embedded Turtle content::
+ from pyRdfa.options import Options
+ options = Options(hturtle=True)
  print pyRdfa(options=options).rdf_from_source('filename')
  
 See the description of the L{Options} class for the details.
@@ -73,55 +69,56 @@ The package uses the concept of 'transformers': the parsed DOM tree is possibly
 transformed I{before} performing the real RDFa processing. This transformer structure makes it possible to
 add additional 'services' without distoring the core code of RDFa processing.
 
-Some transformations are included in the package and can be used at invocation. These are:
+A transformer is a function with two arguments:
 
- - The 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
+ - C{node}: a DOM node for the top level element of the DOM tree
+ - C{options}: the current L{Options} instance
+
+The function may perform any type of change on the DOM tree; the typical behaviour is to add or remove attributes on specific elements. Some transformations are included in the package and can be used as examples; see the "transform" module of the distribution. These are:
+
+ - The C{@name} attribute of the C{meta} element is copied into a C{@property} attribute of the same element
  - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
  - Implementing the Dublin Core dialect to include DC statements from the header.  See L{transform.DublinCore} for further details.
 
-The user of the package may refer to those and pass it on to the L{processFile} call via an L{Options} instance. The caller of the package may also add his/her transformer modules. Here is a possible usage with the 'openid' transformer
+The user of the package may refer add these transformers to L{Options} instance. Here is a possible usage with the 'openid' transformer
 added to the call::
- from pyRdfa import processFile, Options
+ from pyRdfa.options import Options
  from pyRdfa.transform.OpenID import OpenID_transform
  options = Options(transformers=[OpenID_transform])
  print pyRdfa(options=options).rdf_from_source('filename')
 
-In the case of a call via a CGI script, some of these built-in transformers can be used via extra flags, see L{processURI} for further details.
-
-The current option instance is passed to all transformers as extra parameters. Extensions of the package
-may make use of that to control the transformers, if necessary.
-
 Host Languages
 ==============
 
-RDFa 1.1. Core is defined for generic XML; there are specific documents to describe how the generic specification is valid
-for XHTML and HTML5.
+RDFa 1.1. Core is defined for generic XML; there are specific documents to describe how the generic specification is applied to
+XHTML and HTML5.
 
-pyRdfa makes an automatic switch among these based on the content type of the source. If the content type is 'text/html', the
-content is supposed to be HTML5; if it is 'application/xml+xhtml', then it is considered to be XHTML; finally, if it is
-'application/xml' or 'application/xxx+xml' (where 'xxx' stands for anything except 'xhtml'), then it is considered
+pyRdfa makes an automatic switch among these based on the content type of the source. If the content type is C{text/html}, the
+content is supposed to be HTML5; if it is C{application/xml+xhtml}, then it is considered to be XHTML; finally, if it is
+C{application/xml} or C{application/xxx+xml} (where C{xxx} stands for anything except C{xhtml}), then it is considered
 to be general XML.
 
 Beyond the differences described in the RDFa documents, the effect of this choice have the following effect on the
 behaviour of pyRdfa:
 
  - In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; otherwise the simple XML parser, part of the core Python environment, is used.
- - In the case of generic XML the distiller also considers a more "traditional" way of adding RDF metadata to a file, namely by directly including RDF/XML into the XML file with a proper namespace. The distiller extracts that RDF graph and merges it with the output of the regular RDFa processing.
+ - In the case of generic XML the distiller also considers a more "traditional" way of adding RDF metadata to a file, namely by directly including RDF/XML into the XML file with a proper namespace. The distiller extracts that RDF graph and merges it with the output of the regular RDFa processing. A typical usage is SVG that explicitly introduces the possibility of adding RDF/XML into an SVG file.
 
-The content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}. However, the distiller also attempts
-to find the content type by
+The content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}. The distiller also attempts
+to find the content type (in case it is not set by the user) by
 
  - looking at the content type header as returned by an HTTP call; if unsuccessful or the invocation is done locally then
- - looking at the suffix of the URI or file name (.html and .xhtml are considered to be HTML5 and XHTML, respectively; otherwise XML is considered)
+ - looking at the suffix of the URI or file name (C{.html} and C{.xhtml} are considered to be HTML5 and XHTML, respectively; otherwise XML is considered)
  
-See the variables in the "utils" module if a new host language is added to the system. The current host language is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
+See the variables in the "utils" module if a new host language is added to the system. The current host language information is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
 
 Vocabularies
 ============
 
-RDFa 1.1 has the notion of vocabulary files (using the @vocab attribute) that may be used to expand the generated RDF graph. Expansion is based on some very simply RDF Schema statements on sub properties and sub classes.
+RDFa 1.1 has the notion of vocabulary files (using the C{@vocab} attribute) that may be used to expand the generated RDF graph. Expansion is based on some very simply RDF Schema statements on sub properties and sub classes.
 
 pyRdfa implements this feature, although it does not do this by default. The extra vocab-expansion parameter should be used for this extra step, for example::
+ from pyRdfa.options import Options
  options = Options(vocab_expansion=True)
  print pyRdfa(options=options).rdf_from_source('filename')
 
@@ -130,26 +127,26 @@ The triples in the vocabulary files themselves (i.e., the small ontology in RDF 
 Vocabulary caching
 ------------------
 
-By default, pyRdfa fetches the vocabulary files each time their URI is met as a @vocab attribute value. However, by using the extra option "vocab_cache=True", the system perfoms caching of these files to avoid making HTTP requests all the time. 
+By default, pyRdfa uses a caching mechanism instead of fetching the vocabulary files each time their URI is met as a @vocab attribute value. (This behavior can be switched off setting the C{vocab-cache} option to false.) 
 
 Caching happens in a file system directory. The directory itself is determined by the platform the tool is used on, namely:
- - On Windows, it is the 'pyRdfa-cache' subdirectory of the "%APPDATA%" environment variable (referring to the usual place for application data)
- - On MacOS, it is the ~/Library/Application Support/pyRdfa-cache
- - Otherwise, it is the ~/.pyRdfa-cache
+ - On Windows, it is the C{pyRdfa-cache} subdirectory of the C{%APPDATA%} environment variable (referring to the usual place for application data)
+ - On MacOS, it is the C{~/Library/Application Support/pyRdfa-cache}
+ - Otherwise, it is the C{~/.pyRdfa-cache}
  
-This automatic choise can be overridden by the 'CACHE_DIR_VAR' environment variable. 
+This automatic choise can be overridden by the C{CACHE_DIR_VAR} environment variable. 
 
 Caching can be set to be read-only, i.e., the setup might generate the caches off-line instead of letting the tool writing its own cache when operating, e.g., as a service on the Web. This can be achieved by making the cache directory read only. 
 
 If the directories are neither readable nor writable, the vocabulary files are retrieved via HTTP every time they are hit. This may slow down processing, it is advised to avoid such a setup for the package.
 
-The cache includes a separate index file and a file for each vocabulary file. Cache control is based upon the 'EXPIRES' header of a vocabulary file: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
+The cache includes a separate index file and a file for each vocabulary file. Cache control is based upon the C{EXPIRES} header of a vocabulary file’s HTTP return header: when first seen, this data is stored in the index file and controls whether the cache has to be renewed or not. If the HTTP return header does not have this entry, the date is artificially set ot the current date plus one day.
 
-(The cache files themselves are dumped and loaded using Python’s cPickle package. They are binary files; care should be taken if they are managed by CVS: they must be declared as binary files for that purpose, too.)
+(The cache files themselves are dumped and loaded using U{Python’s built in cPickle package<http://docs.python.org/release/2.7/library/pickle.html#module-cPickle>}. These are binary files. For example, care should be taken if they are managed by CVS: they must be declared as binary files when adding them to the repository, too.)
 
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up
-@requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a more readable output serialization.
+@requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a superior output serialization.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
 @requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the distributed tarball.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
@@ -164,7 +161,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.49 2011-11-18 08:42:34 ivan Exp $ $Date: 2011-11-18 08:42:34 $
+$Id: __init__.py,v 1.50 2011-11-22 13:09:43 ivan Exp $ $Date: 2011-11-22 13:09:43 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -690,9 +687,9 @@ def processURI(uri, outputFormat, form={}) :
 		
 	embedded_turtle    = _get_option( "embedded-turtle", "true", True)
 	space_preserve     = _get_option( "space-preserve", "false", True)
-	vocab_cache        = _get_option( "vocab-cache", "true", False)
+	vocab_cache        = _get_option( "vocab-cache", "true", True)
 	vocab_cache_report = _get_option( "vocab-cache-report", "true", False)
-	bypass_vocab_cache = _get_option( "vocab-cache-bypass", "true", False)
+	refresh_vocab_cache = _get_option( "vocab-cache-refresh", "true", False)
 	vocab_expansion    = _get_option( "vocab-expansion", "true", False)
 	if vocab_cache_report : output_processor_graph = True
 
@@ -702,7 +699,7 @@ def processURI(uri, outputFormat, form={}) :
 					  transformers           = transformers,
 					  vocab_cache            = vocab_cache,
 					  vocab_cache_report     = vocab_cache_report,
-					  bypass_vocab_cache     = bypass_vocab_cache,
+					  refresh_vocab_cache    = refresh_vocab_cache,
 					  vocab_expansion        = vocab_expansion,
 					  hturtle                = embedded_turtle
 					  )

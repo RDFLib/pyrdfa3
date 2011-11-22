@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.6 2011-11-18 08:42:34 ivan Exp $
-$Date: 2011-11-18 08:42:34 $
+$Id: parse.py,v 1.7 2011-11-22 13:09:43 ivan Exp $
+$Date: 2011-11-22 13:09:43 $
 """
 
 import sys
@@ -61,7 +61,7 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 	@return: whether the caller has to complete it's parent's incomplete triples
 	@rtype: Boolean
 	"""
-
+	print "got here"
 	# Branch according to versions.
 	if incoming_state.rdfa_version >= "1.1" :
 		_parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_triples)
