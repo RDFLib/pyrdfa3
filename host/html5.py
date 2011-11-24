@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Simple transfomer for HTML5: add a @src for any @data, and add a @content for the @value attribute of the <data> element.
+Simple transfomer for HTML5: add a @src for any @data, add a @content for the @value attribute of the <data> element, and interpret the <time> element.
 
 @summary: Add a top "about" to <head> and <body>
 @requires: U{RDFLib package<http://rdflib.net>}
@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.2 2011-11-18 08:42:48 ivan Exp $
-$Date: 2011-11-18 08:42:48 $
+$Id: html5.py,v 1.3 2011-11-24 15:59:15 ivan Exp $
+$Date: 2011-11-24 15:59:15 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
@@ -55,7 +55,6 @@ def _format_test(string) :
 		str = string[0:-6]
 		# The time-zone portion
 		tz = string[-5:]
-		print tz
 		try :
 			t = datetime.strptime(tz,"%H:%M")
 		except ValueError :

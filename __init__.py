@@ -145,10 +145,12 @@ The cache includes a separate index file and a file for each vocabulary file. Ca
 (The cache files themselves are dumped and loaded using U{Python’s built in cPickle package<http://docs.python.org/release/2.7/library/pickle.html#module-cPickle>}. These are binary files. For example, care should be taken if they are managed by CVS: they must be declared as binary files when adding them to the repository, too.)
 
 @summary: RDFa parser (distiller)
-@requires: Python version 2.5 or up
+@requires: Python version 2.5 or up; 2.7 is preferred
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a superior output serialization.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
 @requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the distributed tarball.
+@requires: U{Ordered Dictionary (odict)<http://dev.pocoo.org/hg/sandbox/raw-file/tip/odict.py>}, needed only for the JSON-LD serialization if Python 2.6 or lower is used (Python 2.7 has a built in ordered list module). It is included in the distribution
+@requires: U{simplejson package by Bob Ippolito<http://undefined.org/python/#simplejson>}, needed only for the JSON-LD serailization if Python 2.5 or lower is used (Python 2.6 has a json implementation included in the distribution). 
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -161,7 +163,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.50 2011-11-22 13:09:43 ivan Exp $ $Date: 2011-11-22 13:09:43 $
+$Id: __init__.py,v 1.51 2011-11-24 15:55:29 ivan Exp $ $Date: 2011-11-24 15:55:29 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 

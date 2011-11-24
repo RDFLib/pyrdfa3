@@ -271,7 +271,7 @@ class CachedVocab(CachedVocabIndex) :
 			(self.filename, self.creation_date, self.expiration_date) = vocab_reference
 			if self.report: options.add_info("Found a cache for %s, expiring on %s" % (URI,self.expiration_date), VocabCachingInfo)
 			# Check if the expiration date is still away
-			if options.bypass_vocab_cache == False and datetime.datetime.utcnow() <= self.expiration_date :
+			if options.refresh_vocab_cache == False and datetime.datetime.utcnow() <= self.expiration_date :
 				# We are fine, we can just extract the data from the cache and we're done
 				if self.report: options.add_info("Cache for %s is still valid; extracting the data" % URI, VocabCachingInfo)
 				fname = os.path.join(self.app_data_dir, self.filename)
@@ -284,7 +284,7 @@ class CachedVocab(CachedVocabIndex) :
 					if self.report: options.add_info("Could not access the vocab cache %s (%s)" % (value,fname), VocabCachingInfo, URI)
 			else :
 				if self.report :
-					if options.bypass_vocab_cache == True :
+					if options.refresh_vocab_cache == True :
 						options.add_info("Time check is bypassed; refreshing the cache for %s" % URI, VocabCachingInfo)
 					else :
 						options.add_info("Cache timeout; refreshing the cache for %s" % URI, VocabCachingInfo)
