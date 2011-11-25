@@ -6,7 +6,7 @@ Most of the utilities are straightforward.
 
 @summary: RDFa core parser processing step
 @requires: U{RDFLib package<http://rdflib.net>}
-@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}. To make distribution easier this module (single file) is added to the distributed tarball.
+@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}. To make distribution easier this module (single file) is added to the distribution.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -16,12 +16,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.3 2011-11-14 14:02:48 ivan Exp $
-$Date: 2011-11-14 14:02:48 $
+$Id: utils.py,v 1.4 2011-11-25 11:23:00 ivan Exp $
+$Date: 2011-11-25 11:23:00 $
 """
 import os, os.path, sys, imp, datetime
 import urllib, urlparse, urllib2
-import httpheader
+from pyRdfa.extras.httpheader import content_type, parse_http_datetime
 
 import rdflib
 if rdflib.__version__ >= "3.0.0" :
@@ -76,7 +76,7 @@ class URIOpener :
 			
 			if URIOpener.CONTENT_TYPE in self.headers :
 				# The call below will remove the possible media type parameters, like charset settings
-				ct = httpheader.content_type(self.headers[URIOpener.CONTENT_TYPE])
+				ct = content_type(self.headers[URIOpener.CONTENT_TYPE])
 				self.content_type = ct.media_type
 				if 'charset' in ct.parmdict :
 					self.charset = ct.parmdict['charset']
@@ -103,7 +103,7 @@ class URIOpener :
 			if URIOpener.EXPIRES in self.headers :
 				try :
 					# Thanks to Deron Meranda for the HTTP date conversion method...
-					self.expiration_date = httpheader.parse_http_datetime(self.headers[URIOpener.EXPIRES])
+					self.expiration_date = parse_http_datetime(self.headers[URIOpener.EXPIRES])
 				except :
 					# The Expires date format was wrong, sorry, forget it...
 					pass
@@ -112,7 +112,7 @@ class URIOpener :
 			if URIOpener.LAST_MODIFIED in self.headers :
 				try :
 					# Thanks to Deron Meranda for the HTTP date conversion method...
-					self.last_modified_date = httpheader.parse_http_datetime(self.headers[URIOpener.LAST_MODIFIED])
+					self.last_modified_date = parse_http_datetime(self.headers[URIOpener.LAST_MODIFIED])
 				except :
 					# The last modified date format was wrong, sorry, forget it...
 					pass

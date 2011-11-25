@@ -148,7 +148,7 @@ The cache includes a separate index file and a file for each vocabulary file. Ca
 @requires: Python version 2.5 or up; 2.7 is preferred
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a superior output serialization.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
-@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the distributed tarball.
+@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the package.
 @requires: U{Ordered Dictionary (odict)<http://dev.pocoo.org/hg/sandbox/raw-file/tip/odict.py>}, needed only for the JSON-LD serialization if Python 2.6 or lower is used (Python 2.7 has a built in ordered list module). It is included in the distribution
 @requires: U{simplejson package by Bob Ippolito<http://undefined.org/python/#simplejson>}, needed only for the JSON-LD serailization if Python 2.5 or lower is used (Python 2.6 has a json implementation included in the distribution). 
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
@@ -163,7 +163,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.51 2011-11-24 15:55:29 ivan Exp $ $Date: 2011-11-24 15:55:29 $
+$Id: __init__.py,v 1.52 2011-11-25 11:23:00 ivan Exp $ $Date: 2011-11-25 11:23:00 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -185,7 +185,7 @@ __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
 
 import sys, StringIO
-import os, httpheader
+import os
 
 import rdflib
 from rdflib	import URIRef
@@ -200,6 +200,7 @@ else :
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
 from pyRdfa.graph import MyGraph as Graph
+from pyRdfa.extras.httpheader import acceptable_content_type, content_type
 
 import xml.dom.minidom
 import urlparse
@@ -717,8 +718,8 @@ def processURI(uri, outputFormat, form={}) :
 		possibilities = ['text/html','application/rdf+xml','text/turtle; charset=utf-8']
 
 		# this nice module does content negotiation and returns the preferred format
-		sg = httpheader.acceptable_content_type(acc, possibilities)
-		htmlOutput = (sg != None and sg[0] == httpheader.content_type('text/html'))
+		sg = acceptable_content_type(acc, possibilities)
+		htmlOutput = (sg != None and sg[0] == content_type('text/html'))
 		os.environ['rdfaerror'] = 'true'
 		
 	# This is really for testing purposes only, it is an unpublished flag to force RDF output no

@@ -9,7 +9,6 @@ deployed, via a CGI front-end, on the U{W3C RDFa Distiller page<http://www.w3.or
 @requires: Python version 2.5 or up
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a more readable output serialization.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
-@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the distributed tarball.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -18,7 +17,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.1 2011-08-12 10:04:58 ivan Exp $ $Date: 2011-08-12 10:04:58 $
+$Id: __init__.py,v 1.2 2011-11-25 11:23:24 ivan Exp $ $Date: 2011-11-25 11:23:24 $
 
 """
 
@@ -28,7 +27,7 @@ __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
 
 import sys, StringIO
-import os, httpheader
+import os
 
 import rdflib
 from rdflib	import URIRef

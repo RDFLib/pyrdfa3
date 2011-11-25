@@ -26,7 +26,6 @@ else :
 	from rdflib.Graph 	import Graph
 
 import urllib, urlparse, urllib2
-import httpheader
 
 from pyRdfa			import HTTPError, RDFaError
 from pyRdfa.host 	import MediaTypes, HostLanguage
