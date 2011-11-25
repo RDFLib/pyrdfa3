@@ -31,11 +31,17 @@ from rdflib.serializer import Serializer
 from rdflib.term import URIRef, BNode, Literal
 from rdflib	import RDF  as ns_rdf
 from rdflib	import RDFS as ns_rdfs
-from pyRdfa	import RDFA_VOCAB
+try :
+	# If this serializer is used within RDFLib, then we should not
+	# have the dependency on pyRdfa. That being said, not doing this
+	# is error prone until RDFa is a Rec, so try it anyway...
+	from pyRdfa	import RDFA_VOCAB
+except :
+	RDFA_VOCAB = URIRef("http://www.w3.org/ns/rdfa#usesVocabulary")
 
 class JsonSerializer(Serializer):
 	__doc__ = __doc__
-	# List of predicates that have a special usage and should not appear as part of the coerced structures...
+	# List of predicates that have a special usage and should not appear as part of the coerced list in the context
 	non_coerced_predicates = [ ns_rdf["type"], RDFA_VOCAB, ns_rdf["first"], ns_rdf["rest"] ]
 
 	def __init__(self, graph):
@@ -61,16 +67,24 @@ class JsonSerializer(Serializer):
 		self.lists          = {}
 
 	def serialize(self, stream, base=None, encoding='utf-8', **kwds):
+		""" Generic entry point for the serialization, as used by RDFLib"""
+		if encoding == None : encoding = 'utf-8'
+
 		d = self._build(base=base, **kwds)
 		if sys.version_info[1] >= 6 :
 			import json
-			json.dump(d, stream, ensure_ascii = False, indent=4)
+			s = json.dumps(d, ensure_ascii = False, indent=4)
 		else :
 			import simplejson
-			simplejson.dump(d, stream, ensure_ascii = False, indent=4)
+			s = simplejson.dumps(d, ensure_ascii = False, indent=4)
+
+		try :
+			stream.write(s)
+		except UnicodeEncodeError :
+			stream.write(s.encode(encoding))
 
 	def _build(self, base=None, prefix_map=None, encode_literal=None):
-		"""Returns dict to serialize."""
+		"""Returns an ordered dict to serialize."""
 		if encode_literal:
 			assert callable(encode_literal)
 			self._encode_literal = encode_literal
@@ -83,7 +97,6 @@ class JsonSerializer(Serializer):
 		self._initialize_predicates()
 		self._initialize_lists()
 		self._rdfa_vocabulary_usage()
-		
 
 		# Fill in the content of the json objects 
 		for s in self.all_subjects.keys() :
