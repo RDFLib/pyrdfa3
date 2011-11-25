@@ -36,7 +36,7 @@ from pyRdfa	import RDFA_VOCAB
 class JsonSerializer(Serializer):
 	__doc__ = __doc__
 	# List of predicates that have a special usage and should not appear as part of the coerced structures...
-	non_coerced_predicates = [ ns_rdf["type"],RDFA_VOCAB ]
+	non_coerced_predicates = [ ns_rdf["type"], RDFA_VOCAB, ns_rdf["first"], ns_rdf["rest"] ]
 
 	def __init__(self, graph):
 		self.graph          = graph
@@ -48,7 +48,7 @@ class JsonSerializer(Serializer):
 		# trimmed in _initialize_subjects()
 		self.top_subjects   = set([ s for s in self.graph.subjects() ])
 		# dictionary mapping subjects to JSON structures
-		self.all_subjects   = {}
+		self.all_subjects   = OrderedDict()
 		# Set of subjects that may appear as intermediate objects in a chain
 		self.chain_links    = set()
 		# Set of predicates whose range in this graph are URI References or Blank Nodes
@@ -57,6 +57,8 @@ class JsonSerializer(Serializer):
 		self.vocab          = None
 		# The 'owner' or the vocabulary, ie, the subject of the vocab setting triple (if there is only one)
 		self.vocab_owner    = None
+		# Lists
+		self.lists          = {}
 
 	def serialize(self, stream, base=None, encoding='utf-8', **kwds):
 		d = self._build(base=base, **kwds)
@@ -79,11 +81,17 @@ class JsonSerializer(Serializer):
 
 		self._initialize_subjects()
 		self._initialize_predicates()
+		self._initialize_lists()
 		self._rdfa_vocabulary_usage()
+		
 
 		# Fill in the content of the json objects 
 		for s in self.all_subjects.keys() :
+			# The special RDFa vocab setting is ditched if there is only one (the information goes to the @context)
 			if self.vocab and s == self.vocab_owner : continue
+			# List headers are treated specially
+			if s in self.lists : continue
+
 			# Get the subject structure
 			subj = self.all_subjects[s]
 			# Get the possible types, and encode them through the special json-ld rules
@@ -174,10 +182,50 @@ class JsonSerializer(Serializer):
 				self.uri_predicates.add(p)
 				
 		# Generate the @coerce structure:
-		if len(self.uri_predicates) == 1 :
-			self.coerce["@iri"] = self.uri_predicates.pop()
+		preds = [ p for p in self.uri_predicates ]
+		if len(preds) == 1 :
+			self.coerce["@iri"] = preds[0]
 		else :
-			self.coerce["@iri"] = [ p for p in self.uri_predicates ]
+			self.coerce["@iri"] = preds
+			
+	def _initialize_lists(self) :
+		def get_heads(l) :
+			retval = []
+			nl = l
+			while True :				
+				h = self.graph.value(nl,ns_rdf["rest"])
+				if h != ns_rdf["nil"] :
+					retval.append(h)
+					nl = h
+				else :
+					break
+			return retval
+		
+		for s in self.all_subjects.keys() :
+			# See if this is a possible list in the first place
+			if self.graph.value(s, ns_rdf["first"]) != None and self.graph.value(s, ns_rdf["rest"]) != None :
+				if len([p for p,x,y in self.graph.triples((None,ns_rdf["rest"],s))]) == 0 :
+					# Yep, this is the head of a list!
+					# Let us collect the list. First the array of list content:
+					content = [ c for c in self.graph.items(s) ]
+					heads   = get_heads(s)
+					# not a clean list...
+					if False in [ isinstance(h, BNode) and h in self.chain_links for h in heads ] : break
+					self.lists[s] = (content, heads)
+		# Now we will have to massage the lists and the subject informations...
+		for s in self.lists :
+			content, heads = self.lists[s]
+			
+			# First the corresponding structure for the list head should change, turning it into the JSON-LD
+			# abbreviation for lists
+			lst = OrderedDict()
+			lst["@list"] = [ self._object(c, None, None) for c in content ]
+			self.all_subjects[s] = lst
+			
+			# The heads, ie, the list building blocks, should be removed from further processing
+			for h in heads :
+				self.all_subjects.pop(h, None)
+				self.top_subjects.discard(h)
 
 	def _get_node_ref(self, ident):
 		"Returns the property name / local identifier for this node."
@@ -203,18 +251,17 @@ class JsonSerializer(Serializer):
 				# This object should be removed from the list of top level subjects
 				self.top_subjects.discard(ident)
 				# The parent must me removed from the chain_links, if there...
-				self.chain_links.discard(parent)
+				if parent : self.chain_links.discard(parent)
 				# The json structure of this object should be linked from the parent; the
 				# content will be filled later
 				jsubj = self.all_subjects[ident]
 				# If this happens to be a BNode, this is the case when the BNode id is unnecessary
 				if isinstance(ident, BNode) :
-					jsubj.pop("@subject",None)
-				
+					jsubj.pop("@subject",None)			
 				return jsubj
 			else :
 				# no, this is either a leaf or a subject with multiple parents
-				if predicate in self.uri_predicates :
+				if predicate and predicate in self.uri_predicates :
 					# The coercion rules will be added to the context for this predicate
 					if isinstance(ident, BNode) :
 						return "_:%s" % ident
