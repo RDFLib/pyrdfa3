@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Simple transfomer: C{meta} element is extended with a C{property} attribute, with a copy of the
-C{name} attribute values.
 
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: lite.py,v 1.2 2011-11-15 10:03:21 ivan Exp $
-$Date: 2011-11-15 10:03:21 $
+@version: $Id: lite.py,v 1.3 2011-12-06 16:57:43 ivan Exp $
+$Date: 2011-12-06 16:57:43 $
 """
 
 non_lite_attributes = ["resource","inlist","datatype","rev", "rel"]
@@ -32,12 +30,12 @@ def lite_prune(top, options) :
 		# first the @content; this has a special treatment
 		if node.tagName != "meta" and node.hasAttribute("content") :
 			generate_warning(node, "content")
-			node.removeAttribute("content")
+			# node.removeAttribute("content")
 		else :
 			for attr in non_lite_attributes :
 				if node.hasAttribute(attr) :
 					generate_warning(node, attr)
-					node.removeAttribute(attr)
+					# node.removeAttribute(attr)
 
 	remove_attrs(top)
 	for n in top.childNodes :
