@@ -6,7 +6,7 @@ host languages.
 This module may have to be modified if a new host language is added to the system. In many cases the rdfa_core as a host language is enough, because there is no need for a special processing. However, some host languages may require an initial context, or their value may control some transformations, in which case additional data have to be added to this module. This module header contains all tables and arrays to be adapted, and the module content may contain specific transformation methods.
 
 
-@summary: RDFa Transformer package
+@summary: RDFa Host package
 @requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
@@ -25,8 +25,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.6 2011-11-14 14:02:57 ivan Exp $
-$Date: 2011-11-14 14:02:57 $
+$Id: __init__.py,v 1.7 2011-12-06 18:14:12 ivan Exp $
+$Date: 2011-12-06 18:14:12 $
 """
 __version__ = "3.0"
 
@@ -43,8 +43,8 @@ class HostLanguage :
 	
 # initial contexts for host languages
 initial_contexts = {
-	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"],
-	HostLanguage.html 		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"],
+	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"],
+	HostLanguage.html 		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.rdfa_core 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.atom	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.svg	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
