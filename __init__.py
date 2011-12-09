@@ -69,10 +69,11 @@ The package uses the concept of 'transformers': the parsed DOM tree is possibly
 transformed I{before} performing the real RDFa processing. This transformer structure makes it possible to
 add additional 'services' without distoring the core code of RDFa processing.
 
-A transformer is a function with two arguments:
+A transformer is a function with three arguments:
 
  - C{node}: a DOM node for the top level element of the DOM tree
  - C{options}: the current L{Options} instance
+ - C{state}: the current L{State} instance, corresponding to the top level DOM Tree element
 
 The function may perform any type of change on the DOM tree; the typical behaviour is to add or remove attributes on specific elements. Some transformations are included in the package and can be used as examples; see the "transform" module of the distribution. These are:
 
@@ -163,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.52 2011-11-25 11:23:00 ivan Exp $ $Date: 2011-11-25 11:23:00 $
+$Id: __init__.py,v 1.53 2011-12-09 10:58:05 ivan Exp $ $Date: 2011-12-09 10:58:05 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -459,13 +460,14 @@ class pyRdfa :
 		# get the DOM tree
 		topElement = dom.documentElement
 		
-		# Perform the built-in and external transformations on the HTML tree. 
-		for trans in self.options.transformers + builtInTransformers :
-			trans(topElement, self.options)
 		
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
 		state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
+
+		# Perform the built-in and external transformations on the HTML tree. 
+		for trans in self.options.transformers + builtInTransformers :
+			trans(topElement, self.options, state)
 		
 		# This may have changed if the state setting detected an explicit version information:
 		self.rdfa_version = state.rdfa_version

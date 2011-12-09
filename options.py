@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.6 2011-11-22 13:09:43 ivan Exp $ $Date: 2011-11-22 13:09:43 $
+$Id: options.py,v 1.7 2011-12-09 10:58:05 ivan Exp $ $Date: 2011-12-09 10:58:05 $
 """
 
 import sys, datetime
@@ -30,7 +30,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language
+from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language, predefined_1_0_rel
 from pyRdfa			import ns_xsd, ns_distill, ns_rdfa
 from pyRdfa 		import RDFA_Error, RDFA_Warning, RDFA_Info
 
@@ -183,7 +183,7 @@ class Options :
 		"""
 		self.processor_graph.graph.remove((None,None,None))
 
-	def add_warning(self, txt, warning_type=None, context=None, node=None) :
+	def add_warning(self, txt, warning_type=None, context=None, node=None, buggy_value=None) :
 		"""Add a warning to the processor graph.
 		@param txt: the warning text. 
 		@keyword warning_type: Warning Class
@@ -191,9 +191,11 @@ class Options :
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
 		"""
+		if warning_type == ns_rdfa["UnresolvedTerm"] and buggy_value in predefined_1_0_rel :
+			return
 		return self.processor_graph.add_triples(txt, RDFA_Warning, warning_type, context, node)
 
-	def add_info(self, txt, info_type=None, context=None, node=None) :
+	def add_info(self, txt, info_type=None, context=None, node=None, buggy_value=None) :
 		"""Add an informational comment to the processor graph.
 		@param txt: the information text. 
 		@keyword info_type: Info Class
@@ -203,7 +205,7 @@ class Options :
 		"""
 		return self.processor_graph.add_triples(txt, RDFA_Info, info_type, context, node)
 
-	def add_error(self, txt, err_type=None, context=None, node=None) :
+	def add_error(self, txt, err_type=None, context=None, node=None, buggy_value=None) :
 		"""Add an error  to the processor graph.
 		@param txt: the information text. 
 		@keyword err_type: Error Class

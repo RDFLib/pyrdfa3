@@ -13,15 +13,17 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: toplevelabout.py,v 1.1 2011-08-12 10:10:33 ivan Exp $
-$Date: 2011-08-12 10:10:33 $
+$Id: toplevelabout.py,v 1.2 2011-12-09 10:57:52 ivan Exp $
+$Date: 2011-12-09 10:57:52 $
 """
 
-def top_about(root, options) :
+def top_about(root, options, state) :
 	"""
 	@param root: a DOM node for the top level element
 	@param options: invocation options
-	@type options: L{Options<pyRdfa.Options>}
+	@type options: L{Options<pyRdfa.options>}
+	@param state: top level execution state
+	@type state: L{State<pyRdfa.state>}
 	"""
 	def set_about(node) :
 		if has_one_of_attributes(node, "rel", "rev") :
@@ -36,12 +38,13 @@ def top_about(root, options) :
 	
 	if not has_one_of_attributes(root, "about") :
 		root.setAttribute("about","")
-	
-	if options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
-		for top in root.getElementsByTagName("head") :
-			if not has_one_of_attributes(top, "href", "resource", "about", "src") :
-				set_about(top)
-		for top in root.getElementsByTagName("body") :
-			if not has_one_of_attributes(top, "href", "resource", "about", "src") :
-				set_about(top)
+		
+	if state.rdfa_version < "1.1" :
+		if options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
+			for top in root.getElementsByTagName("head") :
+				if not has_one_of_attributes(top, "href", "resource", "about", "src") :
+					set_about(top)
+			for top in root.getElementsByTagName("body") :
+				if not has_one_of_attributes(top, "href", "resource", "about", "src") :
+					set_about(top)
 

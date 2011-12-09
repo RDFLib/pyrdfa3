@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.5 2011-11-18 08:42:35 ivan Exp $
-$Date: 2011-11-18 08:42:35 $
+$Id: state.py,v 1.6 2011-12-09 10:58:05 ivan Exp $
+$Date: 2011-12-09 10:58:05 $
 """
 
 import rdflib
@@ -394,7 +394,7 @@ class ExecutionContext :
 			# This is a term, must be handled as such...
 			retval = self.term_or_curie.term_to_URI(val)
 			if not retval :
-				self.options.add_warning(err_undefined_terms % val, UnresolvableTerm, node=self.node.nodeName)
+				self.options.add_warning(err_undefined_terms % val, UnresolvableTerm, node=self.node.nodeName, buggy_value = val)
 				return None
 			else :
 				return retval

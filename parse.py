@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.8 2011-11-22 16:58:12 ivan Exp $
-$Date: 2011-11-22 16:58:12 $
+$Id: parse.py,v 1.9 2011-12-09 10:58:05 ivan Exp $
+$Date: 2011-12-09 10:58:05 $
 """
 
 import sys
@@ -186,6 +186,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 		if current_subject == None :
 			if node.hasAttribute("typeof") :
 				current_subject = BNode()
+				state.reset_list_mapping(origin = current_subject)
 			else :
 				current_subject = parent_object
 		else :

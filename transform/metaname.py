@@ -7,15 +7,17 @@ C{name} attribute values.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: metaname.py,v 1.1 2011-08-12 10:10:33 ivan Exp $
-$Date: 2011-08-12 10:10:33 $
+@version: $Id: metaname.py,v 1.2 2011-12-09 10:57:52 ivan Exp $
+$Date: 2011-12-09 10:57:52 $
 """
 
-def meta_transform(html, options) :
+def meta_transform(html, options, state) :
 	"""
 	@param html: a DOM node for the top level html element
 	@param options: invocation options
-	@type options: L{Options<pyRdfa.Options>}
+	@type options: L{Options<pyRdfa.options>}
+	@param state: top level execution state
+	@type state: L{State<pyRdfa.state>}
 	"""
 	from pyRdfa.host import HostLanguage
 	if not( options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] ) :

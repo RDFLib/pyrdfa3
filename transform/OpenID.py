@@ -14,21 +14,23 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: OpenID.py,v 1.2 2010-11-19 13:52:52 ivan Exp $
-$Date: 2010-11-19 13:52:52 $
+$Id: OpenID.py,v 1.3 2011-12-09 10:57:52 ivan Exp $
+$Date: 2011-12-09 10:57:52 $
 """
 
 OPENID_NS = "http://xmlns.openid.net/auth#"
 
 
-def OpenID_transform(html, options) :
+def OpenID_transform(html, options, state) :
 	"""
 	Replace C{openid.XXX} type C{@rel} attribute values in C{<link>} elements by C{openid:XXX}. The openid URI is also
 	added to the top level namespaces with the C{openid:} local name.
 
 	@param html: a DOM node for the top level html element
 	@param options: invocation options
-	@type options: L{Options<pyRdfa.Options>}
+	@type options: L{Options<pyRdfa.options>}
+	@param state: top level execution state
+	@type state: L{State<pyRdfa.state>}
 	"""
 	from pyRdfa.host import HostLanguage
 	if not( options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] ) :

@@ -125,7 +125,7 @@ class TurtleSerializer(RecursiveSerializer):
 	def p_squared(self, node, position):
 		if not isinstance(node, BNode) or node in self._serialized or self.refCount(node) > 1 or position == SUBJECT:
 			return False
-	   
+
 		if self.isValidList(node): 
 			# this is a list
 			self.write(' ( ')
