@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.4 2011-11-25 11:23:00 ivan Exp $
-$Date: 2011-11-25 11:23:00 $
+$Id: utils.py,v 1.5 2012-01-06 15:19:21 ivan Exp $
+$Date: 2012-01-06 15:19:21 $
 """
 import os, os.path, sys, imp, datetime
 import urllib, urlparse, urllib2
@@ -64,7 +64,8 @@ class URIOpener :
 		@keyword additional_headers: additional HTTP request headers to be added to the call
 		"""		
 		try :
-			req = urllib2.Request(url=name)
+			# Note the removal of the fragment ID. This is necessary, per the HTTP spec
+			req = urllib2.Request(url=name.split('#')[0])
 
 			for key in additional_headers :
 				req.add_header(key, additional_headers[key])
