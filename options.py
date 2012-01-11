@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.7 2011-12-09 10:58:05 ivan Exp $ $Date: 2011-12-09 10:58:05 $
+$Id: options.py,v 1.8 2012-01-11 13:48:25 ivan Exp $ $Date: 2012-01-11 13:48:25 $
 """
 
 import sys, datetime
@@ -117,7 +117,7 @@ class Options :
 	@type rdfa_sem: Boolean
 	@ivar vocab_cache: whether the system should use the vocabulary caching mechanism when expanding via the mini-RDFS, or should just fetch the graphs every time
 	@type vocab_cache: Boolean
-	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml, but it can be HostLanguage.rdfa_core and HostLanguage.html, or others...
+	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml, but it can be HostLanguage.rdfa_core and HostLanguage.html5, or others...
 	@type host_language: integer (logically: an enumeration)
 	@ivar content_type: the content type of the host file. Default is None
 	@type content_type: string (logically: an enumeration)

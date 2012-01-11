@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: graph.py,v 1.2 2011-11-24 15:11:17 ivan Exp $ $Date: 2011-11-24 15:11:17 $
+$Id: graph.py,v 1.3 2012-01-11 13:48:25 ivan Exp $ $Date: 2012-01-11 13:48:25 $
 
 """
 
@@ -132,7 +132,7 @@ class MyGraph(Graph) :
 				#return Graph.serialize(self, format="pretty-xml")
 				self._register_XML_serializer_3()
 				return Graph.serialize(self, format=_xml_serializer_name)
-			elif format == "json-ld" :
+			elif format == "json-ld" or format == "json" :
 				self._register_JSON_serializer_3()
 				return Graph.serialize(self, format=_json_serializer_name)
 			elif format == "nt" :

@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.6 2011-12-09 10:58:05 ivan Exp $
-$Date: 2011-12-09 10:58:05 $
+$Id: state.py,v 1.7 2012-01-11 13:48:25 ivan Exp $
+$Date: 2012-01-11 13:48:25 $
 """
 
 import rdflib
@@ -179,7 +179,7 @@ class ExecutionContext :
 
 			self.base = ""
 			# handle the base element case for HTML
-			if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
+			if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5  ] :
 				for bases in node.getElementsByTagName("base") :
 					if bases.hasAttribute("href") :
 						self.base = remove_frag_id(bases.getAttribute("href"))
@@ -218,13 +218,13 @@ class ExecutionContext :
 			
 		self.supress_lang = False
 			
-		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
+		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.xhtml5 ] :
 			# we may have lang and xml:lang
 			if node.hasAttribute("lang") :
 				lang = node.getAttribute("lang").lower()
 			else :
 				lang = None
-
+				
 			if node.hasAttribute("xml:lang") :
 				xmllang = node.getAttribute("xml:lang").lower()
 			else :
@@ -246,9 +246,10 @@ class ExecutionContext :
 			# check a posible warning (error?), too
 			if lang != None and xmllang != None and lang != xmllang :
 				self.options.add_warning(err_lang % (xmllang, lang), node=self.node.nodeName)
-		else :
-			# this is a clear case, xml:lang is the only possible option...
-			if self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
+		elif self.options.host_language == HostLanguage.html5 and node.hasAttribute("lang") :
+			self.lang = node.getAttribute("lang").lower()
+			if len(self.lang) == 0 : self.lang = None
+		elif self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
 				self.lang = node.getAttribute("xml:lang").lower()
 				if len(self.lang) == 0 : self.lang = None
 			

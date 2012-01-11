@@ -164,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.53 2011-12-09 10:58:05 ivan Exp $ $Date: 2011-12-09 10:58:05 $
+$Id: __init__.py,v 1.54 2012-01-11 13:48:25 ivan Exp $ $Date: 2012-01-11 13:48:25 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -270,6 +270,7 @@ VocabReferenceError			= ns_rdfa["VocabReferenceError"]
 FileReferenceError			= ns_distill["FileReferenceError"]
 IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
 IncorrectBlankNodeUsage     = ns_distill["IncorrectBlankNodeUsage"]
+IncorrectLiteral	        = ns_distill["IncorrectLiteral"]
 
 # Error message texts
 err_no_blank_node					= "Blank node in %s position is not allowed; ignored"
@@ -530,7 +531,7 @@ class pyRdfa :
 			input = self._get_input(name)
 			msg = ""
 			parser = None
-			if self.options.host_language == HostLanguage.html :
+			if self.options.host_language == HostLanguage.html5 :
 				import warnings
 				warnings.filterwarnings("ignore", category=DeprecationWarning)
 				import html5lib
@@ -547,8 +548,13 @@ class pyRdfa :
 					
 			else :
 				# in other cases an XML parser has to be used
+				
+				from pyRdfa.host import adjust_xhtml
+				
 				parse = xml.dom.minidom.parse
 				dom = parse(input)
+				adjusted_host_language = adjust_xhtml(dom, self.options.host_language)
+				self.options.host_language = adjusted_host_language
 			#dom = parse(input,encoding='utf-8')
 			return self.graph_from_DOM(dom, graph, pgraph)
 		except FailedSource, f :
@@ -566,7 +572,7 @@ class pyRdfa :
 		Extract and RDF graph from a list of RDFa sources and serialize them in one graph. The sources are parsed, the RDF
 		extracted, and serialization is done in the specified format.
 		@param names: list of sources, each can be a URI, a file name, or a file-like object
-		@keyword outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml" and "pretty-xml", as well as "turtle" and "n3" are synonyms.
+		@keyword outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml", "pretty-xml", "json" or "json-ld". "turtle" and "n3", "xml" and "pretty-xml", and "json" and "json-ld" are synonyms, respectively. Note that the JSON-LD serialization works with RDFLib 3.* only.
 		@keyword rdfOutput: controls what happens in case an exception is raised. If the value is False, the caller is responsible handling it; otherwise a graph is returned with an error message
 		@type rdfOutput: boolean
 		@return: a serialized RDF Graph
@@ -585,7 +591,7 @@ class pyRdfa :
 		Extract and RDF graph from an RDFa source and serialize it in one graph. The source is parsed, the RDF
 		extracted, and serialization is done in the specified format.
 		@param name: a URI, a file name, or a file-like object
-		@keyword outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml" and "pretty-xml", as well as "turtle" and "n3" are synonyms.
+		@keyword outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml", "pretty-xml", "json" or "json-ld". "turtle" and "n3", "xml" and "pretty-xml", and "json" and "json-ld" are synonyms, respectively. Note that the JSON-LD serialization works with RDFLib 3.* only.
 		@keyword rdfOutput: controls what happens in case an exception is raised. If the value is False, the caller is responsible handling it; otherwise a graph is returned with an error message
 		@type rdfOutput: boolean
 		@return: a serialized RDF Graph

@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.4 2011-11-22 16:58:12 ivan Exp $
-$Date: 2011-11-22 16:58:12 $
+$Id: property.py,v 1.5 2012-01-11 13:48:25 ivan Exp $
+$Date: 2012-01-11 13:48:25 $
 """
 
 import re
@@ -25,11 +25,13 @@ import rdflib
 from rdflib	import BNode
 from rdflib	import Literal, URIRef, Namespace
 if rdflib.__version__ >= "3.0.0" :
-	from rdflib	import RDF as ns_rdf
+	from rdflib	     import RDF as ns_rdf
+	from rdflib.term import XSDToPython
 else :
-	from rdflib.RDF	import RDFNS as ns_rdf
+	from rdflib.RDF	    import RDFNS as ns_rdf
+	from rdflib.Literal import XSDToPython
 
-from pyRdfa	import IncorrectBlankNodeUsage, err_no_blank_node, ns_xsd 
+from pyRdfa	import IncorrectBlankNodeUsage, IncorrectLiteral, err_no_blank_node, ns_xsd 
 from pyRdfa.utils import has_one_of_attributes
 
 XMLLiteral = ns_rdf["XMLLiteral"]
@@ -260,5 +262,18 @@ class ProcessProperty :
 		#elif datatype == ns_xsd["string"] :
 		#	return Literal(val)
 		else :
-			return Literal(val, datatype=datatype)
-
+			# This is a bit convoluted... the default setup of rdflib does not gracefully react if the
+			# datatype cannot properly be converted to Python. I have to copy and reuse some of the
+			# rdflib code to get this working...
+			convFunc = XSDToPython.get(datatype, None)
+			if convFunc :
+				try :
+					pv = convFunc(val)
+					# If we got there the literal value and its datatype match
+					return Literal(val, datatype=datatype)
+				except :
+					self.state.options.add_warning("Incompatible value (%s) and datatype (%s) in Literal definition; datatype is ignored." % (val, datatype), warning_type=IncorrectLiteral, node=self.node.nodeName)
+					return Literal(val)
+			else :
+				# This is a user defined datatype or something similar...
+				return Literal(val, datatype=datatype)

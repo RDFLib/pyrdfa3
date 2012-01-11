@@ -49,8 +49,7 @@ class JsonSerializer(Serializer):
 		# Coerce structure. Is filled through _initialize_predicates()
 		self.coerce         = OrderedDict()
 		self.prefix_map     = PrefixMap(self.graph.namespaces())
-		self.base           = None
-		# List of subjects that should appear on top. Initialzied to all subjects,
+		# List of subjects that should appear on top. Initialized to all subjects,
 		# trimmed in _initialize_subjects()
 		self.top_subjects   = set([ s for s in self.graph.subjects() ])
 		# dictionary mapping subjects to JSON structures
@@ -63,8 +62,12 @@ class JsonSerializer(Serializer):
 		self.vocab          = None
 		# The 'owner' or the vocabulary, ie, the subject of the vocab setting triple (if there is only one)
 		self.vocab_owner    = None
+		# Vocabulary terms, ie, those terms that can be represented as being part of the vocab
+		self.vocabulary_terms = {}
 		# Lists
 		self.lists          = {}
+		# This is to keep the ancestors quiet
+		self.base = None
 
 	def serialize(self, stream, base=None, encoding='utf-8', **kwds):
 		""" Generic entry point for the serialization, as used by RDFLib"""
@@ -83,13 +86,13 @@ class JsonSerializer(Serializer):
 		except UnicodeEncodeError :
 			stream.write(s.encode(encoding))
 
-	def _build(self, base=None, prefix_map=None, encode_literal=None):
-		"""Returns an ordered dict to serialize."""
+	def _build(self, base=None, prefix_map=None, encode_literal=None, **kwds):
+		"""Returns an ordered dict to serialize. The base is, in fact, unused, it is only here
+		because it appears in the rest of the RDFLib call structure..."""
 		if encode_literal:
 			assert callable(encode_literal)
 			self._encode_literal = encode_literal
 			
-		self.base = base        
 		if prefix_map:
 			self.prefix_map.update(prefix_map)
 
@@ -130,28 +133,52 @@ class JsonSerializer(Serializer):
 					
 		#######################################################################
 		# Yet another beautification: if a top level object has no parent and is a blank node,
-		# the @subject is unnecessary.
+		# the @id is unnecessary.
 		for s in self.top_subjects :
 			if len([ p for (p,x,y) in self.graph.triples((None, None, s)) ]) == 0 :
 				if isinstance(s, BNode) :
-					self.all_subjects[s].pop("@subject",None)
+					self.all_subjects[s].pop("@id",None)
 					
 		#######################################################################
 		# Put all together now in the top level object
 		_json_obj = OrderedDict()
 
 		# Add the @context part, if needed
-		if self.base or len(self.prefix_map.used_keys) > 0 or self.vocab or len(self.uri_predicates) > 0 :
+		if len(self.prefix_map.used_keys) > 0 or len(self.vocabulary_terms) > 0 or len(self.uri_predicates) > 0 :
 			context = OrderedDict()
-			if self.base :
-				context["@base"] = self.base
+			predicate_handled = set()
+			
+			# Add the context for, essentially, CURIE-s
 			for k,v in self.graph.namespaces() :
 				if k in self.prefix_map.used_keys :
+					predicate_handled.add(v)
+					if v in self.uri_predicates :
+						typ = OrderedDict()
+						typ['@id']   = "%s" % v
+						typ['@type'] = '@id'
+						context[k] = typ
+					else :
+						context[k] = "%s" % v
+				
+			# Add the context for predicates that originate from an RDFa @vocab construct			
+			for k,v in self.vocabulary_terms.items() :
+				predicate_handled.add(v)
+				if v in self.uri_predicates :
+					typ = OrderedDict()
+					typ['@id']   = "%s" % v
+					typ['@type'] = '@id'
+					context[k] = typ
+				else :
 					context[k] = "%s" % v
-			if self.vocab :
-				context["@vocab"] = self.vocab
-			if len(self.uri_predicates) > 0 :
-				context["@coerce"] = self.coerce
+
+			# Some predicates might have been used as full URI-s, but should still be added
+			# for type coercion
+			for p in self.uri_predicates :
+				if p not in predicate_handled :
+					typ = OrderedDict()
+					typ['@type'] = '@id'
+					context[p] = typ
+					
 			_json_obj["@context"] = context
 
 		# Add the top level objects; the content of these have been filled by the previous steps
@@ -160,7 +187,7 @@ class JsonSerializer(Serializer):
 			for k in subj.keys() :
 				_json_obj[k] = subj[k]
 		elif len(self.top_subjects) > 1 :
-			_json_obj["@subject"] = [ self.all_subjects[s] for s in self.top_subjects ]
+			_json_obj["@id"] = [ self.all_subjects[s] for s in self.top_subjects ]
 
 		return _json_obj
 	
@@ -175,7 +202,7 @@ class JsonSerializer(Serializer):
 		for s in self.top_subjects :
 			js_struct = OrderedDict()
 			# This may have to be refined to remove blank nodes in a chain link...
-			js_struct["@subject"] = self._get_node_ref(s)
+			js_struct["@id"] = self._get_node_ref(s)
 			self.all_subjects[s] = js_struct
 			
 		# Now the chains have to be found
@@ -193,13 +220,6 @@ class JsonSerializer(Serializer):
 		for p in predicates :
 			if p not in self.non_coerced_predicates and True not in [isinstance(o, Literal) for s,x,o in self.graph.triples((None,p,None))] :
 				self.uri_predicates.add(p)
-				
-		# Generate the @coerce structure:
-		preds = [ p for p in self.uri_predicates ]
-		if len(preds) == 1 :
-			self.coerce["@iri"] = preds[0]
-		else :
-			self.coerce["@iri"] = preds
 			
 	def _initialize_lists(self) :
 		def get_heads(l) :
@@ -244,7 +264,9 @@ class JsonSerializer(Serializer):
 		"Returns the property name / local identifier for this node."
 		if isinstance(ident, URIRef):
 			if self.vocab and ident.startswith(self.vocab) :
-				return ident.replace(self.vocab,'',1)
+				term = ident.replace(self.vocab,'',1)
+				self.vocabulary_terms[term] = ident
+				return term
 			else :
 				return self.prefix_map.shrink(ident) or self.relativize(ident)
 		elif isinstance(ident, BNode):
@@ -270,7 +292,7 @@ class JsonSerializer(Serializer):
 				jsubj = self.all_subjects[ident]
 				# If this happens to be a BNode, this is the case when the BNode id is unnecessary
 				if isinstance(ident, BNode) :
-					jsubj.pop("@subject",None)			
+					jsubj.pop("@id",None)			
 				return jsubj
 			else :
 				# no, this is either a leaf or a subject with multiple parents
@@ -283,20 +305,20 @@ class JsonSerializer(Serializer):
 				else :
 					retval = OrderedDict()
 					if isinstance(ident, BNode) :
-						retval["@iri"] = "_:%s" % ident
+						retval["@id"] = "_:%s" % ident
 					else :
-						retval["@iri"] = self._get_node_ref(ident)
+						retval["@id"] = self._get_node_ref(ident)
 					return retval
 	
 	def _encode_literal(self, literal):
 		if literal.datatype != None :
 			retval = OrderedDict()
-			retval["@literal"] = literal
-			retval["@datatype"] = self._get_node_ref(literal.datatype)
+			retval["@value"] = literal
+			retval["@type"] = self._get_node_ref(literal.datatype)
 			return retval
 		elif literal.language != None and literal.language != "" :
 			retval = OrderedDict()
-			retval["@literal"] = literal
+			retval["@value"] = literal
 			retval["@language"] = literal.language
 			return retval
 		else :
