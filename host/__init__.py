@@ -25,8 +25,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.7 2011-12-06 18:14:12 ivan Exp $
-$Date: 2011-12-06 18:14:12 $
+$Id: __init__.py,v 1.8 2012-01-18 14:16:12 ivan Exp $
+$Date: 2012-01-18 14:16:12 $
 """
 __version__ = "3.0"
 
@@ -37,14 +37,17 @@ class HostLanguage :
 	"""An enumeration style class: recognized host language types for this processor of RDFa. Some processing details may depend on these host languages. "rdfa_core" is the default Host Language is nothing else is defined."""
 	rdfa_core 	= "RDFa Core"
 	xhtml		= "XHTML+RDFa"
-	html		= "HTML5+RDFa"
+	xhtml5		= "XHTML5+RDFa"
+	html5		= "HTML5+RDFa"
 	atom		= "Atom+RDFa"
 	svg			= "SVG+RDFa"
 	
 # initial contexts for host languages
 initial_contexts = {
-	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"],
-	HostLanguage.html 		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1",
+							   "http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"],
+	HostLanguage.xhtml5		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.html5 		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.rdfa_core 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.atom	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.svg	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
@@ -54,7 +57,10 @@ beautifying_prefixes = {
 	HostLanguage.xhtml	: {
 		"xhv" : "http://www.w3.org/1999/xhtml/vocab#"
 	},
-	HostLanguage.html	: {
+	HostLanguage.html5	: {
+		"xhv" : "http://www.w3.org/1999/xhtml/vocab#"
+	},	
+	HostLanguage.xhtml5	: {
 		"xhv" : "http://www.w3.org/1999/xhtml/vocab#"
 	},	
 }
@@ -62,11 +68,12 @@ beautifying_prefixes = {
 
 accept_xml_base		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
 accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
-accept_embedded_rdf	= [ HostLanguage.svg, HostLanguage.html, HostLanguage.xhtml ]
+accept_embedded_rdf	= [ HostLanguage.svg, HostLanguage.html5, HostLanguage.xhtml5, HostLanguage.xhtml ]
 
 host_dom_transforms = {
-	HostLanguage.atom : [atom_add_entry_type],
-	HostLanguage.html : [html5_extra_attributes]
+	HostLanguage.atom   : [atom_add_entry_type],
+	HostLanguage.html5  : [html5_extra_attributes],
+	HostLanguage.xhtml5 : [html5_extra_attributes]
 }
 
 predefined_1_0_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
@@ -90,7 +97,7 @@ class MediaTypes :
 	
 # mapping from (some) content types to RDFa host languages. This may control the exact processing or at least the initial context (see below)...
 content_to_host_language = {
-	MediaTypes.html		: HostLanguage.html,
+	MediaTypes.html		: HostLanguage.html5,
 	MediaTypes.xhtml	: HostLanguage.xhtml,
 	MediaTypes.xml		: HostLanguage.rdfa_core,
 	MediaTypes.xmlt		: HostLanguage.rdfa_core,
@@ -114,3 +121,35 @@ preferred_suffixes = {
 	".atom"		: MediaTypes.atom
 }
 	
+	
+def adjust_xhtml(dom, incoming_language) :
+	"""
+	Check if the xhtml+RDFa is really XHTML 0 or 1 or whether it should be considered as XHTML5
+	"""
+	pids = ["-//W3C//DTD XHTML+RDFa 1.1//EN",
+			"-//W3C//DTD XHTML+RDFa 1.0//EN",
+			"-//W3C//DTD XHTML 1.0 Strict//EN",
+			"-//W3C//DTD XHTML 1.0 Transitional//EN",
+			"-//W3C//DTD XHTML 1.1//EN"
+			]
+	sids = ["http://www.w3.org/MarkUp/DTD/xhtml-rdfa-2.dtd",
+			"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd",
+			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd",
+			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
+			"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
+			]
+	if incoming_language == HostLanguage.xhtml :
+		try :
+			# There may not be any doctype set in the first place...
+			publicId = dom.doctype.publicId
+			systemId = dom.doctype.systemId
+			if publicId in pids and systemId in sids :
+				return HostLanguage.xhtml
+			else :
+				return HostLanguage.xhtml5
+		except :
+			# If any of those are missing, forget it...
+			return HostLanguage.xhtml5
+	else :
+		return incoming_language
+

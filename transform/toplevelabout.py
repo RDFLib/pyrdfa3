@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: toplevelabout.py,v 1.2 2011-12-09 10:57:52 ivan Exp $
-$Date: 2011-12-09 10:57:52 $
+$Id: toplevelabout.py,v 1.3 2012-01-18 14:16:45 ivan Exp $
+$Date: 2012-01-18 14:16:45 $
 """
 
 def top_about(root, options, state) :
@@ -40,7 +40,7 @@ def top_about(root, options, state) :
 		root.setAttribute("about","")
 		
 	if state.rdfa_version < "1.1" :
-		if options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
+		if options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5 ] :
 			for top in root.getElementsByTagName("head") :
 				if not has_one_of_attributes(top, "href", "resource", "about", "src") :
 					set_about(top)

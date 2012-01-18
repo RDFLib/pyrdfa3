@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-@version: $Id: DublinCore.py,v 1.3 2011-12-09 10:57:52 ivan Exp $
-$Date: 2011-12-09 10:57:52 $
+@version: $Id: DublinCore.py,v 1.4 2012-01-18 14:16:44 ivan Exp $
+$Date: 2012-01-18 14:16:44 $
 """
 
 def DC_transform(html, options, state) :
@@ -31,7 +31,7 @@ def DC_transform(html, options, state) :
 	@type state: L{State<pyRdfa.state>}
 	"""
 	from pyRdfa.host import HostLanguage
-	if not( options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] ) :
+	if not( options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5 ] ) :
 		return
 	
 	# the head element is necessary; to be sure, the namespaces are set
