@@ -15,7 +15,7 @@
 #You should have received a copy of the GNU General Public License
 #along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-# Modified by Ivan Herman, 2011, to produce a JSON-LD serialization: http://json-ld.org/spec/latest/json-ld-syntax
+# Modified by Ivan Herman, 2012, to produce a JSON-LD serialization: http://json-ld.org/spec/latest/json-ld-syntax
 
 """
 
@@ -42,7 +42,7 @@ except :
 class JsonSerializer(Serializer):
 	__doc__ = __doc__
 	# List of predicates that have a special usage and should not appear as part of the coerced list in the context
-	non_coerced_predicates = [ ns_rdf["type"], RDFA_VOCAB, ns_rdf["first"], ns_rdf["rest"] ]
+	non_coerced_predicates = [ ns_rdf["type"], ns_rdf["first"], ns_rdf["rest"] ]
 
 	def __init__(self, graph):
 		self.graph          = graph
@@ -70,10 +70,14 @@ class JsonSerializer(Serializer):
 		self.base = None
 
 	def serialize(self, stream, base=None, encoding='utf-8', **kwds):
-		""" Generic entry point for the serialization, as used by RDFLib"""
+		""" Generic entry point for the serialization, as used by RDFLib.
+		    The serializer uses order preserving dictionaries to keep the right/expected order within the JSON-LD output, too. 
+		"""
 		if encoding == None : encoding = 'utf-8'
 
+		# Create the dictionary to be serialized
 		d = self._build(base=base, **kwds)
+		
 		if sys.version_info[1] >= 6 :
 			import json
 			s = json.dumps(d, ensure_ascii = False, indent=4)
@@ -84,6 +88,7 @@ class JsonSerializer(Serializer):
 		try :
 			stream.write(s)
 		except UnicodeEncodeError :
+			# This stuff occurs sometimes, and I am not sure why:-()
 			stream.write(s.encode(encoding))
 
 	def _build(self, base=None, prefix_map=None, encode_literal=None, **kwds):
@@ -96,21 +101,25 @@ class JsonSerializer(Serializer):
 		if prefix_map:
 			self.prefix_map.update(prefix_map)
 
+		# Subjects: find the possible 'top level' subjects, possible links; result is a dictionary referring to the
+		# json objects to produce
 		self._initialize_subjects()
+		# Predicates: find the predicates that can safely be coerced as producing URI-s
 		self._initialize_predicates()
+		# Name tells it all: find possible list structures in the graph and treat them separately
 		self._initialize_lists()
+		# Find out if the @vocab has been used in the graph; if so, and there is only one, the term usage is
+		# reproduced in the JSON LD output
 		self._rdfa_vocabulary_usage()
 
 		# Fill in the content of the json objects 
 		for s in self.all_subjects.keys() :
-			# The special RDFa vocab setting is ditched if there is only one (the information goes to the @context)
-			if self.vocab and s == self.vocab_owner : continue
 			# List headers are treated specially
 			if s in self.lists : continue
 
 			# Get the subject structure
 			subj = self.all_subjects[s]
-			# Get the possible types, and encode them through the special json-ld rules
+			# Get the possible types, and encode them through the special json-ld syntax
 			types = [ t for t in self.graph.objects(s,ns_rdf["type"]) ]
 			if len(types) == 1 :
 				subj["@type"] = self._get_node_ref(t)
@@ -119,10 +128,13 @@ class JsonSerializer(Serializer):
 
 			# Get the other properties and their objects
 			for p in self.graph.predicates(s) :
+				# Types have already been taken care of
 				if p == ns_rdf["type"] : continue
+	
 				pobj = self._predicate(p)
 				objs = [ o for o in self.graph.objects(s,p) ]
-				# The cardinality of objs makes a big difference...
+				
+				# The cardinality of objs makes a difference in the output format...
 				if len(objs) == 0 :
 					# Should not happen, though
 					continue
@@ -140,7 +152,7 @@ class JsonSerializer(Serializer):
 					self.all_subjects[s].pop("@id",None)
 					
 		#######################################################################
-		# Put all together now in the top level object
+		# Put all together now in the top level object, ie, the one that produces the output
 		_json_obj = OrderedDict()
 
 		# Add the @context part, if needed
@@ -148,7 +160,8 @@ class JsonSerializer(Serializer):
 			context = OrderedDict()
 			predicate_handled = set()
 			
-			# Add the context for, essentially, CURIE-s
+			# Add the context for CURIE-s
+			# If the predicate has been identified as producing URI references only, that is taken care of here
 			for k,v in self.graph.namespaces() :
 				if k in self.prefix_map.used_keys :
 					predicate_handled.add(v)
@@ -161,6 +174,7 @@ class JsonSerializer(Serializer):
 						context[k] = "%s" % v
 				
 			# Add the context for predicates that originate from an RDFa @vocab construct			
+			# If the predicate has been identified as producing URI references only, that is taken care of here
 			for k,v in self.vocabulary_terms.items() :
 				predicate_handled.add(v)
 				if v in self.uri_predicates :
@@ -172,16 +186,19 @@ class JsonSerializer(Serializer):
 					context[k] = "%s" % v
 
 			# Some predicates might have been used as full URI-s, but should still be added
-			# for type coercion
+			# for type coercion if they produce URI references only
 			for p in self.uri_predicates :
 				if p not in predicate_handled :
 					typ = OrderedDict()
 					typ['@type'] = '@id'
 					context[p] = typ
 					
+			# Context is done
 			_json_obj["@context"] = context
 
 		# Add the top level objects; the content of these have been filled by the previous steps
+		# There is a big difference on whether there are several top level object or not; in the former
+		# case the special JSON-LD idiom has to be used with an array and "@id" as key
 		if len(self.top_subjects) == 1 :
 			subj = self.all_subjects[self.top_subjects.pop()]
 			for k in subj.keys() :
@@ -196,7 +213,8 @@ class JsonSerializer(Serializer):
 		chain links; plus a dictionary mapping subjects to their json structure.
 		"""
 		# First get all the subjects in one place
-		# all subjects are represented by a json object, store those, too
+		# all subjects are represented by a json object, store those, too (though intially empty, but the
+		# structure is then in place)
 		# The initial list of subjects is also stored in the top_subject array,
 		# ie, the list of those subjects that will appear on top of the serialized json output
 		for s in self.top_subjects :
@@ -216,12 +234,12 @@ class JsonSerializer(Serializer):
 		"""Collect all those predicates whose objects are URIRefs only. This collection can be used
 		to simplify the output by using JSON-LD's coercion facility.
 		"""
-		predicates = set([ p for p in self.graph.predicates() ])
-		for p in predicates :
+		for p in set([ p for p in self.graph.predicates() ]) :
 			if p not in self.non_coerced_predicates and True not in [isinstance(o, Literal) for s,x,o in self.graph.triples((None,p,None))] :
 				self.uri_predicates.add(p)
 			
 	def _initialize_lists(self) :
+		# Find and create the list structures
 		def get_heads(l) :
 			retval = []
 			nl = l
@@ -265,6 +283,8 @@ class JsonSerializer(Serializer):
 		if isinstance(ident, URIRef):
 			if self.vocab and ident.startswith(self.vocab) :
 				term = ident.replace(self.vocab,'',1)
+				# Let us not create an empty term if the vocabulary URI is referred to anywhere...
+				if term == "" : return ident
 				self.vocabulary_terms[term] = ident
 				return term
 			else :
@@ -311,6 +331,7 @@ class JsonSerializer(Serializer):
 					return retval
 	
 	def _encode_literal(self, literal):
+		"""Produce either a plain string as a literal, or a literal with datatype or language"""
 		if literal.datatype != None :
 			retval = OrderedDict()
 			retval["@value"] = literal
@@ -324,42 +345,52 @@ class JsonSerializer(Serializer):
 		else :
 			return literal
 
-	# This part could/should be removed if not used with RDFa...
+	# This part is very specific to RDFa usage!
 	def _rdfa_vocabulary_usage(self) :
 		# See if a vocabulary has been used at all and, if yes, whether there is only one
 		vocabs = [ (s,p,o) for s,p,o in self.graph.triples((None, RDFA_VOCAB, None)) ]
-		# if there is no vocab, or if there is more than one, there is nothing we can do...
+		# There may be a double management of vocab and namespace (schema.org is a typical case). The vocab approach
+		# should prevail, otherwise problems occur in the @context of the generated JSON-LD with the keys
+		for v in vocabs :
+			self.prefix_map.remove_vocab(v[2])
+			
+		# if there is no vocab, or if there is more than one, there is nothing we can do to beautify
+		# (in the multiple vocabulary case, there may be identical terms used in both vocabularies, and that can lead
+		# to a mess)
 		if len(vocabs) == 1 :
 			self.vocab       = vocabs[0][2]
 			self.vocab_owner = vocabs[0][0]
-			parents  = [ p for (p,x,y) in self.graph.triples((None, None, self.vocab_owner)) ]
-			children = [ p for (x,y,p) in self.graph.triples((self.vocab_owner, None, None)) ]
-			# See if this is the only apperance of the vocab owner; if so, it should be removed from further processing
-			if len(parents) == 0 and len(children) == 1:
-				# the subject should be removed
-				self.top_subjects.discard(self.vocab_owner)
+			
+			# I had this code, part of a beautifying step that removed the RDFa triple on vocabularies if there was only
+			# one. I think that is not kosher, so I decided to comment it out.
+			#parents  = [ p for (p,x,y) in self.graph.triples((None, None, self.vocab_owner)) ]
+			#children = [ p for (x,y,p) in self.graph.triples((self.vocab_owner, None, None)) ]
+			## See if this is the only apperance of the vocab owner; if so, it should be removed from further processing
+			#if len(parents) == 0 and len(children) == 1:
+			#	# the subject should be removed
+			#	self.top_subjects.discard(self.vocab_owner)
 
 class PrefixMap(dict):
-	"""A mapping of prefixes to URIs.
-	
-	Keeps URIs and CURIEs apart, unlike 
-	http://www.w3.org/TR/rdf-interfaces/#idl-def-PrefixMap .
-	"""
+	"""A mapping of prefixes to URIs."""
 
 	def __init__(self, parent=None, *args, **kwds):
 		dict.__init__(self, *args, **kwds)
-		self.parent    = parent and dict(parent) or None
-		self.used_keys = set()
+		self.parent     = parent and dict(parent) or None
+		self.used_keys  = set()
+		self.vocab_uris = set()
+		
+	def remove_vocab(self, uriref) :
+		self.vocab_uris.add(uriref)
 		
 	def shrink(self, uriref):
 		"Returns a CURIE or None."
 		for pfx, ns in self.iteritems():
-			if uriref.startswith(ns):
+			if ns not in self.vocab_uris and uriref.startswith(ns):
 				self.used_keys.add(pfx)
 				return '%s:%s' % (pfx, uriref.replace(ns,'',1))
 		if self.parent:
 			for pfx, ns in self.parent.iteritems():
-				if uriref.startswith(ns):
+				if ns not in self.vocab_uris and uriref.startswith(ns):
 					self[pfx] = ns
 					self.used_keys.add(pfx)
 					return '%s:%s' % (pfx, uriref.replace(ns,'',1))
