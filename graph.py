@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: graph.py,v 1.3 2012-01-11 13:48:25 ivan Exp $ $Date: 2012-01-11 13:48:25 $
+$Id: graph.py,v 1.4 2012-01-22 17:29:01 ivan Exp $ $Date: 2012-01-22 17:29:01 $
 
 """
 
@@ -35,6 +35,11 @@ from rdflib	import Namespace
 _xml_serializer_name	= "my-rdfxml"
 _turtle_serializer_name	= "my-turtle"
 _json_serializer_name	= "my-json-ld"
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 # Default bindings. This is just for the beauty of things: bindings are added to the graph to make the output nicer. If this is not done, RDFlib defines prefixes like "_1:", "_2:" which is, though correct, ugly...
 _bindings = [	
@@ -78,8 +83,12 @@ class MyGraph(Graph) :
 		if not MyGraph.xml_serializer_registered_3 :
 			from rdflib.plugin import register
 			from rdflib.serializer import Serializer
-			register(_xml_serializer_name, Serializer,
-					 "pyRdfa.serializers.prettyXMLserializer_3", "PrettyXMLSerializer")
+			if rdflib.__version__ > "3.1.0" :
+				register(_xml_serializer_name, Serializer,
+						 "pyRdfa.serializers.prettyXMLserializer_3_2", "PrettyXMLSerializer")
+			else :
+				register(_xml_serializer_name, Serializer,
+						 "pyRdfa.serializers.prettyXMLserializer_3", "PrettyXMLSerializer")
 			MyGraph.xml_serializer_registered_3 = True
 
 	def _register_JSON_serializer_3(self) :
@@ -129,12 +138,15 @@ class MyGraph(Graph) :
 		if rdflib.__version__ >= "3.0.0" :
 			# this is the easy case
 			if format == "xml" or format == "pretty-xml" :
-				#return Graph.serialize(self, format="pretty-xml")
 				self._register_XML_serializer_3()
 				return Graph.serialize(self, format=_xml_serializer_name)
 			elif format == "json-ld" or format == "json" :
+				# The new version of the serialziers in RDFLib 3.2.X require this extra round...
+				# I do not have the patience of working out why that is so.
 				self._register_JSON_serializer_3()
-				return Graph.serialize(self, format=_json_serializer_name)
+				stream = StringIO()
+				Graph.serialize(self, format=_json_serializer_name, destination = stream)
+				return stream.getvalue()
 			elif format == "nt" :
 				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :

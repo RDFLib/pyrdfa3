@@ -74,7 +74,6 @@ class JsonSerializer(Serializer):
 		    The serializer uses order preserving dictionaries to keep the right/expected order within the JSON-LD output, too. 
 		"""
 		if encoding == None : encoding = 'utf-8'
-
 		# Create the dictionary to be serialized
 		d = self._build(base=base, **kwds)
 		
