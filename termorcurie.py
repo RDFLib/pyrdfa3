@@ -19,8 +19,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.4 2011-11-18 08:42:35 ivan Exp $
-$Date: 2011-11-18 08:42:35 $
+$Id: termorcurie.py,v 1.5 2012-01-27 17:11:15 ivan Exp $
+$Date: 2012-01-27 17:11:15 $
 """
 
 import re, sys
@@ -45,7 +45,7 @@ else :
 from pyRdfa.options			import Options
 from pyRdfa.utils 			import quote_URI, URIOpener
 from pyRdfa.host 			import MediaTypes, HostLanguage, predefined_1_0_rel
-from pyRdfa					import IncorrectPrefixDefinition, RDFA_VOCAB
+from pyRdfa					import IncorrectPrefixDefinition, RDFA_VOCAB, UnresolvableReference
 from pyRdfa					import ns_rdfa
 
 from pyRdfa import err_redefining_URI_as_prefix		
@@ -57,6 +57,9 @@ from pyRdfa import err_invalid_prefix
 from pyRdfa import err_no_default_prefix				
 from pyRdfa import err_prefix_and_xmlns				
 from pyRdfa import err_non_ncname_prefix				
+from pyRdfa import err_absolute_reference				
+from pyRdfa import err_query_reference				
+from pyRdfa import err_fragment_reference				
 
 # Regular expression object for NCNAME
 ncname   = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
@@ -334,6 +337,28 @@ class TermOrCurie :
 				self.xmlns = xmlns_dict
 	# end __init__
 
+	def _check_reference(self, val) :
+		"""Checking the CURIE reference for correctness. It is probably not 100% foolproof, but may take care
+		of some of the possible errors. See the URI RFC for the details.
+		"""
+		def char_check(s, not_allowed = ['#','[',']']) :
+			for c in not_allowed :
+				if s.find(c) != -1 : return False
+			return True
+		# Creating an artificial http URI to fool the urlparse module...
+		scheme, netloc, url, query, fragment = urlparse.urlsplit('http:' + val)
+		if netloc != "" and self.state.rdfa_version >= "1.1" :
+			self.state.options.add_warning(err_absolute_reference % (netloc, val), UnresolvableReference, node=self.state.node.nodeName)
+			return False
+		elif not char_check(query) :
+			self.state.options.add_warning(err_query_reference % (query, val), UnresolvableReference, node=self.state.node.nodeName)
+			return False
+		elif not char_check(fragment) :
+			self.state.options.add_warning(err_fragment_reference % (fragment, val), UnresolvableReference, node=self.state.node.nodeName)
+			return False
+		else :
+			return True
+
 	def CURIE_to_URI(self, val) :
 		"""CURIE to URI mapping. 
 		
@@ -366,12 +391,18 @@ class TermOrCurie :
 			else :
 				prefix	= curie_split[0]
 			reference = curie_split[1]
-			if len(reference) > 0 and reference[0] == ":" :
-				return None
+
+			#if len(reference) > 0 :
+			#	if self.state.rdfa_version >= "1.1" and (len(prefix) == 0 or prefix in self.ns) and reference.startswith('//') :
+			#		# This has been defined as illegal in RDFa 1.1
+			#		self.state.options.add_warning(err_absolute_reference % (reference, val), UnresolvableReference, node=self.state.node.nodeName)
+			#		return None
+			#	if reference[0] == ":" :
+			#		return None
 			
 			# first possibility: empty prefix
 			if len(prefix) == 0 :
-				if self.default_curie_uri :
+				if self.default_curie_uri and self._check_reference(reference) :
 					return self.default_curie_uri[reference]
 				else :
 					return None
@@ -393,7 +424,7 @@ class TermOrCurie :
 				# check if the prefix is a valid NCNAME
 				elif ncname.match(prefix) :
 					# see if there is a binding for this:					
-					if prefix in self.ns :
+					if prefix in self.ns and self._check_reference(reference) :
 						# yep, a binding has been defined!
 						if len(reference) == 0 :
 							return URIRef(str(self.ns[prefix]))

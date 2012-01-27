@@ -164,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.54 2012-01-11 13:48:25 ivan Exp $ $Date: 2012-01-11 13:48:25 $
+$Id: __init__.py,v 1.55 2012-01-27 17:11:15 ivan Exp $ $Date: 2012-01-27 17:11:15 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -263,7 +263,8 @@ RDFA_Error					= ns_rdfa["Error"]
 RDFA_Warning				= ns_rdfa["Warning"]
 RDFA_Info					= ns_rdfa["Information"]
 NonConformantMarkup			= ns_rdfa["DocumentError"]
-UnresolvablePrefix			= ns_rdfa["UnresolvedCURIE"]
+UnresolvablePrefix			= ns_rdfa["UnresolvedCURIEPrefix"]
+UnresolvableReference		= ns_rdfa["UnresolvedCURIEReference"]
 UnresolvableTerm			= ns_rdfa["UnresolvedTerm"]
 VocabReferenceError			= ns_rdfa["VocabReferenceError"]
 
@@ -284,9 +285,12 @@ err_invalid_prefix					= "Invalid prefix declaration '%s' (in '%s')"
 err_no_default_prefix				= "Default prefix cannot be changed (in '%s')"
 err_prefix_and_xmlns				= "@prefix setting for '%s' overrides the 'xmlns:%s' setting; may be a source of problem if same file is run through RDFa 1.0"
 err_non_ncname_prefix				= "Non NCNAME '%s' in prefix definition (in '%s'); ignored"
+err_absolute_reference				= "CURIE Reference part contains an authority part: %s (in '%s'); ignored"     
+err_query_reference					= "CURIE Reference query part contains an unauthorized character: %s (in '%s'); ignored"     
+err_fragment_reference				= "CURIE Reference fragment part contains an unauthorized character: %s (in '%s'); ignored"     
 
 err_lang							= "Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)"
-err_URI_scheme						= "Unusual URI scheme used in <%s>; may that be a mistake, e.g., by using an undefined CURIE prefix?"
+err_URI_scheme						= "Unusual URI scheme used in <%s>; may that be a mistake, e.g., resulting from using an undefined CURIE prefix or an incorrect CURIE?"
 err_illegal_safe_CURIE				= "Illegal safe CURIE: %s; ignored"
 err_no_CURIE_in_safe_CURIE			= "Safe CURIE is used, but the value does not correspond to a defined CURIE: [%s]; ignored"
 err_undefined_terms					= "'%s' is used as a term, but has not been defined as such; ignored"
