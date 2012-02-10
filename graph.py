@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: graph.py,v 1.4 2012-01-22 17:29:01 ivan Exp $ $Date: 2012-01-22 17:29:01 $
+$Id: graph.py,v 1.5 2012-02-10 16:23:24 ivan Exp $ $Date: 2012-02-10 16:23:24 $
 
 """
 
@@ -151,7 +151,7 @@ class MyGraph(Graph) :
 				return Graph.serialize(self, format="nt")
 			elif format == "n3" or format == "turtle" :
 				retval =""
-				return Graph.serialize(self, format="n3")
+				return Graph.serialize(self, format="turtle")
 		else :
 			if format == "xml" or format == "pretty-xml" :
 				self._register_XML_serializer_2()
