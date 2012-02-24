@@ -5,18 +5,18 @@
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: lite.py,v 1.6 2011-12-09 10:57:52 ivan Exp $
-$Date: 2011-12-09 10:57:52 $
+@version: $Id: lite.py,v 1.7 2012-02-24 09:25:44 ivan Exp $
+$Date: 2012-02-24 09:25:44 $
 """
 
-non_lite_attributes = ["resource","inlist","datatype","rev","rel"]
+non_lite_attributes = ["about","inlist","datatype","rev","rel"]
 
 def lite_prune(top, options, state) :
 	"""
 	This is a misnomer. The current version does not remove anything from the tree, just generates warnings as for the
 	usage of non-lite attributes. A more aggressive version would mean to remove those attributes, but that would,
 	in fact, define an RDFa Lite conformance level in the parser, which is against the WG decisions. So this should
-	not be done; the corresponding entries are commented in the code below...
+	not be done; the corresponding commands are commented in the code below...
 	
 	@param top: a DOM node for the top level element
 	@param options: invocation options

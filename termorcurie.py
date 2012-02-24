@@ -19,8 +19,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.5 2012-01-27 17:11:15 ivan Exp $
-$Date: 2012-01-27 17:11:15 $
+$Id: termorcurie.py,v 1.6 2012-02-24 09:25:29 ivan Exp $
+$Date: 2012-02-24 09:25:29 $
 """
 
 import re, sys
@@ -447,23 +447,22 @@ class TermOrCurie :
 
 		if termname.match(term) :
 			# It is a valid NCNAME
-			# the algorithm is: first make a case sensitive match; if that fails than make a case insensive one
-			# The first is easy, the second one is a little bit more convoluted
 			
+			# First of all, a @vocab nukes everything. That has to be done first...
+			if self.default_term_uri != None :
+				return URIRef(self.default_term_uri + term)
+
+			# For default terms, the algorithm is (see 7.4.3 of the document): first make a case sensitive match;
+			# if that fails than make a case insensive one			
 			# 1. simple, case sensitive test:
 			if term in self.terms :
 				# yep, term is a valid key as is
 				return self.terms[term]
 				
-			# 2. the case insensitive test
+			# 2. case insensitive test
 			for defined_term in self.terms :
-				uri = self.terms[defined_term]
 				if term.lower() == defined_term.lower() :
-					return uri
-	
-			# 3. check the default term uri, if any
-			if self.default_term_uri != None :
-				return URIRef(self.default_term_uri + term)
+					return self.terms[defined_term]
 
 		# If it got here, it is all wrong...
 		return None

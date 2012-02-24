@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.7 2012-01-11 13:48:25 ivan Exp $
-$Date: 2012-01-11 13:48:25 $
+$Id: state.py,v 1.8 2012-02-24 09:25:28 ivan Exp $
+$Date: 2012-02-24 09:25:28 $
 """
 
 import rdflib
@@ -307,7 +307,6 @@ class ExecutionContext :
 			# The fragment ID must be removed...
 			return URIRef(self.base)
 			
-
 		# fall back on good old traditional URI-s.
 		# To be on the safe side, let us use the Python libraries
 		if self.parsedBase[0] == "" :
@@ -463,7 +462,7 @@ class ExecutionContext :
 		"""
 		if len(args) == 0 :
 			return None
-		if isinstance(args[0], TupleType) or isinstance(args[0],ListType) :
+		if isinstance(args[0], TupleType) or isinstance(args[0], ListType) :
 			rargs = args[0]
 		else :
 			rargs = args
@@ -502,11 +501,23 @@ class ExecutionContext :
 		if the array does not exist yet, it will be created on the fly.
 		
 		@param property: the property URI, used as a key in the dictionary
-		@param resource: the resource to be added to the relevant array in the dictionary.
+		@param resource: the resource to be added to the relevant array in the dictionary. Can be None; this is a dummy
+		placeholder for <span rel="property" inlist>...</span> constructions that may be filled in by children or siblings; if not
+		an empty list has to be generated.
 		"""
 		if property in self.list_mapping.mapping :
-			self.list_mapping.mapping[property].append(resource)
+			if resource != None :
+				# indeed, if it is None, than it should not override anything
+				if self.list_mapping.mapping[property] == None :
+					# replacing a dummy with real content
+					self.list_mapping.mapping[property] = [ resource ]
+				else :			
+					self.list_mapping.mapping[property].append(resource)
 		else :
-			self.list_mapping.mapping[property] = [ resource ]
+			if resource != None :
+				self.list_mapping.mapping[property] = [ resource ]
+			else :
+				self.list_mapping.mapping[property] = None
+				
 
 ####################

@@ -43,6 +43,10 @@ class JsonSerializer(Serializer):
 	__doc__ = __doc__
 	# List of predicates that have a special usage and should not appear as part of the coerced list in the context
 	non_coerced_predicates = [ ns_rdf["type"], ns_rdf["first"], ns_rdf["rest"] ]
+	automatic_datatypes    = [ URIRef("http://www.w3.org/2001/XMLSchema#integer"),
+							   URIRef("http://www.w3.org/2001/XMLSchema#double"),
+							   URIRef("http://www.w3.org/2001/XMLSchema#boolean")
+							 ]
 
 	def __init__(self, graph):
 		self.graph          = graph
@@ -333,8 +337,15 @@ class JsonSerializer(Serializer):
 		"""Produce either a plain string as a literal, or a literal with datatype or language"""
 		if literal.datatype != None :
 			retval = OrderedDict()
-			retval["@value"] = literal
-			retval["@type"] = self._get_node_ref(literal.datatype)
+			if literal.datatype in 	JsonSerializer.automatic_datatypes :
+				try :
+					return literal.toPython()
+				except :
+					retval["@value"] = literal
+					retval["@type"] = self._get_node_ref(literal.datatype)
+			else :
+				retval["@value"] = literal
+				retval["@type"] = self._get_node_ref(literal.datatype)
 			return retval
 		elif literal.language != None and literal.language != "" :
 			retval = OrderedDict()

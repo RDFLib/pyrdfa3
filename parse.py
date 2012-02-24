@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.9 2011-12-09 10:58:05 ivan Exp $
-$Date: 2011-12-09 10:58:05 $
+$Id: parse.py,v 1.10 2012-02-24 09:25:28 ivan Exp $
+$Date: 2012-02-24 09:25:28 $
 """
 
 import sys
@@ -212,9 +212,18 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 		if not isinstance(prop,BNode) :
 			if node.hasAttribute("inlist") :
 				if current_object != None :
+					# Add the content to the list. Note that if the same list
+					# was initialized, at some point, by a None, it will be
+					# overwritten by this real content
 					state.add_to_list_mapping(prop, current_object)
 				else :
-					incomplete_triples.append((None, prop, None))
+					# Add a dummy entry to the list... Note that
+					# if that list was initialized already with a real content
+					# this call will have no effect
+					state.add_to_list_mapping(prop, None)
+					
+					# Add a placeholder into the hanging rels
+					incomplete_triples.append( (None, prop, None) )
 			else :
 				theTriple = (current_subject, prop, current_object)
 				if current_object != None :
@@ -270,12 +279,17 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	if state.new_list and not state.list_empty() :
 		for prop in state.get_list_props() :
 			vals  = state.get_list_value(prop)
-			heads = [ BNode() for r in vals ] + [ ns_rdf["nil"] ]
-			for i in xrange(0, len(vals)) :
-				graph.add( (heads[i], ns_rdf["first"], vals[i]) )
-				graph.add( (heads[i], ns_rdf["rest"],  heads[i+1]) )
-			# Anchor the list
-			graph.add( (state.get_list_origin(), prop, heads[0]) )
+			if vals == None :
+				# This was an empty list, in fact, ie, the list has been initiated by a <xxx rel="prop" inlist>
+				# but no list content has ever been added
+				graph.add( (state.get_list_origin(), prop, ns_rdf["nil"]) )
+			else :
+				heads = [ BNode() for r in vals ] + [ ns_rdf["nil"] ]
+				for i in xrange(0, len(vals)) :
+					graph.add( (heads[i], ns_rdf["first"], vals[i]) )
+					graph.add( (heads[i], ns_rdf["rest"],  heads[i+1]) )
+				# Anchor the list
+				graph.add( (state.get_list_origin(), prop, heads[0]) )
 
 	# -------------------------------------------------------------------
 	# This should be it...

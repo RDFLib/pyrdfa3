@@ -164,7 +164,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.55 2012-01-27 17:11:15 ivan Exp $ $Date: 2012-01-27 17:11:15 $
+$Id: __init__.py,v 1.56 2012-02-24 09:25:28 ivan Exp $ $Date: 2012-02-24 09:25:28 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -276,7 +276,7 @@ IncorrectLiteral	        = ns_distill["IncorrectLiteral"]
 # Error message texts
 err_no_blank_node					= "Blank node in %s position is not allowed; ignored"
 
-err_redefining_URI_as_prefix		= "'%s' a registered or a widely used URI scheme, but is defined as a prefix here; is this a mistake?"
+err_redefining_URI_as_prefix		= "'%s' a registered or an otherwise used URI scheme, but is defined as a prefix here; is this a mistake? (see, eg, http://en.wikipedia.org/wiki/URI_scheme or http://www.iana.org/assignments/uri-schemes.html for further information for most of the URI schemes)"
 err_xmlns_deprecated				= "The usage of 'xmlns' for prefix definition is deprecated; please use the 'prefix' attribute instead (definition for '%s')"
 err_bnode_local_prefix				= "The '_' local CURIE prefix is reserved for blank nodes, and cannot be defined as a prefix"
 err_col_local_prefix				= "The character ':' is not valid in a CURIE Prefix, and cannot be used in a prefix definition (definition for '%s')"
@@ -315,28 +315,45 @@ CACHE_DIR_VAR		= "PyRdfaCacheDir"
 rdfa_current_version	= "1.1"
 
 # I removed schemes that would not appear as a prefix anyway, like iris.beep
+# http://en.wikipedia.org/wiki/URI_scheme seems to be a good source of information
+# as well as http://www.iana.org/assignments/uri-schemes.html
+# There are some overlaps here, but better more than not enough...
+
+# This comes from wikipedia
 registered_iana_schemes = [
-	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","dns","fax","ftp","geo","go",
-	"gopher","h323","http","https","iax","icap","im","imap","info","ipp","iris","ldap",
-	"mailto","mid","modem","msrp","msrps","mupdate","news","nfs","nntp","opaquelocktoken",
-	"pop","pres","rstp","service","shttp","sieve","sip","snmp","soap","tag",
-	"tel","telnet","thismessage","tn3270","tip","tv","urn","vemmi","xmpp",
+	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","dns","fax","file", "ftp","geo","go",
+	"gopher","h323","http","https","iax","icap","im","imap","info","ipp","iris","ldap", "lsid",
+	"mailto","mid","modem","msrp","msrps", "mtqp", "mupdate","news","nfs","nntp","opaquelocktoken",
+	"pop","pres", "prospero","rstp","rsync", "service","shttp","sieve","sip","sips", "sms", "snmp", "soap", "tag",
+	"tel","telnet", "tftp", "thismessage","tn3270","tip","tv","urn","vemmi","wais","ws", "wss", "xmpp"
 ]
 
+# This comes from wikipedia, too
+unofficial_common = [
+	"about", "adiumxtra", "aim", "apt", "afp", "aw", "bitcoin", "bolo", "callto", "chrome", "coap",
+	"content", "cvs", "doi", "ed2k", "facetime", "feed", "finger", "fish", "git", "gg",
+	"gizmoproject", "gtalk", "irc", "ircs", "irc6", "itms", "jar", "javascript",
+	"keyparc", "lastfm", "ldaps", "magnet", "maps", "market", "message", "mms",
+	"msnim", "mumble", "mvn", "notes", "palm", "paparazzi", "psync", "rmi",
+	"secondlife", "sgn", "skype", "spotify", "ssh", "sftp", "smb", "soldat",
+	"steam", "svn", "teamspeak", "things", "udb", "unreal", "ut2004",
+	"ventrillo", "view-source", "webcal", "wtai", "wyciwyg", "xfire", "xri", "ymsgr"
+]
+
+# These come from the IANA page
 historical_iana_schemes = [
-	"mailserver", "prospero", "snews", "videotex", "wais",
+	"fax", "mailserver", "modem", "pack", "prospero", "snews", "videotex", "wais"
 ]
 
 provisional_iana_schemes = [
-	"afs", "dtn", "dvb", "icon", "ipn", "jps", "oid", "pack", "rsync", "ws", "wss",
+	"afs", "dtn", "dvb", "icon", "ipn", "jms", "oid", "rsync" 
 ]
 
 other_used_schemes = [
-	"doi", "file", "git",  "hdl", "isbn", "javascript", "ldap", "lsid", "mms", "mstp", 
-	"rtmp", "rtspu", "sftp", "sips", "sms", "snmp", "stp", "svn", 
+	"hdl", "isbn", "issn", "mstp", "rtmp", "rtspu", "stp" 
 ]
 
-uri_schemes = registered_iana_schemes + historical_iana_schemes + provisional_iana_schemes + other_used_schemes
+uri_schemes = registered_iana_schemes + unofficial_common + historical_iana_schemes + provisional_iana_schemes + other_used_schemes
 
 # List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
