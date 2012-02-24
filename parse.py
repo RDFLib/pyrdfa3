@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.10 2012-02-24 09:25:28 ivan Exp $
-$Date: 2012-02-24 09:25:28 $
+$Id: parse.py,v 1.11 2012-02-24 10:52:42 ivan Exp $
+$Date: 2012-02-24 10:52:42 $
 """
 
 import sys
@@ -25,7 +25,7 @@ import sys
 from pyRdfa.state   		import ExecutionContext
 from pyRdfa.property 		import ProcessProperty
 from pyRdfa.embeddedRDF	 	import handle_embeddedRDF
-from pyRdfa.host			import HostLanguage, host_dom_transforms, accept_embedded_rdf
+from pyRdfa.host			import HostLanguage, host_dom_transforms
 
 import rdflib
 from rdflib	import URIRef
@@ -100,7 +100,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	# This may add some triples to the target graph that does not originate from RDFa parsing
 	# If the function return TRUE, that means that an rdf:RDF has been found. No
 	# RDFa parsing should be done on that subtree, so we simply return...
-	if state.options.host_language in accept_embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
+	if state.options.embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
 		return	
 
 	#---------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	# This may add some triples to the target graph that does not originate from RDFa parsing
 	# If the function return TRUE, that means that an rdf:RDF has been found. No
 	# RDFa parsing should be done on that subtree, so we simply return...
-	if state.options.host_language in accept_embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
+	if state.options.embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
 		return	
 
 	#---------------------------------------------------------------------------------

@@ -44,6 +44,7 @@ By default, the output format for the graph is RDF/XML. At present, the followin
  - "xml": RDF/XML.
  - "turtle": Turtle format.
  - "nt": N triples
+ - "json": JSON-LD format
 
 Options
 =======
@@ -51,13 +52,13 @@ Options
 The package also implements some optional features that are not part of the RDFa recommendations. At the moment these are:
 
  - possibility for plain literals to be normalized in terms of white spaces. Default: false. (The RDFa specification requires keeping the white spaces and leave applications to normalize them, if needed)
- - inclusion of Turtle-in-HTML or Turtle-in-SVG, as U{defined by the RDF Working Group<http://www.w3.org/TR/turtle/>}: Turtle content enclosed in a C{script} element and typed as C{text/turtle} is parsed and added to the output graph. Default: true.
+ - inclusion of embedded RDF: Turtle content may be enclosed in a C{script} element and typed as C{text/turtle}, U{defined by the RDF Working Group<http://www.w3.org/TR/turtle/>}. Alternatively, some XML dialects (e.g., SVG) allows the usage of RDF/XML as part of their core content to define metadata in RDF. For both of these cases pyRdfa parses these serialized RDF content and adds the resulting triples to the output Graph. Default: true.
  - extra, built-in transformers are executed on the DOM tree prior to RDFa processing (see below). These transformers can be provided by the end user.
  
 Options are collected in an instance of the L{Options} class and passed to the processing functions as an extra argument. Eg,
-to include the embedded Turtle content::
+to supress the inclusion of embedded content::
  from pyRdfa.options import Options
- options = Options(hturtle=True)
+ options = Options(embedded_rdf=False)
  print pyRdfa(options=options).rdf_from_source('filename')
  
 See the description of the L{Options} class for the details.
@@ -73,7 +74,7 @@ A transformer is a function with three arguments:
 
  - C{node}: a DOM node for the top level element of the DOM tree
  - C{options}: the current L{Options} instance
- - C{state}: the current L{State} instance, corresponding to the top level DOM Tree element
+ - C{state}: the current L{ExecutionContext} instance, corresponding to the top level DOM Tree element
 
 The function may perform any type of change on the DOM tree; the typical behaviour is to add or remove attributes on specific elements. Some transformations are included in the package and can be used as examples; see the "transform" module of the distribution. These are:
 
@@ -95,22 +96,16 @@ RDFa 1.1. Core is defined for generic XML; there are specific documents to descr
 XHTML and HTML5.
 
 pyRdfa makes an automatic switch among these based on the content type of the source. If the content type is C{text/html}, the
-content is supposed to be HTML5; if it is C{application/xml+xhtml}, then it is considered to be XHTML; finally, if it is
-C{application/xml} or C{application/xxx+xml} (where C{xxx} stands for anything except C{xhtml}), then it is considered
-to be general XML.
+content is supposed to be HTML5; if it is C{application/xml+xhtml}, then it is considered to be XHTML1; of it is C{application/xml+svg}, then
+it is considered to be SVG; finally, if it is C{application/xml} or C{application/xxx+xml} (where C{xxx} stands for anything except
+C{xhtml} or C{svg}), then it is considered to be general XML.
 
-Beyond the differences described in the RDFa documents, the effect of this choice have the following effect on the
-behaviour of pyRdfa:
+If local files are used, pyRdfa makes a guess on the content type based on the file name suffix: C{.html} is for HTML5, C{.xhtml} for
+XHTML1, C{.svg} for SVG, anything else is considered to be general XML. The content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}.
 
- - In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; otherwise the simple XML parser, part of the core Python environment, is used.
- - In the case of generic XML the distiller also considers a more "traditional" way of adding RDF metadata to a file, namely by directly including RDF/XML into the XML file with a proper namespace. The distiller extracts that RDF graph and merges it with the output of the regular RDFa processing. A typical usage is SVG that explicitly introduces the possibility of adding RDF/XML into an SVG file.
+Beyond the differences described in the RDFa specification, the main difference is the parser used to parse the source. In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; for all other cases the simple XML parser, part of the core Python environment, is used. This may be significant in the case of erronuous sources: indeed, the HTML5 parser may do adjustments on
+the DOM tree before handing it over to the distiller. Furthermore, SVG is also recognized as a type that allows embedded RDF in the form of RDF/XML.
 
-The content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}. The distiller also attempts
-to find the content type (in case it is not set by the user) by
-
- - looking at the content type header as returned by an HTTP call; if unsuccessful or the invocation is done locally then
- - looking at the suffix of the URI or file name (C{.html} and C{.xhtml} are considered to be HTML5 and XHTML, respectively; otherwise XML is considered)
- 
 See the variables in the "utils" module if a new host language is added to the system. The current host language information is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
 
 Vocabularies
@@ -164,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.56 2012-02-24 09:25:28 ivan Exp $ $Date: 2012-02-24 09:25:28 $
+$Id: __init__.py,v 1.57 2012-02-24 10:52:42 ivan Exp $ $Date: 2012-02-24 10:52:42 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -180,7 +175,7 @@ Thanks to Elias Torrez, who provided with the idea and patches to interface to t
 
 """
 
-__version__ = "3.0.4"
+__version__ = "3.1.0"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -496,7 +491,6 @@ class pyRdfa :
 		
 		# The top level subject starts with the current document; this
 		# is used by the recursion
-		#subject = URIRef(state.base)
 		# this function is the real workhorse
 		parse_one_node(topElement, default_graph, None, state, [])
 		
@@ -630,7 +624,7 @@ def processURI(uri, outputFormat, form={}) :
 	 - C{space-preserve=[true|false]} means that plain literals are normalized in terms of white spaces. Default: false.
 	 - C{rfa-version} provides the RDFa version that should be used for distilling. The string should be of the form "1.0", "1.1", etc. Default is the highest version the current package implements.
 	 - C{host-language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header should be used
-	 - C{embedded-turtle=[true|false]} : whether embedded turtle content should be added to the output graph. Default: true
+	 - C{embedded-rdf=[true|false]} : whether embedded turtle or RDF/XML content should be added to the output graph. Default: true
 	 - C{vocab-expansion=[true|false]} : whether the vocabularies should be expanded through the restricted RDFS entailment. Default: false
 	 - C{vocab-cache=[true|false]} : whether vocab caching should be performed or whether it should be ignored and vocabulary files should be picked up every time. Default: false
 	 - C{vocab-cache-report=[true|false]} : whether vocab caching details should be reported. Default: false
@@ -717,7 +711,7 @@ def processURI(uri, outputFormat, form={}) :
 		elif a == "processor,output" or a == "output,processor" :
 			output_processor_graph 	= True
 		
-	embedded_turtle    = _get_option( "embedded-turtle", "true", True)
+	embedded_rdf       = _get_option( "embedded-rdf", "true", True)
 	space_preserve     = _get_option( "space-preserve", "false", True)
 	vocab_cache        = _get_option( "vocab-cache", "true", True)
 	vocab_cache_report = _get_option( "vocab-cache-report", "true", False)
@@ -733,7 +727,7 @@ def processURI(uri, outputFormat, form={}) :
 					  vocab_cache_report     = vocab_cache_report,
 					  refresh_vocab_cache    = refresh_vocab_cache,
 					  vocab_expansion        = vocab_expansion,
-					  hturtle                = embedded_turtle
+					  embedded_rdf           = embedded_rdf
 					  )
 	processor = pyRdfa(options = options, base = base, media_type = media_type, rdfa_version = rdfa_version)
 

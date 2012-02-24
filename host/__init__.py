@@ -18,15 +18,16 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var initial_contexts: mapping from host languages to list of initial contexts
 @var accept_xml_base: list of host languages that accept the xml:base attribute for base setting
 @var accept_xml_lang: list of host languages that accept the xml:lang attribute for language setting. Note that XHTML and HTML have some special rules, and those are hard coded...
-@var accept_embedded_rdf: list of host languages that might also include RDF data using an embedded RDF/XML (e.g., SVG). That RDF data is merged with the output
+@var accept_embedded_rdf_xml: list of host languages that might also include RDF data using an embedded RDF/XML (e.g., SVG). That RDF data may be merged with the output
+@var accept_embedded_turtle: list of host languages that might also include RDF data using a C{script} element. That RDF data may be merged with the output
 @var host_dom_transforms: dictionary mapping a host language to an array of methods that are invoked at the beginning of the parsing process for a specific node. That function can do a last minute change on that DOM node, eg, adding or modifying an attribute. The method's signature is (node, state), where node is the DOM node, and state is the L{Execution context<pyRdfa.state.ExecutionContext>}.
 @var predefined_1_0_rel: terms that are hardcoded for HTML+RDF1.0 and replace the initial context for that version
 @var beautifying_prefixes: this is really just to make the output more attractive: for each media type a dictionary of prefix-URI pairs that can be used to make the terms look better...
 """
 
 """
-$Id: __init__.py,v 1.8 2012-01-18 14:16:12 ivan Exp $
-$Date: 2012-01-18 14:16:12 $
+$Id: __init__.py,v 1.9 2012-02-24 10:52:48 ivan Exp $
+$Date: 2012-02-24 10:52:48 $
 """
 __version__ = "3.0"
 
@@ -68,7 +69,9 @@ beautifying_prefixes = {
 
 accept_xml_base		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
 accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
-accept_embedded_rdf	= [ HostLanguage.svg, HostLanguage.html5, HostLanguage.xhtml5, HostLanguage.xhtml ]
+
+accept_embedded_rdf_xml	= [ HostLanguage.svg, HostLanguage.rdfa_core ]
+accept_embedded_turtle	= [ HostLanguage.svg, HostLanguage.html5, HostLanguage.xhtml5, HostLanguage.xhtml ]
 
 host_dom_transforms = {
 	HostLanguage.atom   : [atom_add_entry_type],

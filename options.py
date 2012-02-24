@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.8 2012-01-11 13:48:25 ivan Exp $ $Date: 2012-01-11 13:48:25 $
+$Id: options.py,v 1.9 2012-02-24 10:52:42 ivan Exp $ $Date: 2012-02-24 10:52:42 $
 """
 
 import sys, datetime
@@ -111,7 +111,7 @@ class Options :
 	@type vocab_cache_report: Boolean
 	@ivar refresh_vocab_cache: whether the caching checks of vocabs should be by-passed, ie, if caches should be re-generated regardless of the stored date (important for vocab development)
 	@type refresh_vocab_cache: Boolean
-	@ivar hturtle: whether hturtle (ie, turtle in an HTML script element) should be extracted and added to the final graph. This is a non-standard option...
+	@ivar embedded_rdf: whether embedded RDF (ie, turtle in an HTML script element or an RDF/XML content in SVG) should be extracted and added to the final graph. This is a non-standard option...
 	@type hturtle: Boolean
 	@ivar rdfa_sem: whether the @vocab elements should be expanded and a mini-RDFS processing should be done on the merged graph
 	@type rdfa_sem: Boolean
@@ -126,7 +126,7 @@ class Options :
 					   output_processor_graph = False,
 					   space_preserve         = True,
 					   transformers           = [],
-					   hturtle                = True,
+					   embedded_rdf           = True,
 					   vocab_expansion        = False,
 					   vocab_cache            = True,
 					   vocab_cache_report     = False,
@@ -149,7 +149,7 @@ class Options :
 		self.host_language 			= HostLanguage.rdfa_core
 		self.vocab_cache_report		= vocab_cache_report
 		self.refresh_vocab_cache	= refresh_vocab_cache
-		self.hturtle				= hturtle
+		self.embedded_rdf			= embedded_rdf
 		self.vocab_expansion		= vocab_expansion
 		self.vocab_cache			= vocab_cache
 			
