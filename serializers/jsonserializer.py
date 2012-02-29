@@ -201,13 +201,13 @@ class JsonSerializer(Serializer):
 
 		# Add the top level objects; the content of these have been filled by the previous steps
 		# There is a big difference on whether there are several top level object or not; in the former
-		# case the special JSON-LD idiom has to be used with an array and "@id" as key
+		# case the special JSON-LD "@graph" keyword has to be used as a key
 		if len(self.top_subjects) == 1 :
 			subj = self.all_subjects[self.top_subjects.pop()]
 			for k in subj.keys() :
 				_json_obj[k] = subj[k]
 		elif len(self.top_subjects) > 1 :
-			_json_obj["@id"] = [ self.all_subjects[s] for s in self.top_subjects ]
+			_json_obj["@graph"] = [ self.all_subjects[s] for s in self.top_subjects ]
 
 		return _json_obj
 	
