@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.5 2012-01-11 13:48:25 ivan Exp $
-$Date: 2012-01-11 13:48:25 $
+$Id: property.py,v 1.6 2012-03-05 11:52:49 ivan Exp $
+$Date: 2012-03-05 11:52:49 $
 """
 
 import re
@@ -125,7 +125,7 @@ class ProcessProperty :
 					else :			
 						self.graph.add( (self.subject, prop, object) )
 				else :
-					self.state.options.add_warning(no_blank_node % "property", warning_type=IncorrectBlankNodeUsage, node=self.node.nodeName)
+					self.state.options.add_warning(err_no_blank_node % "property", warning_type=IncorrectBlankNodeUsage, node=self.node.nodeName)
 	
 		# return
 
@@ -182,7 +182,7 @@ class ProcessProperty :
 			if not isinstance(prop,BNode) :
 				self.graph.add( (self.subject,prop,object) )
 			else :
-				self.state.options.add_warning(no_blank_node % "property", warning_type=IncorrectBlankNodeUsage, node=self.node.nodeName)
+				self.state.options.add_warning(err_no_blank_node % "property", warning_type=IncorrectBlankNodeUsage, node=self.node.nodeName)
 	
 		# return
 	
