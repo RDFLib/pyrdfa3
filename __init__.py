@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.57 2012-02-24 10:52:42 ivan Exp $ $Date: 2012-02-24 10:52:42 $
+$Id: __init__.py,v 1.58 2012-03-06 14:12:48 ivan Exp $ $Date: 2012-03-06 14:12:48 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -205,7 +205,7 @@ import urlparse
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
 
 # Vocabulary terms for vocab reporting
-RDFA_VOCAB       = ns_rdfa["usesVocabulary"]
+RDFA_VOCAB  = ns_rdfa["usesVocabulary"]
 
 # Namespace, in the RDFLib sense, for the XSD Datatypes
 ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
@@ -442,6 +442,8 @@ class pyRdfa :
 					return file(name)
 			else :
 				return name
+		except HTTPError, h :
+			raise h
 		except :
 			(type, value, traceback) = sys.exc_info()
 			raise FailedSource(value)
@@ -576,10 +578,14 @@ class pyRdfa :
 			if not rdfOutput : raise f
 			self.options.add_error(f.msg, FileReferenceError, name)
 			return copyErrors(graph, self.options)
+		except HTTPError, h:
+			if not rdfOutput : raise h
+			#self.options.add_error(f.msg, FileReferenceError, name)
+			return copyErrors(graph, self.options)
 		except Exception, e :
 			(a,b,c) = sys.exc_info()
 			sys.excepthook(a,b,c)
-			#if not rdfOutput : raise e
+			if not rdfOutput : raise e
 			return copyErrors(graph, self.options)
 	
 	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
@@ -747,46 +753,64 @@ def processURI(uri, outputFormat, form={}) :
 		
 	# This is really for testing purposes only, it is an unpublished flag to force RDF output no
 	# matter what
-	rdfOutput = ("forceRDFOutput" in form.keys()) or not htmlOutput
-	
 	try :
-		return processor.rdf_from_source(input, outputFormat, rdfOutput = rdfOutput)
+		retval = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()))
+		return (retval, True)
+	except HTTPError, h :
+		import cgi
+		
+		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s \n\n' % h.http_code
+		retval += "<html>\n"		
+		retval += "<head>\n"
+		retval += "<title>HTTP Error in RDFa processing</title>\n"
+		retval += "</head><body>\n"
+		retval += "<h1>HTTP Error in distilling RDFa</h1>\n"
+		retval += "<p>HTTP Error: %s (%s)</p>\n" % (h.http_code,h.msg)
+		retval += "<p>On URI: <code>'%s'</code></p>\n" % cgi.escape(uri)
+		retval +="</body>\n"
+		retval +="</html>\n"
+		return (retval, False)
 	except :
 		# This branch should occur only if an exception is really raised, ie, if it is not turned
 		# into a graph value.
 		(type,value,traceback) = sys.exc_info()
 
 		import traceback, cgi
-		print 'Content-type: text/html; charset=utf-8'
-		print
-		print "<html>"
-		print "<head>"
-		print "<title>Error in RDFa processing</title>"
-		print "</head><body>"
-		print "<h1>Error in distilling RDFa</h1>"
-		print "<pre>"
-		traceback.print_exc(file=sys.stdout)
-		print "</pre>"
-		print "<pre>%s</pre>" % value
-		print "<h1>Distiller request details</h1>"
-		print "<dl>"
+		import StringIO
+
+		retval = 'Content-type: text/html; charset=utf-8\nStatus: 400\n\n'
+		retval += "<html>\n"		
+		retval += "<head>\n"
+		retval += "<title>Exception in RDFa processing</title>\n"
+		retval += "</head><body>\n"
+		retval += "<h1>Exception in distilling RDFa</h1>\n"
+		retval += "<pre>\n"
+		strio  = StringIO.StringIO()
+		traceback.print_exc(file=strio)
+		retval += strio.getvalue()
+		retval +="</pre>\n"
+		retval +="<pre>%s</pre>\n" % value
+		retval +="<h1>Distiller request details</h1>\n"
+		retval +="<dl>\n"
 		if uri == "text:" and "text" in form and form["text"].value != None and len(form["text"].value.strip()) != 0 :
-			print "<dt>Text input:</dt><dd>%s</dd>" % cgi.escape(form["text"].value).replace('\n','<br/>')
+			retval +="<dt>Text input:</dt><dd>%s</dd>\n" % cgi.escape(form["text"].value).replace('\n','<br/>')
 		elif uri == "uploaded:" :
-			print "<dt>Uploaded file</dt>"
+			retval +="<dt>Uploaded file</dt>\n"
 		else :
-			print "<dt>URI received:</dt><dd><code>'%s'</code></dd>" % cgi.escape(uri)
+			retval +="<dt>URI received:</dt><dd><code>'%s'</code></dd>\n" % cgi.escape(uri)
 		if "host_language" in form.keys() :
-			print "<dt>Media Type:</dt><dd>%s</dd>" % media_type
+			retval +="<dt>Media Type:</dt><dd>%s</dd>\n" % media_type
 		if "graph" in form.keys() :
-			print "<dt>Requested graphs:</dt><dd>%s</dd>" % form.getfirst("graph").lower()
+			retval +="<dt>Requested graphs:</dt><dd>%s</dd>\n" % form.getfirst("graph").lower()
 		else :
-			print "<dt>Requested graphs:</dt><dd>default</dd>"
-		print "<dt>Output serialization format:</dt><dd> %s</dd>" % outputFormat
-		if "space-preserve" in form : print "<dt>Space preserve:</dt><dd> %s</dd>" % form["space-preserve"].value
-		print "</dl>"
-		print "</body>"
-		print "</html>"
+			retval +="<dt>Requested graphs:</dt><dd>default</dd>\n"
+		retval +="<dt>Output serialization format:</dt><dd> %s</dd>\n" % outputFormat
+		if "space-preserve" in form : retval +="<dt>Space preserve:</dt><dd> %s</dd>\n" % form["space-preserve"].value
+		retval +="</dl>\n"
+		retval +="</body>\n"
+		retval +="</html>\n"
+		return (retval, False)
+		
 
 ################################################# Deprecated entry points, kept for backward compatibility... 
 def processFile(input, outputFormat="xml", options = None, base="", rdfOutput = False) :

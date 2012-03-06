@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.5 2012-01-06 15:19:21 ivan Exp $
-$Date: 2012-01-06 15:19:21 $
+$Id: utils.py,v 1.6 2012-03-06 14:12:48 ivan Exp $
+$Date: 2012-03-06 14:12:48 $
 """
 import os, os.path, sys, imp, datetime
 import urllib, urlparse, urllib2
@@ -120,7 +120,9 @@ class URIOpener :
 				
 		except urllib2.HTTPError, e :
 			from pyRdfa import HTTPError
-			raise HTTPError('%s' % e, e.code)
+			import BaseHTTPServer
+			msg = BaseHTTPServer.BaseHTTPRequestHandler.responses[e.code]
+			raise HTTPError('%s' % msg[1], e.code)
 		except Exception, e :
 			from pyRdfa import RDFaError
 			raise RDFaError('%s' % e)
