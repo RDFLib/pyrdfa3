@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.58 2012-03-06 14:12:48 ivan Exp $ $Date: 2012-03-06 14:12:48 $
+$Id: __init__.py,v 1.59 2012-03-06 14:43:51 ivan Exp $ $Date: 2012-03-06 14:43:51 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -754,8 +754,18 @@ def processURI(uri, outputFormat, form={}) :
 	# This is really for testing purposes only, it is an unpublished flag to force RDF output no
 	# matter what
 	try :
-		retval = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()))
-		return (retval, True)
+		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()))
+		if outputFormat == "n3" :
+			retval = 'Content-Type: text/rdf+n3; charset=utf-8\n\n'
+		elif outputFormat == "nt" or outputFormat == "turtle" :
+			retval = 'Content-Type: text/turtle; charset=utf-8\n\n'
+		elif outputFormat == "json-ld" or outputFormat == "json" :
+			retval = 'Content-Type: application/json; charset=utf-8\n\n'
+		else :
+			retval = 'Content-Type: application/rdf+xml; charset=utf-8\n\n'
+		
+		retval += graph
+		return retval
 	except HTTPError, h :
 		import cgi
 		
@@ -769,7 +779,7 @@ def processURI(uri, outputFormat, form={}) :
 		retval += "<p>On URI: <code>'%s'</code></p>\n" % cgi.escape(uri)
 		retval +="</body>\n"
 		retval +="</html>\n"
-		return (retval, False)
+		return retval
 	except :
 		# This branch should occur only if an exception is really raised, ie, if it is not turned
 		# into a graph value.
@@ -809,7 +819,7 @@ def processURI(uri, outputFormat, form={}) :
 		retval +="</dl>\n"
 		retval +="</body>\n"
 		retval +="</html>\n"
-		return (retval, False)
+		return retval
 		
 
 ################################################# Deprecated entry points, kept for backward compatibility... 
