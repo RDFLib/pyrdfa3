@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.59 2012-03-06 14:43:51 ivan Exp $ $Date: 2012-03-06 14:43:51 $
+$Id: __init__.py,v 1.60 2012-03-06 14:56:49 ivan Exp $ $Date: 2012-03-06 14:56:49 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -744,7 +744,7 @@ def processURI(uri, outputFormat, form={}) :
 	htmlOutput = False
 	if 'HTTP_ACCEPT' in os.environ :
 		acc = os.environ['HTTP_ACCEPT']
-		possibilities = ['text/html','application/rdf+xml','text/turtle; charset=utf-8']
+		possibilities = ['text/html','application/rdf+xml','text/turtle; charset=utf-8', 'application/json', 'application/ld+json']
 
 		# this nice module does content negotiation and returns the preferred format
 		sg = acceptable_content_type(acc, possibilities)
@@ -754,7 +754,7 @@ def processURI(uri, outputFormat, form={}) :
 	# This is really for testing purposes only, it is an unpublished flag to force RDF output no
 	# matter what
 	try :
-		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()))
+		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()) or not htmlOutput)
 		if outputFormat == "n3" :
 			retval = 'Content-Type: text/rdf+n3; charset=utf-8\n\n'
 		elif outputFormat == "nt" or outputFormat == "turtle" :
