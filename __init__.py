@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.60 2012-03-06 14:56:49 ivan Exp $ $Date: 2012-03-06 14:56:49 $
+$Id: __init__.py,v 1.61 2012-03-07 09:17:41 ivan Exp $ $Date: 2012-03-07 09:17:41 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -709,8 +709,17 @@ def processURI(uri, outputFormat, form={}) :
 
 	output_default_graph 	= True
 	output_processor_graph 	= False
+	# Note that I use the 'graph' and the 'rdfagraph' form keys here. Reason is that
+	# I used 'graph' in the previous versions, including the RDFa 1.0 processor,
+	# so if I removed that altogether that would create backward incompatibilities
+	# On the other hand, the RDFa 1.1 doc clearly refers to 'rdfagraph' as the standard
+	# key.
+	a = None
 	if "graph" in form.keys() :
 		a = form.getfirst("graph").lower()
+	elif "rdfagraph" in form.keys() :
+		a = form.getfirst("rdfagraph").lower()
+	if a != None :
 		if a == "processor" :
 			output_default_graph 	= False
 			output_processor_graph 	= True
