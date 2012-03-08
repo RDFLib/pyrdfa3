@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.64 2012-03-08 15:16:30 ivan Exp $ $Date: 2012-03-08 15:16:30 $
+$Id: __init__.py,v 1.65 2012-03-08 15:41:13 ivan Exp $ $Date: 2012-03-08 15:41:13 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -213,7 +213,7 @@ ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
 # Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
-debug = False
+debug = True
 
 #########################################################################################################
 
@@ -491,7 +491,7 @@ class pyRdfa :
 		for trans in self.options.transformers + builtInTransformers :
 			trans(topElement, self.options, state)
 		
-		# if debug : self.options.add_info("space preserve value: %s" % self.options.space_preserve)
+		if debug : self.options.add_info("space preserve value: %s" % self.options.space_preserve)
 		
 		# This may have changed if the state setting detected an explicit version information:
 		self.rdfa_version = state.rdfa_version
@@ -670,10 +670,11 @@ def processURI(uri, outputFormat, form={}) :
 	@rtype: string
 	"""
 	def _get_option(param, compare_value, default) :
-		retval = default
 		if param in form.keys() :
 			val = form.getfirst(param).lower()
 			return val == compare_value
+		else :
+			return default
 
 	if uri == "uploaded:" :
 		input	= form["uploaded"].file
@@ -754,6 +755,7 @@ def processURI(uri, outputFormat, form={}) :
 		
 	embedded_rdf       = _get_option( "embedded-rdf", "true", True)
 	space_preserve     = _get_option( "space-preserve", "true", True)
+	#space_preserve = True
 	vocab_cache        = _get_option( "vocab-cache", "true", True)
 	vocab_cache_report = _get_option( "vocab-cache-report", "true", False)
 	refresh_vocab_cache = _get_option( "vocab-cache-refresh", "true", False)
