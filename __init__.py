@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.61 2012-03-07 09:17:41 ivan Exp $ $Date: 2012-03-07 09:17:41 $
+$Id: __init__.py,v 1.62 2012-03-08 10:54:50 ivan Exp $ $Date: 2012-03-08 10:54:50 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -362,6 +362,7 @@ class pyRdfa :
 	@ivar options: an instance of the L{Options} class
 	@ivar media_type: the preferred default media type, possibly set at initialization
 	@ivar base: the base value, possibly set at initialization
+	@ivar http_status: HTTP Status, to be returned when the package is used via a CGI entry. Initially set to 200, may be modified by exception handlers
 	"""
 	def __init__(self, options = None, base = "", media_type = "", rdfa_version = None) :
 		"""
@@ -371,6 +372,8 @@ class pyRdfa :
 		@keyword media_type: explicit setting of the preferred media type (a.k.a. content type) of the the RDFa source
 		@keyword rdfa_version: the RDFa version that should be used. If not set, the value of the global L{rdfa_current_version} variable is used
 		"""
+		self.http_status = 200
+		
 		self.base = base
 		if base == "" :
 			self.required_base = None
@@ -488,9 +491,11 @@ class pyRdfa :
 		for trans in self.options.transformers + builtInTransformers :
 			trans(topElement, self.options, state)
 		
+		# if debug : self.options.add_info("space preserve value: %s" % self.options.space_preserve)
+		
 		# This may have changed if the state setting detected an explicit version information:
 		self.rdfa_version = state.rdfa_version
-		
+				
 		# The top level subject starts with the current document; this
 		# is used by the recursion
 		# this function is the real workhorse
@@ -544,48 +549,69 @@ class pyRdfa :
 			return tog		
 		
 		try :
-			# First, open the source...
-			input = self._get_input(name)
-			msg = ""
-			parser = None
-			if self.options.host_language == HostLanguage.html5 :
-				import warnings
-				warnings.filterwarnings("ignore", category=DeprecationWarning)
-				import html5lib
-				parser = html5lib.HTMLParser(tree=html5lib.treebuilders.getTreeBuilder("dom"))
-				if self.charset :
-					# This means the HTTP header has provided a charset, or the
-					# file is a local file when we suppose it to be a utf-8
-					dom = parser.parse(input, encoding=self.charset)
+			# First, open the source... Possible HTTP errors are returned as error triples
+			input = None
+			try :
+				input = self._get_input(name)
+			except FailedSource, f :
+				if not rdfOutput : raise f
+				self.options.add_error(f.msg, FileReferenceError, name)
+				self.http_status = 400
+				return copyErrors(graph, self.options)
+			except HTTPError, h:
+				if not rdfOutput : raise h
+				self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg))
+				self.http_status = h.http_code
+				return copyErrors(graph, self.options)
+			except Exception, e :
+				# Something nasty happened:-(
+				if not rdfOutput : raise e
+				self.options.add_error(str(e))
+				self.http_status = 500
+				return copyErrors(graph, self.options)
+
+			dom = None
+			try :
+				msg = ""
+				parser = None
+				if self.options.host_language == HostLanguage.html5 :
+					import warnings
+					warnings.filterwarnings("ignore", category=DeprecationWarning)
+					import html5lib
+					parser = html5lib.HTMLParser(tree=html5lib.treebuilders.getTreeBuilder("dom"))
+					if self.charset :
+						# This means the HTTP header has provided a charset, or the
+						# file is a local file when we suppose it to be a utf-8
+						dom = parser.parse(input, encoding=self.charset)
+					else :
+						# No charset set. The HTMLLib parser tries to sniff into the
+						# the file to find a meta header for the charset; if that
+						# works, fine, otherwise it falls back on window-...
+						dom = parser.parse(input)
 				else :
-					# No charset set. The HTMLLib parser tries to sniff into the
-					# the file to find a meta header for the charset; if that
-					# works, fine, otherwise it falls back on window-...
-					dom = parser.parse(input)
-					
-			else :
-				# in other cases an XML parser has to be used
-				
-				from pyRdfa.host import adjust_xhtml
-				
-				parse = xml.dom.minidom.parse
-				dom = parse(input)
-				adjusted_host_language = adjust_xhtml(dom, self.options.host_language)
-				self.options.host_language = adjusted_host_language
-			#dom = parse(input,encoding='utf-8')
+					# in other cases an XML parser has to be used
+					from pyRdfa.host import adjust_xhtml
+					parse = xml.dom.minidom.parse
+					dom = parse(input)
+					adjusted_host_language = adjust_xhtml(dom, self.options.host_language)
+					self.options.host_language = adjusted_host_language
+			except Exception, e :
+				# These are various parsing exception. Per spec, this is a case when
+				# error triples MUST be returned, ie, the usage of rdfOutput (which switches between an HTML formatted
+				# return page or a graph with error triples) does not apply
+				self.options.add_error(str(e))
+				self.http_status = 400
+				return copyErrors(graph, self.options)
+
+			# If we got here, we have a DOM tree to operate on...	
 			return self.graph_from_DOM(dom, graph, pgraph)
-		except FailedSource, f :
-			if not rdfOutput : raise f
-			self.options.add_error(f.msg, FileReferenceError, name)
-			return copyErrors(graph, self.options)
-		except HTTPError, h:
-			if not rdfOutput : raise h
-			#self.options.add_error(f.msg, FileReferenceError, name)
-			return copyErrors(graph, self.options)
 		except Exception, e :
+			# Something nasty happened during the generation of the graph...
 			(a,b,c) = sys.exc_info()
 			sys.excepthook(a,b,c)
 			if not rdfOutput : raise e
+			self.options.add_error(str(e))
+			self.http_status = 500
 			return copyErrors(graph, self.options)
 	
 	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
@@ -727,7 +753,7 @@ def processURI(uri, outputFormat, form={}) :
 			output_processor_graph 	= True
 		
 	embedded_rdf       = _get_option( "embedded-rdf", "true", True)
-	space_preserve     = _get_option( "space-preserve", "false", True)
+	space_preserve     = _get_option( "space-preserve", "true", True)
 	vocab_cache        = _get_option( "vocab-cache", "true", True)
 	vocab_cache_report = _get_option( "vocab-cache-report", "true", False)
 	refresh_vocab_cache = _get_option( "vocab-cache-refresh", "true", False)
@@ -765,13 +791,14 @@ def processURI(uri, outputFormat, form={}) :
 	try :
 		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()) or not htmlOutput)
 		if outputFormat == "n3" :
-			retval = 'Content-Type: text/rdf+n3; charset=utf-8\n\n'
+			retval = 'Content-Type: text/rdf+n3; charset=utf-8\n'
 		elif outputFormat == "nt" or outputFormat == "turtle" :
-			retval = 'Content-Type: text/turtle; charset=utf-8\n\n'
+			retval = 'Content-Type: text/turtle; charset=utf-8\n'
 		elif outputFormat == "json-ld" or outputFormat == "json" :
-			retval = 'Content-Type: application/json; charset=utf-8\n\n'
+			retval = 'Content-Type: application/json; charset=utf-8\n'
 		else :
-			retval = 'Content-Type: application/rdf+xml; charset=utf-8\n\n'
+			retval = 'Content-Type: application/rdf+xml; charset=utf-8\n'
+		retval += 'Status: %s\n\n' % processor.http_status
 		
 		retval += graph
 		return retval
@@ -781,9 +808,9 @@ def processURI(uri, outputFormat, form={}) :
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s \n\n' % h.http_code
 		retval += "<html>\n"		
 		retval += "<head>\n"
-		retval += "<title>HTTP Error in RDFa processing</title>\n"
+		retval += "<title>HTTP Error in distilling RDFa content</title>\n"
 		retval += "</head><body>\n"
-		retval += "<h1>HTTP Error in distilling RDFa</h1>\n"
+		retval += "<h1>HTTP Error in distilling RDFa content</h1>\n"
 		retval += "<p>HTTP Error: %s (%s)</p>\n" % (h.http_code,h.msg)
 		retval += "<p>On URI: <code>'%s'</code></p>\n" % cgi.escape(uri)
 		retval +="</body>\n"
@@ -797,7 +824,7 @@ def processURI(uri, outputFormat, form={}) :
 		import traceback, cgi
 		import StringIO
 
-		retval = 'Content-type: text/html; charset=utf-8\nStatus: 400\n\n'
+		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s\n\n' % processor.http_status
 		retval += "<html>\n"		
 		retval += "<head>\n"
 		retval += "<title>Exception in RDFa processing</title>\n"

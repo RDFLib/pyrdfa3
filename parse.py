@@ -16,8 +16,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.11 2012-02-24 10:52:42 ivan Exp $
-$Date: 2012-02-24 10:52:42 $
+$Id: parse.py,v 1.12 2012-03-08 10:54:50 ivan Exp $
+$Date: 2012-03-08 10:54:50 $
 """
 
 import sys
@@ -41,9 +41,8 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa import IncorrectBlankNodeUsage, err_no_blank_node
+from pyRdfa       import IncorrectBlankNodeUsage, err_no_blank_node
 from pyRdfa.utils import has_one_of_attributes
-
 
 #######################################################################
 def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
@@ -89,6 +88,14 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	@return: whether the caller has to complete it's parent's incomplete triples
 	@rtype: Boolean
 	"""
+	def header_check(p_obj) :
+		"""Special disposition for the HTML <head> and <body> elements..."""
+		if state.options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5 ] :
+			if node.nodeName == "head" or node.nodeName == "body" :
+				if not has_one_of_attributes(node, "about", "resource", "src", "href") :
+					return p_obj
+		else :
+			return None
 
 	# Update the state. This means, for example, the possible local settings of
 	# namespaces and lang
@@ -125,10 +132,11 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	current_subject = None
 	current_object  = None
 	typed_resource	= None
-
+	
 	if has_one_of_attributes(node, "rel", "rev")  :
 		# in this case there is the notion of 'left' and 'right' of @rel/@rev
 		# in establishing the new Subject and the objectResource
+		current_subject = header_check(parent_object)
 
 		# set first the subject
 		if node.hasAttribute("about") :
@@ -156,6 +164,8 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 			state.reset_list_mapping(origin = current_object)
 
 	elif  node.hasAttribute("property") and not has_one_of_attributes(node, "content", "datatype") :
+		current_subject = header_check(parent_object)
+
 		# this is the case when the property may take hold of @src and friends...
 		if node.hasAttribute("about") :
 			current_subject = state.getURI("about")
@@ -177,9 +187,12 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 			current_object = current_subject
 			
 	else :
+		current_subject = header_check(parent_object)
+
 		# in this case all the various 'resource' setting attributes
 		# behave identically, though they also have their own priority
-		current_subject = state.getResource("about", "resource", "href", "src")
+		if current_subject == None :
+			current_subject = state.getResource("about", "resource", "href", "src")
 			
 		# get_URI_ref may return None in case of an illegal CURIE, so
 		# we have to be careful here, not use only an 'else'
