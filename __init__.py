@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.63 2012-03-08 15:08:28 ivan Exp $ $Date: 2012-03-08 15:08:28 $
+$Id: __init__.py,v 1.64 2012-03-08 15:16:30 ivan Exp $ $Date: 2012-03-08 15:16:30 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -798,7 +798,7 @@ def processURI(uri, outputFormat, form={}) :
 			retval = 'Content-Type: application/json; charset=utf-8\n'
 		else :
 			retval = 'Content-Type: application/rdf+xml; charset=utf-8\n'
-		
+		retval += '\n'
 		retval += graph
 		return retval
 	except HTTPError, h :
