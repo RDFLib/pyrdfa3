@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.65 2012-03-08 15:41:13 ivan Exp $ $Date: 2012-03-08 15:41:13 $
+$Id: __init__.py,v 1.66 2012-03-09 12:57:58 ivan Exp $ $Date: 2012-03-09 12:57:58 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -554,20 +554,20 @@ class pyRdfa :
 			try :
 				input = self._get_input(name)
 			except FailedSource, f :
+				self.http_status = 400
 				if not rdfOutput : raise f
 				self.options.add_error(f.msg, FileReferenceError, name)
-				self.http_status = 400
 				return copyErrors(graph, self.options)
 			except HTTPError, h:
+				self.http_status = h.http_code
 				if not rdfOutput : raise h
 				self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg))
-				self.http_status = h.http_code
 				return copyErrors(graph, self.options)
 			except Exception, e :
+				self.http_status = 500
 				# Something nasty happened:-(
 				if not rdfOutput : raise e
 				self.options.add_error(str(e))
-				self.http_status = 500
 				return copyErrors(graph, self.options)
 
 			dom = None
@@ -609,9 +609,9 @@ class pyRdfa :
 			# Something nasty happened during the generation of the graph...
 			(a,b,c) = sys.exc_info()
 			sys.excepthook(a,b,c)
+			self.http_status = 500
 			if not rdfOutput : raise e
 			self.options.add_error(str(e))
-			self.http_status = 500
 			return copyErrors(graph, self.options)
 	
 	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
