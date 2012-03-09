@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.66 2012-03-09 12:57:58 ivan Exp $ $Date: 2012-03-09 12:57:58 $
+$Id: __init__.py,v 1.67 2012-03-09 14:41:53 ivan Exp $ $Date: 2012-03-09 14:41:53 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -264,6 +264,7 @@ UnresolvableTerm			= ns_rdfa["UnresolvedTerm"]
 VocabReferenceError			= ns_rdfa["VocabReferenceError"]
 
 FileReferenceError			= ns_distill["FileReferenceError"]
+HTError						= ns_distill["HTTPError"]
 IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
 IncorrectBlankNodeUsage     = ns_distill["IncorrectBlankNodeUsage"]
 IncorrectLiteral	        = ns_distill["IncorrectLiteral"]
@@ -556,18 +557,21 @@ class pyRdfa :
 			except FailedSource, f :
 				self.http_status = 400
 				if not rdfOutput : raise f
-				self.options.add_error(f.msg, FileReferenceError, name)
+				err = self.options.add_error(f.msg, FileReferenceError, name)
+				self.options.processor_graph.add_http_context(err, 400)
 				return copyErrors(graph, self.options)
 			except HTTPError, h:
 				self.http_status = h.http_code
 				if not rdfOutput : raise h
-				self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg))
+				err = self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg), HTError, name)
+				self.options.processor_graph.add_http_context(err, h.http_code)
 				return copyErrors(graph, self.options)
 			except Exception, e :
 				self.http_status = 500
 				# Something nasty happened:-(
 				if not rdfOutput : raise e
-				self.options.add_error(str(e))
+				err = self.options.add_error(str(e), context = name)
+				self.options.processor_graph.add_http_context(err, 500)
 				return copyErrors(graph, self.options)
 
 			dom = None
@@ -599,8 +603,9 @@ class pyRdfa :
 				# These are various parsing exception. Per spec, this is a case when
 				# error triples MUST be returned, ie, the usage of rdfOutput (which switches between an HTML formatted
 				# return page or a graph with error triples) does not apply
-				self.options.add_error(str(e))
+				err = self.options.add_error(str(e), context = name)
 				self.http_status = 400
+				self.options.processor_graph.add_http_context(err, 400)
 				return copyErrors(graph, self.options)
 
 			# If we got here, we have a DOM tree to operate on...	
@@ -611,7 +616,8 @@ class pyRdfa :
 			sys.excepthook(a,b,c)
 			self.http_status = 500
 			if not rdfOutput : raise e
-			self.options.add_error(str(e))
+			err = self.options.add_error(str(e), context = name)
+			self.options.processor_graph.add_http_context(err, 500)
 			return copyErrors(graph, self.options)
 	
 	def rdf_from_sources(self, names, outputFormat = "pretty-xml", rdfOutput = False) :
@@ -781,7 +787,12 @@ def processURI(uri, outputFormat, form={}) :
 	htmlOutput = False
 	if 'HTTP_ACCEPT' in os.environ :
 		acc = os.environ['HTTP_ACCEPT']
-		possibilities = ['text/html','application/rdf+xml','text/turtle; charset=utf-8', 'application/json', 'application/ld+json']
+		possibilities = ['text/html',
+						 'application/rdf+xml',
+						 'text/turtle; charset=utf-8',
+						 'application/json',
+						 'application/ld+json',
+						 'text/rdf+n3']
 
 		# this nice module does content negotiation and returns the preferred format
 		sg = acceptable_content_type(acc, possibilities)

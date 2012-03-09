@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.9 2012-02-24 10:52:42 ivan Exp $ $Date: 2012-02-24 10:52:42 $
+$Id: options.py,v 1.10 2012-03-09 14:41:53 ivan Exp $ $Date: 2012-03-09 14:41:53 $
 """
 
 import sys, datetime
@@ -45,7 +45,9 @@ class ProcessorGraph :
 		self.graph = Graph()
 		self.graph.bind("dcterm", ns_dc)
 		self.graph.bind("pyrdfa", ns_distill)
-		self.graph.bind("rdf", ns_rdf)
+		self.graph.bind("rdf",    ns_rdf)
+		self.graph.bind("rdfa",   ns_rdfa)
+		self.graph.bind("ht",     ns_ht)
 		
 	def add_triples(self, msg, top_class, info_class, context, node) :
 		"""
@@ -80,14 +82,14 @@ class ProcessorGraph :
 			self.graph.add((bnode, ns_rdf["type"], info_class))
 		self.graph.add((bnode, ns_dc["description"], Literal(full_msg)))
 		self.graph.add((bnode, ns_dc["date"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
-		if context :
-			if not isinstance(context,URIRef) :
-				context = URIRef(context)
-			self.graph.add((bnode, ns_rdfa["context"], context))
+		if context and (isinstance(context,URIRef) or isinstance(context, basestring)):
+			htbnode = BNode()
+			self.graph.add( (bnode,   ns_rdfa["context"],htbnode) )
+			self.graph.add( (htbnode, ns_rdf["type"], ns_ht["Request"]) )
+			self.graph.add( (htbnode, ns_ht["requestURI"], Literal("%s" % context)) )
 		return bnode
 	
 	def add_http_context(self, subj, http_code) :
-		self.graph.bind("ht",ns_ht)
 		bnode = BNode()
 		self.graph.add((subj, ns_rdfa["context"], bnode))
 		self.graph.add((bnode, ns_rdf["type"], ns_ht["Response"]))
