@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.67 2012-03-09 14:41:53 ivan Exp $ $Date: 2012-03-09 14:41:53 $
+$Id: __init__.py,v 1.68 2012-03-09 14:51:19 ivan Exp $ $Date: 2012-03-09 14:51:19 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -491,8 +491,6 @@ class pyRdfa :
 		# Perform the built-in and external transformations on the HTML tree. 
 		for trans in self.options.transformers + builtInTransformers :
 			trans(topElement, self.options, state)
-		
-		if debug : self.options.add_info("space preserve value: %s" % self.options.space_preserve)
 		
 		# This may have changed if the state setting detected an explicit version information:
 		self.rdfa_version = state.rdfa_version
