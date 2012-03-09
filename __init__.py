@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.68 2012-03-09 14:51:19 ivan Exp $ $Date: 2012-03-09 14:51:19 $
+$Id: __init__.py,v 1.69 2012-03-09 15:54:44 ivan Exp $ $Date: 2012-03-09 15:54:44 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -213,7 +213,7 @@ ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
 # Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
 
-debug = True
+debug = False
 
 #########################################################################################################
 
@@ -286,6 +286,7 @@ err_query_reference					= "CURIE Reference query part contains an unauthorized c
 err_fragment_reference				= "CURIE Reference fragment part contains an unauthorized character: %s (in '%s'); ignored"     
 
 err_lang							= "Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)"
+err_lang2							= "xml:lang is used without lang (%s)"
 err_URI_scheme						= "Unusual URI scheme used in <%s>; may that be a mistake, e.g., resulting from using an undefined CURIE prefix or an incorrect CURIE?"
 err_illegal_safe_CURIE				= "Illegal safe CURIE: %s; ignored"
 err_no_CURIE_in_safe_CURIE			= "Safe CURIE is used, but the value does not correspond to a defined CURIE: [%s]; ignored"

@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.8 2012-02-24 09:25:28 ivan Exp $
-$Date: 2012-02-24 09:25:28 $
+$Id: state.py,v 1.9 2012-03-09 15:54:44 ivan Exp $
+$Date: 2012-03-09 15:54:44 $
 """
 
 import rdflib
@@ -41,7 +41,7 @@ from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang, beauti
 from pyRdfa.termorcurie	import TermOrCurie
 from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
 
-from pyRdfa import err_lang							
+from pyRdfa import err_lang, err_lang2							
 from pyRdfa import err_URI_scheme						
 from pyRdfa import err_illegal_safe_CURIE				
 from pyRdfa import err_no_CURIE_in_safe_CURIE			
@@ -218,18 +218,17 @@ class ExecutionContext :
 			
 		self.supress_lang = False
 			
-		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.xhtml5 ] :
+			
+		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.xhtml5, HostLanguage.html5 ] :
 			# we may have lang and xml:lang
 			if node.hasAttribute("lang") :
 				lang = node.getAttribute("lang").lower()
 			else :
 				lang = None
-				
 			if node.hasAttribute("xml:lang") :
 				xmllang = node.getAttribute("xml:lang").lower()
 			else :
 				xmllang = None
-				
 			# First of all, set the value, if any
 			if xmllang != None :
 				# this has priority
@@ -242,13 +241,11 @@ class ExecutionContext :
 					self.lang = lang
 				else :
 					self.lang = None
-				
-			# check a posible warning (error?), too
+			# check a posible warnings, too
 			if lang != None and xmllang != None and lang != xmllang :
 				self.options.add_warning(err_lang % (xmllang, lang), node=self.node.nodeName)
-		elif self.options.host_language == HostLanguage.html5 and node.hasAttribute("lang") :
-			self.lang = node.getAttribute("lang").lower()
-			if len(self.lang) == 0 : self.lang = None
+			if lang == None and xmllang != None and self.options.host_language in [ HostLanguage.xhtml5, HostLanguage.html5 ] :
+				self.options.add_warning(err_lang2 % xmllang, node=self.node.nodeName)
 		elif self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
 				self.lang = node.getAttribute("xml:lang").lower()
 				if len(self.lang) == 0 : self.lang = None
