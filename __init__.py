@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.69 2012-03-09 15:54:44 ivan Exp $ $Date: 2012-03-09 15:54:44 $
+$Id: __init__.py,v 1.70 2012-03-09 16:42:38 ivan Exp $ $Date: 2012-03-09 16:42:38 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -784,19 +784,19 @@ def processURI(uri, outputFormat, form={}) :
 
 	# decide whether HTML or RDF should be sent. 
 	htmlOutput = False
-	if 'HTTP_ACCEPT' in os.environ :
-		acc = os.environ['HTTP_ACCEPT']
-		possibilities = ['text/html',
-						 'application/rdf+xml',
-						 'text/turtle; charset=utf-8',
-						 'application/json',
-						 'application/ld+json',
-						 'text/rdf+n3']
-
-		# this nice module does content negotiation and returns the preferred format
-		sg = acceptable_content_type(acc, possibilities)
-		htmlOutput = (sg != None and sg[0] == content_type('text/html'))
-		os.environ['rdfaerror'] = 'true'
+	#if 'HTTP_ACCEPT' in os.environ :
+	#	acc = os.environ['HTTP_ACCEPT']
+	#	possibilities = ['text/html',
+	#					 'application/rdf+xml',
+	#					 'text/turtle; charset=utf-8',
+	#					 'application/json',
+	#					 'application/ld+json',
+	#					 'text/rdf+n3']
+	#
+	#	# this nice module does content negotiation and returns the preferred format
+	#	sg = acceptable_content_type(acc, possibilities)
+	#	htmlOutput = (sg != None and sg[0] == content_type('text/html'))
+	#	os.environ['rdfaerror'] = 'true'
 		
 	# This is really for testing purposes only, it is an unpublished flag to force RDF output no
 	# matter what
