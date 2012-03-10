@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.70 2012-03-09 16:42:38 ivan Exp $ $Date: 2012-03-09 16:42:38 $
+$Id: __init__.py,v 1.71 2012-03-10 12:16:53 ivan Exp $ $Date: 2012-03-10 12:16:53 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -285,8 +285,7 @@ err_absolute_reference				= "CURIE Reference part contains an authority part: %s
 err_query_reference					= "CURIE Reference query part contains an unauthorized character: %s (in '%s'); ignored"     
 err_fragment_reference				= "CURIE Reference fragment part contains an unauthorized character: %s (in '%s'); ignored"     
 
-err_lang							= "Both xml:lang and lang used on an element with different values; xml:lang prevails. (%s and %s)"
-err_lang2							= "xml:lang is used without lang (%s)"
+err_lang							= "There is a problem with language setting; either both xml:lang and lang used on an element with different values, or, for (X)HTML5, only xml:lang is used."
 err_URI_scheme						= "Unusual URI scheme used in <%s>; may that be a mistake, e.g., resulting from using an undefined CURIE prefix or an incorrect CURIE?"
 err_illegal_safe_CURIE				= "Illegal safe CURIE: %s; ignored"
 err_no_CURIE_in_safe_CURIE			= "Safe CURIE is used, but the value does not correspond to a defined CURIE: [%s]; ignored"

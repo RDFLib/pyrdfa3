@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.9 2012-03-09 15:54:44 ivan Exp $
-$Date: 2012-03-09 15:54:44 $
+$Id: state.py,v 1.10 2012-03-10 12:16:53 ivan Exp $
+$Date: 2012-03-10 12:16:53 $
 """
 
 import rdflib
@@ -41,7 +41,7 @@ from pyRdfa.host 		import HostLanguage, accept_xml_base, accept_xml_lang, beauti
 from pyRdfa.termorcurie	import TermOrCurie
 from pyRdfa				import UnresolvablePrefix, UnresolvableTerm
 
-from pyRdfa import err_lang, err_lang2							
+from pyRdfa import err_lang							
 from pyRdfa import err_URI_scheme						
 from pyRdfa import err_illegal_safe_CURIE				
 from pyRdfa import err_no_CURIE_in_safe_CURIE			
@@ -229,6 +229,7 @@ class ExecutionContext :
 				xmllang = node.getAttribute("xml:lang").lower()
 			else :
 				xmllang = None
+			print "lang = %s, xml:lang = %s" % (lang,xmllang)
 			# First of all, set the value, if any
 			if xmllang != None :
 				# this has priority
@@ -242,10 +243,9 @@ class ExecutionContext :
 				else :
 					self.lang = None
 			# check a posible warnings, too
-			if lang != None and xmllang != None and lang != xmllang :
-				self.options.add_warning(err_lang % (xmllang, lang), node=self.node.nodeName)
-			if lang == None and xmllang != None and self.options.host_language in [ HostLanguage.xhtml5, HostLanguage.html5 ] :
-				self.options.add_warning(err_lang2 % xmllang, node=self.node.nodeName)
+			if (lang != None and xmllang != None and lang != xmllang) or (lang == None and xmllang != None and self.options.host_language in [ HostLanguage.xhtml5, HostLanguage.html5 ]) :
+				self.options.add_warning(err_lang, node=self.node.nodeName)
+				
 		elif self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
 				self.lang = node.getAttribute("xml:lang").lower()
 				if len(self.lang) == 0 : self.lang = None
