@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.10 2012-03-10 12:16:53 ivan Exp $
-$Date: 2012-03-10 12:16:53 $
+$Id: state.py,v 1.11 2012-03-12 11:06:34 ivan Exp $
+$Date: 2012-03-12 11:06:34 $
 """
 
 import rdflib
@@ -229,7 +229,6 @@ class ExecutionContext :
 				xmllang = node.getAttribute("xml:lang").lower()
 			else :
 				xmllang = None
-			print "lang = %s, xml:lang = %s" % (lang,xmllang)
 			# First of all, set the value, if any
 			if xmllang != None :
 				# this has priority
