@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.71 2012-03-10 12:16:53 ivan Exp $ $Date: 2012-03-10 12:16:53 $
+$Id: __init__.py,v 1.72 2012-03-13 12:50:55 ivan Exp $ $Date: 2012-03-13 12:50:55 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -684,6 +684,7 @@ def processURI(uri, outputFormat, form={}) :
 		input	= form["uploaded"].file
 		base	= ""
 	elif uri == "text:" :
+		import StringIO
 		input	= StringIO.StringIO(form.getfirst("text"))
 		base	= ""
 	else :
