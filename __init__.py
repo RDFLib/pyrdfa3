@@ -113,7 +113,7 @@ Vocabularies
 
 RDFa 1.1 has the notion of vocabulary files (using the C{@vocab} attribute) that may be used to expand the generated RDF graph. Expansion is based on some very simply RDF Schema statements on sub properties and sub classes.
 
-pyRdfa implements this feature, although it does not do this by default. The extra vocab-expansion parameter should be used for this extra step, for example::
+pyRdfa implements this feature, although it does not do this by default. The extra vocab_expansion parameter should be used for this extra step, for example::
  from pyRdfa.options import Options
  options = Options(vocab_expansion=True)
  print pyRdfa(options=options).rdf_from_source('filename')
@@ -123,7 +123,7 @@ The triples in the vocabulary files themselves (i.e., the small ontology in RDF 
 Vocabulary caching
 ------------------
 
-By default, pyRdfa uses a caching mechanism instead of fetching the vocabulary files each time their URI is met as a @vocab attribute value. (This behavior can be switched off setting the C{vocab-cache} option to false.) 
+By default, pyRdfa uses a caching mechanism instead of fetching the vocabulary files each time their URI is met as a @vocab attribute value. (This behavior can be switched off setting the C{vocab_cache} option to false.) 
 
 Caching happens in a file system directory. The directory itself is determined by the platform the tool is used on, namely:
  - On Windows, it is the C{pyRdfa-cache} subdirectory of the C{%APPDATA%} environment variable (referring to the usual place for application data)
@@ -159,7 +159,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.72 2012-03-13 12:50:55 ivan Exp $ $Date: 2012-03-13 12:50:55 $
+$Id: __init__.py,v 1.73 2012-03-13 13:56:35 ivan Exp $ $Date: 2012-03-13 13:56:35 $
 
 Thanks to Victor Andrée, who found some intricate bugs, and provided fixes, in the interplay between @prefix and @vocab...
 
@@ -657,14 +657,15 @@ def processURI(uri, outputFormat, form={}) :
 	The call accepts extra form options (eg, HTTP GET options) as follows:
 	
 	 - C{graph=[output|processor|output,processor|processor,output]} specifying which graphs are returned. Default: output.
-	 - C{space-preserve=[true|false]} means that plain literals are normalized in terms of white spaces. Default: false.
-	 - C{rfa-version} provides the RDFa version that should be used for distilling. The string should be of the form "1.0", "1.1", etc. Default is the highest version the current package implements.
-	 - C{host-language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header should be used
-	 - C{embedded-rdf=[true|false]} : whether embedded turtle or RDF/XML content should be added to the output graph. Default: true
-	 - C{vocab-expansion=[true|false]} : whether the vocabularies should be expanded through the restricted RDFS entailment. Default: false
-	 - C{vocab-cache=[true|false]} : whether vocab caching should be performed or whether it should be ignored and vocabulary files should be picked up every time. Default: false
-	 - C{vocab-cache-report=[true|false]} : whether vocab caching details should be reported. Default: false
-	 - C{vocab-cache-bypass=[true|false]} : whether vocab caches have to be regenerated every time: Default: false
+	 - C{space_preserve=[true|false]} means that plain literals are normalized in terms of white spaces. Default: false.
+	 - C{rfa_version} provides the RDFa version that should be used for distilling. The string should be of the form "1.0", "1.1", etc. Default is the highest version the current package implements.
+	 - C{host_language=[xhtml,html,xml]} : the host language. Used when files are uploaded or text is added verbatim, otherwise the HTTP return header should be used
+	 - C{embedded_rdf=[true|false]} : whether embedded turtle or RDF/XML content should be added to the output graph. Default: true
+	 - C{vocab_expansion=[true|false]} : whether the vocabularies should be expanded through the restricted RDFS entailment. Default: false
+	 - C{vocab_cache=[true|false]} : whether vocab caching should be performed or whether it should be ignored and vocabulary files should be picked up every time. Default: false
+	 - C{vocab_cache_report=[true|false]} : whether vocab caching details should be reported. Default: false
+	 - C{vocab_cache_bypass=[true|false]} : whether vocab caches have to be regenerated every time. Default: false
+	 - C{rdfa_lite=[true|false]} : whether warnings should be generated for non RDFa Lite attribute usage. Default: false
 
 	@param uri: URI to access. Note that the "text:" and "uploaded:" values are treated separately; the former is for textual intput (in which case a StringIO is used to get the data) and the latter is for uploaded file, where the form gives access to the file directly.
 	@param outputFormat: serialization formats, as understood by RDFLib. 
@@ -674,8 +675,14 @@ def processURI(uri, outputFormat, form={}) :
 	@rtype: string
 	"""
 	def _get_option(param, compare_value, default) :
+		param_old = param.replace('_','-')
 		if param in form.keys() :
 			val = form.getfirst(param).lower()
+			return val == compare_value
+		elif param_old in form.keys() :
+			# this is to ensure the old style parameters are still valid...
+			# in the old days I used '-' in the parameters, the standard favours '_'
+			val = form.getfirst(param_old).lower()
 			return val == compare_value
 		else :
 			return default
@@ -691,8 +698,8 @@ def processURI(uri, outputFormat, form={}) :
 		input	= uri
 		base	= uri
 		
-	if "rdfa-version" in form.keys() :
-		rdfa_version = form.getfirst("rdfa-version")
+	if "rdfa_version" in form.keys() :
+		rdfa_version = form.getfirst("rdfa_version")
 	else :
 		rdfa_version = None
 	
@@ -700,14 +707,14 @@ def processURI(uri, outputFormat, form={}) :
 	# Host language: HTML, XHTML, or XML
 	# Note that these options should be used for the upload and inline version only in case of a form
 	# for real uris the returned content type should be used
-	if "host-language" in form.keys() :
-		if form.getfirst("host-language").lower() == "xhtml" :
+	if "host_language" in form.keys() :
+		if form.getfirst("host_language").lower() == "xhtml" :
 			media_type = MediaTypes.xhtml
-		elif form.getfirst("host-language").lower() == "html" :
+		elif form.getfirst("host_language").lower() == "html" :
 			media_type = MediaTypes.html
-		elif form.getfirst("host-language").lower() == "svg" :
+		elif form.getfirst("host_language").lower() == "svg" :
 			media_type = MediaTypes.svg
-		elif form.getfirst("host-language").lower() == "atom" :
+		elif form.getfirst("host_language").lower() == "atom" :
 			media_type = MediaTypes.atom
 		else :
 			media_type = MediaTypes.xml
@@ -716,7 +723,7 @@ def processURI(uri, outputFormat, form={}) :
 		
 	transformers = []
 	
-	if "rdfa-lite" in form.keys() and form.getfirst("rdfa-lite").lower() == "true" :
+	if "rdfa_lite" in form.keys() and form.getfirst("rdfa_lite").lower() == "true" :
 		from pyRdfa.transform.lite import lite_prune
 		transformers.append(lite_prune)
 
@@ -758,13 +765,12 @@ def processURI(uri, outputFormat, form={}) :
 		elif a == "processor,output" or a == "output,processor" :
 			output_processor_graph 	= True
 		
-	embedded_rdf       = _get_option( "embedded-rdf", "true", True)
-	space_preserve     = _get_option( "space-preserve", "true", True)
-	#space_preserve = True
-	vocab_cache        = _get_option( "vocab-cache", "true", True)
-	vocab_cache_report = _get_option( "vocab-cache-report", "true", False)
-	refresh_vocab_cache = _get_option( "vocab-cache-refresh", "true", False)
-	vocab_expansion    = _get_option( "vocab-expansion", "true", False)
+	embedded_rdf        = _get_option( "embedded_rdf", "true", True)
+	space_preserve      = _get_option( "space_preserve", "true", True)
+	vocab_cache         = _get_option( "vocab_cache", "true", True)
+	vocab_cache_report  = _get_option( "vocab_cache_report", "true", False)
+	refresh_vocab_cache = _get_option( "vocab_cache_refresh", "true", False)
+	vocab_expansion     = _get_option( "vocab_expansion", "true", False)
 	if vocab_cache_report : output_processor_graph = True
 
 	options = Options(output_default_graph   = output_default_graph,
@@ -862,7 +868,7 @@ def processURI(uri, outputFormat, form={}) :
 		else :
 			retval +="<dt>Requested graphs:</dt><dd>default</dd>\n"
 		retval +="<dt>Output serialization format:</dt><dd> %s</dd>\n" % outputFormat
-		if "space-preserve" in form : retval +="<dt>Space preserve:</dt><dd> %s</dd>\n" % form["space-preserve"].value
+		if "space_preserve" in form : retval +="<dt>Space preserve:</dt><dd> %s</dd>\n" % form["space_preserve"].value
 		retval +="</dl>\n"
 		retval +="</body>\n"
 		retval +="</html>\n"
