@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: initialcontext.py,v 1.6 2012-03-12 15:31:56 ivan Exp $
-$Date: 2012-03-12 15:31:56 $
+$Id: initialcontext.py,v 1.7 2012-03-16 16:46:41 ivan Exp $
+$Date: 2012-03-16 16:46:41 $
 """
 
 class Wrapper :
@@ -87,6 +87,7 @@ initial_context["http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"].terms = {
 	'license'				: 'http://www.w3.org/1999/xhtml/vocab#license',
 	'p3pv1'					: 'http://www.w3.org/1999/xhtml/vocab#p3pv1',
 	'prev'					: 'http://www.w3.org/1999/xhtml/vocab#prev',
+	'previous'				: 'http://www.w3.org/1999/xhtml/vocab#previous',
 	'role'					: 'http://www.w3.org/1999/xhtml/vocab#role',
 	'section'				: 'http://www.w3.org/1999/xhtml/vocab#section',
 	'stylesheet'			: 'http://www.w3.org/1999/xhtml/vocab#stylesheet',

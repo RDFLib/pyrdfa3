@@ -18,8 +18,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.11 2012-03-12 11:06:34 ivan Exp $
-$Date: 2012-03-12 11:06:34 $
+$Id: state.py,v 1.12 2012-03-16 16:46:41 ivan Exp $
+$Date: 2012-03-16 16:46:41 $
 """
 
 import rdflib
@@ -387,7 +387,7 @@ class ExecutionContext :
 		
 		from termorcurie import ncname, termname
 		if termname.match(val) :
-			# This is a term, must be handled as such...
+			# This is a term, must be handled as such...			
 			retval = self.term_or_curie.term_to_URI(val)
 			if not retval :
 				self.options.add_warning(err_undefined_terms % val, UnresolvableTerm, node=self.node.nodeName, buggy_value = val)

@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.10 2012-03-09 14:41:53 ivan Exp $ $Date: 2012-03-09 14:41:53 $
+$Id: options.py,v 1.11 2012-03-16 16:46:41 ivan Exp $ $Date: 2012-03-16 16:46:41 $
 """
 
 import sys, datetime
@@ -193,6 +193,8 @@ class Options :
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
 		"""
+		# Note: the reason I added this escape from warning is because almost all RDFa files contain
+		# some of those terms, and I did not want to pollute the output with these...
 		if warning_type == ns_rdfa["UnresolvedTerm"] and buggy_value in predefined_1_0_rel :
 			return
 		return self.processor_graph.add_triples(txt, RDFA_Warning, warning_type, context, node)
