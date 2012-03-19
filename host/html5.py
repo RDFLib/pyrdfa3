@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.3 2011-11-24 15:59:15 ivan Exp $
-$Date: 2011-11-24 15:59:15 $
+$Id: html5.py,v 1.4 2012-03-19 06:34:43 ivan Exp $
+$Date: 2012-03-19 06:34:43 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
@@ -31,9 +31,17 @@ _formats = {
 	date_gMonthDay	: [ "%m-%d" ],
 	date_gYearMonth	: [ "%Y-%m"],
 	date_gYear     	: [ "%Y" ],
-	date_type      	: [ "%Y-%m-%d" ],
-	time_type      	: [ "%H:%M", "%H:%M:%S", "%H:%M:%S.%f" ],
-	datetime_type  	: [ "%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%MZ", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%fZ" ],
+	date_type      	: [ "%Y-%m-%d", "%Y-%m-%dZ" ],
+	time_type      	: [ "%H:%M",
+					    "%H:%M:%S",
+					    "%H:%M:%SZ",						
+					    "%H:%M:%S.%f" ],
+	datetime_type  	: [ "%Y-%m-%dT%H:%M",
+					    "%Y-%m-%dT%H:%M:%S",
+					    "%Y-%m-%dT%H:%M:%S.%f",
+					    "%Y-%m-%dT%H:%MZ",
+					    "%Y-%m-%dT%H:%M:%SZ",
+					    "%Y-%m-%dT%H:%M:%S.%fZ" ],
 }
 
 def _format_test(string) :
@@ -92,7 +100,8 @@ def html5_extra_attributes(node, state) :
 				rc = rc + node.data
 			elif node.nodeType == node.ELEMENT_NODE :
 				rc = rc + self._get_literal(node)
-		return re.sub(r'(\r| |\n|\t)+',"",rc).strip()
+		return rc
+		#return re.sub(r'(\r| |\n|\t)+',"",rc).strip()
 	# end getLiteral
 	
 	if node.tagName == "data" and not node.hasAttribute("content") :

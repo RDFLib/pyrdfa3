@@ -26,8 +26,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.9 2012-02-24 10:52:48 ivan Exp $
-$Date: 2012-02-24 10:52:48 $
+$Id: __init__.py,v 1.10 2012-03-19 06:34:43 ivan Exp $
+$Date: 2012-03-19 06:34:43 $
 """
 __version__ = "3.0"
 
@@ -80,7 +80,7 @@ host_dom_transforms = {
 }
 
 predefined_1_0_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
-'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next', 'p3pv1', 'prev',
+'copyright', 'glossary', 'help', 'icon', 'index', 'meta', 'next', 'p3pv1', 'prev', 'previous', 
 'role', 'section', 'subsection', 'start', 'license', 'up', 'last', 'stylesheet', 'first', 'top']
 
 # ----------------------------------------------------------------------------------------------------------
