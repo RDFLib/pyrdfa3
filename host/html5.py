@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.5 2012-03-19 08:37:41 ivan Exp $
-$Date: 2012-03-19 08:37:41 $
+$Id: html5.py,v 1.6 2012-03-19 09:10:23 ivan Exp $
+$Date: 2012-03-19 09:10:23 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
@@ -27,6 +27,8 @@ date_gYearMonth	= "http://www.w3.org/2001/XMLSchema#gYearMonth"
 date_gMonthDay	= "http://www.w3.org/2001/XMLSchema#gMonthDay"
 duration_type	= "http://www.w3.org/2001/XMLSchema#duration"
 plain			= "plain"
+
+handled_time_types = [ datetime_type, time_type, date_type, date_gYear, date_gYearMonth, date_gMonthDay, duration_type ]
 
 _formats = {
 	date_gMonthDay	  : [ "%m-%d" ],

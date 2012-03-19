@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.7 2012-03-19 08:47:35 ivan Exp $
-$Date: 2012-03-19 08:47:35 $
+$Id: property.py,v 1.8 2012-03-19 09:10:13 ivan Exp $
+$Date: 2012-03-19 09:10:13 $
 """
 
 import re
@@ -32,7 +32,8 @@ else :
 	from rdflib.Literal import XSDToPython
 
 from pyRdfa	import IncorrectBlankNodeUsage, IncorrectLiteral, err_no_blank_node, ns_xsd 
-from pyRdfa.utils import has_one_of_attributes
+from pyRdfa.utils      import has_one_of_attributes
+from pyRdfa.host.html5 import handled_time_types
 
 XMLLiteral = ns_rdf["XMLLiteral"]
 
@@ -265,7 +266,12 @@ class ProcessProperty :
 			# This is a bit convoluted... the default setup of rdflib does not gracefully react if the
 			# datatype cannot properly be converted to Python. I have to copy and reuse some of the
 			# rdflib code to get this working...
-			convFunc = XSDToPython.get(datatype, None)
+			# To make things worse: rdlib 3.1.0 does not handle the various xsd date types properly, ie,
+			# the conversion function below will generate errors. Ie, the check should be skipped for those
+			if ("%s" % datatype) in handled_time_types and rdflib.__version__ < "3.2.0" :
+				convFunc = False
+			else :
+				convFunc = XSDToPython.get(datatype, None)
 			if convFunc :
 				try :
 					pv = convFunc(val)
