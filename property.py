@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.6 2012-03-05 11:52:49 ivan Exp $
-$Date: 2012-03-05 11:52:49 $
+$Id: property.py,v 1.7 2012-03-19 08:47:35 ivan Exp $
+$Date: 2012-03-19 08:47:35 $
 """
 
 import re
@@ -270,10 +270,6 @@ class ProcessProperty :
 				try :
 					pv = convFunc(val)
 					# If we got there the literal value and its datatype match
-					return Literal(val, datatype=datatype)
 				except :
-					self.state.options.add_warning("Incompatible value (%s) and datatype (%s) in Literal definition; datatype is ignored." % (val, datatype), warning_type=IncorrectLiteral, node=self.node.nodeName)
-					return Literal(val)
-			else :
-				# This is a user defined datatype or something similar...
-				return Literal(val, datatype=datatype)
+					self.state.options.add_warning("Incompatible value (%s) and datatype (%s) in Literal definition." % (val, datatype), warning_type=IncorrectLiteral, node=self.node.nodeName)
+			return Literal(val, datatype=datatype)
