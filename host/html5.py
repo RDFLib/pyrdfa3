@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.6 2012-03-19 09:10:23 ivan Exp $
-$Date: 2012-03-19 09:10:23 $
+$Id: html5.py,v 1.7 2012-03-23 14:06:31 ivan Exp $
+$Date: 2012-03-23 14:06:31 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
@@ -58,6 +58,11 @@ _formats = {
 _dur_times = [ "%HH%MM%SS", "%HH", "%MM", "%SS", "%HH%MM", "%HH%SS", "%MM%SS" ]
 
 def _format_test(string) :
+	"""
+	Tests the string format to see whether it fits one of the time datatypes
+	@param string: attribute value to test
+	@return: a URI for the xsd datatype or the string 'plain'
+	"""
 	# Try to get the easy cases:
 	for key in _formats :
 		for format in _formats[key] :

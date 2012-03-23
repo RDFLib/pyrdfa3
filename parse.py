@@ -8,7 +8,6 @@ to L{_parse_1_0} and L{_parse_1_1}. Some of the parsing details (management of C
 between versions and forcing the two into one function would be counter productive.
 
 @summary: RDFa core parser processing step
-@requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -16,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.12 2012-03-08 10:54:50 ivan Exp $
-$Date: 2012-03-08 10:54:50 $
+$Id: parse.py,v 1.13 2012-03-23 14:06:25 ivan Exp $
+$Date: 2012-03-23 14:06:25 $
 """
 
 import sys
@@ -46,18 +45,17 @@ from pyRdfa.utils import has_one_of_attributes
 
 #######################################################################
 def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
-	"""The (recursive) step of handling a single node. See the
-	U{RDFa syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
+	"""The (recursive) step of handling a single node. 
 	
 	This entry just switches between the RDFa 1.0 and RDFa 1.1 versions for parsing. This method is only invoked once,
-	actually, that is from the top level; the recursion then happens in the L{_parse_1_0} and L{_parse_1_1} methods for
+	actually, from the top level; the recursion then happens in the L{_parse_1_0} and L{_parse_1_1} methods for
 	RDFa 1.0 and RDFa 1.1, respectively.
 
 	@param node: the DOM node to handle
 	@param graph: the RDF graph
 	@type graph: RDFLib's Graph object instance
 	@param parent_object: the parent's object, as an RDFLib URIRef
-	@param incoming_state: the inherited state (namespaces, lang, etc)
+	@param incoming_state: the inherited state (namespaces, lang, etc.)
 	@type incoming_state: L{state.ExecutionContext}
 	@param parent_incomplete_triples: list of hanging triples (the missing resource set to None) to be handled (or not)
 	by the current node.
@@ -73,15 +71,15 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 #######################################################################
 def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
 	"""The (recursive) step of handling a single node. See the
-	U{RDFa syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
+	U{RDFa 1.1 Core document<http://www.w3.org/TR/rdfa-core/>} for further details.
 	
-	This is the RDFa 1.1 (and higher) version.
+	This is the RDFa 1.1 version.
 
 	@param node: the DOM node to handle
 	@param graph: the RDF graph
 	@type graph: RDFLib's Graph object instance
 	@param parent_object: the parent's object, as an RDFLib URIRef
-	@param incoming_state: the inherited state (namespaces, lang, etc)
+	@param incoming_state: the inherited state (namespaces, lang, etc.)
 	@type incoming_state: L{state.ExecutionContext}
 	@param parent_incomplete_triples: list of hanging triples (the missing resource set to None) to be handled (or not)
 	by the current node.
@@ -313,7 +311,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 ##################################################################################################################
 def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
 	"""The (recursive) step of handling a single node. See the
-	U{RDFa syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
+	U{RDFa 1.0 syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
 	
 	This is the RDFa 1.0 version.
 
@@ -321,7 +319,7 @@ def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	@param graph: the RDF graph
 	@type graph: RDFLib's Graph object instance
 	@param parent_object: the parent's object, as an RDFLib URIRef
-	@param incoming_state: the inherited state (namespaces, lang, etc)
+	@param incoming_state: the inherited state (namespaces, lang, etc.)
 	@type incoming_state: L{state.ExecutionContext}
 	@param parent_incomplete_triples: list of hanging triples (the missing resource set to None) to be handled (or not)
 	by the current node.

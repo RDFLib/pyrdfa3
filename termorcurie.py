@@ -19,8 +19,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.6 2012-02-24 09:25:29 ivan Exp $
-$Date: 2012-02-24 09:25:29 $
+$Id: termorcurie.py,v 1.7 2012-03-23 14:06:25 ivan Exp $
+$Date: 2012-03-23 14:06:25 $
 """
 
 import re, sys
@@ -82,7 +82,8 @@ _empty_bnode = BNode()
 class InitialContext :
 	"""
 	Get the initial context values. In most cases this class has an empty content, except for the
-	top level (in case of RDFa 1.1). Each L{TermOrCurie} class has one instance of this class.
+	top level (in case of RDFa 1.1). Each L{TermOrCurie} class has one instance of this class. It provides initial
+	mappings for terms, namespace prefixes, etc, that the top level L{TermOrCurie} instance uses for its own initialization.
 	
 	@ivar terms: collection of all term mappings
 	@type terms: dictionary
@@ -130,15 +131,15 @@ class InitialContext :
 
 class TermOrCurie :
 	"""
-	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI (typical
-	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
+	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI. Each instance of this class belongs to a
 	"state", instance of L{state.ExecutionContext}. Context definitions are managed at initialization time.
 	
 	(In fact, this class is, conceptually, part of the overall state at a node, and has been separated here for an
 	easier maintenance.)
 	
 	The class takes care of the stack-like behavior of vocabulary items, ie, inheriting everything that is possible
-	from the "parent".
+	from the "parent". At initialization time, this works through the prefix definitions (i.e., C{@prefix} or C{@xmln:} attributes)
+	and/or C{@vocab} attributes.
 	
 	@ivar state: State to which this instance belongs
 	@type state: L{state.ExecutionContext}

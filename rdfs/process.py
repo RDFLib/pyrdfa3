@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-@summary: RDFa parser (distiller)
-@requires: Python version 2.5 or up
-@requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a more readable output serialization.
-@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -12,7 +8,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: process.py,v 1.6 2011-11-25 11:23:24 ivan Exp $ $Date: 2011-11-25 11:23:24 $
+$Id: process.py,v 1.7 2012-03-23 14:06:38 ivan Exp $ $Date: 2012-03-23 14:06:38 $
 
 """
 
@@ -65,6 +61,8 @@ def return_graph(uri, options, newCache = False) :
 	on the RDFa content.
 			
 	The Accept header of the HTTP request gives a preference to Turtle, followed by RDF/XML and then HTML (RDFa), in case content negotiation is used.
+	
+	This function is used to retreive the vocabulary file and turn it into an RDFLib graph.
 	
 	@param uri: URI for the graph
 	@param options: used as a place where warnings can be sent
@@ -145,8 +143,8 @@ equivalentClass 	= ns_owl["equivalentClass"]
 class MiniOWL :
 	"""
 	Class implementing the simple OWL RL Reasoning required by RDFa in managing vocabulary files. This is done via
-	a forward chaining process (in the L{closure} method) using a few simple rules as defined by the RDF Semantics
-	specification.
+	a forward chaining process (in the L{closure} method) using a few simple rules as defined by the RDF and the OWL Semantics
+	specifications.
 	
 	@ivar graph: the graph that has to be expanded
 	@ivar added_triples: each cycle collects the triples that are to be added to the graph eventually.
@@ -257,7 +255,16 @@ class MiniOWL :
 
 def process_rdfa_sem(graph, options) :
 	"""
-	Expand the graph through the minimal RDFS rules defined for RDFa.
+	Expand the graph through the minimal RDFS and OWL rules defined for RDFa.
+	
+	The expansion is done in several steps:
+	 1. the vocabularies are retrieved from the incoming graph (there are RDFa triples generated for that)
+	 2. all vocabularies are merged into a separate vocabulary graph
+	 3. the RDFS/OWL expansion is done on the vocabulary graph, to take care of all the subproperty, subclass, etc, chains
+	 4. the (expanded) vocabulary graph content is added to the incoming graph
+	 5. the incoming graph is expanded
+	 6. the triples appearing in the vocabulary graph are removed from the incoming graph, to avoid unnecessary extra triples from the data
+	 
 	@param graph: an RDFLib Graph instance, to be expanded
 	@param options: options as defined for the RDFa run; used to generate warnings
 	@type options: L{pyRdfa.Options}

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X, the turtle and the RDF/XML serialization has some issues (bugs and ugly output). As a result, the package’s own serializers should be registered and used. On the other hand, in RDFLib 3.X this becomes unnecessary, it is better to keep to the library’s own version. This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register, if necessary, a different serializer and use that one.
+Wrapper around RDFLib's Graph object. The issue is that, in RDFLib 2.X, the turtle and the RDF/XML serialization both have some issues (bugs and ugly output). As a result, the package’s own serializers should be registered and used. On the other hand, in RDFLib 3.X this becomes unnecessary, it is better to keep to the library’s own version. This wrapper provides a subclass of RDFLib’s Graph overriding the serialize method to register, if necessary, a different serializer and use that one.
 
-As an extra bonus, some bindings (in the RDFLib sense) are done automatically, to ensure a nicer output for widely used schemas…
+Also, some bindings (in the RDFLib sense) are done automatically, to ensure a nicer output for widely used schemas…
 
 @summary: Shell around RDLib's Graph
-@requires: Python version 2.5 or up
-@requires: U{RDFLib<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -16,14 +14,9 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: graph.py,v 1.5 2012-02-10 16:23:24 ivan Exp $ $Date: 2012-02-10 16:23:24 $
+$Id: graph.py,v 1.6 2012-03-23 14:06:25 ivan Exp $ $Date: 2012-03-23 14:06:25 $
 
 """
-
-__version__ = "3.0"
-__author__  = 'Ivan Herman'
-__contact__ = 'Ivan Herman, ivan@w3.org'
-__license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
 
 import rdflib
 if rdflib.__version__ >= "3.0.0" :

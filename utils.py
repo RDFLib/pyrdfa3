@@ -4,9 +4,6 @@ Various utilities for pyRdfa.
 
 Most of the utilities are straightforward.
 
-@summary: RDFa core parser processing step
-@requires: U{RDFLib package<http://rdflib.net>}
-@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}. To make distribution easier this module (single file) is added to the distribution.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -16,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.6 2012-03-06 14:12:48 ivan Exp $
-$Date: 2012-03-06 14:12:48 $
+$Id: utils.py,v 1.7 2012-03-23 14:06:25 ivan Exp $
+$Date: 2012-03-23 14:06:25 $
 """
 import os, os.path, sys, imp, datetime
 import urllib, urlparse, urllib2
@@ -40,12 +37,11 @@ class URIOpener :
 	The class also adds an accept header to the outgoing request, namely
 	text/html and application/xhtml+xml (unless set explicitly by the caller).
 	
-	The content type is either set by the HTTP return. If not set by the server, some common
-	suffixes are used (see L{preferred_suffixes}) to set the content type (this is really of importance
-	for file:/// URI-s). If none of these works, the content type is empty.
+	If the content type is set by the server, the relevant HTTP response field is used. Otherwise,
+	common suffixes are used (see L{host.preferred_suffixes}) to set the content type (this is really of importance
+	for C{file:///} URI-s). If none of these works, the content type is empty.
 		
-	Interpretation of the content type for the return is done by Deron Meranda's <http://deron.meranda.us/>
-	httpheader module.
+	Interpretation of the content type for the return is done by Deron Meranda's U{httpheader module<http://deron.meranda.us/>}.
 	
 	@ivar data: the real data, ie, a file-like object
 	@ivar headers: the return headers as sent back by the server

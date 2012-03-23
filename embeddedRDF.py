@@ -7,8 +7,7 @@ by U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>}.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: embeddedRDF.py,v 1.8 2012-02-24 10:52:42 ivan Exp $
-$Date: 2012-02-24 10:52:42 $
+@version: $Id: embeddedRDF.py,v 1.9 2012-03-23 14:06:25 ivan Exp $
 """
 
 from StringIO	 import StringIO
@@ -19,10 +18,10 @@ def handle_embeddedRDF(node, graph, state) :
 	"""
 	Handles embedded RDF. There are two possibilities:
 	
-	 - the file is one of the XML dialects that allow for an embedded RDF/XML portion. See the host description for those (a typical example is SVG). 
-	 - the file is HTML and there is a turtle portion in the <script> element with type text/turtle. 
+	 - the file is one of the XML dialects that allows for an embedded RDF/XML portion. See the L{host.accept_embedded_rdf_xml} for those (a typical example is SVG). 
+	 - the file is HTML and there is a turtle portion in the C{<script>} element with type text/turtle. 
 	
-	@param node: a DOM node for the top level xml element
+	@param node: a DOM node for the top level element
 	@param graph: target rdf graph
 	@type graph: RDFLib's Graph object instance
 	@param state: the inherited state (namespaces, lang, etc)

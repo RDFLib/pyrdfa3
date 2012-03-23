@@ -26,8 +26,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.10 2012-03-19 06:34:43 ivan Exp $
-$Date: 2012-03-19 06:34:43 $
+$Id: __init__.py,v 1.11 2012-03-23 14:06:31 ivan Exp $
+$Date: 2012-03-23 14:06:31 $
 """
 __version__ = "3.0"
 
@@ -127,7 +127,11 @@ preferred_suffixes = {
 	
 def adjust_xhtml(dom, incoming_language) :
 	"""
-	Check if the xhtml+RDFa is really XHTML 0 or 1 or whether it should be considered as XHTML5
+	Check if the xhtml+RDFa is really XHTML 0 or 1 or whether it should be considered as XHTML5. This is done
+	by looking at the DTD...
+	@param dom: top level DOM node
+	@param incoming_language: host language to be checked; the whole check is relevant for xhtml only.
+	@return: possibly modified host language (ie, set to XHTML5)
 	"""
 	pids = ["-//W3C//DTD XHTML+RDFa 1.1//EN",
 			"-//W3C//DTD XHTML+RDFa 1.0//EN",
