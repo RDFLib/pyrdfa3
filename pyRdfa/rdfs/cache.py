@@ -260,9 +260,8 @@ class CachedVocab(CachedVocabIndex) :
 			# This has never been cached before
 			if self.report: options.add_info("No cache exists for %s, generating one" % URI, VocabCachingInfo)
 			
-			self._get_vocab_data(newCache = True)
 			# Store all the cache data unless caching proves to be impossible
-			if self.caching :
+			if self._get_vocab_data(newCache = True) and self.caching :
 				self.filename = create_file_name(self.uri)
 				self._store_caches()
 				if self.report:
@@ -271,7 +270,7 @@ class CachedVocab(CachedVocabIndex) :
 			(self.filename, self.creation_date, self.expiration_date) = vocab_reference
 			if self.report: options.add_info("Found a cache for %s, expiring on %s" % (URI,self.expiration_date), VocabCachingInfo)
 			# Check if the expiration date is still away
-			if options.bypass_vocab_cache == False and datetime.datetime.utcnow() <= self.expiration_date :
+			if options.refresh_vocab_cache == False and datetime.datetime.utcnow() <= self.expiration_date :
 				# We are fine, we can just extract the data from the cache and we're done
 				if self.report: options.add_info("Cache for %s is still valid; extracting the data" % URI, VocabCachingInfo)
 				fname = os.path.join(self.app_data_dir, self.filename)
@@ -284,7 +283,7 @@ class CachedVocab(CachedVocabIndex) :
 					if self.report: options.add_info("Could not access the vocab cache %s (%s)" % (value,fname), VocabCachingInfo, URI)
 			else :
 				if self.report :
-					if options.bypass_vocab_cache == True :
+					if options.refresh_vocab_cache == True :
 						options.add_info("Time check is bypassed; refreshing the cache for %s" % URI, VocabCachingInfo)
 					else :
 						options.add_info("Cache timeout; refreshing the cache for %s" % URI, VocabCachingInfo)
@@ -311,8 +310,9 @@ class CachedVocab(CachedVocabIndex) :
 
 	def _get_vocab_data(self, newCache = True) :
 		"""Just a macro like function to get the data to be cached"""		
-		from pyRdfa.rdfs.process	import return_graph
+		from pyRdfa.rdfs.process import return_graph
 		(self.graph, self.expiration_date) = return_graph(self.uri, self.options, newCache)
+		return self.graph != None
 
 	def _store_caches(self) :
 		"""Called if the creation date, etc, have been refreshed or new, and
