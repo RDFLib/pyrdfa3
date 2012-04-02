@@ -5,18 +5,14 @@ original version had some bugs (in defining prefixes), and the overall output lo
 
 """
 
-import urlparse
-from xml.sax.saxutils 			import escape, quoteattr
+from rdflib 					import BNode
+from rdflib			 			import Literal
+from rdflib		 				import URIRef
 
-from rdflib.BNode 				import BNode
-from rdflib.Literal 			import Literal
-from rdflib.URIRef 				import URIRef
-from rdflib.syntax.xml_names 	import split_uri 
-
-from rdflib.syntax.serializers.RecursiveSerializer import RecursiveSerializer
+from rdflib.plugins.serializers.turtle import RecursiveSerializer
 from rdflib.exceptions import Error
 
-from rdflib import RDF, RDFS
+from rdflib import RDF
 
 XSD = "http://www.w3.org/2001/XMLSchema#"
 
@@ -125,7 +121,7 @@ class TurtleSerializer(RecursiveSerializer):
 	def p_squared(self, node, position):
 		if not isinstance(node, BNode) or node in self._serialized or self.refCount(node) > 1 or position == SUBJECT:
 			return False
-
+	   
 		if self.isValidList(node): 
 			# this is a list
 			self.write(' ( ')

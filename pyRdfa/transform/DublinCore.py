@@ -18,20 +18,18 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-@version: $Id: DublinCore.py,v 1.4 2012-01-18 14:16:44 ivan Exp $
-$Date: 2012-01-18 14:16:44 $
+@version: $Id: DublinCore.py,v 1.2 2010/11/19 13:52:52 ivan Exp $
+$Date: 2010/11/19 13:52:52 $
 """
 
-def DC_transform(html, options, state) :
+def DC_transform(html, options) :
 	"""
 	@param html: a DOM node for the top level html element
 	@param options: invocation options
-	@type options: L{Options<pyRdfa.options>}
-	@param state: top level execution state
-	@type state: L{State<pyRdfa.state>}
+	@type options: L{Options<pyRdfa.Options>}
 	"""
 	from pyRdfa.host import HostLanguage
-	if not( options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5 ] ) :
+	if not( options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] ) :
 		return
 	
 	# the head element is necessary; to be sure, the namespaces are set

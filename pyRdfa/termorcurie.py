@@ -14,13 +14,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var XHTML_PREFIX: prefix for the XHTML vocabulary URI (set to 'xhv')
 @var XHTML_URI: URI prefix of the XHTML vocabulary
 @var ncname: Regular expression object for NCNAME
-@var termname: Regular expression object for a term
 @var xml_application_media_type: Regular expression object for a general XML application media type
 """
 
 """
-$Id: termorcurie.py,v 1.7 2012-03-23 14:06:25 ivan Exp $
-$Date: 2012-03-23 14:06:25 $
+$Id: termorcurie.py,v 1.3 2011/11/14 14:02:48 ivan Exp $
+$Date: 2011/11/14 14:02:48 $
 """
 
 import re, sys
@@ -45,7 +44,7 @@ else :
 from pyRdfa.options			import Options
 from pyRdfa.utils 			import quote_URI, URIOpener
 from pyRdfa.host 			import MediaTypes, HostLanguage, predefined_1_0_rel
-from pyRdfa					import IncorrectPrefixDefinition, RDFA_VOCAB, UnresolvableReference
+from pyRdfa					import IncorrectPrefixDefinition, RDFA_VOCAB
 from pyRdfa					import ns_rdfa
 
 from pyRdfa import err_redefining_URI_as_prefix		
@@ -57,15 +56,9 @@ from pyRdfa import err_invalid_prefix
 from pyRdfa import err_no_default_prefix				
 from pyRdfa import err_prefix_and_xmlns				
 from pyRdfa import err_non_ncname_prefix				
-from pyRdfa import err_absolute_reference				
-from pyRdfa import err_query_reference				
-from pyRdfa import err_fragment_reference				
 
 # Regular expression object for NCNAME
-ncname   = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
-
-# Regular expression object for term name
-termname = re.compile("^[A-Za-z]([A-Za-z0-9._-]|/)*$")
+ncname = re.compile("^[A-Za-z][A-Za-z0-9._-]*$")
 
 # Regular expression object for a general XML application media type
 xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
@@ -82,8 +75,7 @@ _empty_bnode = BNode()
 class InitialContext :
 	"""
 	Get the initial context values. In most cases this class has an empty content, except for the
-	top level (in case of RDFa 1.1). Each L{TermOrCurie} class has one instance of this class. It provides initial
-	mappings for terms, namespace prefixes, etc, that the top level L{TermOrCurie} instance uses for its own initialization.
+	top level (in case of RDFa 1.1). Each L{TermOrCurie} class has one instance of this class.
 	
 	@ivar terms: collection of all term mappings
 	@type terms: dictionary
@@ -131,15 +123,15 @@ class InitialContext :
 
 class TermOrCurie :
 	"""
-	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI. Each instance of this class belongs to a
+	Wrapper around vocabulary management, ie, mapping a term to a URI, as well as a CURIE to a URI (typical
+	examples for term are the "next", or "previous" as defined by XHTML). Each instance of this class belongs to a
 	"state", instance of L{state.ExecutionContext}. Context definitions are managed at initialization time.
 	
 	(In fact, this class is, conceptually, part of the overall state at a node, and has been separated here for an
 	easier maintenance.)
 	
 	The class takes care of the stack-like behavior of vocabulary items, ie, inheriting everything that is possible
-	from the "parent". At initialization time, this works through the prefix definitions (i.e., C{@prefix} or C{@xmln:} attributes)
-	and/or C{@vocab} attributes.
+	from the "parent".
 	
 	@ivar state: State to which this instance belongs
 	@type state: L{state.ExecutionContext}
@@ -338,28 +330,6 @@ class TermOrCurie :
 				self.xmlns = xmlns_dict
 	# end __init__
 
-	def _check_reference(self, val) :
-		"""Checking the CURIE reference for correctness. It is probably not 100% foolproof, but may take care
-		of some of the possible errors. See the URI RFC for the details.
-		"""
-		def char_check(s, not_allowed = ['#','[',']']) :
-			for c in not_allowed :
-				if s.find(c) != -1 : return False
-			return True
-		# Creating an artificial http URI to fool the urlparse module...
-		scheme, netloc, url, query, fragment = urlparse.urlsplit('http:' + val)
-		if netloc != "" and self.state.rdfa_version >= "1.1" :
-			self.state.options.add_warning(err_absolute_reference % (netloc, val), UnresolvableReference, node=self.state.node.nodeName)
-			return False
-		elif not char_check(query) :
-			self.state.options.add_warning(err_query_reference % (query, val), UnresolvableReference, node=self.state.node.nodeName)
-			return False
-		elif not char_check(fragment) :
-			self.state.options.add_warning(err_fragment_reference % (fragment, val), UnresolvableReference, node=self.state.node.nodeName)
-			return False
-		else :
-			return True
-
 	def CURIE_to_URI(self, val) :
 		"""CURIE to URI mapping. 
 		
@@ -392,18 +362,12 @@ class TermOrCurie :
 			else :
 				prefix	= curie_split[0]
 			reference = curie_split[1]
-
-			#if len(reference) > 0 :
-			#	if self.state.rdfa_version >= "1.1" and (len(prefix) == 0 or prefix in self.ns) and reference.startswith('//') :
-			#		# This has been defined as illegal in RDFa 1.1
-			#		self.state.options.add_warning(err_absolute_reference % (reference, val), UnresolvableReference, node=self.state.node.nodeName)
-			#		return None
-			#	if reference[0] == ":" :
-			#		return None
+			if len(reference) > 0 and reference[0] == ":" :
+				return None
 			
 			# first possibility: empty prefix
 			if len(prefix) == 0 :
-				if self.default_curie_uri and self._check_reference(reference) :
+				if self.default_curie_uri :
 					return self.default_curie_uri[reference]
 				else :
 					return None
@@ -425,7 +389,7 @@ class TermOrCurie :
 				# check if the prefix is a valid NCNAME
 				elif ncname.match(prefix) :
 					# see if there is a binding for this:					
-					if prefix in self.ns and self._check_reference(reference) :
+					if prefix in self.ns :
 						# yep, a binding has been defined!
 						if len(reference) == 0 :
 							return URIRef(str(self.ns[prefix]))
@@ -446,24 +410,25 @@ class TermOrCurie :
 		"""
 		if len(term) == 0 : return None
 
-		if termname.match(term) :
+		if ncname.match(term) :
 			# It is a valid NCNAME
+			# the algorithm is: first make a case sensitive match; if that fails than make a case insensive one
+			# The first is easy, the second one is a little bit more convoluted
 			
-			# First of all, a @vocab nukes everything. That has to be done first...
-			if self.default_term_uri != None :
-				return URIRef(self.default_term_uri + term)
-
-			# For default terms, the algorithm is (see 7.4.3 of the document): first make a case sensitive match;
-			# if that fails than make a case insensive one			
 			# 1. simple, case sensitive test:
 			if term in self.terms :
 				# yep, term is a valid key as is
 				return self.terms[term]
 				
-			# 2. case insensitive test
+			# 2. the case insensitive test
 			for defined_term in self.terms :
+				uri = self.terms[defined_term]
 				if term.lower() == defined_term.lower() :
-					return self.terms[defined_term]
+					return uri
+	
+			# 3. check the default term uri, if any
+			if self.default_term_uri != None :
+				return URIRef(self.default_term_uri + term)
 
 		# If it got here, it is all wrong...
 		return None

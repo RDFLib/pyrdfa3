@@ -5,13 +5,13 @@ original version had some bugs (mainly in handling collections) hence this local
 """
 
 
-from rdflib import RDF, RDFS
+from rdflib import RDF
 
-from rdflib	   import URIRef, Literal, BNode
+from rdflib	   import Literal, BNode
 from rdflib.util  import first, uniq, more_than
-from rdflib.Graph import Seq
+from rdflib.graph import Seq
 
-from rdflib.syntax.serializers	import Serializer
+from rdflib.serializer import Serializer
 from pyRdfa.serializers.XMLWriter import XMLWriter
 
 XMLLANG = "http://www.w3.org/XML/1998/namespacelang"

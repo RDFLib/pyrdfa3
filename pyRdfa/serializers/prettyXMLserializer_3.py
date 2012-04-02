@@ -2,14 +2,12 @@ from __future__ import generators
 
 from rdflib.plugins.serializers.xmlwriter import XMLWriter
 
-from rdflib.namespace import Namespace, RDF, RDFS, split_uri
+from rdflib.namespace import Namespace, RDF, RDFS
 
 from rdflib.term import URIRef, Literal, BNode
 from rdflib.util import first, uniq, more_than
 from rdflib.collection import Collection
 from rdflib.serializer import Serializer
-
-from rdflib.exceptions import Error
 
 from xml.sax.saxutils import quoteattr, escape
 
@@ -144,7 +142,7 @@ class PrettyXMLSerializer(Serializer):
         self.writer = writer = XMLWriter(stream, nm, encoding)
 
         namespaces = {}
-        possible = uniq(store.predicates()) + uniq(store.objects(None, RDF.type))
+        possible = list(uniq(store.predicates())) + list(uniq(store.objects(None, RDF.type)))
         for predicate in possible:
             prefix, namespace, local = nm.compute_qname(predicate)
             namespaces[prefix] = namespace
@@ -173,7 +171,7 @@ class PrettyXMLSerializer(Serializer):
             if bnode not in self.__serialized:
                 self.subject(subject, 1)
         writer.pop(RDF.RDF)
-        stream.write("\n")
+        stream.write("\n".encode('utf-8'))
 
         # Set to None so that the memory can get garbage collected.
         self.__serialized = None
