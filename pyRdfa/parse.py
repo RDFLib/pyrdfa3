@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 The core parsing function of RDFa. Some details are
-put into other modules to make it clearer to update/modify (eg, generation of literals, or managing the current state).
+put into other modules to make it clearer to update/modify (e.g., generation of C{@property} values, or managing the current state).
+
+Note that the entry point (L{parse_one_node}) bifurcates into an RDFa 1.0 and RDFa 1.1 version, ie,
+to L{_parse_1_0} and L{_parse_1_1}. Some of the parsing details (management of C{@property}, list facilities, changed behavior on C{@typeof})) have changed
+between versions and forcing the two into one function would be counter productive.
 
 @summary: RDFa core parser processing step
-@requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -12,11 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.5 2011/11/15 12:18:52 ivan Exp $
-$Date: 2011/11/15 12:18:52 $
-
-Added a reaction on the RDFaStopParsing exception: if raised while setting up the local execution context, parsing
-is stopped (on the whole subtree)
+$Id: parse.py,v 1.13 2012-03-23 14:06:25 ivan Exp $
+$Date: 2012-03-23 14:06:25 $
 """
 
 import sys
@@ -24,7 +24,7 @@ import sys
 from pyRdfa.state   		import ExecutionContext
 from pyRdfa.property 		import ProcessProperty
 from pyRdfa.embeddedRDF	 	import handle_embeddedRDF
-from pyRdfa.host			import HostLanguage, host_dom_transforms, accept_embedded_rdf
+from pyRdfa.host			import HostLanguage, host_dom_transforms
 
 import rdflib
 from rdflib	import URIRef
@@ -40,31 +40,28 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa import IncorrectBlankNodeUsage, err_no_blank_node
+from pyRdfa       import IncorrectBlankNodeUsage, err_no_blank_node
 from pyRdfa.utils import has_one_of_attributes
-
 
 #######################################################################
 def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
-	"""The (recursive) step of handling a single node. See the
-	U{RDFa syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
+	"""The (recursive) step of handling a single node. 
 	
 	This entry just switches between the RDFa 1.0 and RDFa 1.1 versions for parsing. This method is only invoked once,
-	actually, that is from the top level; the recursion then happens in the L{_parse_1_0} and L{_parse_1_1} methods for
+	actually, from the top level; the recursion then happens in the L{_parse_1_0} and L{_parse_1_1} methods for
 	RDFa 1.0 and RDFa 1.1, respectively.
 
 	@param node: the DOM node to handle
 	@param graph: the RDF graph
 	@type graph: RDFLib's Graph object instance
 	@param parent_object: the parent's object, as an RDFLib URIRef
-	@param incoming_state: the inherited state (namespaces, lang, etc)
+	@param incoming_state: the inherited state (namespaces, lang, etc.)
 	@type incoming_state: L{state.ExecutionContext}
 	@param parent_incomplete_triples: list of hanging triples (the missing resource set to None) to be handled (or not)
 	by the current node.
 	@return: whether the caller has to complete it's parent's incomplete triples
 	@rtype: Boolean
 	"""
-
 	# Branch according to versions.
 	if incoming_state.rdfa_version >= "1.1" :
 		_parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_triples)
@@ -74,21 +71,29 @@ def parse_one_node(node, graph, parent_object, incoming_state, parent_incomplete
 #######################################################################
 def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
 	"""The (recursive) step of handling a single node. See the
-	U{RDFa syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
+	U{RDFa 1.1 Core document<http://www.w3.org/TR/rdfa-core/>} for further details.
 	
-	This is the RDFa 1.1 (and higher) version.
+	This is the RDFa 1.1 version.
 
 	@param node: the DOM node to handle
 	@param graph: the RDF graph
 	@type graph: RDFLib's Graph object instance
 	@param parent_object: the parent's object, as an RDFLib URIRef
-	@param incoming_state: the inherited state (namespaces, lang, etc)
+	@param incoming_state: the inherited state (namespaces, lang, etc.)
 	@type incoming_state: L{state.ExecutionContext}
 	@param parent_incomplete_triples: list of hanging triples (the missing resource set to None) to be handled (or not)
 	by the current node.
 	@return: whether the caller has to complete it's parent's incomplete triples
 	@rtype: Boolean
 	"""
+	def header_check(p_obj) :
+		"""Special disposition for the HTML <head> and <body> elements..."""
+		if state.options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5 ] :
+			if node.nodeName == "head" or node.nodeName == "body" :
+				if not has_one_of_attributes(node, "about", "resource", "src", "href") :
+					return p_obj
+		else :
+			return None
 
 	# Update the state. This means, for example, the possible local settings of
 	# namespaces and lang
@@ -100,7 +105,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	# This may add some triples to the target graph that does not originate from RDFa parsing
 	# If the function return TRUE, that means that an rdf:RDF has been found. No
 	# RDFa parsing should be done on that subtree, so we simply return...
-	if state.options.host_language in accept_embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
+	if state.options.embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
 		return	
 
 	#---------------------------------------------------------------------------------
@@ -125,10 +130,11 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	current_subject = None
 	current_object  = None
 	typed_resource	= None
-
+	
 	if has_one_of_attributes(node, "rel", "rev")  :
 		# in this case there is the notion of 'left' and 'right' of @rel/@rev
 		# in establishing the new Subject and the objectResource
+		current_subject = header_check(parent_object)
 
 		# set first the subject
 		if node.hasAttribute("about") :
@@ -156,6 +162,8 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 			state.reset_list_mapping(origin = current_object)
 
 	elif  node.hasAttribute("property") and not has_one_of_attributes(node, "content", "datatype") :
+		current_subject = header_check(parent_object)
+
 		# this is the case when the property may take hold of @src and friends...
 		if node.hasAttribute("about") :
 			current_subject = state.getURI("about")
@@ -177,15 +185,19 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 			current_object = current_subject
 			
 	else :
+		current_subject = header_check(parent_object)
+
 		# in this case all the various 'resource' setting attributes
 		# behave identically, though they also have their own priority
-		current_subject = state.getResource("about", "resource", "href", "src")
+		if current_subject == None :
+			current_subject = state.getResource("about", "resource", "href", "src")
 			
 		# get_URI_ref may return None in case of an illegal CURIE, so
 		# we have to be careful here, not use only an 'else'
 		if current_subject == None :
 			if node.hasAttribute("typeof") :
 				current_subject = BNode()
+				state.reset_list_mapping(origin = current_subject)
 			else :
 				current_subject = parent_object
 		else :
@@ -211,9 +223,18 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 		if not isinstance(prop,BNode) :
 			if node.hasAttribute("inlist") :
 				if current_object != None :
+					# Add the content to the list. Note that if the same list
+					# was initialized, at some point, by a None, it will be
+					# overwritten by this real content
 					state.add_to_list_mapping(prop, current_object)
 				else :
-					incomplete_triples.append((None, prop, None))
+					# Add a dummy entry to the list... Note that
+					# if that list was initialized already with a real content
+					# this call will have no effect
+					state.add_to_list_mapping(prop, None)
+					
+					# Add a placeholder into the hanging rels
+					incomplete_triples.append( (None, prop, None) )
 			else :
 				theTriple = (current_subject, prop, current_object)
 				if current_object != None :
@@ -269,12 +290,17 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	if state.new_list and not state.list_empty() :
 		for prop in state.get_list_props() :
 			vals  = state.get_list_value(prop)
-			heads = [ BNode() for r in vals ] + [ ns_rdf["nil"] ]
-			for i in xrange(0, len(vals)) :
-				graph.add( (heads[i], ns_rdf["first"], vals[i]) )
-				graph.add( (heads[i], ns_rdf["rest"],  heads[i+1]) )
-			# Anchor the list
-			graph.add( (state.get_list_origin(), prop, heads[0]) )
+			if vals == None :
+				# This was an empty list, in fact, ie, the list has been initiated by a <xxx rel="prop" inlist>
+				# but no list content has ever been added
+				graph.add( (state.get_list_origin(), prop, ns_rdf["nil"]) )
+			else :
+				heads = [ BNode() for r in vals ] + [ ns_rdf["nil"] ]
+				for i in xrange(0, len(vals)) :
+					graph.add( (heads[i], ns_rdf["first"], vals[i]) )
+					graph.add( (heads[i], ns_rdf["rest"],  heads[i+1]) )
+				# Anchor the list
+				graph.add( (state.get_list_origin(), prop, heads[0]) )
 
 	# -------------------------------------------------------------------
 	# This should be it...
@@ -285,7 +311,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 ##################################################################################################################
 def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_triples) :
 	"""The (recursive) step of handling a single node. See the
-	U{RDFa syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
+	U{RDFa 1.0 syntax document<http://www.w3.org/TR/rdfa-syntax>} for further details.
 	
 	This is the RDFa 1.0 version.
 
@@ -293,7 +319,7 @@ def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	@param graph: the RDF graph
 	@type graph: RDFLib's Graph object instance
 	@param parent_object: the parent's object, as an RDFLib URIRef
-	@param incoming_state: the inherited state (namespaces, lang, etc)
+	@param incoming_state: the inherited state (namespaces, lang, etc.)
 	@type incoming_state: L{state.ExecutionContext}
 	@param parent_incomplete_triples: list of hanging triples (the missing resource set to None) to be handled (or not)
 	by the current node.
@@ -311,7 +337,7 @@ def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	# This may add some triples to the target graph that does not originate from RDFa parsing
 	# If the function return TRUE, that means that an rdf:RDF has been found. No
 	# RDFa parsing should be done on that subtree, so we simply return...
-	if state.options.host_language in accept_embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
+	if state.options.embedded_rdf and node.nodeType == node.ELEMENT_NODE and handle_embeddedRDF(node, graph, state) : 
 		return	
 
 	#---------------------------------------------------------------------------------

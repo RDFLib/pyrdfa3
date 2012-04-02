@@ -2,15 +2,14 @@
 """
 Parser's execution context (a.k.a. state) object and handling. The state includes:
 
-  - language, retrieved from C{@xml:lang}
-  - URI base, determined by <base> (or set explicitly). This is a little bit superfluous, because the current RDFa syntax does not make use of C{@xml:base}; ie, this could be a global value.  But the structure is prepared to add C{@xml:base} easily, if needed.
+  - language, retrieved from C{@xml:lang} or C{@lang}
+  - URI base, determined by C{<base>} or set explicitly. This is a little bit superfluous, because the current RDFa syntax does not make use of C{@xml:base}; i.e., this could be a global value.  But the structure is prepared to add C{@xml:base} easily, if needed.
   - options, in the form of an L{options<pyRdfa.options>} instance
   - a separate vocabulary/CURIE handling resource, in the form of an L{termorcurie<pyRdfa.TermOrCurie>} instance
 
 The execution context object is also used to handle URI-s, CURIE-s, terms, etc.
 
 @summary: RDFa parser execution context
-@requires: U{RDFLib package<http://rdflib.net>}
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -18,8 +17,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.4 2011/11/14 14:02:48 ivan Exp $
-$Date: 2011/11/14 14:02:48 $
+$Id: state.py,v 1.13 2012-03-23 14:06:25 ivan Exp $
+$Date: 2012-03-23 14:06:25 $
 """
 
 import rdflib
@@ -56,6 +55,9 @@ import urllib
 from types import *
 
 class ListStructure :
+	"""Special class to handle the C{@inlist} type structures in RDFa 1.1; stores the "origin", i.e,
+	where the list will be attached to, and the mappings as defined in the spec.
+	"""
 	def __init__(self) :
 		self.mapping = {}
 		self.origin	  = None
@@ -75,13 +77,14 @@ class ExecutionContext :
 	@ivar term_or_curie: vocabulary management class instance
 	@type term_or_curie: L{termorcurie.TermOrCurie}
 	@ivar list_mapping: dictionary of arrays, containing a list of URIs key-ed via properties for lists
-	@ivar setting_subject: whether the element with that state sets the subject down the line via @resource or @href
 	@ivar node: the node to which this state belongs
 	@type node: DOM node instance
 	@ivar rdfa_version: RDFa version of the content
 	@type rdfa_version: String
+	@ivar supress_lang: in some cases, the effect of the lang attribute should be supressed for the given node, although it should be inherited down below (example: @value attribute of the data element in HTML5)
+	@type supress_lang: Boolean
 	@cvar _list: list of attributes that allow for lists of values and should be treated as such
-	@cvar _resource_type: dictionary; mapping table from attribute name to the exact method to retrieve the URI(s). Is initialized at first run
+	@cvar _resource_type: dictionary; mapping table from attribute name to the exact method to retrieve the URI(s). Is initialized at first instantiation.
 	"""
 
 	# list of attributes that allow for lists of values and should be treated as such	
@@ -177,7 +180,7 @@ class ExecutionContext :
 
 			self.base = ""
 			# handle the base element case for HTML
-			if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
+			if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5  ] :
 				for bases in node.getElementsByTagName("base") :
 					if bases.hasAttribute("href") :
 						self.base = remove_frag_id(bases.getAttribute("href"))
@@ -214,18 +217,19 @@ class ExecutionContext :
 		else :
 			self.lang = None
 			
-		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.html ] :
+		self.supress_lang = False
+			
+			
+		if self.options.host_language in [ HostLanguage.xhtml, HostLanguage.xhtml5, HostLanguage.html5 ] :
 			# we may have lang and xml:lang
 			if node.hasAttribute("lang") :
 				lang = node.getAttribute("lang").lower()
 			else :
 				lang = None
-
 			if node.hasAttribute("xml:lang") :
 				xmllang = node.getAttribute("xml:lang").lower()
 			else :
 				xmllang = None
-				
 			# First of all, set the value, if any
 			if xmllang != None :
 				# this has priority
@@ -238,13 +242,11 @@ class ExecutionContext :
 					self.lang = lang
 				else :
 					self.lang = None
+			# check a posible warnings, too
+			if (lang != None and xmllang != None and lang != xmllang) or (lang == None and xmllang != None and self.options.host_language in [ HostLanguage.xhtml5, HostLanguage.html5 ]) :
+				self.options.add_warning(err_lang, node=self.node.nodeName)
 				
-			# check a posible warning (error?), too
-			if lang != None and xmllang != None and lang != xmllang :
-				self.options.add_warning(err_lang % (xmllang, lang), node=self.node.nodeName)
-		else :
-			# this is a clear case, xml:lang is the only possible option...
-			if self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
+		elif self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
 				self.lang = node.getAttribute("xml:lang").lower()
 				if len(self.lang) == 0 : self.lang = None
 			
@@ -302,7 +304,6 @@ class ExecutionContext :
 			# The fragment ID must be removed...
 			return URIRef(self.base)
 			
-
 		# fall back on good old traditional URI-s.
 		# To be on the safe side, let us use the Python libraries
 		if self.parsedBase[0] == "" :
@@ -385,12 +386,12 @@ class ExecutionContext :
 		if val == "" :
 			return None
 		
-		from termorcurie import ncname
-		if ncname.match(val) :
-			# This is a term, must be handled as such...
+		from termorcurie import ncname, termname
+		if termname.match(val) :
+			# This is a term, must be handled as such...			
 			retval = self.term_or_curie.term_to_URI(val)
 			if not retval :
-				self.options.add_warning(err_undefined_terms % val, UnresolvableTerm, node=self.node.nodeName)
+				self.options.add_warning(err_undefined_terms % val, UnresolvableTerm, node=self.node.nodeName, buggy_value = val)
 				return None
 			else :
 				return retval
@@ -458,7 +459,7 @@ class ExecutionContext :
 		"""
 		if len(args) == 0 :
 			return None
-		if isinstance(args[0], (tuple,list)) :
+		if isinstance(args[0], TupleType) or isinstance(args[0], ListType) :
 			rargs = args[0]
 		else :
 			rargs = args
@@ -478,18 +479,38 @@ class ExecutionContext :
 		self.new_list = True
 
 	def list_empty(self) :
+		"""
+		Checks whether the list is empty.
+		@return: Boolean
+		"""
 		return len(self.list_mapping.mapping) == 0
 		
 	def get_list_props(self) :
+		"""
+		Return the list of property values in the list structure
+		@return: list of URIRef
+		"""
 		return self.list_mapping.mapping.keys()
 		
 	def get_list_value(self,prop) :
+		"""
+		Return the list of values in the list structure for a specific property
+		@return: list of RDF nodes
+		"""
 		return self.list_mapping.mapping[prop]
 		
 	def set_list_origin(self, origin) :
+		"""
+		Set the origin of the list, ie, the subject to attach the final list(s) to
+		@param origin: URIRef
+		"""		
 		self.list_mapping.origin = origin
 		
 	def get_list_origin(self) :
+		"""
+		Return the origin of the list, ie, the subject to attach the final list(s) to
+		@return: URIRef
+		"""		
 		return self.list_mapping.origin
 		
 	def add_to_list_mapping(self, property, resource) :
@@ -497,11 +518,23 @@ class ExecutionContext :
 		if the array does not exist yet, it will be created on the fly.
 		
 		@param property: the property URI, used as a key in the dictionary
-		@param resource: the resource to be added to the relevant array in the dictionary.
+		@param resource: the resource to be added to the relevant array in the dictionary. Can be None; this is a dummy
+		placeholder for C{<span rel="property" inlist>...</span>} constructions that may be filled in by children or siblings; if not
+		an empty list has to be generated.
 		"""
 		if property in self.list_mapping.mapping :
-			self.list_mapping.mapping[property].append(resource)
+			if resource != None :
+				# indeed, if it is None, than it should not override anything
+				if self.list_mapping.mapping[property] == None :
+					# replacing a dummy with real content
+					self.list_mapping.mapping[property] = [ resource ]
+				else :			
+					self.list_mapping.mapping[property].append(resource)
 		else :
-			self.list_mapping.mapping[property] = [ resource ]
+			if resource != None :
+				self.list_mapping.mapping[property] = [ resource ]
+			else :
+				self.list_mapping.mapping[property] = None
+				
 
 ####################

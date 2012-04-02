@@ -13,16 +13,16 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: initialcontext.py,v 1.2 2011/11/14 14:02:48 ivan Exp $
-$Date: 2011/11/14 14:02:48 $
+$Id: initialcontext.py,v 1.7 2012-03-16 16:46:41 ivan Exp $
+$Date: 2012-03-16 16:46:41 $
 """
 
 class Wrapper :
 	pass
 	
 initial_context = {
-	"http://www.w3.org/2011/rdfa-context/rdfa-1.1" 		: Wrapper(),
-	"http://www.w3.org/2011/rdfa-context/html-rdfa-1.1" : Wrapper(),
+	"http://www.w3.org/2011/rdfa-context/rdfa-1.1" 		 : Wrapper(),
+	"http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1" : Wrapper(),
 }
 
 initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
@@ -39,6 +39,7 @@ initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
 	'rev'		: 'http://purl.org/stuff/rev#',
 	'rdfa'		: 'http://www.w3.org/ns/rdfa#',
 	'dc'		: 'http://purl.org/dc/terms/',
+	'dcterms'	: 'http://purl.org/dc/terms/',
 	'foaf'		: 'http://xmlns.com/foaf/0.1/',
 	'void'		: 'http://rdfs.org/ns/void#',
 	'ical'		: 'http://www.w3.org/2002/12/cal/icaltzd#',
@@ -52,76 +53,49 @@ initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
 	'v'			: 'http://rdf.data-vocabulary.org/#',
 	'skosxl'	: 'http://www.w3.org/2008/05/skos-xl#',
 	'schema'	: 'http://schema.org/',
+	'ma'		: 'http://www.w3.org/ns/ma-ont#',
 }
 
 initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].terms = {
 	'describedby'	: 'http://www.w3.org/2007/05/powder-s#describedby',
+	'role'			: 'http://www.w3.org/1999/xhtml/vocab#role',
+	#'license'		: 'http://creativecommons.org/ns#license',
+	'license'		: 'http://www.w3.org/1999/xhtml/vocab#license',
 }
 
 initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].vocabulary = ""
 
-initial_context["http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"].ns = {
+initial_context["http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"].ns = {
 }
 
-initial_context["http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"].vocabulary = ""
+initial_context["http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"].vocabulary = ""
 
-initial_context["http://www.w3.org/2011/rdfa-context/html-rdfa-1.1"].terms = {
+initial_context["http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"].terms = {
 	'alternate'				: 'http://www.w3.org/1999/xhtml/vocab#alternate',
 	'appendix'				: 'http://www.w3.org/1999/xhtml/vocab#appendix',
-	'archives'				: 'http://www.w3.org/1999/xhtml/vocab#archives',
-	'author'				: 'http://www.w3.org/1999/xhtml/vocab#author',
+	'cite'					: 'http://www.w3.org/1999/xhtml/vocab#cite',
 	'bookmark'				: 'http://www.w3.org/1999/xhtml/vocab#bookmark',
-	'canonical'				: 'http://www.w3.org/1999/xhtml/vocab#canonical',
 	'chapter'				: 'http://www.w3.org/1999/xhtml/vocab#chapter',
 	'contents'				: 'http://www.w3.org/1999/xhtml/vocab#contents',
 	'copyright'				: 'http://www.w3.org/1999/xhtml/vocab#copyright',
-	'current'				: 'http://www.w3.org/1999/xhtml/vocab#current',
-	'duplicate'				: 'http://www.w3.org/1999/xhtml/vocab#duplicate',
-	'edit'					: 'http://www.w3.org/1999/xhtml/vocab#edit',
-	'edit-media'			: 'http://www.w3.org/1999/xhtml/vocab#edit-media',
-	'enclosure'				: 'http://www.w3.org/1999/xhtml/vocab#enclosure',
-	'first'					: 'http://www.w3.org/1999/xhtml/vocab#first',
 	'glossary'				: 'http://www.w3.org/1999/xhtml/vocab#glossary',
 	'help'					: 'http://www.w3.org/1999/xhtml/vocab#help',
-	'hub'					: 'http://www.w3.org/1999/xhtml/vocab#hub',
 	'icon'					: 'http://www.w3.org/1999/xhtml/vocab#icon',
 	'index'					: 'http://www.w3.org/1999/xhtml/vocab#index',
-	'last'					: 'http://www.w3.org/1999/xhtml/vocab#last',
-	'latest-version'		: 'http://www.w3.org/1999/xhtml/vocab#latest-version',
-	'license'				: 'http://www.w3.org/1999/xhtml/vocab#license',
-	'lrdd'					: 'http://www.w3.org/1999/xhtml/vocab#lrdd',
-	'monitor'				: 'http://www.w3.org/1999/xhtml/vocab#monitor',
-	'monitor-group'			: 'http://www.w3.org/1999/xhtml/vocab#monitor-group',
+	'meta'					: 'http://www.w3.org/1999/xhtml/vocab#meta',
 	'next'					: 'http://www.w3.org/1999/xhtml/vocab#next',
-	'next-archive'			: 'http://www.w3.org/1999/xhtml/vocab#next-archive',
-	'nofollow'				: 'http://www.w3.org/1999/xhtml/vocab#nofollow',
-	'noreferrer'			: 'http://www.w3.org/1999/xhtml/vocab#noreferrer',
-	'payment'				: 'http://www.w3.org/1999/xhtml/vocab#payment',
-	'predecessor-version'	: 'http://www.w3.org/1999/xhtml/vocab#predecessor-version',
-	'prefetch'				: 'http://www.w3.org/1999/xhtml/vocab#prefetch',
+	'license'				: 'http://www.w3.org/1999/xhtml/vocab#license',
+	'p3pv1'					: 'http://www.w3.org/1999/xhtml/vocab#p3pv1',
 	'prev'					: 'http://www.w3.org/1999/xhtml/vocab#prev',
 	'previous'				: 'http://www.w3.org/1999/xhtml/vocab#previous',
-	'prev-archive'			: 'http://www.w3.org/1999/xhtml/vocab#prev-archive',
-	'related'				: 'http://www.w3.org/1999/xhtml/vocab#related',
-	'replies'				: 'http://www.w3.org/1999/xhtml/vocab#replies',
-	'search'				: 'http://www.w3.org/1999/xhtml/vocab#search',
+	'role'					: 'http://www.w3.org/1999/xhtml/vocab#role',
 	'section'				: 'http://www.w3.org/1999/xhtml/vocab#section',
-	'self'					: 'http://www.w3.org/1999/xhtml/vocab#self',
-	'service'				: 'http://www.w3.org/1999/xhtml/vocab#service',
-	'start'					: 'http://www.w3.org/1999/xhtml/vocab#start',
 	'stylesheet'			: 'http://www.w3.org/1999/xhtml/vocab#stylesheet',
 	'subsection'			: 'http://www.w3.org/1999/xhtml/vocab#subsection',
-	'successor-version'		: 'http://www.w3.org/1999/xhtml/vocab#successor-version',
-	'tag'					: 'http://www.w3.org/1999/xhtml/vocab#tag',
+	'start'					: 'http://www.w3.org/1999/xhtml/vocab#start',
 	'up'					: 'http://www.w3.org/1999/xhtml/vocab#up',
-	'version-history'		: 'http://www.w3.org/1999/xhtml/vocab#version-history',
-	'via'					: 'http://www.w3.org/1999/xhtml/vocab#via',
-	'working-copy'			: 'http://www.w3.org/1999/xhtml/vocab#working-copy',
-	'working-copy-of'		: 'http://www.w3.org/1999/xhtml/vocab#working-copy-of',
-
-	'p3pv1'					: 'http://www.w3.org/1999/xhtml/vocab#p3pv1',
-	'transformation'		: 'http://www.w3.org/2003/g/data-view#transformation',
-	'itsRules'				: 'http://www.w3.org/1999/xhtml/vocab#itsRules',
-	'role'					: 'http://www.w3.org/1999/xhtml/vocab#role',
+	'last'					: 'http://www.w3.org/1999/xhtml/vocab#last',
+	'first'					: 'http://www.w3.org/1999/xhtml/vocab#first',
+	'top'					: 'http://www.w3.org/1999/xhtml/vocab#top',
 }
 

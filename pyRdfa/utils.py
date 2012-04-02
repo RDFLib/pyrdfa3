@@ -4,9 +4,6 @@ Various utilities for pyRdfa.
 
 Most of the utilities are straightforward.
 
-@summary: RDFa core parser processing step
-@requires: U{RDFLib package<http://rdflib.net>}
-@requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}. To make distribution easier this module (single file) is added to the distributed tarball.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -16,12 +13,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.3 2011/11/14 14:02:48 ivan Exp $
-$Date: 2011/11/14 14:02:48 $
+$Id: utils.py,v 1.7 2012-03-23 14:06:25 ivan Exp $
+$Date: 2012-03-23 14:06:25 $
 """
 import os, os.path, sys, imp, datetime
 import urllib, urlparse, urllib2
-import httpheader
+from pyRdfa.extras.httpheader import content_type, parse_http_datetime
 
 import rdflib
 if rdflib.__version__ >= "3.0.0" :
@@ -40,12 +37,11 @@ class URIOpener :
 	The class also adds an accept header to the outgoing request, namely
 	text/html and application/xhtml+xml (unless set explicitly by the caller).
 	
-	The content type is either set by the HTTP return. If not set by the server, some common
-	suffixes are used (see L{preferred_suffixes}) to set the content type (this is really of importance
-	for file:/// URI-s). If none of these works, the content type is empty.
+	If the content type is set by the server, the relevant HTTP response field is used. Otherwise,
+	common suffixes are used (see L{host.preferred_suffixes}) to set the content type (this is really of importance
+	for C{file:///} URI-s). If none of these works, the content type is empty.
 		
-	Interpretation of the content type for the return is done by Deron Meranda's <http://deron.meranda.us/>
-	httpheader module.
+	Interpretation of the content type for the return is done by Deron Meranda's U{httpheader module<http://deron.meranda.us/>}.
 	
 	@ivar data: the real data, ie, a file-like object
 	@ivar headers: the return headers as sent back by the server
@@ -64,7 +60,8 @@ class URIOpener :
 		@keyword additional_headers: additional HTTP request headers to be added to the call
 		"""		
 		try :
-			req = urllib2.Request(url=name)
+			# Note the removal of the fragment ID. This is necessary, per the HTTP spec
+			req = urllib2.Request(url=name.split('#')[0])
 
 			for key in additional_headers :
 				req.add_header(key, additional_headers[key])
@@ -76,7 +73,7 @@ class URIOpener :
 			
 			if URIOpener.CONTENT_TYPE in self.headers :
 				# The call below will remove the possible media type parameters, like charset settings
-				ct = httpheader.content_type(self.headers[URIOpener.CONTENT_TYPE])
+				ct = content_type(self.headers[URIOpener.CONTENT_TYPE])
 				self.content_type = ct.media_type
 				if 'charset' in ct.parmdict :
 					self.charset = ct.parmdict['charset']
@@ -103,7 +100,7 @@ class URIOpener :
 			if URIOpener.EXPIRES in self.headers :
 				try :
 					# Thanks to Deron Meranda for the HTTP date conversion method...
-					self.expiration_date = httpheader.parse_http_datetime(self.headers[URIOpener.EXPIRES])
+					self.expiration_date = parse_http_datetime(self.headers[URIOpener.EXPIRES])
 				except :
 					# The Expires date format was wrong, sorry, forget it...
 					pass
@@ -112,14 +109,16 @@ class URIOpener :
 			if URIOpener.LAST_MODIFIED in self.headers :
 				try :
 					# Thanks to Deron Meranda for the HTTP date conversion method...
-					self.last_modified_date = httpheader.parse_http_datetime(self.headers[URIOpener.LAST_MODIFIED])
+					self.last_modified_date = parse_http_datetime(self.headers[URIOpener.LAST_MODIFIED])
 				except :
 					# The last modified date format was wrong, sorry, forget it...
 					pass
 				
 		except urllib2.HTTPError, e :
 			from pyRdfa import HTTPError
-			raise HTTPError('%s' % e, e.code)
+			import BaseHTTPServer
+			msg = BaseHTTPServer.BaseHTTPRequestHandler.responses[e.code]
+			raise HTTPError('%s' % msg[1], e.code)
 		except Exception, e :
 			from pyRdfa import RDFaError
 			raise RDFaError('%s' % e)
@@ -171,7 +170,7 @@ def has_one_of_attributes(node,*args) :
 	"""
 	if len(args) == 0 :
 		return None
-	if isinstance(args[0], (tuple, list)) :
+	if isinstance(args[0], TupleType) or isinstance(args[0],ListType) :
 		rargs = args[0]
 	else :
 		rargs = args

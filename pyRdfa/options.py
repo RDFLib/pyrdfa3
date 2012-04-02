@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.5 2011/11/15 10:03:13 ivan Exp $ $Date: 2011/11/15 10:03:13 $
+$Id: options.py,v 1.12 2012-03-23 14:06:25 ivan Exp $ $Date: 2012-03-23 14:06:25 $
 """
 
 import sys, datetime
@@ -30,7 +30,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language
+from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language, predefined_1_0_rel
 from pyRdfa			import ns_xsd, ns_distill, ns_rdfa
 from pyRdfa 		import RDFA_Error, RDFA_Warning, RDFA_Info
 
@@ -45,7 +45,9 @@ class ProcessorGraph :
 		self.graph = Graph()
 		self.graph.bind("dcterm", ns_dc)
 		self.graph.bind("pyrdfa", ns_distill)
-		self.graph.bind("rdf", ns_rdf)
+		self.graph.bind("rdf",    ns_rdf)
+		self.graph.bind("rdfa",   ns_rdfa)
+		self.graph.bind("ht",     ns_ht)
 		
 	def add_triples(self, msg, top_class, info_class, context, node) :
 		"""
@@ -80,14 +82,21 @@ class ProcessorGraph :
 			self.graph.add((bnode, ns_rdf["type"], info_class))
 		self.graph.add((bnode, ns_dc["description"], Literal(full_msg)))
 		self.graph.add((bnode, ns_dc["date"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
-		if context :
-			if not isinstance(context,URIRef) :
-				context = URIRef(context)
-			self.graph.add((bnode, ns_rdfa["context"], context))
+		if context and (isinstance(context,URIRef) or isinstance(context, basestring)):
+			htbnode = BNode()
+			self.graph.add( (bnode,   ns_rdfa["context"],htbnode) )
+			self.graph.add( (htbnode, ns_rdf["type"], ns_ht["Request"]) )
+			self.graph.add( (htbnode, ns_ht["requestURI"], Literal("%s" % context)) )
 		return bnode
 	
 	def add_http_context(self, subj, http_code) :
-		self.graph.bind("ht",ns_ht)
+		"""
+		Add an additional HTTP context to a message with subject in C{subj}, using the U{<http://www.w3.org/2006/http#>}
+		vocabulary. Typically used to extend an error structure, as created by L{add_triples}.
+		
+		@param subj: an RDFLib resource, typically a blank node
+		@param http_code: HTTP status code
+		"""
 		bnode = BNode()
 		self.graph.add((subj, ns_rdfa["context"], bnode))
 		self.graph.add((bnode, ns_rdf["type"], ns_ht["Response"]))
@@ -99,26 +108,37 @@ class Options :
 
 	@ivar space_preserve: whether plain literals should preserve spaces at output or not
 	@type space_preserve: Boolean
+	
 	@ivar output_default_graph: whether the 'default' graph should be returned to the user
 	@type output_default_graph: Boolean
+	
 	@ivar output_processor_graph: whether the 'processor' graph should be returned to the user
 	@type output_processor_graph: Boolean
+	
 	@ivar processor_graph: the 'processor' Graph
 	@type processor_graph: L{ProcessorGraph}
+	
 	@ivar transformers: extra transformers
 	@type transformers: list
+	
 	@ivar vocab_cache_report: whether the details of vocabulary file caching process should be reported as information (mainly for debug)
 	@type vocab_cache_report: Boolean
-	@ivar bypass_vocab_cache: whether the caching checks of vocabs should be by-passed, ie, if caches should be generated regardless of the stored date (important for vocab development)
-	@type bypass_vocab_cache: Boolean
-	@ivar hturtle: whether hturtle (ie, turtle in an HTML script element) should be extracted and added to the final graph. This is a non-standard option...
-	@type hturtle: Boolean
-	@ivar rdfa_sem: whether the @vocab elements should be expanded and a mini-RDFS processing should be done on the merged graph
-	@type rdfa_sem: Boolean
+	
+	@ivar refresh_vocab_cache: whether the caching checks of vocabs should be by-passed, ie, if caches should be re-generated regardless of the stored date (important for vocab development)
+	@type refresh_vocab_cache: Boolean
+	
+	@ivar embedded_rdf: whether embedded RDF (ie, turtle in an HTML script element or an RDF/XML content in SVG) should be extracted and added to the final graph. This is a non-standard option...
+	@type embedded_rdf: Boolean
+	
+	@ivar vocab_expansion: whether the @vocab elements should be expanded and a mini-RDFS processing should be done on the merged graph
+	@type vocab_expansion: Boolean
+	
 	@ivar vocab_cache: whether the system should use the vocabulary caching mechanism when expanding via the mini-RDFS, or should just fetch the graphs every time
 	@type vocab_cache: Boolean
-	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml, but it can be HostLanguage.rdfa_core and HostLanguage.html, or others...
+	
+	@ivar host_language: the host language for the RDFa attributes. Default is HostLanguage.xhtml, but it can be HostLanguage.rdfa_core and HostLanguage.html5, or others...
 	@type host_language: integer (logically: an enumeration)
+	
 	@ivar content_type: the content type of the host file. Default is None
 	@type content_type: string (logically: an enumeration)
 	"""
@@ -126,21 +146,11 @@ class Options :
 					   output_processor_graph = False,
 					   space_preserve         = True,
 					   transformers           = [],
-					   vocab_cache_report     = False,
-					   bypass_vocab_cache     = False,
-					   hturtle                = False,
+					   embedded_rdf           = False,
 					   vocab_expansion        = False,
-					   vocab_cache            = False) :
-		"""
-		@keyword space_preserve: whether plain literals should preserve spaces at output or not
-		@type space_preserve: Boolean
-		@keyword output_default_graph: whether the 'default' graph should be returned to the user
-		@type output_default_graph: Boolean
-		@keyword output_processor_graph: whether the 'processor' graph should be returned to the user
-		@type output_processor_graph: Boolean
-		@keyword transformers: extra transformers
-		@type transformers: list
-		"""
+					   vocab_cache            = True,
+					   vocab_cache_report     = False,
+					   refresh_vocab_cache    = False) :
 		self.space_preserve 		= space_preserve
 		self.transformers   		= transformers
 		self.processor_graph  		= ProcessorGraph() 
@@ -148,15 +158,15 @@ class Options :
 		self.output_processor_graph	= output_processor_graph
 		self.host_language 			= HostLanguage.rdfa_core
 		self.vocab_cache_report		= vocab_cache_report
-		self.bypass_vocab_cache		= bypass_vocab_cache
-		self.hturtle				= hturtle
+		self.refresh_vocab_cache	= refresh_vocab_cache
+		self.embedded_rdf			= embedded_rdf
 		self.vocab_expansion		= vocab_expansion
 		self.vocab_cache			= vocab_cache
 			
 	def set_host_language(self, content_type) :
 		"""
-		Set the host language for processing, based on the recognized types. What this means is that everything is considered to be
-		'core' RDFa, except if XHTML or HTML is used; indeed, no other language defined a deviation to core (yet...)
+		Set the host language for processing, based on the recognized types. If this is not a recognized content type,
+		it falls back to RDFa core (i.e., XML)
 		@param content_type: content type
 		@type content_type: string
 		"""
@@ -183,33 +193,41 @@ class Options :
 		"""
 		self.processor_graph.graph.remove((None,None,None))
 
-	def add_warning(self, txt, warning_type=None, context=None, node=None) :
+	def add_warning(self, txt, warning_type=None, context=None, node=None, buggy_value=None) :
 		"""Add a warning to the processor graph.
 		@param txt: the warning text. 
 		@keyword warning_type: Warning Class
 		@type warning_type: URIRef
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
+		@keyword buggy_value: a special case when a 'term' is not recognized; no warning is generated for that case if the value is part of the 'usual' XHTML terms, because almost all RDFa file contains some of those and that would pollute the output
+		@type buggy_value: String
 		"""
+		if warning_type == ns_rdfa["UnresolvedTerm"] and buggy_value in predefined_1_0_rel :
+			return
 		return self.processor_graph.add_triples(txt, RDFA_Warning, warning_type, context, node)
 
-	def add_info(self, txt, info_type=None, context=None, node=None) :
+	def add_info(self, txt, info_type=None, context=None, node=None, buggy_value=None) :
 		"""Add an informational comment to the processor graph.
 		@param txt: the information text. 
 		@keyword info_type: Info Class
 		@type info_type: URIRef
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
+		@keyword buggy_value: a special case when a 'term' is not recognized; no information is generated for that case if the value is part of the 'usual' XHTML terms, because almost all RDFa file contains some of those and that would pollute the output
+		@type buggy_value: String
 		"""
 		return self.processor_graph.add_triples(txt, RDFA_Info, info_type, context, node)
 
-	def add_error(self, txt, err_type=None, context=None, node=None) :
+	def add_error(self, txt, err_type=None, context=None, node=None, buggy_value=None) :
 		"""Add an error  to the processor graph.
 		@param txt: the information text. 
 		@keyword err_type: Error Class
 		@type err_type: URIRef
 		@keyword context: possible context to be added to the processor graph
 		@type context: URIRef or String
+		@keyword buggy_value: a special case when a 'term' is not recognized; no error is generated for that case if the value is part of the 'usual' XHTML terms, because almost all RDFa file contains some of those and that would pollute the output
+		@type buggy_value: String
 		"""
 		return self.processor_graph.add_triples(txt, RDFA_Error, err_type, context, node)
 
