@@ -1,0 +1,8 @@
+include CHANGELOG
+include LICENSE
+include ez_setup.py
+recursive-include pyRdfa *.py
+recursive-include scripts *.py
+include run_tests.py
+graft test
+graft docs
