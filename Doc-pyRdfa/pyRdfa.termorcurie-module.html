@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.termorcurie</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        Module&nbsp;termorcurie
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.termorcurie-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module termorcurie</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa.termorcurie-pysrc.html">source&nbsp;code</a></span></p>
+<p>Management of vocabularies, terms, and their mapping to URI-s. The 
+  main class of this module (<a 
+  href="pyRdfa.termorcurie.TermOrCurie-class.html" 
+  class="link">TermOrCurie</a>) is, conceptually, part of the overall state
+  of processing at a node (<a 
+  href="pyRdfa.state.ExecutionContext-class.html" 
+  class="link">state.ExecutionContext</a>) but putting it into a separate 
+  module makes it easider to maintain.</p>
+
+<hr />
+<div class="fields">      <p><strong>Requires:</strong>
+        <a href="http://rdflib.net" target="_top">RDFLib package</a>
+      </p>
+      <p><strong>Organization:</strong>
+        <a href="http://www.w3.org" target="_top">World Wide Web 
+        Consortium</a>
+      </p>
+      <p><strong>Author:</strong>
+        <a href="http://ahref=&quot;http://www.w3.org/People/Ivan/&quot;" 
+        target="_top">Ivan Herman</a>
+      </p>
+      <p><strong>License:</strong>
+        This software is available for use under the <a 
+        href="http://href=&quot;http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231&quot;"
+        target="_top">W3C&#174; SOFTWARE NOTICE AND LICENSE</a>
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.termorcurie.InitialContext-class.html" class="summary-name">InitialContext</a><br />
+      Get the initial context values.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.termorcurie.TermOrCurie-class.html" class="summary-name">TermOrCurie</a><br />
+      Wrapper around vocabulary management, ie, mapping a term to a URI, 
+        as well as a CURIE to a URI.
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ncname"></a><span class="summary-name">ncname</span> = <code title="re.compile(r'^[A-Za-z][A-Za-z0-9\._-]*$')">re.compile(r'^<code class="re-group">[</code>A<code class="re-op">-</code>Za<code class="re-op">-</code>z<code class="re-group">]</code><code class="re-group">[</code>A<code class="re-op">-</code>Za<code class="re-op">-</code>z0<code class="re-op">-</code>9\._-<code class="re-group">]</code><code class="re-op">*</code>$')</code><br />
+      Regular expression object for NCNAME
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="termname"></a><span class="summary-name">termname</span> = <code title="re.compile(r'^[A-Za-z]([A-Za-z0-9\._-]|/)*$')">re.compile(r'^<code class="re-group">[</code>A<code class="re-op">-</code>Za<code class="re-op">-</code>z<code class="re-group">]</code><code class="re-group">(</code><code class="re-group">[</code>A<code class="re-op">-</code>Za<code class="re-op">-</code>z0<code class="re-op">-</code>9\._-<code class="re-group">]</code><code class="re-op">|</code>/<code class="re-group">)</code><code class="re-op">*</code>$')</code><br />
+      Regular expression object for a term
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.termorcurie-module.html#xml_application_media_type" class="summary-name">xml_application_media_type</a> = <code title="re.compile(r'application/[a-zA-Z0-9]+\+xml')">re.compile(r'application/<code class="re-group">[</code>a<code class="re-op">-</code>zA<code class="re-op">-</code>Z0<code class="variable-ellipsis">...</code></code><br />
+      Regular expression object for a general XML application media type
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="XHTML_PREFIX"></a><span class="summary-name">XHTML_PREFIX</span> = <code title="'xhv'"><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code></code><br />
+      prefix for the XHTML vocabulary URI (set to 'xhv')
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="XHTML_URI"></a><span class="summary-name">XHTML_URI</span> = <code title="'http://www.w3.org/1999/xhtml/vocab#'"><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code></code><br />
+      URI prefix of the XHTML vocabulary
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_bnodes"></a><span class="summary-name">_bnodes</span> = <code title="{}"><code class="variable-group">{</code><code class="variable-group">}</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_empty_bnode"></a><span class="summary-name">_empty_bnode</span> = <code title="rdflib.BNode('jHnTtdkN0')">rdflib.BNode('jHnTtdkN0')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pyRdfa'"><code class="variable-quote">'</code><code class="variable-string">pyRdfa</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<p class="indent-wrapped-lines"><b>Imports:</b>
+  <span title="re">re</span>,
+  <span title="sys">sys</span>,
+  <span title="xml">xml</span>,
+  <span title="random">random</span>,
+  <span title="urlparse">urlparse</span>,
+  <span title="urllib2">urllib2</span>,
+  <span title="rdflib">rdflib</span>,
+  <span title="rdflib.URIRef">URIRef</span>,
+  <span title="rdflib.Literal">Literal</span>,
+  <span title="rdflib.BNode">BNode</span>,
+  <span title="rdflib.Namespace">Namespace</span>,
+  <span title="rdflib.Graph.Graph">Graph</span>,
+  <span title="rdflib.RDFS.RDFSNS">ns_rdfs</span>,
+  <span title="rdflib.RDF.RDFNS">ns_rdf</span>,
+  <a href="pyRdfa.options.Options-class.html" title="pyRdfa.options.Options">Options</a>,
+  <a href="pyRdfa.utils-module.html#quote_URI" title="pyRdfa.utils.quote_URI">quote_URI</a>,
+  <a href="pyRdfa.utils.URIOpener-class.html" title="pyRdfa.utils.URIOpener">URIOpener</a>,
+  <a href="pyRdfa.host.MediaTypes-class.html" title="pyRdfa.host.MediaTypes">MediaTypes</a>,
+  <a href="pyRdfa.host.HostLanguage-class.html" title="pyRdfa.host.HostLanguage">HostLanguage</a>,
+  <span title="pyRdfa.host.predefined_1_0_rel">predefined_1_0_rel</span>,
+  <span title="pyRdfa.IncorrectPrefixDefinition">IncorrectPrefixDefinition</span>,
+  <span title="pyRdfa.RDFA_VOCAB">RDFA_VOCAB</span>,
+  <span title="pyRdfa.UnresolvableReference">UnresolvableReference</span>,
+  <span title="pyRdfa.ns_rdfa">ns_rdfa</span>,
+  <span title="pyRdfa.err_redefining_URI_as_prefix">err_redefining_URI_as_prefix</span>,
+  <span title="pyRdfa.err_xmlns_deprecated">err_xmlns_deprecated</span>,
+  <span title="pyRdfa.err_bnode_local_prefix">err_bnode_local_prefix</span>,
+  <span title="pyRdfa.err_col_local_prefix">err_col_local_prefix</span>,
+  <span title="pyRdfa.err_missing_URI_prefix">err_missing_URI_prefix</span>,
+  <span title="pyRdfa.err_invalid_prefix">err_invalid_prefix</span>,
+  <span title="pyRdfa.err_no_default_prefix">err_no_default_prefix</span>,
+  <span title="pyRdfa.err_prefix_and_xmlns">err_prefix_and_xmlns</span>,
+  <span title="pyRdfa.err_non_ncname_prefix">err_non_ncname_prefix</span>,
+  <span title="pyRdfa.err_absolute_reference">err_absolute_reference</span>,
+  <span title="pyRdfa.err_query_reference">err_query_reference</span>,
+  <span title="pyRdfa.err_fragment_reference">err_fragment_reference</span>
+</p><br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="xml_application_media_type"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">xml_application_media_type</h3>
+  Regular expression object for a general XML application media type
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+re.compile(r'application/<code class="re-group">[</code>a<code class="re-op">-</code>zA<code class="re-op">-</code>Z0<code class="re-op">-</code>9<code class="re-group">]</code><code class="re-op">+</code>\+xml')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

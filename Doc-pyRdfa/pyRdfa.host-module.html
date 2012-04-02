@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.host</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        Package&nbsp;host
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.host-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package host</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa.host-pysrc.html">source&nbsp;code</a></span></p>
+<p>Host language sub-package for the pyRdfa package. It contains 
+  variables and possible modules necessary to manage various RDFa host 
+  languages.</p>
+  <p>This module may have to be modified if a new host language is added to
+  the system. In many cases the rdfa_core as a host language is enough, 
+  because there is no need for a special processing. However, some host 
+  languages may require an initial context, or their value may control some
+  transformations, in which case additional data have to be added to this 
+  module. This module header contains all tables and arrays to be adapted, 
+  and the module content may contain specific transformation methods.</p>
+
+<hr />
+<div class="fields">      <p><strong>Requires:</strong>
+        <a href="http://rdflib.net" target="_top">RDFLib package</a>
+      </p>
+      <p><strong>Organization:</strong>
+        <a href="http://www.w3.org" target="_top">World Wide Web 
+        Consortium</a>
+      </p>
+      <p><strong>Author:</strong>
+        <a href="http://ahref=&quot;http://www.w3.org/People/Ivan/&quot;" 
+        target="_top">Ivan Herman</a>
+      </p>
+      <p><strong>License:</strong>
+        This software is available for use under the <a 
+        href="http://href=&quot;http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231&quot;"
+        target="_top">W3C&#174; SOFTWARE NOTICE AND LICENSE</a>
+      </p>
+      <p><strong>Version:</strong>
+        3.0
+      </p>
+</div><!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Submodules</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Submodules"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li> <strong class="uidlink"><a href="pyRdfa.host.atom-module.html">pyRdfa.host.atom</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt;</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.host.html5-module.html">pyRdfa.host.html5</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt;</em>    </li>
+  </ul></td></tr>
+</table>
+
+<br />
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host.HostLanguage-class.html" class="summary-name">HostLanguage</a><br />
+      An enumeration style class: recognized host language types for this
+        processor of RDFa.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host.MediaTypes-class.html" class="summary-name">MediaTypes</a><br />
+      An enumeration style class: some common media types (better have 
+        them at one place to avoid misstyping...)
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.host-module.html#adjust_xhtml" class="summary-sig-name">adjust_xhtml</a>(<span class="summary-sig-arg">dom</span>,
+        <span class="summary-sig-arg">incoming_language</span>)</span><br />
+      Check if the xhtml+RDFa is really XHTML 0 or 1 or whether it should 
+      be considered as XHTML5.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.host-pysrc.html#adjust_xhtml">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#initial_contexts" class="summary-name">initial_contexts</a> = <code title="{'Atom+RDFa': ['http://www.w3.org/2011/rdfa-context/rdfa-1.1'],
+ 'HTML5+RDFa': ['http://www.w3.org/2011/rdfa-context/rdfa-1.1'],
+ 'RDFa Core': ['http://www.w3.org/2011/rdfa-context/rdfa-1.1'],
+ 'SVG+RDFa': ['http://www.w3.org/2011/rdfa-context/rdfa-1.1'],
+ 'XHTML+RDFa': ['http://www.w3.org/2011/rdfa-context/rdfa-1.1',
+                'http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1'],
+ 'XHTML5+RDFa': ['http://www.w3.org/2011/rdfa-context/rdfa-1.1']}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa</code><code class="variable-ellipsis">...</code></code><br />
+      mapping from host languages to list of initial contexts
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#beautifying_prefixes" class="summary-name">beautifying_prefixes</a> = <code title="{'HTML5+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'},
+ 'XHTML+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'},
+ 'XHTML5+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'}}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.o</code><code class="variable-ellipsis">...</code></code><br />
+      this is really just to make the output more attractive: for each 
+      media type a dictionary of prefix-URI pairs that can be used to make 
+      the terms look better...
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="accept_xml_base"></a><span class="summary-name">accept_xml_base</span> = <code title="['RDFa Core', 'Atom+RDFa', 'SVG+RDFa']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-group">]</code></code><br />
+      list of host languages that accept the xml:base attribute for base 
+      setting
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#accept_xml_lang" class="summary-name">accept_xml_lang</a> = <code title="['RDFa Core', 'Atom+RDFa', 'SVG+RDFa']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-group">]</code></code><br />
+      list of host languages that accept the xml:lang attribute for 
+      language setting.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#accept_embedded_rdf_xml" class="summary-name">accept_embedded_rdf_xml</a> = <code title="['SVG+RDFa', 'RDFa Core']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-group">]</code></code><br />
+      list of host languages that might also include RDF data using an 
+      embedded RDF/XML (e.g., SVG).
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#accept_embedded_turtle" class="summary-name">accept_embedded_turtle</a> = <code title="['SVG+RDFa', 'HTML5+RDFa', 'XHTML5+RDFa', 'XHTML+RDFa']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">XHTML5+RD</code><code class="variable-ellipsis">...</code></code><br />
+      list of host languages that might also include RDF data using a 
+      <code>script</code> element.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#host_dom_transforms" class="summary-name">host_dom_transforms</a> = <code title="{HostLanguage.atom: [atom_add_entry_type], HostLanguage.html5: [html5_\
+extra_attributes], HostLanguage.xhtml5: [html5_extra_attributes]}">{HostLanguage.atom: [atom_add_entry_type<code class="variable-ellipsis">...</code></code><br />
+      dictionary mapping a host language to an array of methods that are 
+      invoked at the beginning of the parsing process for a specific node.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#predefined_1_0_rel" class="summary-name">predefined_1_0_rel</a> = <code title="['alternate',
+ 'appendix',
+ 'cite',
+ 'bookmark',
+ 'chapter',
+ 'contents',
+ 'copyright',
+ 'glossary',
+..."><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">alternate</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">appendix</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">cite</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">bookma</code><code class="variable-ellipsis">...</code></code><br />
+      terms that are hardcoded for HTML+RDF1.0 and replace the initial 
+      context for that version
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#content_to_host_language" class="summary-name">content_to_host_language</a> = <code title="{'application/atom+xml': 'Atom+RDFa',
+ 'application/smil+xml': 'RDFa Core',
+ 'application/svg+xml': 'SVG+RDFa',
+ 'application/xhtml+xml': 'XHTML+RDFa',
+ 'application/xml': 'RDFa Core',
+ 'text/html': 'HTML5+RDFa',
+ 'text/xml': 'RDFa Core'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">application/atom+xml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-ellipsis">...</code></code><br />
+      a dictionary mapping a media type to a host language
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.host-module.html#preferred_suffixes" class="summary-name">preferred_suffixes</a> = <code title="{'.atom': 'application/atom+xml',
+ '.html': 'text/html',
+ '.n3': 'text/turtle',
+ '.nt': 'text/plain',
+ '.owl': 'application/rdf+xml',
+ '.rdf': 'application/rdf+xml',
+ '.smil': 'application/smil+xml',
+ '.svg': 'application/svg+xml',
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">.atom</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/atom+xml</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">.html</code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code><br />
+      mapping from preferred suffixes for media types; used if the file is 
+      local, ie, there is not HTTP return value for the media type.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pyRdfa.host'"><code class="variable-quote">'</code><code class="variable-string">pyRdfa.host</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<p class="indent-wrapped-lines"><b>Imports:</b>
+  <a href="pyRdfa.host.atom-module.html#atom_add_entry_type" title="pyRdfa.host.atom.atom_add_entry_type">atom_add_entry_type</a>,
+  <a href="pyRdfa.host.html5-module.html#html5_extra_attributes" title="pyRdfa.host.html5.html5_extra_attributes">html5_extra_attributes</a>,
+  <a href="pyRdfa.host.atom-module.html" title="pyRdfa.host.atom">atom</a>,
+  <a href="pyRdfa.host.html5-module.html" title="pyRdfa.host.html5">html5</a>
+</p><br />
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="adjust_xhtml"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">adjust_xhtml</span>(<span class="sig-arg">dom</span>,
+        <span class="sig-arg">incoming_language</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.host-pysrc.html#adjust_xhtml">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Check if the xhtml+RDFa is really XHTML 0 or 1 or whether it should be
+  considered as XHTML5. This is done by looking at the DTD...</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dom</code></strong> - top level DOM node</li>
+        <li><strong class="pname"><code>incoming_language</code></strong> - host language to be checked; the whole check is relevant for 
+          xhtml only.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>possibly modified host language (ie, set to XHTML5)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="initial_contexts"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">initial_contexts</h3>
+  mapping from host languages to list of initial contexts
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa-context/rdfa-1.1</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa-context/rdfa-1.1</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa-context/rdfa-1.1</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa-context/rdfa-1.1</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">XHTML+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa-context/rdfa-1.1</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+                <code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">XHTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/2011/rdfa-context/rdfa-1.1</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="beautifying_prefixes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">beautifying_prefixes</h3>
+  this is really just to make the output more attractive: for each media 
+  type a dictionary of prefix-URI pairs that can be used to make the terms 
+  look better...
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">XHTML+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">XHTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="accept_xml_lang"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">accept_xml_lang</h3>
+  list of host languages that accept the xml:lang attribute for language 
+  setting. Note that XHTML and HTML have some special rules, and those are 
+  hard coded...
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="accept_embedded_rdf_xml"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">accept_embedded_rdf_xml</h3>
+  list of host languages that might also include RDF data using an embedded
+  RDF/XML (e.g., SVG). That RDF data may be merged with the output
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="accept_embedded_turtle"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">accept_embedded_turtle</h3>
+  list of host languages that might also include RDF data using a 
+  <code>script</code> element. That RDF data may be merged with the output
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">XHTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">XHTML+RDFa</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="host_dom_transforms"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">host_dom_transforms</h3>
+  dictionary mapping a host language to an array of methods that are 
+  invoked at the beginning of the parsing process for a specific node. That
+  function can do a last minute change on that DOM node, eg, adding or 
+  modifying an attribute. The method's signature is (node, state), where 
+  node is the DOM node, and state is the <a 
+  href="pyRdfa.state.ExecutionContext-class.html" class="link">Execution 
+  context</a>.
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+{HostLanguage.atom: [atom_add_entry_type], HostLanguage.html5: [html5_<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+extra_attributes], HostLanguage.xhtml5: [html5_extra_attributes]}
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="predefined_1_0_rel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">predefined_1_0_rel</h3>
+  terms that are hardcoded for HTML+RDF1.0 and replace the initial context 
+  for that version
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">alternate</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">appendix</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">cite</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">bookmark</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">chapter</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">contents</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">copyright</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">glossary</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="content_to_host_language"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">content_to_host_language</h3>
+  a dictionary mapping a media type to a host language
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">application/atom+xml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">application/smil+xml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">application/svg+xml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">SVG+RDFa</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">application/xhtml+xml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">XHTML+RDFa</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">application/xml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">text/html</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">text/xml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">RDFa Core</code><code class="variable-quote">'</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="preferred_suffixes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">preferred_suffixes</h3>
+  mapping from preferred suffixes for media types; used if the file is 
+  local, ie, there is not HTTP return value for the media type. It 
+  corresponds to the preferred suffix in the media type registration
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">.atom</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/atom+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.html</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">text/html</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.n3</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">text/turtle</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.nt</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">text/plain</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.owl</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/rdf+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.rdf</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/rdf+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.smil</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/smil+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.svg</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/svg+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:23 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

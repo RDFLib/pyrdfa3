@@ -1,0 +1,892 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.state.ExecutionContext</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        <a href="pyRdfa.state-module.html">Module&nbsp;state</a> ::
+        Class&nbsp;ExecutionContext
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.state.ExecutionContext-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class ExecutionContext</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext">source&nbsp;code</a></span></p>
+<p>State at a specific node, including the current set of namespaces in 
+  the RDFLib sense, current language, the base, vocabularies, etc. The 
+  class is also used to interpret URI-s and CURIE-s to produce URI 
+  references for RDFLib.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">node</span>,
+        <span class="summary-sig-arg">graph</span>,
+        <span class="summary-sig-arg">inherited_state</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">base</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">options</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">rdfa_version</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#_URI" class="summary-sig-name" onclick="show_private();">_URI</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">val</span>)</span><br />
+      Returns a URI for a 'pure' URI (ie, not a CURIE).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext._URI">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#_CURIEorURI" class="summary-sig-name" onclick="show_private();">_CURIEorURI</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">val</span>)</span><br />
+      Returns a URI for a (safe or not safe) CURIE.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext._CURIEorURI">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#_TERMorCURIEorAbsURI" class="summary-sig-name" onclick="show_private();">_TERMorCURIEorAbsURI</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">val</span>)</span><br />
+      Returns a URI either for a term or for a CURIE.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext._TERMorCURIEorAbsURI">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#getURI" class="summary-sig-name">getURI</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">attr</span>)</span><br />
+      Get the URI(s) for the attribute.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.getURI">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#getResource" class="summary-sig-name">getResource</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      Get single resources from several different attributes.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.getResource">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="reset_list_mapping"></a><span class="summary-sig-name">reset_list_mapping</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">origin</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Reset, ie, create a new empty dictionary for the list mapping.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.reset_list_mapping">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#list_empty" class="summary-sig-name">list_empty</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Checks whether the list is empty.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.list_empty">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#get_list_props" class="summary-sig-name">get_list_props</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the list of property values in the list structure</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.get_list_props">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#get_list_value" class="summary-sig-name">get_list_value</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">prop</span>)</span><br />
+      Return the list of values in the list structure for a specific 
+      property</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.get_list_value">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#set_list_origin" class="summary-sig-name">set_list_origin</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">origin</span>)</span><br />
+      Set the origin of the list, ie, the subject to attach the final 
+      list(s) to</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.set_list_origin">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#get_list_origin" class="summary-sig-name">get_list_origin</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the origin of the list, ie, the subject to attach the final 
+      list(s) to</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.get_list_origin">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.state.ExecutionContext-class.html#add_to_list_mapping" class="summary-sig-name">add_to_list_mapping</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">property</span>,
+        <span class="summary-sig-arg">resource</span>)</span><br />
+      Add a new property-resource on the list mapping structure.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.add_to_list_mapping">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_list"></a><span class="summary-name">_list</span> = <code title="['rel', 'rev', 'property', 'typeof']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">rel</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rev</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">property</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">typeof</code><code class="variable-quote">'</code><code class="variable-group">]</code></code><br />
+      list of attributes that allow for lists of values and should be 
+      treated as such
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.state.ExecutionContext-class.html#_resource_type" class="summary-name" onclick="show_private();">_resource_type</a> = <code title="{}"><code class="variable-group">{</code><code class="variable-group">}</code></code><br />
+      dictionary; mapping table from attribute name to the exact method to 
+      retrieve the URI(s).
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="base"></a><span class="summary-name">base</span><br />
+      the 'base' URI
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="defaultNS"></a><span class="summary-name">defaultNS</span><br />
+      default namespace (if defined via @xmlns) to be used for XML Literals
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="lang"></a><span class="summary-name">lang</span><br />
+      language tag (possibly None)
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="list_mapping"></a><span class="summary-name">list_mapping</span><br />
+      dictionary of arrays, containing a list of URIs key-ed via properties
+      for lists
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">DOM node instance</span>
+    </td><td class="summary">
+        <a name="node"></a><span class="summary-name">node</span><br />
+      the node to which this state belongs
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="pyRdfa.options.Options-class.html" class="link">Options</a></span>
+    </td><td class="summary">
+        <a name="options"></a><span class="summary-name">options</span><br />
+      reference to the overall options
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="parsedBase"></a><span class="summary-name">parsedBase</span><br />
+      the parsed version of base, as produced by urlparse.urlsplit
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">String</span>
+    </td><td class="summary">
+        <a name="rdfa_version"></a><span class="summary-name">rdfa_version</span><br />
+      RDFa version of the content
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Boolean</span>
+    </td><td class="summary">
+        <a name="supress_lang"></a><span class="summary-name">supress_lang</span><br />
+      in some cases, the effect of the lang attribute should be supressed 
+      for the given node, although it should be inherited down below 
+      (example: @value attribute of the data element in HTML5)
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="pyRdfa.termorcurie.TermOrCurie-class.html" 
+      class="link">termorcurie.TermOrCurie</a></span>
+    </td><td class="summary">
+        <a name="term_or_curie"></a><span class="summary-name">term_or_curie</span><br />
+      vocabulary management class instance
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">node</span>,
+        <span class="sig-arg">graph</span>,
+        <span class="sig-arg">inherited_state</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">base</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">options</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">rdfa_version</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>node</code></strong> - the current DOM Node</li>
+        <li><strong class="pname"><code>graph</code></strong> - the RDFLib Graph</li>
+        <li><strong class="pname"><code>inherited_state</code></strong> (<a href="pyRdfa.state.ExecutionContext-class.html" 
+          class="link">state.ExecutionContext</a>) - the state as inherited from upper layers. This inherited_state is
+          mixed with the state information retrieved from the current node.</li>
+        <li><strong class="pname"><code>base</code></strong> - string denoting the base URI for the specific node. This 
+          overrides the possible base inherited from the upper layers. The 
+          current XHTML+RDFa syntax does not allow the usage of 
+          <code>@xml:base</code>, but SVG1.2 does, so this is necessary for
+          SVG (and other possible XML dialects that accept 
+          <code>@xml:base</code>)</li>
+        <li><strong class="pname"><code>options</code></strong> (<a href="pyRdfa.pyRdfa-class.html#options" 
+          class="link">Options</a>) - invocation options, and references to warning graphs</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_URI"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_URI</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">val</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext._URI">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a URI for a 'pure' URI (ie, not a CURIE). The method resolves 
+  possible relative URI-s. It also checks whether the URI uses an unusual 
+  URI scheme (and issues a warning); this may be the result of an 
+  uninterpreted CURIE...</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>val</code></strong> (string) - attribute value to be interpreted</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>an RDFLib URIRef instance</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_CURIEorURI"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_CURIEorURI</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">val</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext._CURIEorURI">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a URI for a (safe or not safe) CURIE. In case it is a safe 
+  CURIE but the CURIE itself is not defined, an error message is issued. 
+  Otherwise, if it is not a CURIE, it is taken to be a URI</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>val</code></strong> (string) - attribute value to be interpreted</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>an RDFLib URIRef instance or None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_TERMorCURIEorAbsURI"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_TERMorCURIEorAbsURI</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">val</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext._TERMorCURIEorAbsURI">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a URI either for a term or for a CURIE. The value must be an 
+  NCNAME to be handled as a term; otherwise the method falls back on a 
+  CURIE or an absolute URI.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>val</code></strong> (string) - attribute value to be interpreted</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>an RDFLib URIRef instance or None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getURI"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getURI</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">attr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.getURI">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the URI(s) for the attribute. The name of the attribute determines
+  whether the value should be a pure URI, a CURIE, etc, and whether the 
+  return is a single element of a list of those. This is done using the <a 
+  href="pyRdfa.state.ExecutionContext-class.html#_resource_type" 
+  class="link" 
+  onclick="show_private();">ExecutionContext._resource_type</a> table.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>attr</code></strong> (string) - attribute name</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>an RDFLib URIRef instance (or None) or a list of those</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getResource"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getResource</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.getResource">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get single resources from several different attributes. The first one 
+  that returns a valid URI wins.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>args</code></strong> - variable list of attribute names, or a single attribute being a 
+          list itself.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>an RDFLib URIRef instance (or None) :</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="list_empty"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_empty</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.list_empty">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Checks whether the list is empty.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Boolean</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_list_props"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_list_props</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.get_list_props">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the list of property values in the list structure</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>list of URIRef</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_list_value"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_list_value</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">prop</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.get_list_value">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the list of values in the list structure for a specific 
+  property</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>list of RDF nodes</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_list_origin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_list_origin</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">origin</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.set_list_origin">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set the origin of the list, ie, the subject to attach the final 
+  list(s) to</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>origin</code></strong> - URIRef</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_list_origin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_list_origin</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.get_list_origin">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the origin of the list, ie, the subject to attach the final 
+  list(s) to</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>URIRef</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_to_list_mapping"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_to_list_mapping</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">property</span>,
+        <span class="sig-arg">resource</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.state-pysrc.html#ExecutionContext.add_to_list_mapping">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a new property-resource on the list mapping structure. The latter 
+  is a dictionary of arrays; if the array does not exist yet, it will be 
+  created on the fly.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>property</code></strong> - the property URI, used as a key in the dictionary</li>
+        <li><strong class="pname"><code>resource</code></strong> - the resource to be added to the relevant array in the dictionary.
+          Can be None; this is a dummy placeholder for <code>&lt;span 
+          rel=&quot;property&quot; inlist&gt;...&lt;/span&gt;</code> 
+          constructions that may be filled in by children or siblings; if 
+          not an empty list has to be generated.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_resource_type"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_resource_type</h3>
+  dictionary; mapping table from attribute name to the exact method to 
+  retrieve the URI(s). Is initialized at first instantiation.
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

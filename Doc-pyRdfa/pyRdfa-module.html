@@ -1,0 +1,1982 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;pyRdfa
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package pyRdfa</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa-pysrc.html">source&nbsp;code</a></span></p>
+<p>RDFa 1.1 parser, also referred to as a &#8220;RDFa Distiller&#8221;. It is 
+  deployed, via a CGI front-end, on the <a 
+  href="http://www.w3.org/2012/pyRdfa/" target="_top">W3C RDFa 1.1 
+  Distiller page</a>.</p>
+  <p>For details on RDFa, the reader should consult the <a 
+  href="http://www.w3.org/TR/rdfa-core/" target="_top">RDFa Core 1.1</a>, 
+  <a href="http://www.w3.org/TR/2010/xhtml-rdfa" 
+  target="_top">XHTML+RDFa1.1</a>, and the <a 
+  href="http://www.w3.org/TR/rdfa-lite/" target="_top">RDFa 1.1 Lite</a> 
+  documents. The <a href="http://www.w3.org/TR/owl2-primer/" 
+  target="_top">RDFa 1.1 Primer</a> may also prove helpful.</p>
+  <p>This package can also be downloaded <a 
+  href="http://dev.w3.org/2004/PythonLib-IH/dist/pyRdfa-3.tar.gz" 
+  target="_top">as a compressed tar file</a>. The distribution also 
+  includes the CGI front-end and a separate utility script to be run 
+  locally.</p>
+  <p>Note that this package is an updated version of a <a 
+  href="http://www.w3.org/2007/08/pyRdfa" target="_top">previous RDFa 
+  distiller</a> that was developed for RDFa 1.0. Although it reuses large 
+  portions of that code, it has been quite thoroughly rewritten, hence put 
+  in a completely different project.</p>
+  <h1 class="heading">(Simple) Usage</h1>
+    <p>From a Python file, expecting a Turtle output:</p>
+<pre class="literalblock">
+from pyRdfa import pyRdfa
+print pyRdfa().rdf_from_source('filename')
+</pre>
+    <p>Other output formats are also possible. E.g., to produce RDF/XML 
+    output, one could use:</p>
+<pre class="literalblock">
+from pyRdfa import pyRdfa
+print pyRdfa().rdf_from_source('filename', outputFormat='pretty-xml')
+</pre>
+    <p>It is also possible to embed an RDFa processing. Eg, using:</p>
+<pre class="literalblock">
+from pyRdfa import pyRdfa
+graph = pyRdfa().graph_from_source('filename')
+</pre>
+    <p>returns an RDFLib.Graph object instead of a serialization thereof. 
+    See the the description of the <a href="pyRdfa.pyRdfa-class.html" 
+    class="link">pyRdfa class</a> for further possible entry points 
+    details.</p>
+    <p>There is also, as part of this module, a <a 
+    href="pyRdfa-module.html#processURI" class="link">separate entry for 
+    CGI calls</a>.</p>
+    <h2 class="heading">Return formats</h2>
+      <p>By default, the output format for the graph is RDF/XML. At 
+      present, the following formats are also available (with the 
+      corresponding key to be used in the package entry points):</p>
+      <ul>
+        <li>
+          &quot;xml&quot;: <a 
+          href="http://www.w3.org/TR/rdf-syntax-grammar/" 
+          target="_top">RDF/XML</a>
+        </li>
+        <li>
+          &quot;turtle&quot;: <a href="http://www.w3.org/TR/turtle/" 
+          target="_top">Turtle</a> (default)
+        </li>
+        <li>
+          &quot;nt&quot;: <a 
+          href="http://www.w3.org/TR/rdf-testcases/#ntriples" 
+          target="_top">N-triple</a>
+        </li>
+        <li>
+          &quot;json&quot;: <a 
+          href="http://json-ld.org/spec/latest/json-ld-syntax/" 
+          target="_top">JSON-LD</a>
+        </li>
+      </ul>
+  <h1 class="heading">Options</h1>
+    <p>The package also implements some optional features that are not part
+    of the RDFa recommendations. At the moment these are:</p>
+    <ul>
+      <li>
+        possibility for plain literals to be normalized in terms of white 
+        spaces. Default: false. (The RDFa specification requires keeping 
+        the white spaces and leave applications to normalize them, if 
+        needed)
+      </li>
+      <li>
+        inclusion of embedded RDF: Turtle content may be enclosed in a 
+        <code>script</code> element and typed as <code>text/turtle</code>, 
+        <a href="http://www.w3.org/TR/turtle/" target="_top">defined by the
+        RDF Working Group</a>. Alternatively, some XML dialects (e.g., SVG)
+        allows the usage of RDF/XML as part of their core content to define
+        metadata in RDF. For both of these cases pyRdfa parses these 
+        serialized RDF content and adds the resulting triples to the output
+        Graph. Default: true.
+      </li>
+      <li>
+        extra, built-in transformers are executed on the DOM tree prior to 
+        RDFa processing (see below). These transformers can be provided by 
+        the end user.
+      </li>
+    </ul>
+    <p>Options are collected in an instance of the <a 
+    href="pyRdfa.options.Options-class.html" class="link">Options</a> class
+    and may be passed to the processing functions as an extra argument. 
+    E.g., to allow the inclusion of embedded content:</p>
+<pre class="literalblock">
+from pyRdfa.options import Options
+options = Options(embedded_rdf=True)
+print pyRdfa(options=options).rdf_from_source('filename')
+</pre>
+    <p>See the description of the <a 
+    href="pyRdfa.options.Options-class.html" class="link">Options</a> class
+    for the details.</p>
+  <h1 class="heading">Host Languages</h1>
+    <p>RDFa 1.1. Core is defined for generic XML; there are specific 
+    documents to describe how the generic specification is applied to XHTML
+    and HTML5.</p>
+    <p>pyRdfa makes an automatic switch among these based on the content 
+    type of the source as returned by an HTTP request. The following are 
+    the possible host languages:</p>
+    <ul>
+      <li>
+        if the content type is <code>text/html</code>, the content is HTML5
+      </li>
+      <li>
+        if the content type is <code>application/xhtml+xml</code> 
+        <i>and</i> the right DTD is used, the content is XHTML1
+      </li>
+      <li>
+        if the content type is <code>application/xhtml+xml</code> and no or
+        an unknown DTD is used, the content is XHTML5
+      </li>
+      <li>
+        if the content type is <code>application/svg+xml</code>, the 
+        content type is SVG
+      </li>
+      <li>
+        if the content type is <code>application/atom+xml</code>, the 
+        content type is SVG
+      </li>
+      <li>
+        if the content type is <code>application/xml</code> or 
+        <code>application/xxx+xml</code> (but 'xxx' is not 'atom' or 
+        'svg'), the content type is XML
+      </li>
+    </ul>
+    <p>If local files are used, pyRdfa makes a guess on the content type 
+    based on the file name suffix: <code>.html</code> is for HTML5, 
+    <code>.xhtml</code> for XHTML1, <code>.svg</code> for SVG, anything 
+    else is considered to be general XML. Finally, the content type may be 
+    set by the caller when initializing the <a 
+    href="pyRdfa.pyRdfa-class.html" class="link">pyRdfa class</a>.</p>
+    <p>Beyond the differences described in the RDFa specification, the main
+    difference is the parser used to parse the source. In the case of 
+    HTML5, pyRdfa uses an <a href="http://code.google.com/p/html5lib/" 
+    target="_top">HTML5 parser</a>; for all other cases the simple XML 
+    parser, part of the core Python environment, is used. This may be 
+    significant in the case of erronuous sources: indeed, the HTML5 parser 
+    may do adjustments on the DOM tree before handing it over to the 
+    distiller. Furthermore, SVG is also recognized as a type that allows 
+    embedded RDF in the form of RDF/XML.</p>
+    <p>See the variables in the <a href="pyRdfa.host-module.html" 
+    class="link">host</a> module if a new host language is added to the 
+    system. The current host language information is available for 
+    transformers via the option argument, too, and can be used to control 
+    the effect of the transformer.</p>
+  <h1 class="heading">Vocabularies</h1>
+    <p>RDFa 1.1 has the notion of vocabulary files (using the 
+    <code>@vocab</code> attribute) that may be used to expand the generated
+    RDF graph. Expansion is based on some very simply RDF Schema and OWL 
+    statements on sub-properties and sub-classes, and equivalences.</p>
+    <p>pyRdfa implements this feature, although it does not do this by 
+    default. The extra <code>vocab_expansion</code> parameter should be 
+    used for this extra step, for example:</p>
+<pre class="literalblock">
+from pyRdfa.options import Options
+options = Options(vocab_expansion=True)
+print pyRdfa(options=options).rdf_from_source('filename')
+</pre>
+    <p>The triples in the vocabulary files themselves (i.e., the small 
+    ontology in RDF Schema and OWL) are removed from the result, leaving 
+    the inferred property and type relationships only (additionally to the 
+    &#8220;core&#8221; RDF content).</p>
+    <h2 class="heading">Vocabulary caching</h2>
+      <p>By default, pyRdfa uses a caching mechanism instead of fetching 
+      the vocabulary files each time their URI is met as a 
+      <code>@vocab</code> attribute value. (This behavior can be switched 
+      off setting the <code>vocab_cache</code> option to false.)</p>
+      <p>Caching happens in a file system directory. The directory itself 
+      is determined by the platform the tool is used on, namely:</p>
+      <ul>
+        <li>
+          On Windows, it is the <code>pyRdfa-cache</code> subdirectory of 
+          the <code>%APPDATA%</code> environment variable
+        </li>
+        <li>
+          On MacOS, it is the <code>~/Library/Application 
+          Support/pyRdfa-cache</code>
+        </li>
+        <li>
+          Otherwise, it is the <code>~/.pyRdfa-cache</code>
+        </li>
+      </ul>
+      <p>This automatic choice can be overridden by the 
+      <code>PyRdfaCacheDir</code> environment variable.</p>
+      <p>Caching can be set to be read-only, i.e., the setup might generate
+      the cache files off-line instead of letting the tool writing its own 
+      cache when operating, e.g., as a service on the Web. This can be 
+      achieved by making the cache directory read only.</p>
+      <p>If the directories are neither readable nor writable, the 
+      vocabulary files are retrieved via HTTP every time they are hit. This
+      may slow down processing, it is advised to avoid such a setup for the
+      package.</p>
+      <p>The cache includes a separate index file and a file for each 
+      vocabulary file. Cache control is based upon the <code>EXPIRES</code>
+      header of a vocabulary file&#8217;s HTTP return header: when first seen, 
+      this data is stored in the index file and controls whether the cache 
+      has to be renewed or not. If the HTTP return header does not have 
+      this entry, the date is artificially set ot the current date plus one
+      day.</p>
+      <p>(The cache files themselves are dumped and loaded using <a 
+      href="http://docs.python.org/release/2.7/library/pickle.html#module-cPickle"
+      target="_top">Python&#8217;s built in cPickle package</a>. These are binary
+      files. Care should be taken if they are managed by CVS: they must be 
+      declared as binary files when adding them to the repository.)</p>
+  <h1 class="heading">RDFa 1.1 vs. RDFa 1.0</h1>
+    <p>Unfortunately, RDFa 1.1 is <i>not</i> backward compatible with RDFa 
+    1.0, meaning that, in a few cases, the triples generated from an RDFa 
+    1.1 source are not the same as for RDFa 1.0. (See the separate  <a 
+    href="http://www.w3.org/TR/rdfa-core/#major-differences-with-rdfa-syntax-1.0"
+    target="_top">section in the RDFa 1.1 specification</a> for some 
+    further details.)</p>
+    <p>This distiller&#8217;s default behavior is RDFa 1.1. However, if the 
+    source includes, in the top element of the file (e.g., the 
+    <code>html</code> element) a <code>@version</code> attribute whose 
+    value contains the <code>RDFa 1.0</code> string, then the distiller 
+    will switch in RDFa 1.0 mode. (Although the <code>@version</code> 
+    attribute is not required in RDFa 1.0, it is fairly commonly used.)</p>
+  <h1 class="heading">Transformers</h1>
+    <p>The package uses the concept of 'transformers': the parsed DOM tree 
+    is possibly transformed <i>before</i> performing the real RDFa 
+    processing. This transformer structure makes it possible to add 
+    additional 'services' without distoring the core code of RDFa 
+    processing.</p>
+    <p>A transformer is a function with three arguments:</p>
+    <ul>
+      <li>
+        <code>node</code>: a DOM node for the top level element of the DOM 
+        tree
+      </li>
+      <li>
+        <code>options</code>: the current <a 
+        href="pyRdfa.options.Options-class.html" class="link">Options</a> 
+        instance
+      </li>
+      <li>
+        <code>state</code>: the current <a 
+        href="pyRdfa.state.ExecutionContext-class.html" 
+        class="link">ExecutionContext</a> instance, corresponding to the 
+        top level DOM Tree element
+      </li>
+    </ul>
+    <p>The function may perform any type of change on the DOM tree; the 
+    typical behaviour is to add or remove attributes on specific elements. 
+    Some transformations are included in the package and can be used as 
+    examples; see the <a href="pyRdfa.transform-module.html" 
+    class="link">transform</a> module of the distribution. These are:</p>
+    <ul>
+      <li>
+        The <code>@name</code> attribute of the <code>meta</code> element 
+        is copied into a <code>@property</code> attribute of the same 
+        element
+      </li>
+      <li>
+        Interpreting the 'openid' references in the header. See <a 
+        href="pyRdfa.transform.OpenID-module.html" 
+        class="link">transform.OpenID</a> for further details.
+      </li>
+      <li>
+        Implementing the Dublin Core dialect to include DC statements from 
+        the header.  See <a href="pyRdfa.transform.DublinCore-module.html" 
+        class="link">transform.DublinCore</a> for further details.
+      </li>
+    </ul>
+    <p>The user of the package may refer add these transformers to <a 
+    href="pyRdfa.options.Options-class.html" class="link">Options</a> 
+    instance. Here is a possible usage with the &#8220;openid&#8221; transformer added 
+    to the call:</p>
+<pre class="literalblock">
+from pyRdfa.options import Options
+from pyRdfa.transform.OpenID import OpenID_transform
+options = Options(transformers=[OpenID_transform])
+print pyRdfa(options=options).rdf_from_source('filename')
+</pre>
+
+<hr />
+<div class="fields">      <strong>Requires:</strong>
+      <ul class="nomargin-top">
+        <li>
+        Python version 2.5 or up; 2.7 is preferred
+        </li>
+        <li>
+        <a href="http://rdflib.net" target="_top">RDFLib</a>; version 3.X 
+        is preferred, it has a superior output serialization.
+        </li>
+        <li>
+        <a href="http://code.google.com/p/html5lib/" 
+        target="_top">html5lib</a> for the HTML5 parsing.
+        </li>
+        <li>
+        <a href="http://deron.meranda.us/python/httpheader/" 
+        target="_top">httpheader</a>; however, a small modification had to 
+        make on the original file, so for this reason and to make 
+        distribution easier this module (single file) is added to the 
+        package.
+        </li>
+        <li>
+        <a href="http://dev.pocoo.org/hg/sandbox/raw-file/tip/odict.py" 
+        target="_top">Ordered Dictionary (odict)</a>, needed only for the 
+        JSON-LD serialization if Python 2.6 or lower is used (Python 2.7 
+        has a built in ordered list module). It is included in the 
+        distribution
+        </li>
+        <li>
+        <a href="http://undefined.org/python/#simplejson" 
+        target="_top">simplejson package by Bob Ippolito</a>, needed only 
+        for the JSON-LD serailization if Python 2.5 or lower is used 
+        (Python 2.6 has a json implementation included in the 
+        distribution).
+        </li>
+      </ul>
+      <p><strong>Organization:</strong>
+        <a href="http://www.w3.org" target="_top">World Wide Web 
+        Consortium</a>
+      </p>
+      <p><strong>Author:</strong>
+        <a href="http://ahref=&quot;http://www.w3.org/People/Ivan/&quot;" 
+        target="_top">Ivan Herman</a>
+      </p>
+      <p><strong>License:</strong>
+        This software is available for use under the <a 
+        href="http://href=&quot;http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231&quot;"
+        target="_top">W3C&#174; SOFTWARE NOTICE AND LICENSE</a>
+      </p>
+      <p><strong>Version:</strong>
+        3.2.0
+      </p>
+      <p><strong>Contact:</strong>
+        Ivan Herman, ivan@w3.org
+      </p>
+</div><!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Submodules</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Submodules"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li> <strong class="uidlink"><a href="pyRdfa.embeddedRDF-module.html">pyRdfa.embeddedRDF</a></strong>: <em class="summary">Extracting possible embedded RDF/XML content from the file and 
+        parse it separately into the Graph.</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.graph-module.html">pyRdfa.graph</a></strong>: <em class="summary">Shell around RDLib's Graph</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.host-module.html">pyRdfa.host</a></strong>: <em class="summary">RDFa Host package</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="pyRdfa.host.atom-module.html">pyRdfa.host.atom</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt;</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.host.html5-module.html">pyRdfa.host.html5</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt;</em>    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.initialcontext-module.html">pyRdfa.initialcontext</a></strong>: <em class="summary">Management of vocabularies, terms, and their mapping to URI-s.</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.options-module.html">pyRdfa.options</a></strong>: <em class="summary">RDFa parser (distiller)</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.parse-module.html">pyRdfa.parse</a></strong>: <em class="summary">RDFa core parser processing step</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.property-module.html">pyRdfa.property</a></strong>: <em class="summary">RDFa Literal generation</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.rdfs-module.html">pyRdfa.rdfs</a></strong>: <em class="summary">Separate module to handle vocabulary expansions.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="pyRdfa.rdfs.cache-module.html">pyRdfa.rdfs.cache</a></strong>: <em class="summary">RDFa parser (distiller)</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.rdfs.process-module.html">pyRdfa.rdfs.process</a></strong>    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.state-module.html">pyRdfa.state</a></strong>: <em class="summary">RDFa parser execution context</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.termorcurie-module.html">pyRdfa.termorcurie</a></strong>: <em class="summary">Management of vocabularies, terms, and their mapping to URI-s.</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.transform-module.html">pyRdfa.transform</a></strong>: <em class="summary">RDFa Transformer package</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="pyRdfa.transform.DublinCore-module.html">pyRdfa.transform.DublinCore</a></strong>: <em class="summary">Dublin Core transformer</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.transform.OpenID-module.html">pyRdfa.transform.OpenID</a></strong>: <em class="summary">OpenID transformer module.</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.transform.lite-module.html">pyRdfa.transform.lite</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.transform.metaname-module.html">pyRdfa.transform.metaname</a></strong>: <em class="summary">Simple transfomer: <code>meta</code> element is extended with a 
+        <code>property</code> attribute, with a copy of the 
+        <code>name</code> attribute values.</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.transform.toplevelabout-module.html">pyRdfa.transform.toplevelabout</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt; or 
+        root element</em>    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.utils-module.html">pyRdfa.utils</a></strong>: <em class="summary">Various utilities for pyRdfa.</em>    </li>
+  </ul></td></tr>
+</table>
+
+<br />
+<!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.RDFaError-class.html" class="summary-name">RDFaError</a><br />
+      Superclass exceptions representing error conditions defined by the 
+        RDFa 1.1 specification.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.FailedSource-class.html" class="summary-name">FailedSource</a><br />
+      Raised when the original source cannot be accessed.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.HTTPError-class.html" class="summary-name">HTTPError</a><br />
+      Raised when HTTP problems are detected.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.ProcessingError-class.html" class="summary-name">ProcessingError</a><br />
+      Error found during processing.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.pyRdfaError-class.html" class="summary-name">pyRdfaError</a><br />
+      Superclass exceptions representing error conditions outside the 
+        RDFa 1.1 specification.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.pyRdfa-class.html" class="summary-name">pyRdfa</a><br />
+      Main processing class for the distiller
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa-module.html#processURI" class="summary-sig-name">processURI</a>(<span class="summary-sig-arg">uri</span>,
+        <span class="summary-sig-arg">outputFormat</span>,
+        <span class="summary-sig-arg">form</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span><br />
+      The standard processing of an RDFa uri options in a form; used as an 
+      entry point from a CGI call.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa-pysrc.html#processURI">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__author__"></a><span class="summary-name">__author__</span> = <code title="'Ivan Herman'"><code class="variable-quote">'</code><code class="variable-string">Ivan Herman</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#__license__" class="summary-name">__license__</a> = <code title="u'W3C&#174; SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal\
+/2002/copyright-software-20021231'"><code class="variable-quote">u'</code><code class="variable-string">W3C&#174; SOFTWARE NOTICE AND LICENSE, http://www.w</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ns_rdfa"></a><span class="summary-name">ns_rdfa</span> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#')">rdflib.URIRef('http://www.w3.org/ns/rdfa#')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#RDFA_VOCAB" class="summary-name">RDFA_VOCAB</a> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#usesVocabulary')">rdflib.URIRef('http://www.w3.org/ns/rdfa#usesVoca<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ns_xsd"></a><span class="summary-name">ns_xsd</span> = <code title="rdflib.URIRef('http://www.w3.org/2001/XMLSchema#')">rdflib.URIRef('http://www.w3.org/2001/XMLSchema#')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#ns_distill" class="summary-name">ns_distill</a> = <code title="rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#')">rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/v<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="debug"></a><span class="summary-name">debug</span> = <code title="False">False</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RDFA_Error"></a><span class="summary-name">RDFA_Error</span> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#Error')">rdflib.URIRef('http://www.w3.org/ns/rdfa#Error')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="RDFA_Warning"></a><span class="summary-name">RDFA_Warning</span> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#Warning')">rdflib.URIRef('http://www.w3.org/ns/rdfa#Warning')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#RDFA_Info" class="summary-name">RDFA_Info</a> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#Information')">rdflib.URIRef('http://www.w3.org/ns/rdfa#Informati<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#NonConformantMarkup" class="summary-name">NonConformantMarkup</a> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#DocumentError')">rdflib.URIRef('http://www.w3.org/ns/rdfa<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#UnresolvablePrefix" class="summary-name">UnresolvablePrefix</a> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#UnresolvedCURIEPrefix')">rdflib.URIRef('http://www.w3.org/ns/rdfa#<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#UnresolvableReference" class="summary-name">UnresolvableReference</a> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#UnresolvedCURIEReference')">rdflib.URIRef('http://www.w3.org/ns/rd<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#UnresolvableTerm" class="summary-name">UnresolvableTerm</a> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#UnresolvedTerm')">rdflib.URIRef('http://www.w3.org/ns/rdfa#Un<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#VocabReferenceError" class="summary-name">VocabReferenceError</a> = <code title="rdflib.URIRef('http://www.w3.org/ns/rdfa#VocabReferenceError')">rdflib.URIRef('http://www.w3.org/ns/rdfa<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#FileReferenceError" class="summary-name">FileReferenceError</a> = <code title="rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#FileReferenceErr\
+or')">rdflib.URIRef('http://www.w3.org/2007/08/<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#HTError" class="summary-name">HTError</a> = <code title="rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#HTTPError')">rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/voca<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#IncorrectPrefixDefinition" class="summary-name">IncorrectPrefixDefinition</a> = <code title="rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#IncorrectPrefixD\
+efinition')">rdflib.URIRef('http://www.w3.org/2<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#IncorrectBlankNodeUsage" class="summary-name">IncorrectBlankNodeUsage</a> = <code title="rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#IncorrectBlankNo\
+deUsage')">rdflib.URIRef('http://www.w3.org/200<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#IncorrectLiteral" class="summary-name">IncorrectLiteral</a> = <code title="rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#IncorrectLiteral\
+')">rdflib.URIRef('http://www.w3.org/2007/08/py<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_no_blank_node" class="summary-name">err_no_blank_node</a> = <code title="'Blank node in %s position is not allowed; ignored'"><code class="variable-quote">'</code><code class="variable-string">Blank node in %s position is not allowed;</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_redefining_URI_as_prefix" class="summary-name">err_redefining_URI_as_prefix</a> = <code title="'\'%s\' a registered or an otherwise used URI scheme, but is defined a\
+s a prefix here; is this a mistake? (see, eg, http://en.wikipedia.org/\
+wiki/URI_scheme or http://www.iana.org/assignments/uri-schemes.html fo\
+r further information for most of the URI schemes)'"><code class="variable-quote">'</code><code class="variable-string">\'%s\' a registered or an othe</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_xmlns_deprecated" class="summary-name">err_xmlns_deprecated</a> = <code title="'The usage of \'xmlns\' for prefix definition is deprecated; please us\
+e the \'prefix\' attribute instead (definition for \'%s\')'"><code class="variable-quote">'</code><code class="variable-string">The usage of \'xmlns\' for prefix defi</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_bnode_local_prefix" class="summary-name">err_bnode_local_prefix</a> = <code title="'The \'_\' local CURIE prefix is reserved for blank nodes, and cannot \
+be defined as a prefix'"><code class="variable-quote">'</code><code class="variable-string">The \'_\' local CURIE prefix is rese</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_col_local_prefix" class="summary-name">err_col_local_prefix</a> = <code title="'The character \':\' is not valid in a CURIE Prefix, and cannot be use\
+d in a prefix definition (definition for \'%s\')'"><code class="variable-quote">'</code><code class="variable-string">The character \':\' is not valid in a </code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_missing_URI_prefix" class="summary-name">err_missing_URI_prefix</a> = <code title="'Missing URI in prefix declaration for \'%s\' (in \'%s\')'"><code class="variable-quote">'</code><code class="variable-string">Missing URI in prefix declaration fo</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_invalid_prefix" class="summary-name">err_invalid_prefix</a> = <code title="'Invalid prefix declaration \'%s\' (in \'%s\')'"><code class="variable-quote">'</code><code class="variable-string">Invalid prefix declaration \'%s\' (in \'</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_no_default_prefix" class="summary-name">err_no_default_prefix</a> = <code title="'Default prefix cannot be changed (in \'%s\')'"><code class="variable-quote">'</code><code class="variable-string">Default prefix cannot be changed (in </code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_prefix_and_xmlns" class="summary-name">err_prefix_and_xmlns</a> = <code title="'@prefix setting for \'%s\' overrides the \'xmlns:%s\' setting; may be\
+ a source of problem if same file is run through RDFa 1.0'"><code class="variable-quote">'</code><code class="variable-string">@prefix setting for \'%s\' overrides t</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_non_ncname_prefix" class="summary-name">err_non_ncname_prefix</a> = <code title="'Non NCNAME \'%s\' in prefix definition (in \'%s\'); ignored'"><code class="variable-quote">'</code><code class="variable-string">Non NCNAME \'%s\' in prefix definitio</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_absolute_reference" class="summary-name">err_absolute_reference</a> = <code title="'CURIE Reference part contains an authority part: %s (in \'%s\'); igno\
+red'"><code class="variable-quote">'</code><code class="variable-string">CURIE Reference part contains an aut</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_query_reference" class="summary-name">err_query_reference</a> = <code title="'CURIE Reference query part contains an unauthorized character: %s (in\
+ \'%s\'); ignored'"><code class="variable-quote">'</code><code class="variable-string">CURIE Reference query part contains an </code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_fragment_reference" class="summary-name">err_fragment_reference</a> = <code title="'CURIE Reference fragment part contains an unauthorized character: %s \
+(in \'%s\'); ignored'"><code class="variable-quote">'</code><code class="variable-string">CURIE Reference fragment part contai</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_lang" class="summary-name">err_lang</a> = <code title="'There is a problem with language setting; either both xml:lang and la\
+ng used on an element with different values, or, for (X)HTML5, only xm\
+l:lang is used.'"><code class="variable-quote">'</code><code class="variable-string">There is a problem with language setting; either b</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_URI_scheme" class="summary-name">err_URI_scheme</a> = <code title="'Unusual URI scheme used in &lt;%s&gt;; may that be a mistake, e.g., resulti\
+ng from using an undefined CURIE prefix or an incorrect CURIE?'"><code class="variable-quote">'</code><code class="variable-string">Unusual URI scheme used in &lt;%s&gt;; may that be</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="err_illegal_safe_CURIE"></a><span class="summary-name">err_illegal_safe_CURIE</span> = <code title="'Illegal safe CURIE: %s; ignored'"><code class="variable-quote">'</code><code class="variable-string">Illegal safe CURIE: %s; ignored</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_no_CURIE_in_safe_CURIE" class="summary-name">err_no_CURIE_in_safe_CURIE</a> = <code title="'Safe CURIE is used, but the value does not correspond to a defined CU\
+RIE: [%s]; ignored'"><code class="variable-quote">'</code><code class="variable-string">Safe CURIE is used, but the valu</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_undefined_terms" class="summary-name">err_undefined_terms</a> = <code title="'\'%s\' is used as a term, but has not been defined as such; ignored'"><code class="variable-quote">'</code><code class="variable-string">\'%s\' is used as a term, but has not b</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_non_legal_CURIE_ref" class="summary-name">err_non_legal_CURIE_ref</a> = <code title="'Relative URI is not allowed in this position (or not a legal CURIE re\
+ference) \'%s\'; ignored'"><code class="variable-quote">'</code><code class="variable-string">Relative URI is not allowed in this</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="err_undefined_CURIE"></a><span class="summary-name">err_undefined_CURIE</span> = <code title="'Undefined CURIE: \'%s\'; ignored'"><code class="variable-quote">'</code><code class="variable-string">Undefined CURIE: \'%s\'; ignored</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#err_unusual_char_in_URI" class="summary-name">err_unusual_char_in_URI</a> = <code title="'Unusual character in uri: %s; possible error?'"><code class="variable-quote">'</code><code class="variable-string">Unusual character in uri: %s; possi</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="CACHE_DIR_VAR"></a><span class="summary-name">CACHE_DIR_VAR</span> = <code title="'PyRdfaCacheDir'"><code class="variable-quote">'</code><code class="variable-string">PyRdfaCacheDir</code><code class="variable-quote">'</code></code><br />
+      Environment variable used to define cache directories for RDFa 
+      vocabularies in case the default setting does not work or is not 
+      appropriate.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#rdfa_current_version" class="summary-name">rdfa_current_version</a> = <code title="'1.1'"><code class="variable-quote">'</code><code class="variable-string">1.1</code><code class="variable-quote">'</code></code><br />
+      Current &quot;official&quot; version of RDFa that this package 
+      implements by default.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#registered_iana_schemes" class="summary-name">registered_iana_schemes</a> = <code title="['aaa',
+ 'aaas',
+ 'acap',
+ 'cap',
+ 'cid',
+ 'crid',
+ 'data',
+ 'dav',
+..."><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">aaa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">aaas</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">acap</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">cap</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">cid</code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#unofficial_common" class="summary-name">unofficial_common</a> = <code title="['about',
+ 'adiumxtra',
+ 'aim',
+ 'apt',
+ 'afp',
+ 'aw',
+ 'bitcoin',
+ 'bolo',
+..."><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">about</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">adiumxtra</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">aim</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">apt</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">afp</code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#historical_iana_schemes" class="summary-name">historical_iana_schemes</a> = <code title="['fax',
+ 'mailserver',
+ 'modem',
+ 'pack',
+ 'prospero',
+ 'snews',
+ 'videotex',
+ 'wais']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">fax</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">mailserver</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">modem</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">pack</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#provisional_iana_schemes" class="summary-name">provisional_iana_schemes</a> = <code title="['afs', 'dtn', 'dvb', 'icon', 'ipn', 'jms', 'oid', 'rsync']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">afs</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">dtn</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">dvb</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">icon</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ipn</code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#other_used_schemes" class="summary-name">other_used_schemes</a> = <code title="['hdl', 'isbn', 'issn', 'mstp', 'rtmp', 'rtspu', 'stp']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">hdl</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">isbn</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">issn</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">mstp</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rtmp</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#uri_schemes" class="summary-name">uri_schemes</a> = <code title="['aaa',
+ 'aaas',
+ 'acap',
+ 'cap',
+ 'cid',
+ 'crid',
+ 'data',
+ 'dav',
+..."><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">aaa</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">aaas</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">acap</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">cap</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">cid</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">crid</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">d</code><code class="variable-ellipsis">...</code></code><br />
+      List of registered (or widely used) URI schemes; used for warnings...
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="builtInTransformers"></a><span class="summary-name">builtInTransformers</span> = <code title="[top_about]">[top_about]</code><br />
+      List of built-in transformers that are to be run regardless, because 
+      they are part of the RDFa spec
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pyRdfa'"><code class="variable-quote">'</code><code class="variable-string">pyRdfa</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<p class="indent-wrapped-lines"><b>Imports:</b>
+  <span title="sys">sys</span>,
+  <span title="StringIO">StringIO</span>,
+  <span title="os">os</span>,
+  <span title="rdflib">rdflib</span>,
+  <span title="rdflib.URIRef">URIRef</span>,
+  <span title="rdflib.Literal">Literal</span>,
+  <span title="rdflib.BNode">BNode</span>,
+  <span title="rdflib.Namespace">Namespace</span>,
+  <span title="rdflib.RDFS.RDFSNS">ns_rdfs</span>,
+  <span title="rdflib.RDF.RDFNS">ns_rdf</span>,
+  <a href="pyRdfa.graph.MyGraph-class.html" title="pyRdfa.graph.MyGraph">Graph</a>,
+  <span title="pyRdfa.extras.httpheader.acceptable_content_type">acceptable_content_type</span>,
+  <span title="pyRdfa.extras.httpheader.content_type">content_type</span>,
+  <span title="xml">xml</span>,
+  <span title="urlparse">urlparse</span>,
+  <a href="pyRdfa.state.ExecutionContext-class.html" title="pyRdfa.state.ExecutionContext">ExecutionContext</a>,
+  <a href="pyRdfa.parse-module.html#parse_one_node" title="pyRdfa.parse.parse_one_node">parse_one_node</a>,
+  <a href="pyRdfa.options.Options-class.html" title="pyRdfa.options.Options">Options</a>,
+  <a href="pyRdfa.transform.toplevelabout-module.html#top_about" title="pyRdfa.transform.toplevelabout.top_about">top_about</a>,
+  <a href="pyRdfa.utils.URIOpener-class.html" title="pyRdfa.utils.URIOpener">URIOpener</a>,
+  <a href="pyRdfa.host.HostLanguage-class.html" title="pyRdfa.host.HostLanguage">HostLanguage</a>,
+  <a href="pyRdfa.host.MediaTypes-class.html" title="pyRdfa.host.MediaTypes">MediaTypes</a>,
+  <span title="pyRdfa.host.preferred_suffixes">preferred_suffixes</span>,
+  <span title="pyRdfa.host.content_to_host_language">content_to_host_language</span>,
+  <a href="pyRdfa.embeddedRDF-module.html" title="pyRdfa.embeddedRDF">embeddedRDF</a>,
+  <span title="pyRdfa.extras">extras</span>,
+  <a href="pyRdfa.graph-module.html" title="pyRdfa.graph">graph</a>,
+  <a href="pyRdfa.host-module.html" title="pyRdfa.host">host</a>,
+  <a href="pyRdfa.options-module.html" title="pyRdfa.options">options</a>,
+  <a href="pyRdfa.parse-module.html" title="pyRdfa.parse">parse</a>,
+  <a href="pyRdfa.property-module.html" title="pyRdfa.property">property</a>,
+  <a href="pyRdfa.state-module.html" title="pyRdfa.state">state</a>,
+  <a href="pyRdfa.termorcurie-module.html" title="pyRdfa.termorcurie">termorcurie</a>,
+  <a href="pyRdfa.transform-module.html" title="pyRdfa.transform">transform</a>,
+  <a href="pyRdfa.utils-module.html" title="pyRdfa.utils">utils</a>
+</p><br />
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="processURI"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">processURI</span>(<span class="sig-arg">uri</span>,
+        <span class="sig-arg">outputFormat</span>,
+        <span class="sig-arg">form</span>=<span class="sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa-pysrc.html#processURI">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The standard processing of an RDFa uri options in a form; used as an 
+  entry point from a CGI call.</p>
+  <p>The call accepts extra form options (i.e., HTTP GET options) as 
+  follows:</p>
+  <ul>
+    <li>
+      
+      <code>graph=[output|processor|output,processor|processor,output]</code>
+      specifying which graphs are returned. Default: <code>output</code>
+    </li>
+    <li>
+      <code>space_preserve=[true|false]</code> means that plain literals 
+      are normalized in terms of white spaces. Default: <code>false</code>
+    </li>
+    <li>
+      <code>rfa_version</code> provides the RDFa version that should be 
+      used for distilling. The string should be of the form &quot;1.0&quot;
+      or &quot;1.1&quot;. Default is the highest version the current 
+      package implements, currently &quot;1.1&quot;
+    </li>
+    <li>
+      <code>host_language=[xhtml,html,xml]</code> : the host language. Used
+      when files are uploaded or text is added verbatim, otherwise the HTTP
+      return header should be used. Default <code>xml</code>
+    </li>
+    <li>
+      <code>embedded_rdf=[true|false]</code> : whether embedded turtle or 
+      RDF/XML content should be added to the output graph. Default: 
+      <code>false</code>
+    </li>
+    <li>
+      <code>vocab_expansion=[true|false]</code> : whether the vocabularies 
+      should be expanded through the restricted RDFS entailment. Default: 
+      <code>false</code>
+    </li>
+    <li>
+      <code>vocab_cache=[true|false]</code> : whether vocab caching should 
+      be performed or whether it should be ignored and vocabulary files 
+      should be picked up every time. Default: <code>false</code>
+    </li>
+    <li>
+      <code>vocab_cache_report=[true|false]</code> : whether vocab caching 
+      details should be reported. Default: <code>false</code>
+    </li>
+    <li>
+      <code>vocab_cache_bypass=[true|false]</code> : whether vocab caches 
+      have to be regenerated every time. Default: <code>false</code>
+    </li>
+    <li>
+      <code>rdfa_lite=[true|false]</code> : whether warnings should be 
+      generated for non RDFa Lite attribute usage. Default: 
+      <code>false</code>
+    </li>
+  </ul>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uri</code></strong> - URI to access. Note that the <code>text:</code> and 
+          <code>uploaded:</code> fake URI values are treated separately; 
+          the former is for textual intput (in which case a StringIO is 
+          used to get the data) and the latter is for uploaded file, where 
+          the form gives access to the file directly.</li>
+        <li><strong class="pname"><code>outputFormat</code></strong> - serialization format, as defined by the package. Currently 
+          &quot;xml&quot;, &quot;turtle&quot;, &quot;nt&quot;, or 
+          &quot;json&quot;. Default is &quot;turtle&quot;, also used if any
+          other string is given.</li>
+        <li><strong class="pname"><code>form</code></strong> (cgi FieldStorage instance) - extra call options (from the CGI call) to set up the local 
+          options</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>serialized graph</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__license__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__license__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">u'</code><code class="variable-string">W3C&#174; SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">/2002/copyright-software-20021231</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="RDFA_VOCAB"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">RDFA_VOCAB</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/ns/rdfa#usesVocabulary')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ns_distill"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">ns_distill</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="RDFA_Info"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">RDFA_Info</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/ns/rdfa#Information')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="NonConformantMarkup"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">NonConformantMarkup</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/ns/rdfa#DocumentError')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="UnresolvablePrefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">UnresolvablePrefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/ns/rdfa#UnresolvedCURIEPrefix')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="UnresolvableReference"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">UnresolvableReference</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/ns/rdfa#UnresolvedCURIEReference')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="UnresolvableTerm"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">UnresolvableTerm</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/ns/rdfa#UnresolvedTerm')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="VocabReferenceError"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">VocabReferenceError</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/ns/rdfa#VocabReferenceError')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="FileReferenceError"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">FileReferenceError</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#FileReferenceErr<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+or')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="HTError"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">HTError</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#HTTPError')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="IncorrectPrefixDefinition"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">IncorrectPrefixDefinition</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#IncorrectPrefixD<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+efinition')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="IncorrectBlankNodeUsage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">IncorrectBlankNodeUsage</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#IncorrectBlankNo<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+deUsage')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="IncorrectLiteral"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">IncorrectLiteral</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.URIRef('http://www.w3.org/2007/08/pyRdfa/vocab#IncorrectLiteral<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_no_blank_node"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_no_blank_node</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Blank node in %s position is not allowed; ignored</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_redefining_URI_as_prefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_redefining_URI_as_prefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">\'%s\' a registered or an otherwise used URI scheme, but is defined a</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">s a prefix here; is this a mistake? (see, eg, http://en.wikipedia.org/</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">wiki/URI_scheme or http://www.iana.org/assignments/uri-schemes.html fo</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">r further information for most of the URI schemes)</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_xmlns_deprecated"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_xmlns_deprecated</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">The usage of \'xmlns\' for prefix definition is deprecated; please us</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">e the \'prefix\' attribute instead (definition for \'%s\')</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_bnode_local_prefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_bnode_local_prefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">The \'_\' local CURIE prefix is reserved for blank nodes, and cannot </code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">be defined as a prefix</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_col_local_prefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_col_local_prefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">The character \':\' is not valid in a CURIE Prefix, and cannot be use</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">d in a prefix definition (definition for \'%s\')</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_missing_URI_prefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_missing_URI_prefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Missing URI in prefix declaration for \'%s\' (in \'%s\')</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_invalid_prefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_invalid_prefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Invalid prefix declaration \'%s\' (in \'%s\')</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_no_default_prefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_no_default_prefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Default prefix cannot be changed (in \'%s\')</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_prefix_and_xmlns"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_prefix_and_xmlns</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">@prefix setting for \'%s\' overrides the \'xmlns:%s\' setting; may be</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string"> a source of problem if same file is run through RDFa 1.0</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_non_ncname_prefix"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_non_ncname_prefix</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Non NCNAME \'%s\' in prefix definition (in \'%s\'); ignored</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_absolute_reference"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_absolute_reference</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">CURIE Reference part contains an authority part: %s (in \'%s\'); igno</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">red</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_query_reference"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_query_reference</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">CURIE Reference query part contains an unauthorized character: %s (in</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string"> \'%s\'); ignored</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_fragment_reference"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_fragment_reference</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">CURIE Reference fragment part contains an unauthorized character: %s </code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">(in \'%s\'); ignored</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_lang"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_lang</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">There is a problem with language setting; either both xml:lang and la</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">ng used on an element with different values, or, for (X)HTML5, only xm</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">l:lang is used.</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_URI_scheme"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_URI_scheme</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Unusual URI scheme used in &lt;%s&gt;; may that be a mistake, e.g., resulti</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">ng from using an undefined CURIE prefix or an incorrect CURIE?</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_no_CURIE_in_safe_CURIE"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_no_CURIE_in_safe_CURIE</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Safe CURIE is used, but the value does not correspond to a defined CU</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">RIE: [%s]; ignored</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_undefined_terms"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_undefined_terms</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">\'%s\' is used as a term, but has not been defined as such; ignored</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_non_legal_CURIE_ref"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_non_legal_CURIE_ref</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Relative URI is not allowed in this position (or not a legal CURIE re</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">ference) \'%s\'; ignored</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="err_unusual_char_in_URI"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_unusual_char_in_URI</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Unusual character in uri: %s; possible error?</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rdfa_current_version"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">rdfa_current_version</h3>
+  Current &quot;official&quot; version of RDFa that this package implements
+  by default. This can be changed at the invocation of the package
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">1.1</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="registered_iana_schemes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">registered_iana_schemes</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">aaa</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">aaas</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">acap</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">cap</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">cid</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">crid</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">data</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">dav</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="unofficial_common"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">unofficial_common</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">about</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">adiumxtra</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">aim</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">apt</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">afp</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">aw</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">bitcoin</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">bolo</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="historical_iana_schemes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">historical_iana_schemes</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">fax</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">mailserver</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">modem</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">pack</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">prospero</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">snews</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">videotex</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">wais</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="provisional_iana_schemes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">provisional_iana_schemes</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">afs</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">dtn</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">dvb</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">icon</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ipn</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">jms</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">oid</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rsync</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="other_used_schemes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">other_used_schemes</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">hdl</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">isbn</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">issn</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">mstp</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rtmp</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rtspu</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">stp</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="uri_schemes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">uri_schemes</h3>
+  List of registered (or widely used) URI schemes; used for warnings...
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">aaa</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">aaas</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">acap</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">cap</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">cid</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">crid</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">data</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">dav</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:23 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

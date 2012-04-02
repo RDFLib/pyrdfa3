@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.parse</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        Module&nbsp;parse
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.parse-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module parse</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa.parse-pysrc.html">source&nbsp;code</a></span></p>
+<p>The core parsing function of RDFa. Some details are put into other 
+  modules to make it clearer to update/modify (e.g., generation of 
+  <code>@property</code> values, or managing the current state).</p>
+  <p>Note that the entry point (<a 
+  href="pyRdfa.parse-module.html#parse_one_node" 
+  class="link">parse_one_node</a>) bifurcates into an RDFa 1.0 and RDFa 1.1
+  version, ie, to <a href="pyRdfa.parse-module.html#_parse_1_0" 
+  class="link" onclick="show_private();">_parse_1_0</a> and <a 
+  href="pyRdfa.parse-module.html#_parse_1_1" class="link" 
+  onclick="show_private();">_parse_1_1</a>. Some of the parsing details 
+  (management of <code>@property</code>, list facilities, changed behavior 
+  on <code>@typeof</code>)) have changed between versions and forcing the 
+  two into one function would be counter productive.</p>
+
+<hr />
+<div class="fields">      <p><strong>Organization:</strong>
+        <a href="http://www.w3.org" target="_top">World Wide Web 
+        Consortium</a>
+      </p>
+      <p><strong>Author:</strong>
+        <a href="http://ahref=&quot;http://www.w3.org/People/Ivan/&quot;" 
+        target="_top">Ivan Herman</a>
+      </p>
+      <p><strong>License:</strong>
+        This software is available for use under the <a 
+        href="http://href=&quot;http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231&quot;"
+        target="_top">W3C&#174; SOFTWARE NOTICE AND LICENSE</a>
+      </p>
+</div><!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Boolean</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.parse-module.html#parse_one_node" class="summary-sig-name">parse_one_node</a>(<span class="summary-sig-arg">node</span>,
+        <span class="summary-sig-arg">graph</span>,
+        <span class="summary-sig-arg">parent_object</span>,
+        <span class="summary-sig-arg">incoming_state</span>,
+        <span class="summary-sig-arg">parent_incomplete_triples</span>)</span><br />
+      The (recursive) step of handling a single node.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.parse-pysrc.html#parse_one_node">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Boolean</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.parse-module.html#_parse_1_1" class="summary-sig-name" onclick="show_private();">_parse_1_1</a>(<span class="summary-sig-arg">node</span>,
+        <span class="summary-sig-arg">graph</span>,
+        <span class="summary-sig-arg">parent_object</span>,
+        <span class="summary-sig-arg">incoming_state</span>,
+        <span class="summary-sig-arg">parent_incomplete_triples</span>)</span><br />
+      The (recursive) step of handling a single node.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.parse-pysrc.html#_parse_1_1">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Boolean</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.parse-module.html#_parse_1_0" class="summary-sig-name" onclick="show_private();">_parse_1_0</a>(<span class="summary-sig-arg">node</span>,
+        <span class="summary-sig-arg">graph</span>,
+        <span class="summary-sig-arg">parent_object</span>,
+        <span class="summary-sig-arg">incoming_state</span>,
+        <span class="summary-sig-arg">parent_incomplete_triples</span>)</span><br />
+      The (recursive) step of handling a single node.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.parse-pysrc.html#_parse_1_0">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pyRdfa'"><code class="variable-quote">'</code><code class="variable-string">pyRdfa</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<p class="indent-wrapped-lines"><b>Imports:</b>
+  <span title="sys">sys</span>,
+  <a href="pyRdfa.state.ExecutionContext-class.html" title="pyRdfa.state.ExecutionContext">ExecutionContext</a>,
+  <a href="pyRdfa.property.ProcessProperty-class.html" title="pyRdfa.property.ProcessProperty">ProcessProperty</a>,
+  <a href="pyRdfa.embeddedRDF-module.html#handle_embeddedRDF" title="pyRdfa.embeddedRDF.handle_embeddedRDF">handle_embeddedRDF</a>,
+  <a href="pyRdfa.host.HostLanguage-class.html" title="pyRdfa.host.HostLanguage">HostLanguage</a>,
+  <span title="pyRdfa.host.host_dom_transforms">host_dom_transforms</span>,
+  <span title="rdflib">rdflib</span>,
+  <span title="rdflib.URIRef">URIRef</span>,
+  <span title="rdflib.Literal">Literal</span>,
+  <span title="rdflib.BNode">BNode</span>,
+  <span title="rdflib.Namespace">Namespace</span>,
+  <span title="rdflib.Graph.Graph">Graph</span>,
+  <span title="rdflib.RDFS.RDFSNS">ns_rdfs</span>,
+  <span title="rdflib.RDF.RDFNS">ns_rdf</span>,
+  <span title="pyRdfa.IncorrectBlankNodeUsage">IncorrectBlankNodeUsage</span>,
+  <span title="pyRdfa.err_no_blank_node">err_no_blank_node</span>,
+  <a href="pyRdfa.utils-module.html#has_one_of_attributes" title="pyRdfa.utils.has_one_of_attributes">has_one_of_attributes</a>
+</p><br />
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="parse_one_node"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">parse_one_node</span>(<span class="sig-arg">node</span>,
+        <span class="sig-arg">graph</span>,
+        <span class="sig-arg">parent_object</span>,
+        <span class="sig-arg">incoming_state</span>,
+        <span class="sig-arg">parent_incomplete_triples</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.parse-pysrc.html#parse_one_node">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The (recursive) step of handling a single node.</p>
+  <p>This entry just switches between the RDFa 1.0 and RDFa 1.1 versions 
+  for parsing. This method is only invoked once, actually, from the top 
+  level; the recursion then happens in the <a 
+  href="pyRdfa.parse-module.html#_parse_1_0" class="link" 
+  onclick="show_private();">_parse_1_0</a> and <a 
+  href="pyRdfa.parse-module.html#_parse_1_1" class="link" 
+  onclick="show_private();">_parse_1_1</a> methods for RDFa 1.0 and RDFa 
+  1.1, respectively.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>node</code></strong> - the DOM node to handle</li>
+        <li><strong class="pname"><code>graph</code></strong> (RDFLib's Graph object instance) - the RDF graph</li>
+        <li><strong class="pname"><code>parent_object</code></strong> - the parent's object, as an RDFLib URIRef</li>
+        <li><strong class="pname"><code>incoming_state</code></strong> (<a href="pyRdfa.state.ExecutionContext-class.html" 
+          class="link">state.ExecutionContext</a>) - the inherited state (namespaces, lang, etc.)</li>
+        <li><strong class="pname"><code>parent_incomplete_triples</code></strong> - list of hanging triples (the missing resource set to None) to be 
+          handled (or not) by the current node.</li>
+    </ul></dd>
+    <dt>Returns: Boolean</dt>
+        <dd>whether the caller has to complete it's parent's incomplete 
+          triples</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_parse_1_1"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_parse_1_1</span>(<span class="sig-arg">node</span>,
+        <span class="sig-arg">graph</span>,
+        <span class="sig-arg">parent_object</span>,
+        <span class="sig-arg">incoming_state</span>,
+        <span class="sig-arg">parent_incomplete_triples</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.parse-pysrc.html#_parse_1_1">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The (recursive) step of handling a single node. See the <a 
+  href="http://www.w3.org/TR/rdfa-core/" target="_top">RDFa 1.1 Core 
+  document</a> for further details.</p>
+  <p>This is the RDFa 1.1 version.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>node</code></strong> - the DOM node to handle</li>
+        <li><strong class="pname"><code>graph</code></strong> (RDFLib's Graph object instance) - the RDF graph</li>
+        <li><strong class="pname"><code>parent_object</code></strong> - the parent's object, as an RDFLib URIRef</li>
+        <li><strong class="pname"><code>incoming_state</code></strong> (<a href="pyRdfa.state.ExecutionContext-class.html" 
+          class="link">state.ExecutionContext</a>) - the inherited state (namespaces, lang, etc.)</li>
+        <li><strong class="pname"><code>parent_incomplete_triples</code></strong> - list of hanging triples (the missing resource set to None) to be 
+          handled (or not) by the current node.</li>
+    </ul></dd>
+    <dt>Returns: Boolean</dt>
+        <dd>whether the caller has to complete it's parent's incomplete 
+          triples</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_parse_1_0"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_parse_1_0</span>(<span class="sig-arg">node</span>,
+        <span class="sig-arg">graph</span>,
+        <span class="sig-arg">parent_object</span>,
+        <span class="sig-arg">incoming_state</span>,
+        <span class="sig-arg">parent_incomplete_triples</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.parse-pysrc.html#_parse_1_0">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The (recursive) step of handling a single node. See the <a 
+  href="http://www.w3.org/TR/rdfa-syntax" target="_top">RDFa 1.0 syntax 
+  document</a> for further details.</p>
+  <p>This is the RDFa 1.0 version.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>node</code></strong> - the DOM node to handle</li>
+        <li><strong class="pname"><code>graph</code></strong> (RDFLib's Graph object instance) - the RDF graph</li>
+        <li><strong class="pname"><code>parent_object</code></strong> - the parent's object, as an RDFLib URIRef</li>
+        <li><strong class="pname"><code>incoming_state</code></strong> (<a href="pyRdfa.state.ExecutionContext-class.html" 
+          class="link">state.ExecutionContext</a>) - the inherited state (namespaces, lang, etc.)</li>
+        <li><strong class="pname"><code>parent_incomplete_triples</code></strong> - list of hanging triples (the missing resource set to None) to be 
+          handled (or not) by the current node.</li>
+    </ul></dd>
+    <dt>Returns: Boolean</dt>
+        <dd>whether the caller has to complete it's parent's incomplete 
+          triples</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

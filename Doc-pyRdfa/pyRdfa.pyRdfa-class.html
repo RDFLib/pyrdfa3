@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.pyRdfa</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        Class&nbsp;pyRdfa
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.pyRdfa-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class pyRdfa</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa">source&nbsp;code</a></span></p>
+<p>Main processing class for the distiller</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.pyRdfa-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">options</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">base</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">media_type</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">rdfa_version</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.pyRdfa-class.html#_get_input" class="summary-sig-name" onclick="show_private();">_get_input</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Trying to guess whether &quot;name&quot; is a URI or a string (for a 
+      file); it then tries to open this source accordingly, returning a 
+      file-like object.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa._get_input">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rdflib Graph instance</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.pyRdfa-class.html#graph_from_DOM" class="summary-sig-name">graph_from_DOM</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dom</span>,
+        <span class="summary-sig-arg">graph</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">pgraph</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Extract the RDF Graph from a DOM tree.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.graph_from_DOM">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">rdflib Graph instance</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.pyRdfa-class.html#graph_from_source" class="summary-sig-name">graph_from_source</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">graph</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">rdfOutput</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">pgraph</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Extract an RDF graph from an RDFa source.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.graph_from_source">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.pyRdfa-class.html#rdf_from_sources" class="summary-sig-name">rdf_from_sources</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">names</span>,
+        <span class="summary-sig-arg">outputFormat</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">turtle</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">rdfOutput</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Extract and RDF graph from a list of RDFa sources and serialize them 
+      in one graph.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.rdf_from_sources">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.pyRdfa-class.html#rdf_from_source" class="summary-sig-name">rdf_from_source</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">outputFormat</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">turtle</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">rdfOutput</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Extract and RDF graph from an RDFa source and serialize it in one 
+      graph.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.rdf_from_source">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="base"></a><span class="summary-name">base</span><br />
+      the base value, possibly set at initialization
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.pyRdfa-class.html#http_status" class="summary-name">http_status</a><br />
+      HTTP Status, to be returned when the package is used via a CGI entry.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="media_type"></a><span class="summary-name">media_type</span><br />
+      the preferred default media type, possibly set at initialization
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="options"></a><span class="summary-name">options</span><br />
+      an instance of the <a href="pyRdfa.options.Options-class.html" 
+      class="link">Options</a> class
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">options</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">base</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">media_type</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">rdfa_version</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>options</code></strong> (<a href="pyRdfa.options.Options-class.html" 
+          class="link">Options</a>) - Options for the distiller</li>
+        <li><strong class="pname"><code>base</code></strong> - URI for the default &quot;base&quot; value (usually the URI of 
+          the file to be processed)</li>
+        <li><strong class="pname"><code>media_type</code></strong> - explicit setting of the preferred media type (a.k.a. content 
+          type) of the the RDFa source</li>
+        <li><strong class="pname"><code>rdfa_version</code></strong> - the RDFa version that should be used. If not set, the value of 
+          the global <a href="pyRdfa-module.html#rdfa_current_version" 
+          class="link">rdfa_current_version</a> variable is used</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_get_input"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_get_input</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa._get_input">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Trying to guess whether &quot;name&quot; is a URI or a string (for a 
+  file); it then tries to open this source accordingly, returning a 
+  file-like object. If name is none of these, it returns the input argument
+  (that should be, supposedly, a file-like object already).</p>
+  <p>If the media type has not been set explicitly at initialization of 
+  this instance, the method also sets the media_type based on the HTTP GET 
+  response or the suffix of the file. See <a 
+  href="pyRdfa.host-module.html#preferred_suffixes" 
+  class="link">host.preferred_suffixes</a> for the suffix to media type 
+  mapping.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (string or a file-like object) - identifier of the input source</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>a file like object if opening &quot;name&quot; is possible and 
+          successful, &quot;name&quot; otherwise</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="graph_from_DOM"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">graph_from_DOM</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">dom</span>,
+        <span class="sig-arg">graph</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">pgraph</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.graph_from_DOM">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Extract the RDF Graph from a DOM tree. This is where the real 
+  processing happens. All other methods get down to this one, eventually 
+  (e.g., after opening a URI and parsing it into a DOM).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dom</code></strong> - a DOM Node element, the top level entry node for the whole tree 
+          (i.e., the <code>dom.documentElement</code> is used to initiate 
+          processing down the node hierarchy)</li>
+        <li><strong class="pname"><code>graph</code></strong> (rdflib Graph instance.) - an RDF Graph (if None, than a new one is created)</li>
+        <li><strong class="pname"><code>pgraph</code></strong> (rdflib Graph instance) - an RDF Graph to hold (possibly) the processor graph content. If 
+          None, and the error/warning triples are to be generated, they 
+          will be added to the returned graph. Otherwise they are stored in
+          this graph.</li>
+    </ul></dd>
+    <dt>Returns: rdflib Graph instance</dt>
+        <dd>an RDF Graph</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="graph_from_source"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">graph_from_source</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">graph</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">rdfOutput</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">pgraph</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.graph_from_source">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Extract an RDF graph from an RDFa source. The source is parsed, the 
+  RDF extracted, and the RDFa Graph is returned. This is a front-end to the
+  <a href="pyRdfa.pyRdfa-class.html#graph_from_DOM" 
+  class="link">pyRdfa.graph_from_DOM</a> method.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> - a URI, a file name, or a file-like object</li>
+        <li><strong class="pname"><code>graph</code></strong> - rdflib Graph instance. If None, a new one is created.</li>
+        <li><strong class="pname"><code>pgraph</code></strong> - rdflib Graph instance for the processor graph. If None, and the 
+          error/warning triples are to be generated, they will be added to 
+          the returned graph. Otherwise they are stored in this graph.</li>
+        <li><strong class="pname"><code>rdfOutput</code></strong> - whether runtime exceptions should be turned into RDF and returned
+          as part of the processor graph</li>
+    </ul></dd>
+    <dt>Returns: rdflib Graph instance</dt>
+        <dd>an RDF Graph</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rdf_from_sources"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">rdf_from_sources</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">names</span>,
+        <span class="sig-arg">outputFormat</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">turtle</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">rdfOutput</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.rdf_from_sources">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Extract and RDF graph from a list of RDFa sources and serialize them 
+  in one graph. The sources are parsed, the RDF extracted, and 
+  serialization is done in the specified format.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>names</code></strong> - list of sources, each can be a URI, a file name, or a file-like 
+          object</li>
+        <li><strong class="pname"><code>outputFormat</code></strong> - serialization format. Can be one of &quot;turtle&quot;, 
+          &quot;n3&quot;, &quot;xml&quot;, &quot;pretty-xml&quot;, 
+          &quot;nt&quot;. &quot;xml&quot;, &quot;pretty-xml&quot;, 
+          &quot;json&quot; or &quot;json-ld&quot;. &quot;turtle&quot; and 
+          &quot;n3&quot;, &quot;xml&quot; and &quot;pretty-xml&quot;, and 
+          &quot;json&quot; and &quot;json-ld&quot; are synonyms, 
+          respectively. Note that the JSON-LD serialization works with 
+          RDFLib 3.* only.</li>
+        <li><strong class="pname"><code>rdfOutput</code></strong> (boolean) - controls what happens in case an exception is raised. If the 
+          value is False, the caller is responsible handling it; otherwise 
+          a graph is returned with an error message included in the 
+          processor graph</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>a serialized RDF Graph</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rdf_from_source"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">rdf_from_source</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">outputFormat</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">turtle</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">rdfOutput</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa-pysrc.html#pyRdfa.rdf_from_source">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Extract and RDF graph from an RDFa source and serialize it in one 
+  graph. The source is parsed, the RDF extracted, and serialization is done
+  in the specified format.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> - a URI, a file name, or a file-like object</li>
+        <li><strong class="pname"><code>outputFormat</code></strong> - serialization format. Can be one of &quot;turtle&quot;, 
+          &quot;n3&quot;, &quot;xml&quot;, &quot;pretty-xml&quot;, 
+          &quot;nt&quot;. &quot;xml&quot;, &quot;pretty-xml&quot;, 
+          &quot;json&quot; or &quot;json-ld&quot;. &quot;turtle&quot; and 
+          &quot;n3&quot;, &quot;xml&quot; and &quot;pretty-xml&quot;, and 
+          &quot;json&quot; and &quot;json-ld&quot; are synonyms, 
+          respectively. Note that the JSON-LD serialization works with 
+          RDFLib 3.* only.</li>
+        <li><strong class="pname"><code>rdfOutput</code></strong> (boolean) - controls what happens in case an exception is raised. If the 
+          value is False, the caller is responsible handling it; otherwise 
+          a graph is returned with an error message included in the 
+          processor graph</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>a serialized RDF Graph</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== INSTANCE VARIABLE DETAILS ==================== -->
+<a name="section-InstanceVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="http_status"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">http_status</h3>
+  HTTP Status, to be returned when the package is used via a CGI entry. 
+  Initially set to 200, may be modified by exception handlers
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

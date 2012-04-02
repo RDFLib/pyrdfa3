@@ -1,0 +1,38 @@
+<html><head><title>Epydoc Redirect Page</title>
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="pragma" content="no-cache" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+<!--
+var pages = ["pyRdfa.rdfs.cache.CachedVocabIndex-c", "pyRdfa.termorcurie.InitialContext-c", "pyRdfa.property.ProcessProperty-c", "pyRdfa.transform.toplevelabout-m", "pyRdfa.termorcurie.TermOrCurie-c", "pyRdfa.initialcontext.Wrapper-c", "pyRdfa.options.ProcessorGraph-c", "pyRdfa.rdfs.cache.CachedVocab-c", "pyRdfa.state.ExecutionContext-c", "pyRdfa.transform.DublinCore-m", "pyRdfa.rdfs.process.MiniOWL-c", "pyRdfa.state.ListStructure-c", "pyRdfa.transform.metaname-m", "pyRdfa.host.HostLanguage-c", "pyRdfa.transform.OpenID-m", "pyRdfa.ProcessingError-c", "pyRdfa.host.MediaTypes-c", "pyRdfa.options.Options-c", "pyRdfa.utils.URIOpener-c", "pyRdfa.initialcontext-m", "pyRdfa.transform.lite-m", "pyRdfa.graph.MyGraph-c", "pyRdfa.rdfs.process-m", "pyRdfa.FailedSource-c", "pyRdfa.embeddedRDF-m", "pyRdfa.termorcurie-m", "pyRdfa.pyRdfaError-c", "pyRdfa.host.html5-m", "pyRdfa.rdfs.cache-m", "pyRdfa.host.atom-m", "pyRdfa.transform-m", "pyRdfa.HTTPError-c", "pyRdfa.RDFaError-c", "pyRdfa.property-m", "pyRdfa.options-m", "pyRdfa.pyRdfa-c", "pyRdfa.graph-m", "pyRdfa.parse-m", "pyRdfa.state-m", "pyRdfa.utils-m", "pyRdfa.host-m", "pyRdfa.rdfs-m", "pyRdfa-m"];
+var dottedName = get_anchor();
+if (dottedName) {
+    var target = redirect_url(dottedName);
+    if (target) window.location.replace(target);
+}
+// -->
+</script>
+
+<h3>Epydoc Auto-redirect page</h3>
+
+<p>When javascript is enabled, this page will redirect URLs of
+the form <tt>redirect.html#<i>dotted.name</i></tt> to the
+documentation for the object with the given fully-qualified
+dotted name.</p>
+<p><a id="message"> &nbsp; </a></p>
+
+<script type="text/javascript">
+<!--
+if (dottedName) {
+    var msg = document.getElementById("message");
+    msg.innerHTML = "No documentation found for <tt>"+
+                    dottedName+"</tt>";
+}
+// -->
+</script>
+
+</body>
+</html>

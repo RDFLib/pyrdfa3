@@ -1,0 +1,9 @@
+Metadata-Version: 1.0
+Name: pyRdfa
+Version: 3.2.0
+Summary: RDFa 1.1 distiller
+Author: Ivan Herman
+Author-email: ivan@w3.org
+License: W3C© SOFTWARE NOTICE AND LICENSE
+Description: RDFa 1.1 parser, also referred to as a “RDFa Distiller”, to generate RDF triples extracted from HTML5 or XML files
+Platform: any

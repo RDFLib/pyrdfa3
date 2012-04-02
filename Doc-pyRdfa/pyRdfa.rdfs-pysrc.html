@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.rdfs</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        Package&nbsp;rdfs
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.rdfs-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pyRdfa.rdfs-module.html">Package pyRdfa.rdfs</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">Separate module to handle vocabulary expansions. The L{cache} module takes care of caching vocabulary graphs; the L{process}</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-docstring">module takes care of the expansion itself.</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-docstring">@organization: U{World Wide Web Consortium&lt;http://www.w3.org&gt;}</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-docstring">@author: U{Ivan Herman&lt;a href="http://www.w3.org/People/Ivan/"&gt;}</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-docstring">@license: This software is available for use under the</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-docstring">U{W3C&#174; SOFTWARE NOTICE AND LICENSE&lt;href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"&gt;}</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-string">$Id: __init__.py,v 1.3 2012/03/23 14:06:38 ivan Exp $ $Date: 2012/03/23 14:06:38 $</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-string"></tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-name">__version__</tt> <tt class="py-op">=</tt> <tt class="py-string">"3.0.2"</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable pyRdfa.__author__=pyRdfa-module.html#__author__,Variable pyRdfa.rdfs.__author__=pyRdfa.rdfs-module.html#__author__,Variable pyRdfa.rdfs.process.__author__=pyRdfa.rdfs.process-module.html#__author__"><a title="pyRdfa.__author__
+pyRdfa.rdfs.__author__
+pyRdfa.rdfs.process.__author__" class="py-name" href="#" onclick="return doclink('link-0', '__author__', 'link-0');">__author__</a></tt>  <tt class="py-op">=</tt> <tt class="py-string">'Ivan Herman'</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-name">__contact__</tt> <tt class="py-op">=</tt> <tt class="py-string">'Ivan Herman, ivan@w3.org'</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt id="link-1" class="py-name" targets="Variable pyRdfa.__license__=pyRdfa-module.html#__license__,Variable pyRdfa.rdfs.__license__=pyRdfa.rdfs-module.html#__license__,Variable pyRdfa.rdfs.process.__license__=pyRdfa.rdfs.process-module.html#__license__"><a title="pyRdfa.__license__
+pyRdfa.rdfs.__license__
+pyRdfa.rdfs.process.__license__" class="py-name" href="#" onclick="return doclink('link-1', '__license__', 'link-1');">__license__</a></tt> <tt class="py-op">=</tt> <tt class="py-string">u'W3C&#174; SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt><tt class="py-op">,</tt> <tt class="py-name">StringIO</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">rdflib</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt>     <tt class="py-keyword">import</tt> <tt class="py-name">URIRef</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt>     <tt class="py-keyword">import</tt> <tt class="py-name">Literal</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt>     <tt class="py-keyword">import</tt> <tt class="py-name">BNode</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt>     <tt class="py-keyword">import</tt> <tt class="py-name">Namespace</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">rdflib</tt><tt class="py-op">.</tt><tt class="py-name">__version__</tt> <tt class="py-op">&gt;=</tt> <tt class="py-string">"3.0.0"</tt> <tt class="py-op">:</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt>     <tt class="py-keyword">import</tt> <tt class="py-name">RDF</tt>  <tt class="py-keyword">as</tt> <tt class="py-name">ns_rdf</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt>     <tt class="py-keyword">import</tt> <tt class="py-name">RDFS</tt> <tt class="py-keyword">as</tt> <tt class="py-name">ns_rdfs</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-keyword">else</tt> <tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt><tt class="py-op">.</tt><tt class="py-name">RDFS</tt>        <tt class="py-keyword">import</tt> <tt class="py-name">RDFSNS</tt> <tt class="py-keyword">as</tt> <tt class="py-name">ns_rdfs</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt class="py-name">rdflib</tt><tt class="py-op">.</tt><tt class="py-name">RDF</tt>         <tt class="py-keyword">import</tt> <tt class="py-name">RDFNS</tt>  <tt class="py-keyword">as</tt> <tt class="py-name">ns_rdf</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Package pyRdfa=pyRdfa-module.html,Class pyRdfa.pyRdfa=pyRdfa.pyRdfa-class.html"><a title="pyRdfa
+pyRdfa.pyRdfa" class="py-name" href="#" onclick="return doclink('link-2', 'pyRdfa', 'link-2');">pyRdfa</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Module pyRdfa.graph=pyRdfa.graph-module.html"><a title="pyRdfa.graph" class="py-name" href="#" onclick="return doclink('link-3', 'graph', 'link-3');">graph</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Class pyRdfa.graph.MyGraph=pyRdfa.graph.MyGraph-class.html"><a title="pyRdfa.graph.MyGraph" class="py-name" href="#" onclick="return doclink('link-4', 'MyGraph', 'link-4');">MyGraph</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">Graph</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Variable pyRdfa.host.MediaTypes.xml=pyRdfa.host.MediaTypes-class.html#xml"><a title="pyRdfa.host.MediaTypes.xml" class="py-name" href="#" onclick="return doclink('link-5', 'xml', 'link-5');">xml</a></tt><tt class="py-op">.</tt><tt class="py-name">dom</tt><tt class="py-op">.</tt><tt class="py-name">minidom</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">urlparse</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name"><a title="pyRdfa
+pyRdfa.pyRdfa" class="py-name" href="#" onclick="return doclink('link-6', 'pyRdfa', 'link-2');">pyRdfa</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name" targets="Class pyRdfa.RDFaError=pyRdfa.RDFaError-class.html"><a title="pyRdfa.RDFaError" class="py-name" href="#" onclick="return doclink('link-7', 'RDFaError', 'link-7');">RDFaError</a></tt><tt class="py-op">,</tt> <tt id="link-8" class="py-name" targets="Class pyRdfa.pyRdfaError=pyRdfa.pyRdfaError-class.html"><a title="pyRdfa.pyRdfaError" class="py-name" href="#" onclick="return doclink('link-8', 'pyRdfaError', 'link-8');">pyRdfaError</a></tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-9" class="py-name"><a title="pyRdfa
+pyRdfa.pyRdfa" class="py-name" href="#" onclick="return doclink('link-9', 'pyRdfa', 'link-2');">pyRdfa</a></tt> <tt class="py-keyword">import</tt> <tt id="link-10" class="py-name" targets="Variable pyRdfa.ns_rdfa=pyRdfa-module.html#ns_rdfa"><a title="pyRdfa.ns_rdfa" class="py-name" href="#" onclick="return doclink('link-10', 'ns_rdfa', 'link-10');">ns_rdfa</a></tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name" targets="Variable pyRdfa.ns_xsd=pyRdfa-module.html#ns_xsd"><a title="pyRdfa.ns_xsd" class="py-name" href="#" onclick="return doclink('link-11', 'ns_xsd', 'link-11');">ns_xsd</a></tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name" targets="Variable pyRdfa.ns_distill=pyRdfa-module.html#ns_distill"><a title="pyRdfa.ns_distill" class="py-name" href="#" onclick="return doclink('link-12', 'ns_distill', 'link-12');">ns_distill</a></tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt id="link-13" class="py-name" targets="Variable pyRdfa.rdfs.VocabCachingInfo=pyRdfa.rdfs-module.html#VocabCachingInfo"><a title="pyRdfa.rdfs.VocabCachingInfo" class="py-name" href="#" onclick="return doclink('link-13', 'VocabCachingInfo', 'link-13');">VocabCachingInfo</a></tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name"><a title="pyRdfa.ns_distill" class="py-name" href="#" onclick="return doclink('link-14', 'ns_distill', 'link-12');">ns_distill</a></tt><tt class="py-op">[</tt><tt class="py-string">"VocabCachingInfo"</tt><tt class="py-op">]</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line"> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"><tt class="py-comment"># Error message texts</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"><tt id="link-15" class="py-name" targets="Variable pyRdfa.rdfs.err_outdated_cache=pyRdfa.rdfs-module.html#err_outdated_cache"><a title="pyRdfa.rdfs.err_outdated_cache" class="py-name" href="#" onclick="return doclink('link-15', 'err_outdated_cache', 'link-15');">err_outdated_cache</a></tt>                      <tt class="py-op">=</tt> <tt class="py-string">"Vocab document &lt;%s&gt; could not be dereferenced; using possibly outdated cache"</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt id="link-16" class="py-name" targets="Variable pyRdfa.rdfs.err_unreachable_vocab=pyRdfa.rdfs-module.html#err_unreachable_vocab"><a title="pyRdfa.rdfs.err_unreachable_vocab" class="py-name" href="#" onclick="return doclink('link-16', 'err_unreachable_vocab', 'link-16');">err_unreachable_vocab</a></tt>                   <tt class="py-op">=</tt> <tt class="py-string">"Vocab document &lt;%s&gt; could not be dereferenced"</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt id="link-17" class="py-name" targets="Variable pyRdfa.rdfs.err_unparsable_Turtle_vocab=pyRdfa.rdfs-module.html#err_unparsable_Turtle_vocab"><a title="pyRdfa.rdfs.err_unparsable_Turtle_vocab" class="py-name" href="#" onclick="return doclink('link-17', 'err_unparsable_Turtle_vocab', 'link-17');">err_unparsable_Turtle_vocab</a></tt>     <tt class="py-op">=</tt> <tt class="py-string">"Could not parse vocab in Turtle at &lt;%s&gt; (%s)"</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt id="link-18" class="py-name" targets="Variable pyRdfa.rdfs.err_unparsable_xml_vocab=pyRdfa.rdfs-module.html#err_unparsable_xml_vocab"><a title="pyRdfa.rdfs.err_unparsable_xml_vocab" class="py-name" href="#" onclick="return doclink('link-18', 'err_unparsable_xml_vocab', 'link-18');">err_unparsable_xml_vocab</a></tt>                <tt class="py-op">=</tt> <tt class="py-string">"Could not parse vocab in RDF/XML at &lt;%s&gt; (%s)"</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt id="link-19" class="py-name" targets="Variable pyRdfa.rdfs.err_unparsable_ntriples_vocab=pyRdfa.rdfs-module.html#err_unparsable_ntriples_vocab"><a title="pyRdfa.rdfs.err_unparsable_ntriples_vocab" class="py-name" href="#" onclick="return doclink('link-19', 'err_unparsable_ntriples_vocab', 'link-19');">err_unparsable_ntriples_vocab</a></tt>   <tt class="py-op">=</tt> <tt class="py-string">"Could not parse vocab in N-Triple at &lt;%s&gt; (%s)"</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt id="link-20" class="py-name" targets="Variable pyRdfa.rdfs.err_unparsable_rdfa_vocab=pyRdfa.rdfs-module.html#err_unparsable_rdfa_vocab"><a title="pyRdfa.rdfs.err_unparsable_rdfa_vocab" class="py-name" href="#" onclick="return doclink('link-20', 'err_unparsable_rdfa_vocab', 'link-20');">err_unparsable_rdfa_vocab</a></tt>               <tt class="py-op">=</tt> <tt class="py-string">"Could not parse vocab in RDFa at &lt;%s&gt; (%s)"</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt id="link-21" class="py-name" targets="Variable pyRdfa.rdfs.err_unrecognised_vocab_type=pyRdfa.rdfs-module.html#err_unrecognised_vocab_type"><a title="pyRdfa.rdfs.err_unrecognised_vocab_type" class="py-name" href="#" onclick="return doclink('link-21', 'err_unrecognised_vocab_type', 'link-21');">err_unrecognised_vocab_type</a></tt>             <tt class="py-op">=</tt> <tt class="py-string">"Unrecognized media type for the vocab file &lt;%s&gt;: '%s'"</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

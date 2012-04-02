@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.state</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        Module&nbsp;state
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.state-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module state</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa.state-pysrc.html">source&nbsp;code</a></span></p>
+<p>Parser's execution context (a.k.a. state) object and handling. The 
+  state includes:</p>
+  <ul>
+    <li>
+      language, retrieved from <code>@xml:lang</code> or <code>@lang</code>
+    </li>
+    <li>
+      URI base, determined by <code>&lt;base&gt;</code> or set explicitly. 
+      This is a little bit superfluous, because the current RDFa syntax 
+      does not make use of <code>@xml:base</code>; i.e., this could be a 
+      global value.  But the structure is prepared to add 
+      <code>@xml:base</code> easily, if needed.
+    </li>
+    <li>
+      options, in the form of an <a href="pyRdfa.pyRdfa-class.html#options"
+      class="link">options</a> instance
+    </li>
+    <li>
+      a separate vocabulary/CURIE handling resource, in the form of an <a 
+      href="pyRdfa.termorcurie.TermOrCurie-class.html" 
+      class="link">termorcurie</a> instance
+    </li>
+  </ul>
+  <p>The execution context object is also used to handle URI-s, CURIE-s, 
+  terms, etc.</p>
+
+<hr />
+<div class="fields">      <p><strong>Organization:</strong>
+        <a href="http://www.w3.org" target="_top">World Wide Web 
+        Consortium</a>
+      </p>
+      <p><strong>Author:</strong>
+        <a href="http://ahref=&quot;http://www.w3.org/People/Ivan/&quot;" 
+        target="_top">Ivan Herman</a>
+      </p>
+      <p><strong>License:</strong>
+        This software is available for use under the <a 
+        href="http://href=&quot;http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231&quot;"
+        target="_top">W3C&#174; SOFTWARE NOTICE AND LICENSE</a>
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Classes</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Classes"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.state.ListStructure-class.html" class="summary-name">ListStructure</a><br />
+      Special class to handle the <code>@inlist</code> type structures in
+        RDFa 1.1; stores the &quot;origin&quot;, i.e, where the list will 
+        be attached to, and the mappings as defined in the spec.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa.state.ExecutionContext-class.html" class="summary-name">ExecutionContext</a><br />
+      State at a specific node, including the current set of namespaces 
+        in the RDFLib sense, current language, the base, vocabularies, etc.
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pyRdfa'"><code class="variable-quote">'</code><code class="variable-string">pyRdfa</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<p class="indent-wrapped-lines"><b>Imports:</b>
+  <span title="rdflib">rdflib</span>,
+  <span title="rdflib.URIRef">URIRef</span>,
+  <span title="rdflib.Literal">Literal</span>,
+  <span title="rdflib.BNode">BNode</span>,
+  <span title="rdflib.Namespace">Namespace</span>,
+  <span title="rdflib.RDFS.RDFSNS">ns_rdfs</span>,
+  <span title="rdflib.RDF.RDFNS">ns_rdf</span>,
+  <a href="pyRdfa.options.Options-class.html" title="pyRdfa.options.Options">Options</a>,
+  <a href="pyRdfa.utils-module.html#quote_URI" title="pyRdfa.utils.quote_URI">quote_URI</a>,
+  <a href="pyRdfa.host.HostLanguage-class.html" title="pyRdfa.host.HostLanguage">HostLanguage</a>,
+  <span title="pyRdfa.host.accept_xml_base">accept_xml_base</span>,
+  <span title="pyRdfa.host.accept_xml_lang">accept_xml_lang</span>,
+  <span title="pyRdfa.host.beautifying_prefixes">beautifying_prefixes</span>,
+  <a href="pyRdfa.termorcurie.TermOrCurie-class.html" title="pyRdfa.termorcurie.TermOrCurie">TermOrCurie</a>,
+  <span title="pyRdfa.UnresolvablePrefix">UnresolvablePrefix</span>,
+  <span title="pyRdfa.UnresolvableTerm">UnresolvableTerm</span>,
+  <span title="pyRdfa.err_lang">err_lang</span>,
+  <span title="pyRdfa.err_URI_scheme">err_URI_scheme</span>,
+  <span title="pyRdfa.err_illegal_safe_CURIE">err_illegal_safe_CURIE</span>,
+  <span title="pyRdfa.err_no_CURIE_in_safe_CURIE">err_no_CURIE_in_safe_CURIE</span>,
+  <span title="pyRdfa.err_undefined_terms">err_undefined_terms</span>,
+  <span title="pyRdfa.err_non_legal_CURIE_ref">err_non_legal_CURIE_ref</span>,
+  <span title="pyRdfa.err_undefined_CURIE">err_undefined_CURIE</span>,
+  <span title="re">re</span>,
+  <span title="random">random</span>,
+  <span title="urlparse">urlparse</span>,
+  <span title="urllib">urllib</span>,
+  <span title="types.IntType">IntType</span>,
+  <span title="types.TypeType">TypeType</span>,
+  <span title="types.BooleanType">BooleanType</span>,
+  <span title="types.CodeType">CodeType</span>,
+  <span title="types.UnboundMethodType">UnboundMethodType</span>,
+  <span title="types.StringType">StringType</span>,
+  <span title="types.BuiltinMethodType">BuiltinMethodType</span>,
+  <span title="types.FloatType">FloatType</span>,
+  <span title="types.DictionaryType">DictionaryType</span>,
+  <span title="types.NotImplementedType">NotImplementedType</span>,
+  <span title="types.BuiltinFunctionType">BuiltinFunctionType</span>,
+  <span title="types.DictProxyType">DictProxyType</span>,
+  <span title="types.GeneratorType">GeneratorType</span>,
+  <span title="types.InstanceType">InstanceType</span>,
+  <span title="types.ObjectType">ObjectType</span>,
+  <span title="types.DictType">DictType</span>,
+  <span title="types.GetSetDescriptorType">GetSetDescriptorType</span>,
+  <span title="types.FileType">FileType</span>,
+  <span title="types.EllipsisType">EllipsisType</span>,
+  <span title="types.StringTypes">StringTypes</span>,
+  <span title="types.ListType">ListType</span>,
+  <span title="types.MethodType">MethodType</span>,
+  <span title="types.TupleType">TupleType</span>,
+  <span title="types.ModuleType">ModuleType</span>,
+  <span title="types.FrameType">FrameType</span>,
+  <span title="types.LongType">LongType</span>,
+  <span title="types.BufferType">BufferType</span>,
+  <span title="types.TracebackType">TracebackType</span>,
+  <span title="types.ClassType">ClassType</span>,
+  <span title="types.MemberDescriptorType">MemberDescriptorType</span>,
+  <span title="types.UnicodeType">UnicodeType</span>,
+  <span title="types.SliceType">SliceType</span>,
+  <span title="types.ComplexType">ComplexType</span>,
+  <span title="types.LambdaType">LambdaType</span>,
+  <span title="types.FunctionType">FunctionType</span>,
+  <span title="types.XRangeType">XRangeType</span>,
+  <span title="types.NoneType">NoneType</span>
+</p><br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

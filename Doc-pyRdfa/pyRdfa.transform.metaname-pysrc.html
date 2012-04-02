@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.transform.metaname</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        <a href="pyRdfa.transform-module.html">Package&nbsp;transform</a> ::
+        Module&nbsp;metaname
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.transform.metaname-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pyRdfa.transform.metaname-module.html">Module pyRdfa.transform.metaname</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">Simple transfomer: C{meta} element is extended with a C{property} attribute, with a copy of the</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-docstring">C{name} attribute values.</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-docstring">@author: U{Ivan Herman&lt;a href="http://www.w3.org/People/Ivan/"&gt;}</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-docstring">@license: This software is available for use under the</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-docstring">U{W3C&#174; SOFTWARE NOTICE AND LICENSE&lt;href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"&gt;}</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-docstring">@contact: Ivan Herman, ivan@w3.org</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-docstring">@version: $Id: metaname.py,v 1.3 2012/01/18 14:16:45 ivan Exp $</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-docstring">$Date: 2012/01/18 14:16:45 $</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"> </tt>
+<a name="meta_transform"></a><div id="meta_transform-def"><a name="L14"></a><tt class="py-lineno">14</tt> <a class="py-toggle" href="#" id="meta_transform-toggle" onclick="return toggle('meta_transform');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pyRdfa.transform.metaname-module.html#meta_transform">meta_transform</a><tt class="py-op">(</tt><tt class="py-param">html</tt><tt class="py-op">,</tt> <tt class="py-param">options</tt><tt class="py-op">,</tt> <tt class="py-param">state</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
+</div><div id="meta_transform-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="meta_transform-expanded"><a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-docstring">        @param html: a DOM node for the top level html element</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-docstring">        @param options: invocation options</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-docstring">        @type options: L{Options&lt;pyRdfa.options&gt;}</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-docstring">        @param state: top level execution state</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-docstring">        @type state: L{State&lt;pyRdfa.state&gt;}</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package pyRdfa=pyRdfa-module.html,Class pyRdfa.pyRdfa=pyRdfa.pyRdfa-class.html"><a title="pyRdfa
+pyRdfa.pyRdfa" class="py-name" href="#" onclick="return doclink('link-0', 'pyRdfa', 'link-0');">pyRdfa</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package pyRdfa.host=pyRdfa.host-module.html"><a title="pyRdfa.host" class="py-name" href="#" onclick="return doclink('link-1', 'host', 'link-1');">host</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class pyRdfa.host.HostLanguage=pyRdfa.host.HostLanguage-class.html"><a title="pyRdfa.host.HostLanguage" class="py-name" href="#" onclick="return doclink('link-2', 'HostLanguage', 'link-2');">HostLanguage</a></tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt><tt class="py-op">(</tt> <tt id="link-3" class="py-name" targets="Module pyRdfa.options=pyRdfa.options-module.html"><a title="pyRdfa.options" class="py-name" href="#" onclick="return doclink('link-3', 'options', 'link-3');">options</a></tt><tt class="py-op">.</tt><tt class="py-name">host_language</tt> <tt class="py-keyword">in</tt> <tt class="py-op">[</tt> <tt id="link-4" class="py-name"><a title="pyRdfa.host.HostLanguage" class="py-name" href="#" onclick="return doclink('link-4', 'HostLanguage', 'link-2');">HostLanguage</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Variable pyRdfa.host.HostLanguage.xhtml=pyRdfa.host.HostLanguage-class.html#xhtml,Variable pyRdfa.host.MediaTypes.xhtml=pyRdfa.host.MediaTypes-class.html#xhtml"><a title="pyRdfa.host.HostLanguage.xhtml
+pyRdfa.host.MediaTypes.xhtml" class="py-name" href="#" onclick="return doclink('link-5', 'xhtml', 'link-5');">xhtml</a></tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name"><a title="pyRdfa.host.HostLanguage" class="py-name" href="#" onclick="return doclink('link-6', 'HostLanguage', 'link-2');">HostLanguage</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Variable pyRdfa.host.HostLanguage.html5=pyRdfa.host.HostLanguage-class.html#html5,Module pyRdfa.host.html5=pyRdfa.host.html5-module.html"><a title="pyRdfa.host.HostLanguage.html5
+pyRdfa.host.html5" class="py-name" href="#" onclick="return doclink('link-7', 'html5', 'link-7');">html5</a></tt><tt class="py-op">,</tt> <tt id="link-8" class="py-name"><a title="pyRdfa.host.HostLanguage" class="py-name" href="#" onclick="return doclink('link-8', 'HostLanguage', 'link-2');">HostLanguage</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Variable pyRdfa.host.HostLanguage.xhtml5=pyRdfa.host.HostLanguage-class.html#xhtml5"><a title="pyRdfa.host.HostLanguage.xhtml5" class="py-name" href="#" onclick="return doclink('link-9', 'xhtml5', 'link-9');">xhtml5</a></tt> <tt class="py-op">]</tt> <tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">meta</tt> <tt class="py-keyword">in</tt> <tt id="link-10" class="py-name" targets="Variable pyRdfa.host.MediaTypes.html=pyRdfa.host.MediaTypes-class.html#html"><a title="pyRdfa.host.MediaTypes.html" class="py-name" href="#" onclick="return doclink('link-10', 'html', 'link-10');">html</a></tt><tt class="py-op">.</tt><tt class="py-name">getElementsByTagName</tt><tt class="py-op">(</tt><tt class="py-string">"meta"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">meta</tt><tt class="py-op">.</tt><tt class="py-name">hasAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"name"</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-keyword">not</tt> <tt class="py-name">meta</tt><tt class="py-op">.</tt><tt class="py-name">hasAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"property"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">                        <tt class="py-name">meta</tt><tt class="py-op">.</tt><tt class="py-name">setAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"property"</tt><tt class="py-op">,</tt> <tt class="py-name">meta</tt><tt class="py-op">.</tt><tt class="py-name">getAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"name"</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class Hierarchy</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Trees&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">&nbsp;</td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="class-tree.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<center><b>
+ [ <a href="module-tree.html">Module Hierarchy</a>
+ | <a href="class-tree.html">Class Hierarchy</a> ]
+</b></center><br />
+<h1 class="epydoc">Class Hierarchy</h1>
+<ul class="nomargin-top">
+    <li> <strong class="uidlink"><a href="pyRdfa.rdfs.cache.CachedVocabIndex-class.html">pyRdfa.rdfs.cache.CachedVocabIndex</a></strong>:
+      <em class="summary">Class to manage the cache index.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="pyRdfa.rdfs.cache.CachedVocab-class.html">pyRdfa.rdfs.cache.CachedVocab</a></strong>:
+      <em class="summary">Cache for a specific vocab.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.state.ExecutionContext-class.html">pyRdfa.state.ExecutionContext</a></strong>:
+      <em class="summary">State at a specific node, including the current set of namespaces 
+        in the RDFLib sense, current language, the base, vocabularies, etc.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.host.HostLanguage-class.html">pyRdfa.host.HostLanguage</a></strong>:
+      <em class="summary">An enumeration style class: recognized host language types for this
+        processor of RDFa.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.termorcurie.InitialContext-class.html">pyRdfa.termorcurie.InitialContext</a></strong>:
+      <em class="summary">Get the initial context values.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.state.ListStructure-class.html">pyRdfa.state.ListStructure</a></strong>:
+      <em class="summary">Special class to handle the <code>@inlist</code> type structures in
+        RDFa 1.1; stores the &quot;origin&quot;, i.e, where the list will 
+        be attached to, and the mappings as defined in the spec.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.host.MediaTypes-class.html">pyRdfa.host.MediaTypes</a></strong>:
+      <em class="summary">An enumeration style class: some common media types (better have 
+        them at one place to avoid misstyping...)</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.rdfs.process.MiniOWL-class.html">pyRdfa.rdfs.process.MiniOWL</a></strong>:
+      <em class="summary">Class implementing the simple OWL RL Reasoning required by RDFa in 
+        managing vocabulary files.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.options.Options-class.html">pyRdfa.options.Options</a></strong>:
+      <em class="summary">Settable options.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.property.ProcessProperty-class.html">pyRdfa.property.ProcessProperty</a></strong>:
+      <em class="summary">Generate the value for <code>@property</code> taking into account 
+        datatype, etc.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.options.ProcessorGraph-class.html">pyRdfa.options.ProcessorGraph</a></strong>:
+      <em class="summary">Wrapper around the 'processor graph', ie, the (RDF) Graph 
+        containing the warnings, error messages, and informational 
+        messages.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.termorcurie.TermOrCurie-class.html">pyRdfa.termorcurie.TermOrCurie</a></strong>:
+      <em class="summary">Wrapper around vocabulary management, ie, mapping a term to a URI, 
+        as well as a CURIE to a URI.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.utils.URIOpener-class.html">pyRdfa.utils.URIOpener</a></strong>:
+      <em class="summary">A wrapper around the urllib2 method to open a resource.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.initialcontext.Wrapper-class.html">pyRdfa.initialcontext.Wrapper</a></strong>
+    </li>
+    <li> <strong class="uidlink">object</strong>:
+      <em class="summary">The most base type</em>
+    <ul>
+    <li> <strong class="uidlink">exceptions.BaseException</strong>:
+      <em class="summary">Common base class for all exceptions</em>
+    <ul>
+    <li> <strong class="uidlink">exceptions.Exception</strong>:
+      <em class="summary">Common base class for all non-exit exceptions.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="pyRdfa.RDFaError-class.html">pyRdfa.RDFaError</a></strong>:
+      <em class="summary">Superclass exceptions representing error conditions defined by the 
+        RDFa 1.1 specification.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="pyRdfa.FailedSource-class.html">pyRdfa.FailedSource</a></strong>:
+      <em class="summary">Raised when the original source cannot be accessed.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.HTTPError-class.html">pyRdfa.HTTPError</a></strong>:
+      <em class="summary">Raised when HTTP problems are detected.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.ProcessingError-class.html">pyRdfa.ProcessingError</a></strong>:
+      <em class="summary">Error found during processing.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.pyRdfaError-class.html">pyRdfa.pyRdfaError</a></strong>:
+      <em class="summary">Superclass exceptions representing error conditions outside the 
+        RDFa 1.1 specification.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink">rdflib.Node.Node</strong>:
+      <em class="summary">A Node in the Graph.</em>
+    <ul>
+    <li> <strong class="uidlink">rdflib.Graph.Graph</strong>:
+      <em class="summary">An RDF Graph</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="pyRdfa.graph.MyGraph-class.html">pyRdfa.graph.MyGraph</a></strong>:
+      <em class="summary">Wrapper around RDFLib's Graph object.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.pyRdfa-class.html">pyRdfa.pyRdfa</a></strong>:
+      <em class="summary">Main processing class for the distiller</em>
+    </li>
+</ul>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Trees&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:23 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

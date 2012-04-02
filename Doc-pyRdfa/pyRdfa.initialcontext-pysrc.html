@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.initialcontext</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        Module&nbsp;initialcontext
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.initialcontext-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="pyRdfa.initialcontext-module.html">Module pyRdfa.initialcontext</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">Built-in version of the initial contexts for RDFa Core, and RDFa + HTML</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">@summary: Management of vocabularies, terms, and their mapping to URI-s.</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">@requires: U{RDFLib package&lt;http://rdflib.net&gt;}</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">@organization: U{World Wide Web Consortium&lt;http://www.w3.org&gt;}</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">@author: U{Ivan Herman&lt;a href="http://www.w3.org/People/Ivan/"&gt;}</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">@license: This software is available for use under the</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-docstring">U{W3C&#174; SOFTWARE NOTICE AND LICENSE&lt;href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"&gt;}</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">@var initial_context: dictionary for all the initial context data, keyed through the context URI-s</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-string">$Id: initialcontext.py,v 1.7 2012/03/16 16:46:41 ivan Exp $</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-string">$Date: 2012/03/16 16:46:41 $</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="Wrapper"></a><div id="Wrapper-def"><a name="L20"></a><tt class="py-lineno"> 20</tt> <a class="py-toggle" href="#" id="Wrapper-toggle" onclick="return toggle('Wrapper');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="pyRdfa.initialcontext.Wrapper-class.html">Wrapper</a> <tt class="py-op">:</tt> </tt>
+</div><div id="Wrapper-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Wrapper-expanded"><a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">         </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable pyRdfa.initialcontext.initial_context=pyRdfa.initialcontext-module.html#initial_context"><a title="pyRdfa.initialcontext.initial_context" class="py-name" href="#" onclick="return doclink('link-0', 'initial_context', 'link-0');">initial_context</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">        <tt class="py-string">"http://www.w3.org/2011/rdfa-context/rdfa-1.1"</tt>           <tt class="py-op">:</tt> <tt id="link-1" class="py-name" targets="Class pyRdfa.initialcontext.Wrapper=pyRdfa.initialcontext.Wrapper-class.html"><a title="pyRdfa.initialcontext.Wrapper" class="py-name" href="#" onclick="return doclink('link-1', 'Wrapper', 'link-1');">Wrapper</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">        <tt class="py-string">"http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"</tt> <tt class="py-op">:</tt> <tt id="link-2" class="py-name"><a title="pyRdfa.initialcontext.Wrapper" class="py-name" href="#" onclick="return doclink('link-2', 'Wrapper', 'link-1');">Wrapper</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-op">}</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt id="link-3" class="py-name"><a title="pyRdfa.initialcontext.initial_context" class="py-name" href="#" onclick="return doclink('link-3', 'initial_context', 'link-0');">initial_context</a></tt><tt class="py-op">[</tt><tt class="py-string">"http://www.w3.org/2011/rdfa-context/rdfa-1.1"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">ns</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt class="py-string">'owl'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2002/07/owl#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">        <tt class="py-string">'gr'</tt>            <tt class="py-op">:</tt> <tt class="py-string">'http://purl.org/goodrelations/v1#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-string">'ctag'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://commontag.org/ns#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt class="py-string">'cc'</tt>            <tt class="py-op">:</tt> <tt class="py-string">'http://creativecommons.org/ns#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-string">'grddl'</tt>         <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2003/g/data-view#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-string">'rif'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2007/rif#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">        <tt class="py-string">'sioc'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://rdfs.org/sioc/ns#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-string">'skos'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2004/02/skos/core#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-string">'xml'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/XML/1998/namespace'</tt><tt class="py-op">,</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-string">'rdfs'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2000/01/rdf-schema#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-string">'rev'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://purl.org/stuff/rev#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-string">'rdfa'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/ns/rdfa#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-string">'dc'</tt>            <tt class="py-op">:</tt> <tt class="py-string">'http://purl.org/dc/terms/'</tt><tt class="py-op">,</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-string">'dcterms'</tt>       <tt class="py-op">:</tt> <tt class="py-string">'http://purl.org/dc/terms/'</tt><tt class="py-op">,</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">        <tt class="py-string">'foaf'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://xmlns.com/foaf/0.1/'</tt><tt class="py-op">,</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-string">'void'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://rdfs.org/ns/void#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-string">'ical'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2002/12/cal/icaltzd#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt class="py-string">'vcard'</tt>         <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2006/vcard/ns#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-string">'wdrs'</tt>          <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2007/05/powder-s#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-string">'og'</tt>            <tt class="py-op">:</tt> <tt class="py-string">'http://ogp.me/ns#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-string">'wdr'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2007/05/powder#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-string">'rdf'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/02/22-rdf-syntax-ns#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-string">'xhv'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-string">'xsd'</tt>           <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2001/XMLSchema#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-string">'v'</tt>                     <tt class="py-op">:</tt> <tt class="py-string">'http://rdf.data-vocabulary.org/#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-string">'skosxl'</tt>        <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2008/05/skos-xl#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-string">'schema'</tt>        <tt class="py-op">:</tt> <tt class="py-string">'http://schema.org/'</tt><tt class="py-op">,</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-string">'ma'</tt>            <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/ns/ma-ont#'</tt><tt class="py-op">,</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-op">}</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt id="link-4" class="py-name"><a title="pyRdfa.initialcontext.initial_context" class="py-name" href="#" onclick="return doclink('link-4', 'initial_context', 'link-0');">initial_context</a></tt><tt class="py-op">[</tt><tt class="py-string">"http://www.w3.org/2011/rdfa-context/rdfa-1.1"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">terms</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-string">'describedby'</tt>   <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/2007/05/powder-s#describedby'</tt><tt class="py-op">,</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-string">'role'</tt>                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#role'</tt><tt class="py-op">,</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-comment">#'license'              : 'http://creativecommons.org/ns#license',</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-string">'license'</tt>               <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#license'</tt><tt class="py-op">,</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-op">}</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"><tt id="link-5" class="py-name"><a title="pyRdfa.initialcontext.initial_context" class="py-name" href="#" onclick="return doclink('link-5', 'initial_context', 'link-0');">initial_context</a></tt><tt class="py-op">[</tt><tt class="py-string">"http://www.w3.org/2011/rdfa-context/rdfa-1.1"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">vocabulary</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"><tt id="link-6" class="py-name"><a title="pyRdfa.initialcontext.initial_context" class="py-name" href="#" onclick="return doclink('link-6', 'initial_context', 'link-0');">initial_context</a></tt><tt class="py-op">[</tt><tt class="py-string">"http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">ns</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-op">}</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"><tt id="link-7" class="py-name"><a title="pyRdfa.initialcontext.initial_context" class="py-name" href="#" onclick="return doclink('link-7', 'initial_context', 'link-0');">initial_context</a></tt><tt class="py-op">[</tt><tt class="py-string">"http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">vocabulary</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt id="link-8" class="py-name"><a title="pyRdfa.initialcontext.initial_context" class="py-name" href="#" onclick="return doclink('link-8', 'initial_context', 'link-0');">initial_context</a></tt><tt class="py-op">[</tt><tt class="py-string">"http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">terms</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-string">'alternate'</tt>                             <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#alternate'</tt><tt class="py-op">,</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-string">'appendix'</tt>                              <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#appendix'</tt><tt class="py-op">,</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-string">'cite'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#cite'</tt><tt class="py-op">,</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-string">'bookmark'</tt>                              <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#bookmark'</tt><tt class="py-op">,</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-string">'chapter'</tt>                               <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#chapter'</tt><tt class="py-op">,</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-string">'contents'</tt>                              <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#contents'</tt><tt class="py-op">,</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-string">'copyright'</tt>                             <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#copyright'</tt><tt class="py-op">,</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-string">'glossary'</tt>                              <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#glossary'</tt><tt class="py-op">,</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-string">'help'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#help'</tt><tt class="py-op">,</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-string">'icon'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#icon'</tt><tt class="py-op">,</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-string">'index'</tt>                                 <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#index'</tt><tt class="py-op">,</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-string">'meta'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#meta'</tt><tt class="py-op">,</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-string">'next'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#next'</tt><tt class="py-op">,</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-string">'license'</tt>                               <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#license'</tt><tt class="py-op">,</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-string">'p3pv1'</tt>                                 <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#p3pv1'</tt><tt class="py-op">,</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-string">'prev'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#prev'</tt><tt class="py-op">,</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-string">'previous'</tt>                              <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#previous'</tt><tt class="py-op">,</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-string">'role'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#role'</tt><tt class="py-op">,</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-string">'section'</tt>                               <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#section'</tt><tt class="py-op">,</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-string">'stylesheet'</tt>                    <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#stylesheet'</tt><tt class="py-op">,</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-string">'subsection'</tt>                    <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#subsection'</tt><tt class="py-op">,</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-string">'start'</tt>                                 <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#start'</tt><tt class="py-op">,</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-string">'up'</tt>                                    <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#up'</tt><tt class="py-op">,</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-string">'last'</tt>                                  <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#last'</tt><tt class="py-op">,</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-string">'first'</tt>                                 <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#first'</tt><tt class="py-op">,</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-string">'top'</tt>                                   <tt class="py-op">:</tt> <tt class="py-string">'http://www.w3.org/1999/xhtml/vocab#top'</tt><tt class="py-op">,</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-op">}</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="pyRdfa-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:25 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
