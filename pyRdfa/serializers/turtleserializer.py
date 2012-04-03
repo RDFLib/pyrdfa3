@@ -11,7 +11,7 @@ from xml.sax.saxutils 			import escape, quoteattr
 from rdflib import BNode
 from rdflib import Literal
 from rdflib import URIRef
-from rdflib.syntax.xml_names 	import split_uri 
+from rdflib.namespace import split_uri 
 
 from rdflib.plugins.serializers.turtle import RecursiveSerializer
 from rdflib.exceptions import Error
