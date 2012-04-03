@@ -7,33 +7,41 @@ diff -uNr ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/prettyXMLserializer_3.py py
          writer.pop(RDF.RDF)
 -        stream.write("\n")
 +        stream.write("\n".encode('utf-8'))
-
+ 
          # Set to None so that the memory can get garbage collected.
          self.__serialized = None
 diff -uNr ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/prettyXMLserializer.py pyRdfa/serializers/prettyXMLserializer.py
 --- ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/prettyXMLserializer.py	2012-03-23 14:32:44.000000000 +0000
 +++ pyRdfa/serializers/prettyXMLserializer.py	2012-04-03 13:02:06.001877368 +0100
 @@ -9,9 +9,9 @@
-
+ 
  from rdflib	   import URIRef, Literal, BNode
  from rdflib.util  import first, uniq, more_than
 -from rdflib.Graph import Seq
 +from rdflib.graph import Seq
-
+ 
 -from rdflib.syntax.serializers	import Serializer
 +from rdflib.serializer import Serializer
  from pyRdfa.serializers.XMLWriter import XMLWriter
-
+ 
  XMLLANG = "http://www.w3.org/XML/1998/namespacelang"
 diff -uNr ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/turtleserializer.py pyRdfa/serializers/turtleserializer.py
 --- ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/turtleserializer.py	2012-03-23 14:32:44.000000000 +0000
-+++ pyRdfa/serializers/turtleserializer.py	2012-04-03 12:45:52.545050264 +0100
-@@ -13,7 +13,7 @@
- from rdflib.URIRef 				import URIRef
- from rdflib.syntax.xml_names 	import split_uri
-
++++ pyRdfa/serializers/turtleserializer.py	2012-04-03 14:04:20.080393663 +0100
+@@ -8,12 +8,12 @@
+ import urlparse
+ from xml.sax.saxutils 			import escape, quoteattr
+ 
+-from rdflib.BNode 				import BNode
+-from rdflib.Literal 			import Literal
+-from rdflib.URIRef 				import URIRef
++from rdflib import BNode
++from rdflib import Literal
++from rdflib import URIRef
+ from rdflib.syntax.xml_names 	import split_uri 
+ 
 -from rdflib.syntax.serializers.RecursiveSerializer import RecursiveSerializer
 +from rdflib.plugins.serializers.turtle import RecursiveSerializer
  from rdflib.exceptions import Error
-
+ 
  from rdflib import RDF, RDFS
