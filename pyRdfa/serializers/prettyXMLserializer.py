@@ -5,9 +5,9 @@ original version had some bugs (mainly in handling collections) hence this local
 """
 
 
-from rdflib import RDF
+from rdflib import RDF, RDFS
 
-from rdflib	   import Literal, BNode
+from rdflib	   import URIRef, Literal, BNode
 from rdflib.util  import first, uniq, more_than
 from rdflib.graph import Seq
 

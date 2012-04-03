@@ -5,14 +5,18 @@ original version had some bugs (in defining prefixes), and the overall output lo
 
 """
 
-from rdflib 					import BNode
-from rdflib			 			import Literal
-from rdflib		 				import URIRef
+import urlparse
+from xml.sax.saxutils 			import escape, quoteattr
+
+from rdflib.BNode 				import BNode
+from rdflib.Literal 			import Literal
+from rdflib.URIRef 				import URIRef
+from rdflib.syntax.xml_names 	import split_uri
 
 from rdflib.plugins.serializers.turtle import RecursiveSerializer
 from rdflib.exceptions import Error
 
-from rdflib import RDF
+from rdflib import RDF, RDFS
 
 XSD = "http://www.w3.org/2001/XMLSchema#"
 
@@ -36,15 +40,15 @@ def _Literal_n3(lit,store):
 	if lit.find("\n") != -1:
 		# Triple quote this string.
 		encoded = lit.replace('\\', '\\\\')
-		if lit.find('"""')!=-1: 
+		if lit.find('"""')!=-1:
 			# is this ok?
 			encoded=encoded.replace('"""','\\"""')
 		if encoded.endswith('"'): encoded=encoded[:-1]+"\\\""
 		encoded = '"""%s"""' % encoded
-	else: 
+	else:
 		encoded = '"%s"' % lit.replace('\n','\\n').replace('\\', '\\\\').replace('"','\\"')
 	if language:
-		if datatype:    
+		if datatype:
 			return '%s@%s^^%s' % (encoded, language, datatype)
 		else:
 			return '%s@%s' % (encoded, language)
@@ -53,7 +57,7 @@ def _Literal_n3(lit,store):
 			return '%s^^%s' % (encoded, datatype)
 		else:
 			return '%s' % encoded
-			
+
 
 class TurtleSerializer(RecursiveSerializer):
 	short_name="turtle"
@@ -68,7 +72,7 @@ class TurtleSerializer(RecursiveSerializer):
 		super(TurtleSerializer, self).reset()
 		self._shortNames = {}
 		self._started = False
-	
+
 	def getQName(self, uri):
 		if isinstance(uri, URIRef):
 			return self.store.namespace_manager.normalizeUri(uri)
@@ -80,7 +84,7 @@ class TurtleSerializer(RecursiveSerializer):
 		p = triple[1]
 		if isinstance(p, BNode):
 			self._references[p] = self.refCount(p) +1
-			
+
 	def label(self, node):
 		qname = self.getQName(node)
 		if qname is None:
@@ -96,19 +100,19 @@ class TurtleSerializer(RecursiveSerializer):
 		ns_list.sort()
 		if len(ns_list) == 0:
 			return
-		
+
 		for prefix, uri in ns_list:
 			self.write(self.indent() + '@prefix %s: <%s> .\n' % (prefix, uri))
-			
+
 		self.write('\n')
 
 	def endDocument(self):
 		pass
 
-	def isValidList(self,l): 
-		"""Checks if l is a valid RDF list."""			
+	def isValidList(self,l):
+		"""Checks if l is a valid RDF list."""
 		return len([ i for i in self.store.items(l) ]) > 0
-		
+
 	def doList(self,l):
 		while l:
 			item = self.store.value(l, RDF.first)
@@ -117,18 +121,18 @@ class TurtleSerializer(RecursiveSerializer):
 				self.write(' ')
 				self.subjectDone(l)
 			l = self.store.value(l, RDF.rest)
-			
+
 	def p_squared(self, node, position):
 		if not isinstance(node, BNode) or node in self._serialized or self.refCount(node) > 1 or position == SUBJECT:
 			return False
-	   
-		if self.isValidList(node): 
+
+		if self.isValidList(node):
 			# this is a list
 			self.write(' ( ')
 			self.depth += 2
 			self.doList(node)
 			self.write(')')
-			self.depth -= 2			
+			self.depth -= 2
 		else :
 			self.subjectDone(node)
 			self.depth += 2
@@ -144,7 +148,7 @@ class TurtleSerializer(RecursiveSerializer):
 		else :
 			self.write(" " + self.label(node))
 		return True
-	
+
 	def path(self, node, position):
 		if not (self.p_squared(node, position) or self.p_default(node, position)):
 			raise Error("Cannot serialize node '%s'" % (node, ))
@@ -154,7 +158,7 @@ class TurtleSerializer(RecursiveSerializer):
 			self.write(' a')
 		else:
 			self.path(node, VERB)
-	
+
 	def objectList(self, predicate, objects):
 		num = len(objects)
 		if num == 0:
@@ -200,17 +204,17 @@ class TurtleSerializer(RecursiveSerializer):
 		self.predicateList(subject)
 		self.write(' . ')
 		return True
-	
+
 	def statement(self, subject):
 		self.subjectDone(subject)
 		if not self.s_squared(subject):
 			self.s_default(subject)
-			
+
 	def serialize(self, stream, base=None, encoding=None, **args):
 		self.reset()
 		self.stream = stream
 		self.base=base
-		
+
 		self.preprocess()
 		subjects_list = self.orderSubjects()
 
@@ -224,5 +228,5 @@ class TurtleSerializer(RecursiveSerializer):
 				else:
 					self.write('\n')
 				self.statement(subject)
-		
+
 		self.endDocument()

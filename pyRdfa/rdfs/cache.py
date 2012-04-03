@@ -378,16 +378,16 @@ def offline_cache_generation(args) :
 			
 	for uri in args :
 		# This should write the cache
-		# print ">>>>> Writing Cache <<<<<"
+		print ">>>>> Writing Cache <<<<<"
 		writ = CachedVocab(uri,options = LocalOption(),report = True)
 		# Now read it back and print the content for tracing
-		# print ">>>>> Reading Cache <<<<<"
+		print ">>>>> Reading Cache <<<<<"
 		rd = CachedVocab(uri,options = LocalOption(),report = True)
-		# print "URI: " + uri
-		# print "default vocab: " + rd.vocabulary
-		# print "terms: ",
-		# print rd.terms
-		# print "prefixes: ",
-		# print rd.ns
+		print "URI: " + uri
+		print "default vocab: " + rd.vocabulary
+		print "terms: ",
+		print rd.terms
+		print "prefixes: ",
+		print rd.ns
 
 	
