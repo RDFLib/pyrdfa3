@@ -1,53 +1,7 @@
-diff -uNr ../pyRdfa/rdfs/cache.py pyRdfa/rdfs/cache.py
---- ../pyRdfa/rdfs/cache.py	2012-03-23 14:32:44.000000000 +0000
-+++ pyRdfa/rdfs/cache.py	2012-04-03 00:26:42.777131637 +0100
-@@ -378,16 +378,16 @@
-
- 	for uri in args :
- 		# This should write the cache
--		print ">>>>> Writing Cache <<<<<"
-+		# print ">>>>> Writing Cache <<<<<"
- 		writ = CachedVocab(uri,options = LocalOption(),report = True)
- 		# Now read it back and print the content for tracing
--		print ">>>>> Reading Cache <<<<<"
-+		# print ">>>>> Reading Cache <<<<<"
- 		rd = CachedVocab(uri,options = LocalOption(),report = True)
--		print "URI: " + uri
--		print "default vocab: " + rd.vocabulary
--		print "terms: ",
--		print rd.terms
--		print "prefixes: ",
--		print rd.ns
-+		# print "URI: " + uri
-+		# print "default vocab: " + rd.vocabulary
-+		# print "terms: ",
-+		# print rd.terms
-+		# print "prefixes: ",
-+		# print rd.ns
-
-
-\ No newline at end of file
-diff -uNr ../pyRdfa/serializers/prettyXMLserializer_3.py pyRdfa/serializers/prettyXMLserializer_3.py
---- ../pyRdfa/serializers/prettyXMLserializer_3.py	2012-03-23 14:32:44.000000000 +0000
-+++ pyRdfa/serializers/prettyXMLserializer_3.py	2012-04-03 00:26:42.777131637 +0100
-@@ -2,15 +2,13 @@
-
- from rdflib.plugins.serializers.xmlwriter import XMLWriter
-
--from rdflib.namespace import Namespace, RDF, RDFS, split_uri
-+from rdflib.namespace import Namespace, RDF, RDFS
-
- from rdflib.term import URIRef, Literal, BNode
- from rdflib.util import first, uniq, more_than
- from rdflib.collection import Collection
- from rdflib.serializer import Serializer
-
--from rdflib.exceptions import Error
--
- from xml.sax.saxutils import quoteattr, escape
-
-
-@@ -173,7 +171,7 @@
+diff -uNr ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/prettyXMLserializer_3.py pyRdfa/serializers/prettyXMLserializer_3.py
+--- ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/prettyXMLserializer_3.py	2012-03-23 14:32:44.000000000 +0000
++++ pyRdfa/serializers/prettyXMLserializer_3.py	2012-04-03 13:21:22.999614600 +0100
+@@ -173,7 +173,7 @@
              if bnode not in self.__serialized:
                  self.subject(subject, 1)
          writer.pop(RDF.RDF)
@@ -56,18 +10,12 @@ diff -uNr ../pyRdfa/serializers/prettyXMLserializer_3.py pyRdfa/serializers/pret
 
          # Set to None so that the memory can get garbage collected.
          self.__serialized = None
-diff -uNr ../pyRdfa/serializers/prettyXMLserializer.py pyRdfa/serializers/prettyXMLserializer.py
---- ../pyRdfa/serializers/prettyXMLserializer.py	2012-03-23 14:32:44.000000000 +0000
-+++ pyRdfa/serializers/prettyXMLserializer.py	2012-04-03 00:26:42.777131637 +0100
-@@ -5,13 +5,13 @@
- """
+diff -uNr ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/prettyXMLserializer.py pyRdfa/serializers/prettyXMLserializer.py
+--- ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/prettyXMLserializer.py	2012-03-23 14:32:44.000000000 +0000
++++ pyRdfa/serializers/prettyXMLserializer.py	2012-04-03 13:02:06.001877368 +0100
+@@ -9,9 +9,9 @@
 
-
--from rdflib import RDF, RDFS
-+from rdflib import RDF
-
--from rdflib	   import URIRef, Literal, BNode
-+from rdflib	   import Literal, BNode
+ from rdflib	   import URIRef, Literal, BNode
  from rdflib.util  import first, uniq, more_than
 -from rdflib.Graph import Seq
 +from rdflib.graph import Seq
@@ -77,85 +25,15 @@ diff -uNr ../pyRdfa/serializers/prettyXMLserializer.py pyRdfa/serializers/pretty
  from pyRdfa.serializers.XMLWriter import XMLWriter
 
  XMLLANG = "http://www.w3.org/XML/1998/namespacelang"
-diff -uNr ../pyRdfa/serializers/turtleserializer.py pyRdfa/serializers/turtleserializer.py
---- ../pyRdfa/serializers/turtleserializer.py	2012-03-23 14:32:44.000000000 +0000
-+++ pyRdfa/serializers/turtleserializer.py	2012-04-03 00:26:42.777131637 +0100
-@@ -5,18 +5,14 @@
+diff -uNr ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/turtleserializer.py pyRdfa/serializers/turtleserializer.py
+--- ../aa-shed/pyRdfa-3.2.0/pyRdfa/serializers/turtleserializer.py	2012-03-23 14:32:44.000000000 +0000
++++ pyRdfa/serializers/turtleserializer.py	2012-04-03 12:45:52.545050264 +0100
+@@ -13,7 +13,7 @@
+ from rdflib.URIRef 				import URIRef
+ from rdflib.syntax.xml_names 	import split_uri
 
- """
-
--import urlparse
--from xml.sax.saxutils 			import escape, quoteattr
-+from rdflib 					import BNode
-+from rdflib			 			import Literal
-+from rdflib		 				import URIRef
-
--from rdflib.BNode 				import BNode
--from rdflib.Literal 			import Literal
--from rdflib.URIRef 				import URIRef
--from rdflib.syntax.xml_names 	import split_uri
--
 -from rdflib.syntax.serializers.RecursiveSerializer import RecursiveSerializer
 +from rdflib.plugins.serializers.turtle import RecursiveSerializer
  from rdflib.exceptions import Error
 
--from rdflib import RDF, RDFS
-+from rdflib import RDF
-
- XSD = "http://www.w3.org/2001/XMLSchema#"
-
-@@ -125,7 +121,7 @@
- 	def p_squared(self, node, position):
- 		if not isinstance(node, BNode) or node in self._serialized or self.refCount(node) > 1 or position == SUBJECT:
- 			return False
--
-+
- 		if self.isValidList(node):
- 			# this is a list
- 			self.write(' ( ')
-diff -uNr ../pyRdfa/transform/__init__.py pyRdfa/transform/__init__.py
---- ../pyRdfa/transform/__init__.py	2012-03-23 14:32:44.000000000 +0000
-+++ pyRdfa/transform/__init__.py	2012-04-03 00:26:42.777131637 +0100
-@@ -1,21 +1,28 @@
- # -*- coding: utf-8 -*-
- """
--Transformer sub-package for the pyRdfa package. It contains modules with transformer functions; each may be
--invoked by pyRdfa to transform the dom tree before the "real" RDfa processing.
-+Transformers
-+============
-
--@summary: RDFa Transformer package
--@requires: U{RDFLib package<http://rdflib.net>}
--@organization: U{World Wide Web Consortium<http://www.w3.org>}
--@author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
--@license: This software is available for use under the
--U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
--"""
-+The package uses the concept of 'transformers': the parsed DOM tree is possibly
-+transformed I{before} performing the real RDFa processing. This transformer structure makes it possible to
-+add additional 'services' without distoring the core code of RDFa processing.
-
--"""
--$Id: __init__.py,v 1.2 2010/11/19 13:52:52 ivan Exp $
--$Date: 2010/11/19 13:52:52 $
--"""
--__version__ = "3.0"
-+Some transformations are included in the package and can be used at invocation. These are:
-
-+ - The 'name' attribute of the 'meta' element is copied into a 'property' attribute of the same element
-+ - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
-+ - Implementing the Dublin Core dialect to include DC statements from the header.  See L{transform.DublinCore} for further details.
-
-+The user of the package may refer to those and pass it on to the L{processFile} call via an L{Options} instance. The caller of the package may also add his/her transformer modules. Here is a possible usage with the 'openid' transformer
-+added to the call::
-+ from pyRdfa import processFile, Options
-+ from pyRdfa.transform.OpenID import OpenID_transform
-+ options = Options(transformers=[OpenID_transform])
-+ print pyRdfa(options=options).rdf_from_source('filename')
-+
-+In the case of a call via a CGI script, some of these built-in transformers can be used via extra flags, see L{processURI} for further details.
-+
-+The current option instance is passed to all transformers as extra parameters. Extensions of the package
-+may make use of that to control the transformers, if necessary.
-+"""
-
+ from rdflib import RDF, RDFS
