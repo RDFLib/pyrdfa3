@@ -84,6 +84,7 @@ setup(
     """,
     download_url = "%s.tar.gz" % version,
     packages = ['pyRdfa',
+                'pyRdfa/extras',
                 'pyRdfa/host',
                 'pyRdfa/rdfs',
                 'pyRdfa/serializers',
