@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.12 2012-03-23 14:06:25 ivan Exp $ $Date: 2012-03-23 14:06:25 $
+$Id: options.py,v 1.12 2012/03/23 14:06:25 ivan Exp $ $Date: 2012/03/23 14:06:25 $
 """
 
 import sys, datetime

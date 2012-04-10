@@ -331,7 +331,7 @@ historical_iana_schemes = [
 ]
 
 provisional_iana_schemes = [
-	"afs", "dtn", "dvb", "icon", "ipn", "jms", "oid", "rsync" 
+	"afs", "dtn", "dvb", "icon", "ipn", "jms", "oid", "rsync", "ni" 
 ]
 
 other_used_schemes = [

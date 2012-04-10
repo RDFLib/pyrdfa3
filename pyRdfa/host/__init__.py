@@ -26,8 +26,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.11 2012-03-23 14:06:31 ivan Exp $
-$Date: 2012-03-23 14:06:31 $
+$Id: __init__.py,v 1.11 2012/03/23 14:06:31 ivan Exp $
+$Date: 2012/03/23 14:06:31 $
 """
 __version__ = "3.0"
 

@@ -19,8 +19,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.7 2012-03-23 14:06:25 ivan Exp $
-$Date: 2012-03-23 14:06:25 $
+$Id: termorcurie.py,v 1.7 2012/03/23 14:06:25 ivan Exp $
+$Date: 2012/03/23 14:06:25 $
 """
 
 import re, sys

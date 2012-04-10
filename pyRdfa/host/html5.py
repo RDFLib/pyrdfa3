@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.7 2012-03-23 14:06:31 ivan Exp $
-$Date: 2012-03-23 14:06:31 $
+$Id: html5.py,v 1.7 2012/03/23 14:06:31 ivan Exp $
+$Date: 2012/03/23 14:06:31 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
