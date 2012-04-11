@@ -17,8 +17,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.13 2012/03/23 14:06:25 ivan Exp $
-$Date: 2012/03/23 14:06:25 $
+$Id: state.py,v 1.15 2012/04/11 09:57:32 ivan Exp $
+$Date: 2012/04/11 09:57:32 $
 """
 
 import rdflib
@@ -293,7 +293,7 @@ class ExecutionContext :
 			"""
 			joined = urlparse.urljoin(base, v)
 			try :
-				if v[-1] != joined[-1] :
+				if v[-1] != joined[-1] and (v[-1] == "#" or v[-1] == "?") :
 					return create_URIRef(joined + v[-1], check)
 				else :
 					return create_URIRef(joined, check)
