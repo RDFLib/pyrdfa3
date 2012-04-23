@@ -17,9 +17,11 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.15 2012/04/11 09:57:32 ivan Exp $
-$Date: 2012/04/11 09:57:32 $
+$Id: state.py,v 1.16 2012/04/23 10:39:19 ivan Exp $
+$Date: 2012/04/23 10:39:19 $
 """
+import sys
+(py_v_major, py_v_minor, py_v_micro, py_v_final, py_v_serial) = sys.version_info
 
 import rdflib
 from rdflib	import URIRef
@@ -291,6 +293,11 @@ class ExecutionContext :
 			@param v: local part
 			@return: an RDFLib URIRef instance
 			"""
+			# UGLY!!! There is a bug for a corner case in python version <= 2.5.X
+			if len(v) > 0 and v[0] == '?' and py_v_minor <= 5 :
+				return create_URIRef(base+v, check)
+			####
+			
 			joined = urlparse.urljoin(base, v)
 			try :
 				if v[-1] != joined[-1] and (v[-1] == "#" or v[-1] == "?") :
