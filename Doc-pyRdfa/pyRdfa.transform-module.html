@@ -105,12 +105,65 @@
     <li> <strong class="uidlink"><a href="pyRdfa.transform.metaname-module.html">pyRdfa.transform.metaname</a></strong>: <em class="summary">Simple transfomer: <code>meta</code> element is extended with a 
         <code>property</code> attribute, with a copy of the 
         <code>name</code> attribute values.</em>    </li>
-    <li> <strong class="uidlink"><a href="pyRdfa.transform.toplevelabout-module.html">pyRdfa.transform.toplevelabout</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt; or 
-        root element</em>    </li>
   </ul></td></tr>
 </table>
 
 <br />
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.transform-module.html#top_about" class="summary-sig-name">top_about</a>(<span class="summary-sig-arg">root</span>,
+        <span class="summary-sig-arg">options</span>,
+        <span class="summary-sig-arg">state</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.transform-pysrc.html#top_about">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.transform-module.html#empty_safe_curie" class="summary-sig-name">empty_safe_curie</a>(<span class="summary-sig-arg">node</span>,
+        <span class="summary-sig-arg">options</span>,
+        <span class="summary-sig-arg">state</span>)</span><br />
+      Remove the attributes whose value is an empty safe curie.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.transform-pysrc.html#empty_safe_curie">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -136,9 +189,81 @@
     </td>
   </tr>
 </table>
-<p class="indent-wrapped-lines"><b>Imports:</b>
-  <a href="pyRdfa.transform.toplevelabout-module.html" title="pyRdfa.transform.toplevelabout">toplevelabout</a>
-</p><br />
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="top_about"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">top_about</span>(<span class="sig-arg">root</span>,
+        <span class="sig-arg">options</span>,
+        <span class="sig-arg">state</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.transform-pysrc.html#top_about">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>root</code></strong> - a DOM node for the top level element</li>
+        <li><strong class="pname"><code>options</code></strong> (<a href="pyRdfa.pyRdfa-class.html#options" 
+          class="link">Options</a>) - invocation options</li>
+        <li><strong class="pname"><code>state</code></strong> (<a href="pyRdfa.state-module.html" class="link">State</a>) - top level execution state</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="empty_safe_curie"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">empty_safe_curie</span>(<span class="sig-arg">node</span>,
+        <span class="sig-arg">options</span>,
+        <span class="sig-arg">state</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.transform-pysrc.html#empty_safe_curie">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove the attributes whose value is an empty safe curie.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>node</code></strong> - a DOM node for the top level element</li>
+        <li><strong class="pname"><code>options</code></strong> (<a href="pyRdfa.pyRdfa-class.html#options" 
+          class="link">Options</a>) - invocation options</li>
+        <li><strong class="pname"><code>state</code></strong> (<a href="pyRdfa.state-module.html" class="link">State</a>) - top level execution state</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -165,7 +290,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    Generated by Epydoc 3.0.1 on Fri May  4 10:54:10 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

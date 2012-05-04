@@ -64,8 +64,8 @@
 <a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-docstring">@license: This software is available for use under the</tt> </tt>
 <a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-docstring">U{W3C&#174; SOFTWARE NOTICE AND LICENSE&lt;href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231"&gt;}</tt> </tt>
 <a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-docstring">@contact: Ivan Herman, ivan@w3.org</tt> </tt>
-<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-docstring">@version: $Id: lite.py,v 1.7 2012/02/24 09:25:44 ivan Exp $</tt> </tt>
-<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-docstring">$Date: 2012/02/24 09:25:44 $</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-docstring">@version: $Id: lite.py,v 1.8 2012/05/04 08:50:31 ivan Exp $</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-docstring">$Date: 2012/05/04 08:50:31 $</tt> </tt>
 <a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
 <a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"> </tt>
 <a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable pyRdfa.transform.lite.non_lite_attributes=pyRdfa.transform.lite-module.html#non_lite_attributes"><a title="pyRdfa.transform.lite.non_lite_attributes" class="py-name" href="#" onclick="return doclink('link-0', 'non_lite_attributes', 'link-0');">non_lite_attributes</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-string">"about"</tt><tt class="py-op">,</tt><tt class="py-string">"inlist"</tt><tt class="py-op">,</tt><tt class="py-string">"datatype"</tt><tt class="py-op">,</tt><tt class="py-string">"rev"</tt><tt class="py-op">,</tt><tt class="py-string">"rel"</tt><tt class="py-op">]</tt> </tt>
@@ -86,8 +86,8 @@
 <a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-keyword">def</tt> <tt class="py-def-name">generate_warning</tt><tt class="py-op">(</tt><tt class="py-param">node</tt><tt class="py-op">,</tt> <tt class="py-param">attr</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
 <a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">attr</tt> <tt class="py-op">==</tt> <tt class="py-string">"rel"</tt> <tt class="py-op">:</tt> </tt>
 <a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">                        <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt class="py-string">"Attribute @rel is not used in RDFa Lite, ignored (consider using @property)"</tt> </tt>
-<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt class="py-name">attr</tt> <tt class="py-op">==</tt> <tt class="py-string">"resource"</tt> <tt class="py-op">:</tt> </tt>
-<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">                        <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt class="py-string">"Attribute @resource is not used in RDFa Lite, ignored (consider using a &lt;link&gt; element with @href)"</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt class="py-name">attr</tt> <tt class="py-op">==</tt> <tt class="py-string">"about"</tt> <tt class="py-op">:</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">                        <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt class="py-string">"Attribute @about is not used in RDFa Lite, ignored (consider using a &lt;link&gt; element with @href or @resource)"</tt> </tt>
 <a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt> <tt class="py-op">:</tt> </tt>
 <a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">                        <tt class="py-name">msg</tt> <tt class="py-op">=</tt> <tt class="py-string">"Attribute @%s is not used in RDFa Lite, ignored"</tt> <tt class="py-op">%</tt> <tt class="py-name">attr</tt> </tt>
 <a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">                <tt id="link-1" class="py-name" targets="Module pyRdfa.options=pyRdfa.options-module.html"><a title="pyRdfa.options" class="py-name" href="#" onclick="return doclink('link-1', 'options', 'link-1');">options</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Method pyRdfa.options.Options.add_warning()=pyRdfa.options.Options-class.html#add_warning"><a title="pyRdfa.options.Options.add_warning" class="py-name" href="#" onclick="return doclink('link-2', 'add_warning', 'link-2');">add_warning</a></tt><tt class="py-op">(</tt><tt class="py-name">msg</tt><tt class="py-op">,</tt> <tt class="py-name">node</tt><tt class="py-op">=</tt><tt class="py-name">node</tt><tt class="py-op">)</tt> </tt>
@@ -140,7 +140,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Mar 23 15:08:24 2012
+    Generated by Epydoc 3.0.1 on Fri May  4 10:54:11 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -67,7 +67,7 @@ beautifying_prefixes = {
 }
 
 
-accept_xml_base		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
+accept_xml_base		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg,  HostLanguage.xhtml5 ]
 accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg ]
 
 accept_embedded_rdf_xml	= [ HostLanguage.svg, HostLanguage.rdfa_core ]

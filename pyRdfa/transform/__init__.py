@@ -12,10 +12,70 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.2 2010-11-19 13:52:52 ivan Exp $
-$Date: 2010-11-19 13:52:52 $
+$Id: __init__.py,v 1.3 2012/05/04 08:50:31 ivan Exp $
+$Date: 2012/05/04 08:50:31 $
 """
 __version__ = "3.0"
+
+# Here are the transfomer functions that are to be performed for all RDFa files, no matter what
+
+def top_about(root, options, state) :
+	"""
+	@param root: a DOM node for the top level element
+	@param options: invocation options
+	@type options: L{Options<pyRdfa.options>}
+	@param state: top level execution state
+	@type state: L{State<pyRdfa.state>}
+	"""
+	def set_about(node) :
+		if has_one_of_attributes(node, "rel", "rev") :
+			if not has_one_of_attributes(top, "about", "src") :
+				node.setAttribute("about","")
+		else :
+			if not has_one_of_attributes(node, "href", "resource", "about", "src") :
+				node.setAttribute("about","")
+	
+	from pyRdfa.host import HostLanguage
+	from pyRdfa.utils import has_one_of_attributes
+	
+	if not has_one_of_attributes(root, "about") :
+		root.setAttribute("about","")
+		
+	if options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5 ] :
+		if state.rdfa_version >= "1.1" :
+			pass
+		else :
+			for top in root.getElementsByTagName("head") :
+				if not has_one_of_attributes(top, "href", "resource", "about", "src") :
+					set_about(top)
+			for top in root.getElementsByTagName("body") :
+				if not has_one_of_attributes(top, "href", "resource", "about", "src") :
+					set_about(top)
+
+
+def empty_safe_curie(node, options, state) :
+	"""
+	Remove the attributes whose value is an empty safe curie.
+	
+	@param node: a DOM node for the top level element
+	@param options: invocation options
+	@type options: L{Options<pyRdfa.options>}
+	@param state: top level execution state
+	@type state: L{State<pyRdfa.state>}
+	"""
+	def prune_safe_curie(node,name) :
+		if node.hasAttribute(name) :
+			av = node.getAttribute(name)
+			if av == '[]' :
+				node.removeAttribute(name)
+				msg = "Attribute @%s uses an empty safe CURIE; the attribute is ignored" % name
+				options.add_warning(msg, node=node)
+				
+	prune_safe_curie(node, "about")
+	prune_safe_curie(node, "resource")
+	for n in node.childNodes :
+		if n.nodeType == node.ELEMENT_NODE :
+			empty_safe_curie(n, options, state)
 
 
 

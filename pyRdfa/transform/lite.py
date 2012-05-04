@@ -5,8 +5,8 @@
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: lite.py,v 1.7 2012-02-24 09:25:44 ivan Exp $
-$Date: 2012-02-24 09:25:44 $
+@version: $Id: lite.py,v 1.8 2012/05/04 08:50:31 ivan Exp $
+$Date: 2012/05/04 08:50:31 $
 """
 
 non_lite_attributes = ["about","inlist","datatype","rev","rel"]
@@ -27,8 +27,8 @@ def lite_prune(top, options, state) :
 	def generate_warning(node, attr) :
 		if attr == "rel" :
 			msg = "Attribute @rel is not used in RDFa Lite, ignored (consider using @property)"
-		elif attr == "resource" :
-			msg = "Attribute @resource is not used in RDFa Lite, ignored (consider using a <link> element with @href)"
+		elif attr == "about" :
+			msg = "Attribute @about is not used in RDFa Lite, ignored (consider using a <link> element with @href or @resource)"
 		else :
 			msg = "Attribute @%s is not used in RDFa Lite, ignored" % attr
 		options.add_warning(msg, node=node)

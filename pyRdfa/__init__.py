@@ -286,12 +286,12 @@ err_unusual_char_in_URI				= "Unusual character in uri: %s; possible error?"
 
 #############################################################################################
 
-from pyRdfa.state						import ExecutionContext
-from pyRdfa.parse						import parse_one_node
-from pyRdfa.options						import Options
-from pyRdfa.transform.toplevelabout		import top_about
-from pyRdfa.utils						import URIOpener
-from pyRdfa.host 						import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
+from pyRdfa.state			import ExecutionContext
+from pyRdfa.parse			import parse_one_node
+from pyRdfa.options			import Options
+from pyRdfa.transform		import top_about, empty_safe_curie
+from pyRdfa.utils			import URIOpener
+from pyRdfa.host 			import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
 
 # Environment variable used to characterize cache directories for RDFa vocabulary files. 
 CACHE_DIR_VAR		= "PyRdfaCacheDir"
@@ -342,7 +342,7 @@ uri_schemes = registered_iana_schemes + unofficial_common + historical_iana_sche
 
 # List of built-in transformers that are to be run regardless, because they are part of the RDFa spec
 builtInTransformers = [
-	top_about
+	empty_safe_curie, top_about
 ]
 	
 #########################################################################################################
