@@ -30,6 +30,13 @@ The package primarily depends on:
 The package has been tested on Python version 2.4 and higher. Python 2.6 is strongly recommended. The package
 does not run with Python 3.
 
-For the details on RDFa, see:
+For the details on RDFa 1.1, see:
 
-http://www.w3.org/TR/rdfa-syntax
+http://www.w3.org/TR/rdfa-core
+http://www.w3.org/TR/rdfa-lite/
+http://www.w3.org/TR/xhtml-rdfa/
+http://www.w3.org/TR/rdfa-in-html/
+
+possibly:
+
+http://www.w3.org/TR/rdfa-primer/
