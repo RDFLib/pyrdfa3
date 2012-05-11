@@ -33,10 +33,3 @@ does not run with Python 3.
 For the details on RDFa, see:
 
 http://www.w3.org/TR/rdfa-syntax
-
-
-Release notes (starting from version 2.3)
-=========================================
-
-- this is the first fully released version of the 3.X series, implementing RDFa 1.1
-

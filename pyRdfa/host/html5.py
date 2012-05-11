@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.7 2012/03/23 14:06:31 ivan Exp $
-$Date: 2012/03/23 14:06:31 $
+$Id: html5.py,v 1.8 2012/05/11 09:19:07 ivan Exp $
+$Date: 2012/05/11 09:19:07 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
@@ -195,5 +195,41 @@ def html5_extra_attributes(node, state) :
 		# Finally, set the value itself
 		node.setAttribute("content",value)
 			
-	elif node.hasAttribute("data") and not node.hasAttribute("src") :
-		node.setAttribute("src", node.getAttribute("data"))
+	#elif node.hasAttribute("data") and not node.hasAttribute("src") :
+	#	node.setAttribute("src", node.getAttribute("data"))
+		
+def remove_rel(node, state):
+	"""
+	If @property and @rel/@rev are on the same element, then only CURIE and URI can appear as a rel/rev value.
+	
+	@param node: the current node that could be modified
+	@param state: current state
+	@type state: L{Execution context<pyRdfa.state.ExecutionContext>}
+	"""
+	from pyRdfa.termorcurie import termname
+	def _massage_node(node,attr) :
+		"""The real work for remove_rel is done here, parametrized with @rel and @rev"""
+		if node.hasAttribute("property") and node.hasAttribute(attr) :
+			vals = node.getAttribute(attr).strip().split()
+			if len(vals) != 0 :
+				final_vals = [ v for v in vals if not termname.match(v) ]
+				if len(final_vals) == 0 :
+					node.removeAttribute(attr)
+				else :
+					node.setAttribute(attr, reduce(lambda x,y: x+' '+y,final_vals))
+	
+	_massage_node(node, "rev")
+	_massage_node(node, "rel")
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

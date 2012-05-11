@@ -30,6 +30,7 @@ pyRdfa.err_non_legal_CURIE_ref	pyRdfa-module.html#err_non_legal_CURIE_ref
 pyRdfa.processURI	pyRdfa-module.html#processURI
 pyRdfa.err_undefined_CURIE	pyRdfa-module.html#err_undefined_CURIE
 pyRdfa.UnresolvablePrefix	pyRdfa-module.html#UnresolvablePrefix
+pyRdfa.empty_safe_curie	pyRdfa.transform-module.html#empty_safe_curie
 pyRdfa.ns_xsd	pyRdfa-module.html#ns_xsd
 pyRdfa.RDFA_VOCAB	pyRdfa-module.html#RDFA_VOCAB
 pyRdfa.err_xmlns_deprecated	pyRdfa-module.html#err_xmlns_deprecated
@@ -49,7 +50,7 @@ pyRdfa.err_fragment_reference	pyRdfa-module.html#err_fragment_reference
 pyRdfa.builtInTransformers	pyRdfa-module.html#builtInTransformers
 pyRdfa.__package__	pyRdfa-module.html#__package__
 pyRdfa.UnresolvableTerm	pyRdfa-module.html#UnresolvableTerm
-pyRdfa.top_about	pyRdfa.transform.toplevelabout-module.html#top_about
+pyRdfa.top_about	pyRdfa.transform-module.html#top_about
 pyRdfa.NonConformantMarkup	pyRdfa-module.html#NonConformantMarkup
 pyRdfa.err_no_blank_node	pyRdfa-module.html#err_no_blank_node
 pyRdfa.UnresolvableReference	pyRdfa-module.html#UnresolvableReference
@@ -76,11 +77,13 @@ pyRdfa.host.__package__	pyRdfa.host-module.html#__package__
 pyRdfa.host.initial_contexts	pyRdfa.host-module.html#initial_contexts
 pyRdfa.host.host_dom_transforms	pyRdfa.host-module.html#host_dom_transforms
 pyRdfa.host.adjust_xhtml	pyRdfa.host-module.html#adjust_xhtml
+pyRdfa.host.remove_rel	pyRdfa.host.html5-module.html#remove_rel
 pyRdfa.host.accept_embedded_rdf_xml	pyRdfa.host-module.html#accept_embedded_rdf_xml
 pyRdfa.host.atom	pyRdfa.host.atom-module.html
 pyRdfa.host.atom.atom_add_entry_type	pyRdfa.host.atom-module.html#atom_add_entry_type
 pyRdfa.host.atom.__package__	pyRdfa.host.atom-module.html#__package__
 pyRdfa.host.html5	pyRdfa.host.html5-module.html
+pyRdfa.host.html5.remove_rel	pyRdfa.host.html5-module.html#remove_rel
 pyRdfa.host.html5.html5_extra_attributes	pyRdfa.host.html5-module.html#html5_extra_attributes
 pyRdfa.host.html5.date_gMonthDay	pyRdfa.host.html5-module.html#date_gMonthDay
 pyRdfa.host.html5._format_test	pyRdfa.host.html5-module.html#_format_test
@@ -150,6 +153,11 @@ pyRdfa.rdfs.process.equivalentClass	pyRdfa.rdfs.process-module.html#equivalentCl
 pyRdfa.rdfs.process.subClassOf	pyRdfa.rdfs.process-module.html#subClassOf
 pyRdfa.state	pyRdfa.state-module.html
 pyRdfa.state.__package__	pyRdfa.state-module.html#__package__
+pyRdfa.state.py_v_minor	pyRdfa.state-module.html#py_v_minor
+pyRdfa.state.py_v_micro	pyRdfa.state-module.html#py_v_micro
+pyRdfa.state.py_v_serial	pyRdfa.state-module.html#py_v_serial
+pyRdfa.state.py_v_final	pyRdfa.state-module.html#py_v_final
+pyRdfa.state.py_v_major	pyRdfa.state-module.html#py_v_major
 pyRdfa.state.quote_URI	pyRdfa.utils-module.html#quote_URI
 pyRdfa.termorcurie	pyRdfa.termorcurie-module.html
 pyRdfa.termorcurie.xml_application_media_type	pyRdfa.termorcurie-module.html#xml_application_media_type
@@ -162,6 +170,8 @@ pyRdfa.termorcurie._bnodes	pyRdfa.termorcurie-module.html#_bnodes
 pyRdfa.termorcurie._empty_bnode	pyRdfa.termorcurie-module.html#_empty_bnode
 pyRdfa.termorcurie.quote_URI	pyRdfa.utils-module.html#quote_URI
 pyRdfa.transform	pyRdfa.transform-module.html
+pyRdfa.transform.top_about	pyRdfa.transform-module.html#top_about
+pyRdfa.transform.empty_safe_curie	pyRdfa.transform-module.html#empty_safe_curie
 pyRdfa.transform.__package__	pyRdfa.transform-module.html#__package__
 pyRdfa.transform.DublinCore	pyRdfa.transform.DublinCore-module.html
 pyRdfa.transform.DublinCore.DC_transform	pyRdfa.transform.DublinCore-module.html#DC_transform
@@ -177,9 +187,6 @@ pyRdfa.transform.lite.__package__	pyRdfa.transform.lite-module.html#__package__
 pyRdfa.transform.metaname	pyRdfa.transform.metaname-module.html
 pyRdfa.transform.metaname.meta_transform	pyRdfa.transform.metaname-module.html#meta_transform
 pyRdfa.transform.metaname.__package__	pyRdfa.transform.metaname-module.html#__package__
-pyRdfa.transform.toplevelabout	pyRdfa.transform.toplevelabout-module.html
-pyRdfa.transform.toplevelabout.top_about	pyRdfa.transform.toplevelabout-module.html#top_about
-pyRdfa.transform.toplevelabout.__package__	pyRdfa.transform.toplevelabout-module.html#__package__
 pyRdfa.utils	pyRdfa.utils-module.html
 pyRdfa.utils.has_one_of_attributes	pyRdfa.utils-module.html#has_one_of_attributes
 pyRdfa.utils.dump	pyRdfa.utils-module.html#dump

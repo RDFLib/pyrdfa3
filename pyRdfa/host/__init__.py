@@ -26,13 +26,13 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.11 2012/03/23 14:06:31 ivan Exp $
-$Date: 2012/03/23 14:06:31 $
+$Id: __init__.py,v 1.13 2012/05/11 09:19:33 ivan Exp $
+$Date: 2012/05/11 09:19:33 $
 """
 __version__ = "3.0"
 
 from pyRdfa.host.atom  import atom_add_entry_type
-from pyRdfa.host.html5 import html5_extra_attributes
+from pyRdfa.host.html5 import html5_extra_attributes, remove_rel
 
 class HostLanguage :
 	"""An enumeration style class: recognized host language types for this processor of RDFa. Some processing details may depend on these host languages. "rdfa_core" is the default Host Language is nothing else is defined."""
@@ -75,8 +75,8 @@ accept_embedded_turtle	= [ HostLanguage.svg, HostLanguage.html5, HostLanguage.xh
 
 host_dom_transforms = {
 	HostLanguage.atom   : [atom_add_entry_type],
-	HostLanguage.html5  : [html5_extra_attributes],
-	HostLanguage.xhtml5 : [html5_extra_attributes]
+	HostLanguage.html5  : [html5_extra_attributes, remove_rel],
+	HostLanguage.xhtml5 : [html5_extra_attributes, remove_rel]
 }
 
 predefined_1_0_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',
