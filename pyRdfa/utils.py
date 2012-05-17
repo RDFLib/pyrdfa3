@@ -191,7 +191,7 @@ def traverse_tree(node, func) :
 			traverse_tree(n, func)
 
 #########################################################################################################
-def return_XML(state, node, base = True) :
+def return_XML(state, inode, base = True) :
 	"""
 	Get (recursively) the XML Literal content of a DOM Element Node. (Most of the processing is done
 	via a C{node.toxml} call of the xml minidom implementation.)
@@ -201,6 +201,7 @@ def return_XML(state, node, base = True) :
 	@param base: whether the base element should be added to the output
 	@return: string
 	"""
+	node = inode.cloneNode(True)
 	# Decorate the element with namespaces.lang values and, optionally, base
 	if base :
 		node.setAttribute("xml:base",state.base)
