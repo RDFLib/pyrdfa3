@@ -7,7 +7,7 @@ by U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>}.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: embeddedRDF.py,v 1.9 2012/03/23 14:06:25 ivan Exp $
+@version: $Id: embeddedRDF.py,v 1.11 2012/05/17 15:07:19 ivan Exp $
 """
 
 from StringIO	  import StringIO
@@ -67,13 +67,6 @@ def handle_embeddedRDF(node, graph, state) :
 					state.options.add_error("Embedded Turtle content could not be parsed (problems with %s?); ignored" % value)
 			return True
 		elif state.options.host_language in accept_embedded_rdf_xml and node.localName == "RDF" and node.namespaceURI == "http://www.w3.org/1999/02/22-rdf-syntax-ns#" :
-			#node.setAttribute("xml:base",state.base)
-			# the namespace declarations should be added to the node; care should be taken not to override locally defined
-			# declarations, though.
-			#for prefix in state.term_or_curie.xmlns :
-			#	if not node.hasAttribute("xmlns:%s" % prefix) :
-			#		node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
-			#rdf = StringIO(node.toxml())
 			rdf = StringIO(return_XML(state, node))
 			try :
 				graph.parse(rdf)
