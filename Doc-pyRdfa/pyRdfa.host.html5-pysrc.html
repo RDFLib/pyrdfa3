@@ -71,8 +71,8 @@
 <a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
 <a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"> </tt>
 <a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
-<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-string">$Id: html5.py,v 1.7 2012/03/23 14:06:31 ivan Exp $</tt> </tt>
-<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-string">$Date: 2012/03/23 14:06:31 $</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-string">$Id: html5.py,v 1.8 2012/05/11 09:19:07 ivan Exp $</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-string">$Date: 2012/05/11 09:19:07 $</tt> </tt>
 <a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
 <a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"> </tt>
 <a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"># The handling of datatime is a little bit more complex... better put this in a separate function for a better management</tt> </tt>
@@ -253,10 +253,10 @@
 <a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">                                <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">setAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"datatype"</tt><tt class="py-op">,</tt><tt class="py-name">dt</tt><tt class="py-op">)</tt> </tt>
 <a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">                <tt class="py-comment"># Finally, set the value itself</tt> </tt>
 <a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">                <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">setAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"content"</tt><tt class="py-op">,</tt><tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
-<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">                         </tt>
-<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">hasAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"data"</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-keyword">not</tt> <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">hasAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"src"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
-<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">                <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">setAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"src"</tt><tt class="py-op">,</tt> <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">getAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"data"</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
-</div><a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">                 </tt>
+</div><a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">                         </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt class="py-comment">#elif node.hasAttribute("data") and not node.hasAttribute("src") :</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt class="py-comment">#       node.setAttribute("src", node.getAttribute("data"))</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">                 </tt>
 <a name="remove_rel"></a><div id="remove_rel-def"><a name="L201"></a><tt class="py-lineno">201</tt> <a class="py-toggle" href="#" id="remove_rel-toggle" onclick="return toggle('remove_rel');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="pyRdfa.host.html5-module.html#remove_rel">remove_rel</a><tt class="py-op">(</tt><tt class="py-param">node</tt><tt class="py-op">,</tt> <tt class="py-param">state</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="remove_rel-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="remove_rel-expanded"><a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
 <a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line"><tt class="py-docstring">        If @property and @rel/@rev are on the same element, then only CURIE and URI can appear as a rel/rev value.</tt> </tt>
@@ -313,7 +313,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri May 11 11:14:53 2012
+    Generated by Epydoc 3.0.1 on Thu May 17 17:02:25 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

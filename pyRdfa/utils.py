@@ -196,9 +196,12 @@ def return_XML(state, inode, base = True, xmlns = True) :
 	Get (recursively) the XML Literal content of a DOM Element Node. (Most of the processing is done
 	via a C{node.toxml} call of the xml minidom implementation.)
 
-	@param node: DOM Node
+	@param inode: DOM Node
 	@param state: L{pyRdfa.state.ExecutionContext}
 	@param base: whether the base element should be added to the output
+	@type base: Boolean
+	@param xmlns: whether the namespace declarations should be repeated in the generated node
+	@type xmlns: Boolean
 	@return: string
 	"""
 	node = inode.cloneNode(True)
