@@ -243,10 +243,10 @@ class ExecutionContext :
 				if len(lang) != 0 :
 					self.lang = lang
 				else :
-					self.lang = None
-			# check a posible warnings, too
-			if (lang != None and xmllang != None and lang != xmllang) or (lang == None and xmllang != None and self.options.host_language in [ HostLanguage.xhtml5, HostLanguage.html5 ]) :
-				self.options.add_warning(err_lang, node=self.node.nodeName)
+					self.lang = None					
+			# Ideally, a warning should be generated if lang and xmllang are both present with different values. But
+			# the HTML5 Parser does its magic by overriding a lang value if xmllang is present, so the potential
+			# error situations are simply swallowed...
 				
 		elif self.options.host_language in accept_xml_lang and node.hasAttribute("xml:lang") :
 				self.lang = node.getAttribute("xml:lang").lower()
