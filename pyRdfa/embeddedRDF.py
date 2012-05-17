@@ -10,8 +10,9 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @version: $Id: embeddedRDF.py,v 1.9 2012/03/23 14:06:25 ivan Exp $
 """
 
-from StringIO	 import StringIO
-from pyRdfa.host import HostLanguage, accept_embedded_rdf_xml, accept_embedded_turtle
+from StringIO	  import StringIO
+from pyRdfa.host  import HostLanguage, accept_embedded_rdf_xml, accept_embedded_turtle
+from pyRdfa.utils import return_XML
 import re, sys
 
 def handle_embeddedRDF(node, graph, state) :
@@ -66,8 +67,14 @@ def handle_embeddedRDF(node, graph, state) :
 					state.options.add_error("Embedded Turtle content could not be parsed (problems with %s?); ignored" % value)
 			return True
 		elif state.options.host_language in accept_embedded_rdf_xml and node.localName == "RDF" and node.namespaceURI == "http://www.w3.org/1999/02/22-rdf-syntax-ns#" :
-			node.setAttribute("xml:base",state.base)
-			rdf = StringIO(node.toxml())
+			#node.setAttribute("xml:base",state.base)
+			# the namespace declarations should be added to the node; care should be taken not to override locally defined
+			# declarations, though.
+			#for prefix in state.term_or_curie.xmlns :
+			#	if not node.hasAttribute("xmlns:%s" % prefix) :
+			#		node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
+			#rdf = StringIO(node.toxml())
+			rdf = StringIO(return_XML(state, node))
 			try :
 				graph.parse(rdf)
 			except :

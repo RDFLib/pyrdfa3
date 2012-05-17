@@ -31,8 +31,8 @@ else :
 	from rdflib.RDF	    import RDFNS as ns_rdf
 	from rdflib.Literal import XSDToPython
 
-from pyRdfa	import IncorrectBlankNodeUsage, IncorrectLiteral, err_no_blank_node, ns_xsd 
-from pyRdfa.utils      import has_one_of_attributes
+from pyRdfa	           import IncorrectBlankNodeUsage, IncorrectLiteral, err_no_blank_node, ns_xsd 
+from pyRdfa.utils      import has_one_of_attributes, return_XML
 from pyRdfa.host.html5 import handled_time_types
 
 XMLLiteral = ns_rdf["XMLLiteral"]
@@ -232,32 +232,17 @@ class ProcessProperty :
 	
 	def _get_XML_literal(self, Pnode) :
 		"""
-		Get (recursively) the XML Literal content of a DOM Node. (Most of the processing is done
-		via a C{node.toxml} call of the xml minidom implementation.)
+		Get (recursively) the XML Literal content of a DOM Node. 
 	
 		@param Pnode: DOM Node
 		@return: string
-		"""
-					
+		"""	
 		rc = ""		
 		for node in Pnode.childNodes:
 			if node.nodeType == node.TEXT_NODE:
 				rc = rc + self._putBackEntities(node.data)
 			elif node.nodeType == node.ELEMENT_NODE :
-				# Decorate the element with namespaces and lang values
-				#for prefix in prefixes :
-				#	if prefix in state.term_or_curie.xmlns and not node.hasAttribute("xmlns:%s" % prefix) :
-				#		node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
-				for prefix in self.state.term_or_curie.xmlns :
-					if not node.hasAttribute("xmlns:%s" % prefix) :
-						node.setAttribute("xmlns:%s" % prefix,"%s" % self.state.term_or_curie.xmlns[prefix])
-				# Set the default namespace, if not done (and is available)
-				if not node.getAttribute("xmlns") and self.state.defaultNS != None :
-					node.setAttribute("xmlns", self.state.defaultNS)
-				# Get the lang, if necessary
-				if not node.getAttribute("xml:lang") and self.state.lang != None :
-					node.setAttribute("xml:lang", self.state.lang)
-				rc = rc + node.toxml()
+				rc = rc + return_XML(self.state, node, base = False)
 		return rc
 	# end getXMLLiteral
 	

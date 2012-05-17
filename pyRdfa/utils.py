@@ -189,7 +189,32 @@ def traverse_tree(node, func) :
 	for n in node.childNodes :
 		if n.nodeType == node.ELEMENT_NODE :
 			traverse_tree(n, func)
-			
+
+#########################################################################################################
+def return_XML(state, node, base = True) :
+	"""
+	Get (recursively) the XML Literal content of a DOM Element Node. (Most of the processing is done
+	via a C{node.toxml} call of the xml minidom implementation.)
+
+	@param node: DOM Node
+	@param state: L{pyRdfa.state.ExecutionContext}
+	@param base: whether the base element should be added to the output
+	@return: string
+	"""
+	# Decorate the element with namespaces.lang values and, optionally, base
+	if base :
+		node.setAttribute("xml:base",state.base)
+	for prefix in state.term_or_curie.xmlns :
+		if not node.hasAttribute("xmlns:%s" % prefix) :
+			node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
+	# Set the default namespace, if not done (and is available)
+	if not node.getAttribute("xmlns") and state.defaultNS != None :
+		node.setAttribute("xmlns", state.defaultNS)
+	# Get the lang, if necessary
+	if not node.getAttribute("xml:lang") and state.lang != None :
+		node.setAttribute("xml:lang", state.lang)
+	return node.toxml()
+
 #########################################################################################################
 
 def dump(node) :
