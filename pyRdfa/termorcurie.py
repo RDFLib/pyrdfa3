@@ -44,7 +44,7 @@ else :
 
 from pyRdfa.options			import Options
 from pyRdfa.utils 			import quote_URI, URIOpener
-from pyRdfa.host 			import MediaTypes, HostLanguage, predefined_1_0_rel
+from pyRdfa.host 			import MediaTypes, HostLanguage, predefined_1_0_rel, warn_xmlns_usage
 from pyRdfa					import IncorrectPrefixDefinition, RDFA_VOCAB, UnresolvableReference
 from pyRdfa					import ns_rdfa
 
@@ -243,7 +243,7 @@ class TermOrCurie :
 				# yep, there is a namespace setting
 				prefix = attr.localName
 				if prefix != "" : # exclude the top level xmlns setting...
-					if state.rdfa_version >= "1.1" :
+					if state.rdfa_version >= "1.1" and state.options.host_language in warn_xmlns_usage :
 						state.options.add_warning(err_xmlns_deprecated % prefix, IncorrectPrefixDefinition, node=state.node.nodeName)
 					if prefix == "_" :
 						state.options.add_warning(err_bnode_local_prefix, IncorrectPrefixDefinition, node=state.node.nodeName)
