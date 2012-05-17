@@ -191,7 +191,7 @@ def traverse_tree(node, func) :
 			traverse_tree(n, func)
 
 #########################################################################################################
-def return_XML(state, inode, base = True) :
+def return_XML(state, inode, base = True, xmlns = True) :
 	"""
 	Get (recursively) the XML Literal content of a DOM Element Node. (Most of the processing is done
 	via a C{node.toxml} call of the xml minidom implementation.)
@@ -205,15 +205,22 @@ def return_XML(state, inode, base = True) :
 	# Decorate the element with namespaces.lang values and, optionally, base
 	if base :
 		node.setAttribute("xml:base",state.base)
-	for prefix in state.term_or_curie.xmlns :
-		if not node.hasAttribute("xmlns:%s" % prefix) :
-			node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
-	# Set the default namespace, if not done (and is available)
-	if not node.getAttribute("xmlns") and state.defaultNS != None :
-		node.setAttribute("xmlns", state.defaultNS)
+	if xmlns :
+		for prefix in state.term_or_curie.xmlns :
+			if not node.hasAttribute("xmlns:%s" % prefix) :
+				node.setAttribute("xmlns:%s" % prefix,"%s" % state.term_or_curie.xmlns[prefix])
+		# Set the default namespace, if not done (and is available)
+		if not node.getAttribute("xmlns") and state.defaultNS != None :
+			node.setAttribute("xmlns", state.defaultNS)
 	# Get the lang, if necessary
-	if not node.getAttribute("xml:lang") and state.lang != None :
-		node.setAttribute("xml:lang", state.lang)
+	if state.lang :
+		if state.options.host_language in [ HostLanguage.xhtml, HostLanguage.xhtml5, HostLanguage.html5 ] :
+			if not node.getAttribute("lang") :
+				node.setAttribute("lang", state.lang)
+		else :
+			if not node.getAttribute("xml:lang") :
+				node.setAttribute("xml:lang", state.lang)
+	
 	return node.toxml()
 
 #########################################################################################################

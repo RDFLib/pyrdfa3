@@ -35,7 +35,8 @@ from pyRdfa	           import IncorrectBlankNodeUsage, IncorrectLiteral, err_no_
 from pyRdfa.utils      import has_one_of_attributes, return_XML
 from pyRdfa.host.html5 import handled_time_types
 
-XMLLiteral = ns_rdf["XMLLiteral"]
+XMLLiteral  = ns_rdf["XMLLiteral"]
+HTMLLiteral = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML") 
 
 class ProcessProperty :
 	"""Generate the value for C{@property} taking into account datatype, etc.
@@ -121,6 +122,8 @@ class ProcessProperty :
 				if dtset :
 					if datatype == XMLLiteral :
 						object = Literal(self._get_XML_literal(self.node), datatype=XMLLiteral)
+					elif datatype == HTMLLiteral :
+						object = Literal(self._get_HTML_literal(self.node), datatype=HTMLLiteral)						
 					else :
 						object = self._create_Literal(self._get_literal(self.node), datatype=datatype, lang=lang)
 				else :
@@ -174,6 +177,8 @@ class ProcessProperty :
 				# explicit XML Literal
 				if datatype == XMLLiteral :
 					object = Literal(self._get_XML_literal(self.node),datatype=XMLLiteral)
+				elif datatype == HTMLLiteral :
+						object = Literal(self._get_HTML_literal(self.node), datatype=HTMLLiteral)						
 				else :
 					object = self._create_Literal(self._get_literal(self.node), datatype=datatype, lang=lang)
 			else :
@@ -243,6 +248,22 @@ class ProcessProperty :
 				rc = rc + self._putBackEntities(node.data)
 			elif node.nodeType == node.ELEMENT_NODE :
 				rc = rc + return_XML(self.state, node, base = False)
+		return rc
+	# end getXMLLiteral
+
+	def _get_HTML_literal(self, Pnode) :
+		"""
+		Get (recursively) the XML Literal content of a DOM Node. 
+	
+		@param Pnode: DOM Node
+		@return: string
+		"""	
+		rc = ""		
+		for node in Pnode.childNodes:
+			if node.nodeType == node.TEXT_NODE:
+				rc = rc + self._putBackEntities(node.data)
+			elif node.nodeType == node.ELEMENT_NODE :
+				rc = rc + return_XML(self.state, node, base = False, xmlns = False )
 		return rc
 	# end getXMLLiteral
 	
