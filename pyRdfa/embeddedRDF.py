@@ -7,7 +7,7 @@ by U{SVG 1.2 Tiny<http://www.w3.org/TR/SVGMobile12/>}.
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: embeddedRDF.py,v 1.11 2012/05/17 15:07:19 ivan Exp $
+@version: $Id: embeddedRDF.py,v 1.14 2012/05/18 15:31:13 ivan Exp $
 """
 
 from StringIO	  import StringIO
@@ -62,6 +62,7 @@ def handle_embeddedRDF(node, graph, state) :
 				rdf = StringIO(content)
 				try :
 					graph.parse(rdf, format="n3", publicID = state.base)
+					state.options.add_info("The output graph includes triples coming from an embedded Turtle script")
 				except :
 					(type,value,traceback) = sys.exc_info()
 					state.options.add_error("Embedded Turtle content could not be parsed (problems with %s?); ignored" % value)
@@ -70,6 +71,7 @@ def handle_embeddedRDF(node, graph, state) :
 			rdf = StringIO(return_XML(state, node))
 			try :
 				graph.parse(rdf)
+				state.options.add_info("The output graph includes triples coming from an embedded RDF/XML subtree")
 			except :
 				(type,value,traceback) = sys.exc_info()
 				state.options.add_error("Embedded RDF/XML content could not parsed (problems with %s?); ignored" % value)

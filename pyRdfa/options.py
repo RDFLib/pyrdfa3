@@ -146,7 +146,7 @@ class Options :
 					   output_processor_graph = False,
 					   space_preserve         = True,
 					   transformers           = [],
-					   embedded_rdf           = False,
+					   embedded_rdf           = True,
 					   vocab_expansion        = False,
 					   vocab_cache            = True,
 					   vocab_cache_report     = False,
