@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.3 2012/05/04 08:50:31 ivan Exp $
-$Date: 2012/05/04 08:50:31 $
+$Id: __init__.py,v 1.5 2012/05/19 14:48:17 ivan Exp $
+$Date: 2012/05/19 14:48:17 $
 """
 __version__ = "3.0"
 
@@ -39,7 +39,13 @@ def top_about(root, options, state) :
 	from pyRdfa.utils import has_one_of_attributes
 	
 	if not has_one_of_attributes(root, "about") :
-		root.setAttribute("about","")
+		# The situation is a bit complicated: if a @resource is present without anything else, then it sets
+		# the subject, ie, should be accepted...
+		if has_one_of_attributes(root, "resource", "href", "src") :
+			if has_one_of_attributes(root, "rel", "rev") :
+				root.setAttribute("about","")
+		else :
+			root.setAttribute("about","")
 		
 	if options.host_language in [ HostLanguage.xhtml, HostLanguage.html5, HostLanguage.xhtml5 ] :
 		if state.rdfa_version >= "1.1" :
