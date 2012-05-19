@@ -27,8 +27,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.13 2012/05/11 09:19:33 ivan Exp $
-$Date: 2012/05/11 09:19:33 $
+$Id: __init__.py,v 1.15 2012/05/19 14:17:30 ivan Exp $
+$Date: 2012/05/19 14:17:30 $
 """
 __version__ = "3.0"
 
@@ -119,6 +119,7 @@ preferred_suffixes = {
 	".n3"		: MediaTypes.turtle,
 	".owl"		: MediaTypes.rdfxml,
 	".html"		: MediaTypes.html,
+	".shtml"    : MediaTypes.html,
 	".xhtml"	: MediaTypes.xhtml,
 	".svg"		: MediaTypes.svg,
 	".smil"		: MediaTypes.smil,
