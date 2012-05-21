@@ -19,8 +19,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.7 2012/03/23 14:06:25 ivan Exp $
-$Date: 2012/03/23 14:06:25 $
+$Id: termorcurie.py,v 1.9 2012/05/21 15:27:07 ivan Exp $
+$Date: 2012/05/21 15:27:07 $
 """
 
 import re, sys
@@ -112,15 +112,20 @@ class InitialContext :
 		if state.rdfa_version < "1.1" or top_level == False :
 			return
 		
-		from initialcontext		import initial_context  as context_data
-		from host 				import initial_contexts as context_ids
+		from initialcontext		import initial_context    as context_data
+		from host 				import initial_contexts   as context_ids
+		from host				import default_vocabulary
+
 		for id in context_ids[state.options.host_language] :
 			# This gives the id of a initial context, valid for this media type:
 			data = context_data[id]
 			
 			# Merge the context data with the overall definition
-			if data.vocabulary != "" :
-				self.vocabulary = data.vocabulary				
+			if state.options.host_language in default_vocabulary :
+				self.vocabulary = default_vocabulary[state.options.host_language]
+			elif data.vocabulary != "" :
+				self.vocabulary = data.vocabulary
+
 			for key in data.terms :
 				self.terms[key] = URIRef(data.terms[key])
 			for key in data.ns :

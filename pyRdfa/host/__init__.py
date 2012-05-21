@@ -24,11 +24,13 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var host_dom_transforms: dictionary mapping a host language to an array of methods that are invoked at the beginning of the parsing process for a specific node. That function can do a last minute change on that DOM node, eg, adding or modifying an attribute. The method's signature is (node, state), where node is the DOM node, and state is the L{Execution context<pyRdfa.state.ExecutionContext>}.
 @var predefined_1_0_rel: terms that are hardcoded for HTML+RDF1.0 and replace the initial context for that version
 @var beautifying_prefixes: this is really just to make the output more attractive: for each media type a dictionary of prefix-URI pairs that can be used to make the terms look better...
+@var default_vocabulary: as its name suggests, default @vocab value for a specific host language
+
 """
 
 """
-$Id: __init__.py,v 1.15 2012/05/19 14:17:30 ivan Exp $
-$Date: 2012/05/19 14:17:30 $
+$Id: __init__.py,v 1.16 2012/05/21 15:28:20 ivan Exp $
+$Date: 2012/05/21 15:28:20 $
 """
 __version__ = "3.0"
 
@@ -46,8 +48,7 @@ class HostLanguage :
 	
 # initial contexts for host languages
 initial_contexts = {
-	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1",
-							   "http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"],
+	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"],
 	HostLanguage.xhtml5		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.html5 		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 	HostLanguage.rdfa_core 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
@@ -64,7 +65,10 @@ beautifying_prefixes = {
 	},	
 	HostLanguage.xhtml5	: {
 		"xhv" : "http://www.w3.org/1999/xhtml/vocab#"
-	},	
+	},
+	HostLanguage.atom : {
+		"atomrel" : "http://www.iana.org/assignments/relation/"
+	}
 }
 
 
@@ -80,6 +84,10 @@ host_dom_transforms = {
 	HostLanguage.atom   : [atom_add_entry_type],
 	HostLanguage.html5  : [html5_extra_attributes, remove_rel],
 	HostLanguage.xhtml5 : [html5_extra_attributes, remove_rel]
+}
+
+default_vocabulary = {
+	HostLanguage.atom : "http://www.iana.org/assignments/relation/"
 }
 
 predefined_1_0_rel  = ['alternate', 'appendix', 'cite', 'bookmark', 'chapter', 'contents',

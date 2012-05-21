@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: atom.py,v 1.1 2011/08/12 10:05:55 ivan Exp $
-$Date: 2011/08/12 10:05:55 $
+$Id: atom.py,v 1.2 2012/05/21 15:28:20 ivan Exp $
+$Date: 2012/05/21 15:28:20 $
 """
 
 def atom_add_entry_type(node, state) :
@@ -22,5 +22,8 @@ def atom_add_entry_type(node, state) :
 	@param state: current state
 	@type state: L{Execution context<pyRdfa.state.ExecutionContext>}
 	"""
-	if node.tagName == "entry" and node.hasAttribute("typeof") == False :
+	def res_set(node) :	
+		return True in [ node.hasAttribute(a) for a in ["resource", "about", "href", "src"] ]
+	
+	if node.tagName == "entry" and not res_set(node) and node.hasAttribute("typeof") == False :
 		node.setAttribute("typeof","")
