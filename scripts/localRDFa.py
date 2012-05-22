@@ -9,7 +9,7 @@ import sys, getopt, platform
 sys.path.insert(0, "..")
 
 from pyRdfa 									import pyRdfa
-from pyRdfa.transform.metaname			  	import meta_transform
+from pyRdfa.transform.metaname					import meta_transform
 from pyRdfa.transform.OpenID					import OpenID_transform
 from pyRdfa.transform.DublinCore				import DC_transform
 from pyRdfa.transform.lite 						import lite_prune
