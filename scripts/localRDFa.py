@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Run the pyRdfa package locally, ie, on a local file
 """
