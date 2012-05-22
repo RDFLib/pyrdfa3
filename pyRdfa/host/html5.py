@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.8 2012/05/11 09:19:07 ivan Exp $
-$Date: 2012/05/11 09:19:07 $
+$Id: html5.py,v 1.9 2012/05/22 12:29:33 ivan Exp $
+$Date: 2012/05/22 12:29:33 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
@@ -174,7 +174,7 @@ def html5_extra_attributes(node, state) :
 		#return re.sub(r'(\r| |\n|\t)+',"",rc).strip()
 	# end getLiteral
 	
-	if node.tagName == "data" and node.hasAttribute("value")  :
+	if node.hasAttribute("value")  :
 		# state.supress_lang = True
 		node.setAttribute("content", node.getAttribute("value"))
 
