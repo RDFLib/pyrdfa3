@@ -285,7 +285,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 		if s == None and o == None :
 			# This is an encoded version of a hanging rel for a collection:
 			incoming_state.add_to_list_mapping( p, current_subject )
-		else :
+		elif not node.hasAttribute("inlist") :
 			if s == None : s = current_subject
 			if o == None : o = current_subject
 			graph.add((s,p,o))
