@@ -811,7 +811,7 @@ def processURI(uri, outputFormat, form={}) :
 		import cgi
 		
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s \n\n' % h.http_code
-		retval += "<html>\n"		
+		retval += "<html>\n"
 		retval += "<head>\n"
 		retval += "<title>HTTP Error in distilling RDFa content</title>\n"
 		retval += "</head><body>\n"
@@ -830,7 +830,7 @@ def processURI(uri, outputFormat, form={}) :
 		import StringIO
 
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s\n\n' % processor.http_status
-		retval += "<html>\n"		
+		retval += "<html>\n"
 		retval += "<head>\n"
 		retval += "<title>Exception in RDFa processing</title>\n"
 		retval += "</head><body>\n"

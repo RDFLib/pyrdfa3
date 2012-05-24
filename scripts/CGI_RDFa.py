@@ -62,7 +62,7 @@ else :
 		print "</body>"
 		print "</html>"
 		sys.exit(1)
-	
+
 	try :
 		#uri = form["uri"].value
 		uri = form.getfirst("uri")
@@ -100,5 +100,3 @@ else :
 			format = "turtle"
 		retval = processURI(uri, format, form)
 		print retval
-
-
