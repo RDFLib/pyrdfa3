@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.13 2012/03/23 14:06:25 ivan Exp $
-$Date: 2012/03/23 14:06:25 $
+$Id: parse.py,v 1.14 2012/05/24 07:50:04 ivan Exp $
+$Date: 2012/05/24 07:50:04 $
 """
 
 import sys
@@ -99,6 +99,10 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	# namespaces and lang
 	state = None
 	state = ExecutionContext(node, graph, inherited_state=incoming_state)
+	
+	#---------------------------------------------------------------------------------
+	# Handling the role attribute is pretty much orthogonal to everything else...
+	handle_role_attribute(node, graph, state)
 
 	#---------------------------------------------------------------------------------
 	# Handle the special case for embedded RDF, eg, in SVG1.2. 
@@ -333,6 +337,10 @@ def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	state = ExecutionContext(node, graph, inherited_state=incoming_state)
 
 	#---------------------------------------------------------------------------------
+	# Handling the role attribute is pretty much orthogonal to everything else...
+	handle_role_attribute(node, graph, state)
+
+	#---------------------------------------------------------------------------------
 	# Handle the special case for embedded RDF, eg, in SVG1.2. 
 	# This may add some triples to the target graph that does not originate from RDFa parsing
 	# If the function return TRUE, that means that an rdf:RDF has been found. No
@@ -468,4 +476,36 @@ def _parse_1_0(node, graph, parent_object, incoming_state, parent_incomplete_tri
 	# -------------------------------------------------------------------
 	return
 
+
+#######################################################################
+# Handle the role attribute
+def handle_role_attribute(node, graph, state) :
+	"""
+	Handling the role attribute, according to http://www.w3.org/TR/role-attribute/#using-role-in-conjunction-with-rdfa
+	@param node: the DOM node to handle
+	@param graph: the RDF graph
+	@type graph: RDFLib's Graph object instance
+	@param state: the inherited state (namespaces, lang, etc.)
+	@type state: L{state.ExecutionContext}
+	"""
+	if node.hasAttribute("role") :
+		if node.hasAttribute("id") :
+			id = node.getAttribute("id").strip()
+			subject = URIRef(state.base + '#' + id)
+		else :
+			subject = BNode()
+		predicate = URIRef('http://www.w3.org/1999/xhtml/vocab#role')
+		values = node.getAttribute("role").strip().split()
+		for object in values :
+			graph.add((subject, predicate, Literal(object)))
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
