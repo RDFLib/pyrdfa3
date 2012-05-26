@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.14 2012/05/24 07:50:04 ivan Exp $
-$Date: 2012/05/24 07:50:04 $
+$Id: parse.py,v 1.15 2012/05/26 16:21:09 ivan Exp $
+$Date: 2012/05/26 16:21:09 $
 """
 
 import sys
@@ -495,9 +495,8 @@ def handle_role_attribute(node, graph, state) :
 		else :
 			subject = BNode()
 		predicate = URIRef('http://www.w3.org/1999/xhtml/vocab#role')
-		values = node.getAttribute("role").strip().split()
-		for object in values :
-			graph.add((subject, predicate, Literal(object)))
+		for object in state.getURI("role") :
+			graph.add((subject, predicate, object))
 	
 	
 	

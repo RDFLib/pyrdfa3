@@ -17,8 +17,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.16 2012/04/23 10:39:19 ivan Exp $
-$Date: 2012/04/23 10:39:19 $
+$Id: state.py,v 1.18 2012/05/26 16:20:02 ivan Exp $
+$Date: 2012/05/26 16:20:02 $
 """
 import sys
 (py_v_major, py_v_minor, py_v_micro, py_v_final, py_v_serial) = sys.version_info
@@ -90,7 +90,7 @@ class ExecutionContext :
 	"""
 
 	# list of attributes that allow for lists of values and should be treated as such	
-	_list = [ "rel", "rev", "property", "typeof" ]
+	_list = [ "rel", "rev", "property", "typeof", "role" ]
 	# mapping table from attribute name to the exact method to retrieve the URI(s).
 	_resource_type = {}
 	
@@ -135,6 +135,7 @@ class ExecutionContext :
 				"datatype"	:	ExecutionContext._TERMorCURIEorAbsURI,
 				"typeof"	:	ExecutionContext._TERMorCURIEorAbsURI,
 				"property"	:	ExecutionContext._TERMorCURIEorAbsURI,
+				"role"		:	ExecutionContext._TERMorCURIEorAbsURI,
 			}	
 		#-----------------------------------------------------------------
 		self.node = node
