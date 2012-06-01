@@ -220,9 +220,11 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="pyRdfa.host-module.html#beautifying_prefixes" class="summary-name">beautifying_prefixes</a> = <code title="{'HTML5+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'},
+        <a href="pyRdfa.host-module.html#beautifying_prefixes" class="summary-name">beautifying_prefixes</a> = <code title="{'Atom+RDFa': {'atomrel': 'http://www.iana.org/assignments/relation/'}\
+,
+ 'HTML5+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'},
  'XHTML+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'},
- 'XHTML5+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'}}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.o</code><code class="variable-ellipsis">...</code></code><br />
+ 'XHTML5+RDFa': {'xhv': 'http://www.w3.org/1999/xhtml/vocab#'}}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">atomrel</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.i</code><code class="variable-ellipsis">...</code></code><br />
       this is really just to make the output more attractive: for each 
       media type a dictionary of prefix-URI pairs that can be used to make 
       the terms look better...
@@ -288,6 +290,15 @@ butes, remove_rel]}">{HostLanguage.atom: [atom_add_entry_type<code class="variab
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
+        <a href="pyRdfa.host-module.html#default_vocabulary" class="summary-name">default_vocabulary</a> = <code title="{'Atom+RDFa': 'http://www.iana.org/assignments/relation/'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.iana.org/assign</code><code class="variable-ellipsis">...</code></code><br />
+      as its name suggests, default @vocab value for a specific host 
+      language
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
         <a href="pyRdfa.host-module.html#predefined_1_0_rel" class="summary-name">predefined_1_0_rel</a> = <code title="['alternate',
  'appendix',
  'cite',
@@ -325,8 +336,8 @@ butes, remove_rel]}">{HostLanguage.atom: [atom_add_entry_type<code class="variab
  '.nt': 'text/plain',
  '.owl': 'application/rdf+xml',
  '.rdf': 'application/rdf+xml',
+ '.shtml': 'text/html',
  '.smil': 'application/smil+xml',
- '.svg': 'application/svg+xml',
 ..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">.atom</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/atom+xml</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">.html</code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code><br />
       mapping from preferred suffixes for media types; used if the file is 
       local, ie, there is not HTTP return value for the media type.
@@ -451,7 +462,9 @@ butes, remove_rel]}">{HostLanguage.atom: [atom_add_entry_type<code class="variab
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-op">,</code>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">atomrel</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.iana.org/assignments/relation/</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-op"></code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">HTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">XHTML+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">XHTML5+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">xhv</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.w3.org/1999/xhtml/vocab#</code><code class="variable-quote">'</code><code class="variable-group">}</code><code class="variable-group">}</code>
 </pre></td></tr></table>
@@ -562,6 +575,24 @@ butes, remove_rel]}
   </dl>
 </td></tr></table>
 </div>
+<a name="default_vocabulary"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">default_vocabulary</h3>
+  as its name suggests, default @vocab value for a specific host language
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">Atom+RDFa</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">http://www.iana.org/assignments/relation/</code><code class="variable-quote">'</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="predefined_1_0_rel"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -633,8 +664,8 @@ butes, remove_rel]}
  <code class="variable-quote">'</code><code class="variable-string">.nt</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">text/plain</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">.owl</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/rdf+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">.rdf</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/rdf+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.shtml</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">text/html</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">.smil</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/smil+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">.svg</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">application/svg+xml</code><code class="variable-quote">'</code><code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -668,7 +699,7 @@ butes, remove_rel]}
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu May 17 17:02:24 2012
+    Generated by Epydoc 3.0.1 on Fri Jun  1 11:29:06 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
