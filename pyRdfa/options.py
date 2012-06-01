@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.12 2012/03/23 14:06:25 ivan Exp $ $Date: 2012/03/23 14:06:25 $
+$Id: options.py,v 1.13 2012/05/31 10:58:40 ivan Exp $ $Date: 2012/05/31 10:58:40 $
 """
 
 import sys, datetime
@@ -43,11 +43,11 @@ class ProcessorGraph :
 	"""
 	def __init__(self) :
 		self.graph = Graph()
-		self.graph.bind("dcterm", ns_dc)
-		self.graph.bind("pyrdfa", ns_distill)
-		self.graph.bind("rdf",    ns_rdf)
-		self.graph.bind("rdfa",   ns_rdfa)
-		self.graph.bind("ht",     ns_ht)
+		self.graph.bind("dcterms", ns_dc)
+		self.graph.bind("pyrdfa",  ns_distill)
+		self.graph.bind("rdf",     ns_rdf)
+		self.graph.bind("rdfa",    ns_rdfa)
+		self.graph.bind("ht",      ns_ht)
 		
 	def add_triples(self, msg, top_class, info_class, context, node) :
 		"""
