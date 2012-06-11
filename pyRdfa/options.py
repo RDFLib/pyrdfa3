@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.13 2012/05/31 10:58:40 ivan Exp $ $Date: 2012/05/31 10:58:40 $
+$Id: options.py,v 1.15 2012/06/11 10:05:50 ivan Exp $ $Date: 2012/06/11 10:05:50 $
 """
 
 import sys, datetime
@@ -30,7 +30,7 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 
-from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language, predefined_1_0_rel
+from pyRdfa.host 	import HostLanguage, MediaTypes, content_to_host_language, predefined_1_0_rel, require_embedded_rdf
 from pyRdfa			import ns_xsd, ns_distill, ns_rdfa
 from pyRdfa 		import RDFA_Error, RDFA_Warning, RDFA_Info
 
@@ -174,6 +174,9 @@ class Options :
 			self.host_language = content_to_host_language[content_type]
 		else :
 			self.host_language = HostLanguage.rdfa_core
+			
+		if self.host_language in require_embedded_rdf :
+			self.embedded_rdf = True
 		
 	def __str__(self) :
 		retval = """Current options:
@@ -181,11 +184,11 @@ class Options :
 		output processor graph                 : %s
 		output default graph                   : %s
 		host language                          : %s
-		accept embedded turtle                 : %s
+		accept embedded RDF                    : %s
 		perfom semantic postprocessing         : %s
 		cache vocabulary graphs                : %s
 		"""
-		return retval % (self.space_preserve, self.output_processor_graph, self.output_default_graph, self.host_language, self.hturtle, self.rdfa_sem, self.vocab_cache)
+		return retval % (self.space_preserve, self.output_processor_graph, self.output_default_graph, self.host_language, self.embedded_rdf, self.rdfa_sem, self.vocab_cache)
 		
 	def reset_processor_graph(self):
 		"""Empty the processor graph. This is necessary if the same options is reused

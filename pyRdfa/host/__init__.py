@@ -21,6 +21,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var warn_xmlns_usage: list of host languages that should generate a warning for the usage of @xmlns (for RDFa 1.1)
 @var accept_embedded_rdf_xml: list of host languages that might also include RDF data using an embedded RDF/XML (e.g., SVG). That RDF data may be merged with the output
 @var accept_embedded_turtle: list of host languages that might also include RDF data using a C{script} element. That RDF data may be merged with the output
+@var require_embedded_rdf: list of languages that must accept embedded RDF, ie, the corresponding option is irrelevant
 @var host_dom_transforms: dictionary mapping a host language to an array of methods that are invoked at the beginning of the parsing process for a specific node. That function can do a last minute change on that DOM node, eg, adding or modifying an attribute. The method's signature is (node, state), where node is the DOM node, and state is the L{Execution context<pyRdfa.state.ExecutionContext>}.
 @var predefined_1_0_rel: terms that are hardcoded for HTML+RDF1.0 and replace the initial context for that version
 @var beautifying_prefixes: this is really just to make the output more attractive: for each media type a dictionary of prefix-URI pairs that can be used to make the terms look better...
@@ -29,8 +30,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.16 2012/05/21 15:28:20 ivan Exp $
-$Date: 2012/05/21 15:28:20 $
+$Id: __init__.py,v 1.18 2012/06/11 10:14:53 ivan Exp $
+$Date: 2012/06/11 10:14:53 $
 """
 __version__ = "3.0"
 
@@ -48,12 +49,13 @@ class HostLanguage :
 	
 # initial contexts for host languages
 initial_contexts = {
-	HostLanguage.xhtml		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1", "http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"],
-	HostLanguage.xhtml5		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
-	HostLanguage.html5 		: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
-	HostLanguage.rdfa_core 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
-	HostLanguage.atom	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
-	HostLanguage.svg	 	: ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.xhtml      : ["http://www.w3.org/2011/rdfa-context/rdfa-1.1",
+                               "http://www.w3.org/2011/rdfa-context/xhtml-rdfa-1.1"],
+	HostLanguage.xhtml5     : ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.html5      : ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.rdfa_core  : ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.atom       : ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
+	HostLanguage.svg        : ["http://www.w3.org/2011/rdfa-context/rdfa-1.1"],
 }
 
 beautifying_prefixes = {
@@ -77,6 +79,10 @@ accept_xml_lang		= [ HostLanguage.rdfa_core, HostLanguage.atom, HostLanguage.svg
 
 accept_embedded_rdf_xml	= [ HostLanguage.svg, HostLanguage.rdfa_core ]
 accept_embedded_turtle	= [ HostLanguage.svg, HostLanguage.html5, HostLanguage.xhtml5, HostLanguage.xhtml ]
+
+# some languages, eg, SVG, require that embedded content should be combined with the default graph,
+# ie, it cannot be turned down by an option
+require_embedded_rdf    = [ HostLanguage.svg ]
 
 warn_xmlns_usage = [ HostLanguage.html5, HostLanguage.xhtml5, HostLanguage.xhtml]
 
@@ -103,6 +109,7 @@ class MediaTypes :
 	html	= 'text/html'
 	xhtml	= 'application/xhtml+xml'
 	svg		= 'application/svg+xml'
+	svgi	= 'image/svg+xml'
 	smil	= 'application/smil+xml'
 	atom	= 'application/atom+xml'
 	xml		= 'application/xml'
@@ -117,6 +124,7 @@ content_to_host_language = {
 	MediaTypes.xmlt		: HostLanguage.rdfa_core,
 	MediaTypes.smil		: HostLanguage.rdfa_core,
 	MediaTypes.svg		: HostLanguage.svg,
+	MediaTypes.svgi		: HostLanguage.svg,
 	MediaTypes.atom		: HostLanguage.atom,
 }
 

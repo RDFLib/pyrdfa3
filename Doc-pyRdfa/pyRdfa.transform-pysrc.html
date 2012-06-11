@@ -70,8 +70,8 @@
 <a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
 <a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"> </tt>
 <a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
-<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-string">$Id: __init__.py,v 1.6 2012/06/01 09:13:46 ivan Exp $</tt> </tt>
-<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-string">$Date: 2012/06/01 09:13:46 $</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-string">$Id: __init__.py,v 1.7 2012/06/11 09:42:49 ivan Exp $</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-string">$Date: 2012/06/11 09:42:49 $</tt> </tt>
 <a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
 <a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-name">__version__</tt> <tt class="py-op">=</tt> <tt class="py-string">"3.0"</tt> </tt>
 <a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
@@ -97,12 +97,12 @@
 pyRdfa.pyRdfa" class="py-name" href="#" onclick="return doclink('link-3', 'pyRdfa', 'link-3');">pyRdfa</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Package pyRdfa.host=pyRdfa.host-module.html"><a title="pyRdfa.host" class="py-name" href="#" onclick="return doclink('link-4', 'host', 'link-4');">host</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name" targets="Class pyRdfa.host.HostLanguage=pyRdfa.host.HostLanguage-class.html"><a title="pyRdfa.host.HostLanguage" class="py-name" href="#" onclick="return doclink('link-5', 'HostLanguage', 'link-5');">HostLanguage</a></tt> </tt>
 <a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-keyword">from</tt> <tt id="link-6" class="py-name"><a title="pyRdfa
 pyRdfa.pyRdfa" class="py-name" href="#" onclick="return doclink('link-6', 'pyRdfa', 'link-3');">pyRdfa</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Module pyRdfa.utils=pyRdfa.utils-module.html"><a title="pyRdfa.utils" class="py-name" href="#" onclick="return doclink('link-7', 'utils', 'link-7');">utils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-8" class="py-name"><a title="pyRdfa.utils.has_one_of_attributes" class="py-name" href="#" onclick="return doclink('link-8', 'has_one_of_attributes', 'link-0');">has_one_of_attributes</a></tt> </tt>
-<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">         </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">                 </tt>
 <a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-9" class="py-name"><a title="pyRdfa.utils.has_one_of_attributes" class="py-name" href="#" onclick="return doclink('link-9', 'has_one_of_attributes', 'link-0');">has_one_of_attributes</a></tt><tt class="py-op">(</tt><tt class="py-name">root</tt><tt class="py-op">,</tt> <tt class="py-string">"about"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
 <a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">                <tt class="py-comment"># The situation is a bit complicated: if a @resource is present without anything else, then it sets</tt> </tt>
 <a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">                <tt class="py-comment"># the subject, ie, should be accepted...</tt> </tt>
 <a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt id="link-10" class="py-name"><a title="pyRdfa.utils.has_one_of_attributes" class="py-name" href="#" onclick="return doclink('link-10', 'has_one_of_attributes', 'link-0');">has_one_of_attributes</a></tt><tt class="py-op">(</tt><tt class="py-name">root</tt><tt class="py-op">,</tt> <tt class="py-string">"resource"</tt><tt class="py-op">,</tt> <tt class="py-string">"href"</tt><tt class="py-op">,</tt> <tt class="py-string">"src"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
-<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt id="link-11" class="py-name"><a title="pyRdfa.utils.has_one_of_attributes" class="py-name" href="#" onclick="return doclink('link-11', 'has_one_of_attributes', 'link-0');">has_one_of_attributes</a></tt><tt class="py-op">(</tt><tt class="py-name">root</tt><tt class="py-op">,</tt> <tt class="py-string">"rel"</tt><tt class="py-op">,</tt> <tt class="py-string">"rev"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt id="link-11" class="py-name"><a title="pyRdfa.utils.has_one_of_attributes" class="py-name" href="#" onclick="return doclink('link-11', 'has_one_of_attributes', 'link-0');">has_one_of_attributes</a></tt><tt class="py-op">(</tt><tt class="py-name">root</tt><tt class="py-op">,</tt> <tt class="py-string">"rel"</tt><tt class="py-op">,</tt> <tt class="py-string">"rev"</tt><tt class="py-op">,</tt><tt class="py-string">"property"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
 <a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">                                <tt class="py-name">root</tt><tt class="py-op">.</tt><tt class="py-name">setAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"about"</tt><tt class="py-op">,</tt><tt class="py-string">""</tt><tt class="py-op">)</tt> </tt>
 <a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt> <tt class="py-op">:</tt> </tt>
 <a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">                        <tt class="py-name">root</tt><tt class="py-op">.</tt><tt class="py-name">setAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"about"</tt><tt class="py-op">,</tt><tt class="py-string">""</tt><tt class="py-op">)</tt> </tt>
@@ -208,7 +208,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jun  1 11:29:07 2012
+    Generated by Epydoc 3.0.1 on Mon Jun 11 14:10:21 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

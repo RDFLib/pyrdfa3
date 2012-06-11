@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.9 2012/03/23 14:06:25 ivan Exp $
-$Date: 2012/03/23 14:06:25 $
+$Id: property.py,v 1.10 2012/05/17 15:02:48 ivan Exp $
+$Date: 2012/05/17 15:02:48 $
 """
 
 import re

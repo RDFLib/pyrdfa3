@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.15 2012/05/26 16:21:09 ivan Exp $
-$Date: 2012/05/26 16:21:09 $
+$Id: parse.py,v 1.16 2012/06/11 08:29:08 ivan Exp $
+$Date: 2012/06/11 08:29:08 $
 """
 
 import sys
@@ -285,7 +285,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 		if s == None and o == None :
 			# This is an encoded version of a hanging rel for a collection:
 			incoming_state.add_to_list_mapping( p, current_subject )
-		elif not node.hasAttribute("inlist") :
+		else :
 			if s == None : s = current_subject
 			if o == None : o = current_subject
 			graph.add((s,p,o))
