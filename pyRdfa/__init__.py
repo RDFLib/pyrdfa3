@@ -241,61 +241,60 @@ class pyRdfaError(Exception) :
 	pass
 
 # Error and Warning RDFS classes
-RDFA_Error					= ns_rdfa["Error"]
-RDFA_Warning				= ns_rdfa["Warning"]
-RDFA_Info					= ns_rdfa["Information"]
-NonConformantMarkup			= ns_rdfa["DocumentError"]
-UnresolvablePrefix			= ns_rdfa["UnresolvedCURIEPrefix"]
-UnresolvableReference		= ns_rdfa["UnresolvedCURIEReference"]
-UnresolvableTerm			= ns_rdfa["UnresolvedTerm"]
-VocabReferenceError			= ns_rdfa["VocabReferenceError"]
+RDFA_Error                  = ns_rdfa["Error"]
+RDFA_Warning                = ns_rdfa["Warning"]
+RDFA_Info                   = ns_rdfa["Information"]
+NonConformantMarkup         = ns_rdfa["DocumentError"]
+UnresolvablePrefix          = ns_rdfa["UnresolvedCURIEPrefix"]
+UnresolvableReference       = ns_rdfa["UnresolvedCURIEReference"]
+UnresolvableTerm            = ns_rdfa["UnresolvedTerm"]
+VocabReferenceError         = ns_rdfa["VocabReferenceError"]
 
-FileReferenceError			= ns_distill["FileReferenceError"]
-HTError						= ns_distill["HTTPError"]
-IncorrectPrefixDefinition 	= ns_distill["IncorrectPrefixDefinition"]
+FileReferenceError          = ns_distill["FileReferenceError"]
+HTError                     = ns_distill["HTTPError"]
+IncorrectPrefixDefinition   = ns_distill["IncorrectPrefixDefinition"]
 IncorrectBlankNodeUsage     = ns_distill["IncorrectBlankNodeUsage"]
-IncorrectLiteral	        = ns_distill["IncorrectLiteral"]
+IncorrectLiteral            = ns_distill["IncorrectLiteral"]
 
 # Error message texts
-err_no_blank_node					= "Blank node in %s position is not allowed; ignored"
+err_no_blank_node                    = "Blank node in %s position is not allowed; ignored"
 
-err_redefining_URI_as_prefix		= "'%s' a registered or an otherwise used URI scheme, but is defined as a prefix here; is this a mistake? (see, eg, http://en.wikipedia.org/wiki/URI_scheme or http://www.iana.org/assignments/uri-schemes.html for further information for most of the URI schemes)"
-err_xmlns_deprecated				= "The usage of 'xmlns' for prefix definition is deprecated; please use the 'prefix' attribute instead (definition for '%s')"
-err_bnode_local_prefix				= "The '_' local CURIE prefix is reserved for blank nodes, and cannot be defined as a prefix"
-err_col_local_prefix				= "The character ':' is not valid in a CURIE Prefix, and cannot be used in a prefix definition (definition for '%s')"
-err_missing_URI_prefix				= "Missing URI in prefix declaration for '%s' (in '%s')"
-err_invalid_prefix					= "Invalid prefix declaration '%s' (in '%s')"
-err_no_default_prefix				= "Default prefix cannot be changed (in '%s')"
-err_prefix_and_xmlns				= "@prefix setting for '%s' overrides the 'xmlns:%s' setting; may be a source of problem if same file is run through RDFa 1.0"
-err_non_ncname_prefix				= "Non NCNAME '%s' in prefix definition (in '%s'); ignored"
-err_absolute_reference				= "CURIE Reference part contains an authority part: %s (in '%s'); ignored"     
-err_query_reference					= "CURIE Reference query part contains an unauthorized character: %s (in '%s'); ignored"     
-err_fragment_reference				= "CURIE Reference fragment part contains an unauthorized character: %s (in '%s'); ignored"     
+err_redefining_URI_as_prefix        = "'%s' a registered or an otherwise used URI scheme, but is defined as a prefix here; is this a mistake? (see, eg, http://en.wikipedia.org/wiki/URI_scheme or http://www.iana.org/assignments/uri-schemes.html for further information for most of the URI schemes)"
+err_xmlns_deprecated                = "The usage of 'xmlns' for prefix definition is deprecated; please use the 'prefix' attribute instead (definition for '%s')"
+err_bnode_local_prefix              = "The '_' local CURIE prefix is reserved for blank nodes, and cannot be defined as a prefix"
+err_col_local_prefix                = "The character ':' is not valid in a CURIE Prefix, and cannot be used in a prefix definition (definition for '%s')"
+err_missing_URI_prefix              = "Missing URI in prefix declaration for '%s' (in '%s')"
+err_invalid_prefix                  = "Invalid prefix declaration '%s' (in '%s')"
+err_no_default_prefix               = "Default prefix cannot be changed (in '%s')"
+err_prefix_and_xmlns                = "@prefix setting for '%s' overrides the 'xmlns:%s' setting; may be a source of problem if same file is run through RDFa 1.0"
+err_non_ncname_prefix               = "Non NCNAME '%s' in prefix definition (in '%s'); ignored"
+err_absolute_reference              = "CURIE Reference part contains an authority part: %s (in '%s'); ignored"     
+err_query_reference                 = "CURIE Reference query part contains an unauthorized character: %s (in '%s'); ignored"     
+err_fragment_reference              = "CURIE Reference fragment part contains an unauthorized character: %s (in '%s'); ignored"     
+err_lang                            = "There is a problem with language setting; either both xml:lang and lang used on an element with different values, or, for (X)HTML5, only xml:lang is used."
+err_URI_scheme                      = "Unusual URI scheme used in <%s>; may that be a mistake, e.g., resulting from using an undefined CURIE prefix or an incorrect CURIE?"
+err_illegal_safe_CURIE              = "Illegal safe CURIE: %s; ignored"
+err_no_CURIE_in_safe_CURIE          = "Safe CURIE is used, but the value does not correspond to a defined CURIE: [%s]; ignored"
+err_undefined_terms                 = "'%s' is used as a term, but has not been defined as such; ignored"
+err_non_legal_CURIE_ref             = "Relative URI is not allowed in this position (or not a legal CURIE reference) '%s'; ignored"
+err_undefined_CURIE                 = "Undefined CURIE: '%s'; ignored"
 
-err_lang							= "There is a problem with language setting; either both xml:lang and lang used on an element with different values, or, for (X)HTML5, only xml:lang is used."
-err_URI_scheme						= "Unusual URI scheme used in <%s>; may that be a mistake, e.g., resulting from using an undefined CURIE prefix or an incorrect CURIE?"
-err_illegal_safe_CURIE				= "Illegal safe CURIE: %s; ignored"
-err_no_CURIE_in_safe_CURIE			= "Safe CURIE is used, but the value does not correspond to a defined CURIE: [%s]; ignored"
-err_undefined_terms					= "'%s' is used as a term, but has not been defined as such; ignored"
-err_non_legal_CURIE_ref				= "Relative URI is not allowed in this position (or not a legal CURIE reference) '%s'; ignored"
-err_undefined_CURIE					= "Undefined CURIE: '%s'; ignored"
-
-err_unusual_char_in_URI				= "Unusual character in uri: %s; possible error?"
+err_unusual_char_in_URI             = "Unusual character in uri: %s; possible error?"
 
 #############################################################################################
 
-from pyRdfa.state			import ExecutionContext
-from pyRdfa.parse			import parse_one_node
-from pyRdfa.options			import Options
-from pyRdfa.transform		import top_about, empty_safe_curie, vocab_for_role
-from pyRdfa.utils			import URIOpener
-from pyRdfa.host 			import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
+from pyRdfa.state            import ExecutionContext
+from pyRdfa.parse            import parse_one_node
+from pyRdfa.options          import Options
+from pyRdfa.transform        import top_about, empty_safe_curie, vocab_for_role
+from pyRdfa.utils            import URIOpener
+from pyRdfa.host             import HostLanguage, MediaTypes, preferred_suffixes, content_to_host_language
 
 # Environment variable used to characterize cache directories for RDFa vocabulary files. 
-CACHE_DIR_VAR		= "PyRdfaCacheDir"
+CACHE_DIR_VAR           = "PyRdfaCacheDir"
 
 # current "official" version of RDFa that this package implements. This can be changed at the invocation of the package
-rdfa_current_version	= "1.1"
+rdfa_current_version    = "1.1"
 
 # I removed schemes that would not appear as a prefix anyway, like iris.beep
 # http://en.wikipedia.org/wiki/URI_scheme seems to be a good source of information
@@ -809,7 +808,7 @@ def processURI(uri, outputFormat, form={}) :
 		import cgi
 		
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s \n\n' % h.http_code
-		retval += "<html>\n"
+		retval += "<html>\n"		
 		retval += "<head>\n"
 		retval += "<title>HTTP Error in distilling RDFa content</title>\n"
 		retval += "</head><body>\n"
@@ -828,7 +827,7 @@ def processURI(uri, outputFormat, form={}) :
 		import StringIO
 
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s\n\n' % processor.http_status
-		retval += "<html>\n"
+		retval += "<html>\n"		
 		retval += "<head>\n"
 		retval += "<title>Exception in RDFa processing</title>\n"
 		retval += "</head><body>\n"
@@ -859,5 +858,3 @@ def processURI(uri, outputFormat, form={}) :
 		retval +="</body>\n"
 		retval +="</html>\n"
 		return retval
-
-
