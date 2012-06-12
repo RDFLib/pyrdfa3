@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.16 2012/06/11 08:29:08 ivan Exp $
-$Date: 2012/06/11 08:29:08 $
+$Id: parse.py,v 1.17 2012/06/12 11:47:28 ivan Exp $
+$Date: 2012/06/12 11:47:28 $
 """
 
 import sys
@@ -173,7 +173,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 			current_subject = state.getURI("about")
 			if node.hasAttribute("typeof") : typed_resource = current_subject
 
-		# get_URI_ref may return None in case of an illegal CURIE, so
+		# getURI may return None in case of an illegal CURIE, so
 		# we have to be careful here, not use only an 'else'
 		if current_subject == None :
 			current_subject = parent_object
@@ -259,7 +259,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 			state.options.add_warning(err_no_blank_node % "rev", warning_type=IncorrectBlankNodeUsage, node=node.nodeName)
 
 	# ----------------------------------------------------------------------
-	# Generation of the literal values. The newSubject is the subject
+	# Generation of the @property values, including literals. The newSubject is the subject
 	# A particularity of property is that it stops the parsing down the DOM tree if an XML Literal is generated,
 	# because everything down there is part of the generated literal. 
 	if node.hasAttribute("property") :

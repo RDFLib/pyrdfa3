@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.10 2012/05/17 15:02:48 ivan Exp $
-$Date: 2012/05/17 15:02:48 $
+$Id: property.py,v 1.11 2012/06/12 11:47:11 ivan Exp $
+$Date: 2012/06/12 11:47:11 $
 """
 
 import re
@@ -80,13 +80,13 @@ class ProcessProperty :
 		# See if the target is _not_ a literal
 		irirefs      = ("resource", "href", "src")
 		noiri        = ("content", "datatype", "rel", "rev")
-		notypediri   = ("content", "datatype", "rel", "rev", "about")
+		notypediri   = ("content", "datatype", "rel", "rev", "about", "about_pruned")
 		if has_one_of_attributes(self.node, irirefs) and not has_one_of_attributes(self.node, noiri) :
 			# @href/@resource/@src takes the lead here...
 			object = self.state.getResource(irirefs)
-		elif has_one_of_attributes(self.node, "typeof") and not has_one_of_attributes(self.node, notypediri) and self.typed_resource != None :
-			# a @typeof creates a special branch in case the typed resource was set during parsing
-			object = self.typed_resource
+		elif self.node.hasAttribute("typeof") and not has_one_of_attributes(self.node, notypediri) and self.typed_resource != None :
+				# a @typeof creates a special branch in case the typed resource was set during parsing
+				object = self.typed_resource
 		else :
 			# We have to generate a literal
 			

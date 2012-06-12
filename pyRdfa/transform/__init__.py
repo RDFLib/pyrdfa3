@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.7 2012/06/11 09:42:49 ivan Exp $
-$Date: 2012/06/11 09:42:49 $
+$Id: __init__.py,v 1.8 2012/06/12 11:47:19 ivan Exp $
+$Date: 2012/06/12 11:47:19 $
 """
 __version__ = "3.0"
 
@@ -61,7 +61,9 @@ def top_about(root, options, state) :
 
 def empty_safe_curie(node, options, state) :
 	"""
-	Remove the attributes whose value is an empty safe curie.
+	Remove the attributes whose value is an empty safe curie. It also adds an 'artificial' flag, ie, an
+	attribute (called 'emptysc') into the node to signal that there _is_ an attribute with an ignored
+	safe curie value. The name of the attribute is 'about_pruned' or 'resource_pruned'.
 	
 	@param node: a DOM node for the top level element
 	@param options: invocation options
@@ -74,6 +76,7 @@ def empty_safe_curie(node, options, state) :
 			av = node.getAttribute(name)
 			if av == '[]' :
 				node.removeAttribute(name)
+				node.setAttribute(name+'_pruned','')
 				msg = "Attribute @%s uses an empty safe CURIE; the attribute is ignored" % name
 				options.add_warning(msg, node=node)
 				
