@@ -1,16 +1,17 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Run the pyRdfa package locally, ie, on a local file
 """
 # You may want to adapt this to your environment...
 import sys, getopt, platform
 
-sys.path.insert(0,"/Users/ivan/W3C/dev/2004/PythonLib-IH/rdfa-1.1")
+sys.path.insert(0, "..")
 
 from pyRdfa 									import pyRdfa
-from pyRdfa.transform.metaname              	import meta_transform
-from pyRdfa.transform.OpenID                	import OpenID_transform
-from pyRdfa.transform.DublinCore            	import DC_transform
+from pyRdfa.transform.metaname					import meta_transform
+from pyRdfa.transform.OpenID					import OpenID_transform
+from pyRdfa.transform.DublinCore				import DC_transform
 from pyRdfa.transform.lite 						import lite_prune
 
 from pyRdfa.options								import Options
@@ -21,9 +22,8 @@ extraTransformers = [
 	#DC_transform,
 	# meta_transform
 ]
-		
-###########################################	
 
+###########################################
 
 usageText="""Usage: %s -[vjxtnpzsb:g:ryle] [filename[s]]
 where:
@@ -50,23 +50,25 @@ The -g option may be unnecessary, the script tries to make a guess based on a de
 def usage() :
 	print usageText % sys.argv[0]
 
-format         			= "turtle"
-extras         			= []
-value          			= ""
-space_preserve 			= True
-base           			= ""
-value          			= []
-rdfOutput	   			= False
-output_default_graph 	= True
-output_processor_graph 	= True
-vocab_cache_report      = False
-refresh_vocab_cache     = False
-vocab_expansion         = False
-vocab_cache             = True
+format					= "turtle"
+extras					= []
+value					= ""
+space_preserve			= True
+base					= ""
+value					= []
+rdfOutput				= False
+output_default_graph	= True
+output_processor_graph	= True
+vocab_cache_report		= False
+refresh_vocab_cache		= False
+vocab_expansion			= False
+vocab_cache				= True
 embedded_rdf			= True
 
 try :
 	opts, value = getopt.getopt(sys.argv[1:],"vxetjnpzsb:g:ryl",['graph='])
+	if not opts:
+		sys.exit(1)
 	for o,a in opts:
 		if o == "-t" :
 			format = "turtle"
@@ -87,7 +89,7 @@ try :
 		elif o == "-l" :
 			extras.append(lite_prune)
 		elif o == "-r" :
-			vocab_cache_report = True			
+			vocab_cache_report = True
 		elif o == "-v" :
 			vocab_expansion = True
 		elif o == "-y" :
@@ -98,9 +100,9 @@ try :
 				output_processor_graph 	= True
 			elif a == "processor,default" or a == "default,processor" :
 				output_processor_graph 	= True
-			elif a == "default" :				
+			elif a == "default" :
 				output_default_graph 	= True
-				output_processor_graph 	= False			
+				output_processor_graph 	= False
 		else :
 			usage()
 			sys.exit(1)
@@ -108,15 +110,15 @@ except :
 	usage()
 	sys.exit(1)
 
-options = Options(output_default_graph = output_default_graph,
-				  output_processor_graph = output_processor_graph,
-				  space_preserve=space_preserve,
-				  transformers = extras,
-				  embedded_rdf = embedded_rdf,
-				  vocab_expansion = vocab_expansion,
-				  vocab_cache = vocab_cache,
-				  vocab_cache_report = vocab_cache_report,
-				  refresh_vocab_cache = refresh_vocab_cache
+options = Options(	output_default_graph = output_default_graph,
+					output_processor_graph = output_processor_graph,
+					space_preserve=space_preserve,
+					transformers = extras,
+					embedded_rdf = embedded_rdf,
+					vocab_expansion = vocab_expansion,
+					vocab_cache = vocab_cache,
+					vocab_cache_report = vocab_cache_report,
+					refresh_vocab_cache = refresh_vocab_cache
 )
 
 processor = pyRdfa(options, base)
@@ -124,4 +126,4 @@ if len(value) >= 1 :
 	print processor.rdf_from_sources(value, outputFormat = format, rdfOutput = rdfOutput)
 else :
 	print processor.rdf_from_source(sys.stdin, outputFormat = format, rdfOutput = rdfOutput)
-	
+
