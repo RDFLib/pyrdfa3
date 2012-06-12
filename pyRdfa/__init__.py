@@ -6,12 +6,12 @@ deployed, via a CGI front-end, on the U{W3C RDFa 1.1 Distiller page<http://www.w
 For details on RDFa, the reader should consult the U{RDFa Core 1.1<http://www.w3.org/TR/rdfa-core/>}, U{XHTML+RDFa1.1<http://www.w3.org/TR/2010/xhtml-rdfa>}, and the U{RDFa 1.1 Lite<http://www.w3.org/TR/rdfa-lite/>} documents.
 The U{RDFa 1.1 Primer<http://www.w3.org/TR/owl2-primer/>} may also prove helpful.
 
-This package can also be downloaded U{as a compressed tar file<http://dev.w3.org/2004/PythonLib-IH/dist/pyRdfa-3.tar.gz>}. The
+This package can also be downloaded U{from GitHub<https://github.com/RDFLib/pyrdfa3>}. The
 distribution also includes the CGI front-end and a separate utility script to be run locally.
 
 Note that this package is an updated version of a U{previous RDFa distiller<http://www.w3.org/2007/08/pyRdfa>} that was developed
 for RDFa 1.0. Although it reuses large portions of that code, it has been quite thoroughly rewritten, hence put in a completely
-different project.
+different project. (The version numbering has been continued, though, to avoid any kind of misunderstandings. This version has version numbers "3.0.0" or higher.)
 
 (Simple) Usage
 ==============
@@ -117,7 +117,7 @@ RDFa 1.1 vs. RDFa 1.0
 Unfortunately, RDFa 1.1 is I{not} backward compatible with RDFa 1.0, meaning that, in a few cases, the triples generated from
 an RDFa 1.1 source are not the same as for RDFa 1.0. (See the separate  U{section in the RDFa 1.1 specification<http://www.w3.org/TR/rdfa-core/#major-differences-with-rdfa-syntax-1.0>} for some further details.)
 
-This distiller’s default behavior is RDFa 1.1. However, if the source includes, in the top element of the file (e.g., the C{html} element) a C{@version} attribute whose value contains the C{RDFa 1.0} string, then the distiller will switch in RDFa 1.0 mode. (Although the C{@version} attribute is not required in RDFa 1.0, it is fairly commonly used.)
+This distiller’s default behavior is RDFa 1.1. However, if the source includes, in the top element of the file (e.g., the C{html} element) a C{@version} attribute whose value contains the C{RDFa 1.0} string, then the distiller switches to a RDFa 1.0 mode. (Although the C{@version} attribute is not required in RDFa 1.0, it is fairly commonly used.)
 
 Transformers
 ============
@@ -144,11 +144,9 @@ The user of the package may refer add these transformers to L{Options} instance.
  options = Options(transformers=[OpenID_transform])
  print pyRdfa(options=options).rdf_from_source('filename')
 
-
-
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up; 2.7 is preferred
-@requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred, it has a superior output serialization.
+@requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
 @requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the package.
 @requires: U{Ordered Dictionary (odict)<http://dev.pocoo.org/hg/sandbox/raw-file/tip/odict.py>}, needed only for the JSON-LD serialization if Python 2.6 or lower is used (Python 2.7 has a built in ordered list module). It is included in the distribution
@@ -164,7 +162,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
 """
 
-__version__ = "3.3.0"
+__version__ = "3.4.0"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'

@@ -73,8 +73,8 @@
 <a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
 <a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
 <a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
-<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-string">$Id: parse.py,v 1.16 2012/06/11 08:29:08 ivan Exp $</tt> </tt>
-<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-string">$Date: 2012/06/11 08:29:08 $</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-string">$Id: parse.py,v 1.17 2012/06/12 11:47:28 ivan Exp $</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-string">$Date: 2012/06/12 11:47:28 $</tt> </tt>
 <a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-string">"""</tt> </tt>
 <a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
 <a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
@@ -239,7 +239,7 @@ pyRdfa.host.html5" class="py-name" href="#" onclick="return doclink('link-28', '
 <a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">                        <tt class="py-name">current_subject</tt> <tt class="py-op">=</tt> <tt id="link-65" class="py-name"><a title="pyRdfa.state" class="py-name" href="#" onclick="return doclink('link-65', 'state', 'link-1');">state</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="pyRdfa.state.ExecutionContext.getURI" class="py-name" href="#" onclick="return doclink('link-66', 'getURI', 'link-57');">getURI</a></tt><tt class="py-op">(</tt><tt class="py-string">"about"</tt><tt class="py-op">)</tt> </tt>
 <a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">                        <tt class="py-keyword">if</tt> <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">hasAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"typeof"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> <tt class="py-name">typed_resource</tt> <tt class="py-op">=</tt> <tt class="py-name">current_subject</tt> </tt>
 <a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"> </tt>
-<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">                <tt class="py-comment"># get_URI_ref may return None in case of an illegal CURIE, so</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">                <tt class="py-comment"># getURI may return None in case of an illegal CURIE, so</tt> </tt>
 <a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">                <tt class="py-comment"># we have to be careful here, not use only an 'else'</tt> </tt>
 <a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">current_subject</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt> <tt class="py-op">:</tt> </tt>
 <a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">                        <tt class="py-name">current_subject</tt> <tt class="py-op">=</tt> <tt class="py-name">parent_object</tt> </tt>
@@ -325,7 +325,7 @@ pyRdfa.host.html5" class="py-name" href="#" onclick="return doclink('link-28', '
 <a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">                        <tt id="link-98" class="py-name"><a title="pyRdfa.state" class="py-name" href="#" onclick="return doclink('link-98', 'state', 'link-1');">state</a></tt><tt class="py-op">.</tt><tt id="link-99" class="py-name"><a title="pyRdfa.options" class="py-name" href="#" onclick="return doclink('link-99', 'options', 'link-24');">options</a></tt><tt class="py-op">.</tt><tt id="link-100" class="py-name"><a title="pyRdfa.options.Options.add_warning" class="py-name" href="#" onclick="return doclink('link-100', 'add_warning', 'link-91');">add_warning</a></tt><tt class="py-op">(</tt><tt id="link-101" class="py-name"><a title="pyRdfa.err_no_blank_node" class="py-name" href="#" onclick="return doclink('link-101', 'err_no_blank_node', 'link-15');">err_no_blank_node</a></tt> <tt class="py-op">%</tt> <tt class="py-string">"rev"</tt><tt class="py-op">,</tt> <tt class="py-name">warning_type</tt><tt class="py-op">=</tt><tt id="link-102" class="py-name"><a title="pyRdfa.IncorrectBlankNodeUsage" class="py-name" href="#" onclick="return doclink('link-102', 'IncorrectBlankNodeUsage', 'link-14');">IncorrectBlankNodeUsage</a></tt><tt class="py-op">,</tt> <tt class="py-name">node</tt><tt class="py-op">=</tt><tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">nodeName</tt><tt class="py-op">)</tt> </tt>
 <a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line"> </tt>
 <a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">        <tt class="py-comment"># ----------------------------------------------------------------------</tt> </tt>
-<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-comment"># Generation of the literal values. The newSubject is the subject</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-comment"># Generation of the @property values, including literals. The newSubject is the subject</tt> </tt>
 <a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">        <tt class="py-comment"># A particularity of property is that it stops the parsing down the DOM tree if an XML Literal is generated,</tt> </tt>
 <a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">        <tt class="py-comment"># because everything down there is part of the generated literal. </tt> </tt>
 <a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">node</tt><tt class="py-op">.</tt><tt class="py-name">hasAttribute</tt><tt class="py-op">(</tt><tt class="py-string">"property"</tt><tt class="py-op">)</tt> <tt class="py-op">:</tt> </tt>
@@ -596,7 +596,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jun 11 14:10:21 2012
+    Generated by Epydoc 3.0.1 on Tue Jun 12 14:44:23 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
