@@ -67,8 +67,6 @@ embedded_rdf           = True
 
 try :
 	opts, value = getopt.getopt(sys.argv[1:],"vxetjnpzsb:g:ryl",['graph='])
-	if not opts:
-		sys.exit(1)
 	for o,a in opts:
 		if o == "-t" :
 			format = "turtle"
