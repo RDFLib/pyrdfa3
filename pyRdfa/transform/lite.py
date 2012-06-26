@@ -5,8 +5,8 @@
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: lite.py,v 1.8 2012/05/04 08:50:31 ivan Exp $
-$Date: 2012/05/04 08:50:31 $
+@version: $Id: lite.py,v 1.9 2012/06/26 13:29:58 ivan Exp $
+$Date: 2012/06/26 13:29:58 $
 """
 
 non_lite_attributes = ["about","inlist","datatype","rev","rel"]
@@ -47,6 +47,6 @@ def lite_prune(top, options, state) :
 	remove_attrs(top)
 	for n in top.childNodes :
 		if n.nodeType == top.ELEMENT_NODE :
-			lite_prune(n, options)
+			lite_prune(n, options, state)
 
 	
