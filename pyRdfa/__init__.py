@@ -71,8 +71,7 @@ possible host languages:
  - if the content type is C{application/atom+xml}, the content type is SVG
  - if the content type is C{application/xml} or C{application/xxx+xml} (but 'xxx' is not 'atom' or 'svg'), the content type is XML
 
-If local files are used, pyRdfa makes a guess on the content type based on the file name suffix: C{.html} is for HTML5, C{.xhtml} for
-XHTML1, C{.svg} for SVG, anything else is considered to be general XML. Finally, the content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}.
+If local files are used, pyRdfa makes a guess on the content type based on the file name suffix: C{.html} is for HTML5, C{.xhtml} for XHTML1, C{.svg} for SVG, anything else is considered to be general XML. Finally, the content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}.
 
 Beyond the differences described in the RDFa specification, the main difference is the parser used to parse the source. In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; for all other cases the simple XML parser, part of the core Python environment, is used. This may be significant in the case of erronuous sources: indeed, the HTML5 parser may do adjustments on
 the DOM tree before handing it over to the distiller. Furthermore, SVG is also recognized as a type that allows embedded RDF in the form of RDF/XML.
@@ -114,10 +113,9 @@ The cache includes a separate index file and a file for each vocabulary file. Ca
 RDFa 1.1 vs. RDFa 1.0
 =====================
 
-Unfortunately, RDFa 1.1 is I{not} backward compatible with RDFa 1.0, meaning that, in a few cases, the triples generated from
-an RDFa 1.1 source are not the same as for RDFa 1.0. (See the separate  U{section in the RDFa 1.1 specification<http://www.w3.org/TR/rdfa-core/#major-differences-with-rdfa-syntax-1.0>} for some further details.)
+Unfortunately, RDFa 1.1 is I{not} fully backward compatible with RDFa 1.0, meaning that, in a few cases, the triples generated from an RDFa 1.1 source are not the same as for RDFa 1.0. (See the separate  U{section in the RDFa 1.1 specification<http://www.w3.org/TR/rdfa-core/#major-differences-with-rdfa-syntax-1.0>} for some further details.)
 
-This distiller’s default behavior is RDFa 1.1. However, if the source includes, in the top element of the file (e.g., the C{html} element) a C{@version} attribute whose value contains the C{RDFa 1.0} string, then the distiller switches to a RDFa 1.0 mode. (Although the C{@version} attribute is not required in RDFa 1.0, it is fairly commonly used.)
+This distiller’s default behavior is RDFa 1.1. However, if the source includes, in the top element of the file (e.g., the C{html} element) a C{@version} attribute whose value contains the C{RDFa 1.0} string, then the distiller switches to a RDFa 1.0 mode. (Although the C{@version} attribute is not required in RDFa 1.0, it is fairly commonly used.) Similarly, if the RDFa 1.0 DTD is used in the XHTML source, it will be taken into account (a very frequent setup is that an XHTML file is defined with that DTD and is served as text/html; pyRdfa will consider that file as XHTML5, i.e., parse it with the HTML5 parser, but interpret the RDFa attributes under the RDFa 1.0 rules).
 
 Transformers
 ============
@@ -162,7 +160,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
 """
 
-__version__ = "3.4.0"
+__version__ = "3.4.1"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -575,13 +573,27 @@ class pyRdfa :
 						# the file to find a meta header for the charset; if that
 						# works, fine, otherwise it falls back on window-...
 						dom = parser.parse(input)
+						
+					try :
+						if isinstance(name, basestring) :
+							input.close()
+							input = self._get_input(name)
+						else :
+							input.seek(0)
+						from pyRdfa.host import adjust_html_version
+						self.rdfa_version = adjust_html_version(input, self.rdfa_version)
+					except :
+						# if anyting goes wrong, it is not really important; rdfa version stays what it was...
+						pass
+					
 				else :
 					# in other cases an XML parser has to be used
-					from pyRdfa.host import adjust_xhtml
+					from pyRdfa.host import adjust_xhtml_and_version
 					parse = xml.dom.minidom.parse
 					dom = parse(input)
-					adjusted_host_language = adjust_xhtml(dom, self.options.host_language)
+					(adjusted_host_language, version) = adjust_xhtml_and_version(dom, self.options.host_language, self.rdfa_version)
 					self.options.host_language = adjusted_host_language
+					self.rdfa_version          = version
 			except Exception, e :
 				# These are various parsing exception. Per spec, this is a case when
 				# error triples MUST be returned, ie, the usage of rdfOutput (which switches between an HTML formatted

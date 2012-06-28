@@ -25,8 +25,7 @@ The package primarily depends on:
  - simplejson<http://undefined.org/python/#simplejson>  (in the additional packages folder), needed if the JSON serialization is used and if the underlying python version is 2.5 or lower
  - isodate<http://hg.proclos.com/isodate> (in the additional packages folder) which, in some cases, is missing and RDFLib complains (?)
    
-The package has been tested on Python version 2.4 and higher. Python 2.6 or higher is strongly recommended. The package
-does not run with Python 3.
+The package has been tested on Python version 2.5 and higher. Python 2.6 or higher is strongly recommended. The package does not run with Python 3.
 
 For the details on RDFa 1.1, see:
 

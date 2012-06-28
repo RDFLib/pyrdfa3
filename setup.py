@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(name="pyRdfa",
       description="pyRdfa Libray",
-      version="3.4.0",
+      version="3.4.1",
       author="Ivan Herman",
       author_email="ivan@w3.org",
 	  maintainer="Ivan Herman",

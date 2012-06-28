@@ -12,21 +12,21 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.9 2012/05/22 12:29:33 ivan Exp $
-$Date: 2012/05/22 12:29:33 $
+$Id: html5.py,v 1.10 2012/06/28 11:58:14 ivan Exp $
+$Date: 2012/06/28 11:58:14 $
 """
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
 from datetime import datetime
 import re
-datetime_type 	= "http://www.w3.org/2001/XMLSchema#dateTime"
-time_type 	 	= "http://www.w3.org/2001/XMLSchema#time"
-date_type 	 	= "http://www.w3.org/2001/XMLSchema#date"
-date_gYear		= "http://www.w3.org/2001/XMLSchema#gYear"
-date_gYearMonth	= "http://www.w3.org/2001/XMLSchema#gYearMonth"
-date_gMonthDay	= "http://www.w3.org/2001/XMLSchema#gMonthDay"
-duration_type	= "http://www.w3.org/2001/XMLSchema#duration"
-plain			= "plain"
+datetime_type   = "http://www.w3.org/2001/XMLSchema#dateTime"
+time_type 	    = "http://www.w3.org/2001/XMLSchema#time"
+date_type       = "http://www.w3.org/2001/XMLSchema#date"
+date_gYear      = "http://www.w3.org/2001/XMLSchema#gYear"
+date_gYearMonth = "http://www.w3.org/2001/XMLSchema#gYearMonth"
+date_gMonthDay  = "http://www.w3.org/2001/XMLSchema#gMonthDay"
+duration_type   = "http://www.w3.org/2001/XMLSchema#duration"
+plain           = "plain"
 
 handled_time_types = [ datetime_type, time_type, date_type, date_gYear, date_gYearMonth, date_gMonthDay, duration_type ]
 

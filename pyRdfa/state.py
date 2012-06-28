@@ -17,8 +17,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.18 2012/05/26 16:20:02 ivan Exp $
-$Date: 2012/05/26 16:20:02 $
+$Id: state.py,v 1.19 2012/06/28 11:57:37 ivan Exp $
+$Date: 2012/06/28 11:57:37 $
 """
 import sys
 (py_v_major, py_v_minor, py_v_micro, py_v_final, py_v_serial) = sys.version_info
@@ -166,13 +166,14 @@ class ExecutionContext :
 			else :
 				from pyRdfa import rdfa_current_version				
 				self.rdfa_version = rdfa_current_version
-				# This value can be overwritten by a @version attribute
-				if node.hasAttribute("version") :
-					top_version = node.getAttribute("version")
-					if top_version.find("RDFa 1.0") != -1 :
-						self.rdfa_version = "1.0"
-					elif top_version.find("RDFa 1.1") != -1 :
-						self.rdfa_version = "1.1"						
+
+			# This value can be overwritten by a @version attribute
+			if node.hasAttribute("version") :
+				top_version = node.getAttribute("version")
+				if top_version.find("RDFa 1.0") != -1 :
+					self.rdfa_version = "1.0"
+				elif top_version.find("RDFa 1.1") != -1 :
+					self.rdfa_version = "1.1"						
 			
 			# this is just to play safe. I believe this should actually not happen...
 			if options == None :
@@ -200,6 +201,9 @@ class ExecutionContext :
 				dict = beautifying_prefixes[self.options.host_language]
 				for key in dict :
 					graph.bind(key,dict[key])
+					
+			input_info = "Input Host Language:%s, RDFa version:%s, base:%s" % (self.options.host_language, self.rdfa_version, self.base)
+			self.options.add_info(input_info)
 
 								
 		#-----------------------------------------------------------------

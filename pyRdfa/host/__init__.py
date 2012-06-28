@@ -30,8 +30,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.18 2012/06/11 10:14:53 ivan Exp $
-$Date: 2012/06/11 10:14:53 $
+$Id: __init__.py,v 1.19 2012/06/28 11:58:14 ivan Exp $
+$Date: 2012/06/28 11:58:14 $
 """
 __version__ = "3.0"
 
@@ -144,39 +144,64 @@ preferred_suffixes = {
 	".atom"		: MediaTypes.atom
 }
 	
+# DTD combinations that may determine the host language and the rdfa version
+_XHTML_1_0 = [
+	("-//W3C//DTD XHTML+RDFa 1.0//EN", "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd")
+]
+
+_XHTML_1_1 = [
+	("-//W3C//DTD XHTML+RDFa 1.1//EN", "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-2.dtd"),
+	("-//W3C//DTD HTML 4.01+RDFa 1.1//EN", "http://www.w3.org/MarkUp/DTD/html401-rdfa11-1.dtd")	
+]
+
+_XHTML = [
+	("-//W3C//DTD XHTML 1.0 Strict//EN",       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"),
+	("-//W3C//DTD XHTML 1.0 Transitional//EN", "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"),
+	("-//W3C//DTD XHTML 1.1//EN",              "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd")	
+]
+
+def adjust_html_version(input, rdfa_version) :
+	"""
+	Adjust the rdfa_version based on the (possible) DTD
+	@param input: the input stream that has to be parsed by an xml parser
+	@param rdfa_version: the current rdfa_version; will be returned if nothing else is found
+	@return: the rdfa_version, either "1.0" or "1.1, if the DTD says so, otherwise the input rdfa_version value
+	"""
+	import xml.dom.minidom
+	parse = xml.dom.minidom.parse
+	dom = parse(input)
 	
-def adjust_xhtml(dom, incoming_language) :
+	(hl,version) = adjust_xhtml_and_version(dom, HostLanguage.xhtml, rdfa_version)
+	return version
+	
+def adjust_xhtml_and_version(dom, incoming_language, rdfa_version) :
 	"""
 	Check if the xhtml+RDFa is really XHTML 0 or 1 or whether it should be considered as XHTML5. This is done
-	by looking at the DTD...
+	by looking at the DTD. Furthermore, checks whether whether the system id signals an rdfa 1.0, in which case the
+	version is also set.
+	
 	@param dom: top level DOM node
 	@param incoming_language: host language to be checked; the whole check is relevant for xhtml only.
-	@return: possibly modified host language (ie, set to XHTML5)
+	@param rdfa_version: rdfa_version as known by the caller
+	@return: a tuple of the possibly modified host language (ie, set to XHTML5) and the possibly modified rdfa version (ie, set to "1.0", "1.1", or the incoming rdfa_version if nothing is found)
 	"""
-	pids = ["-//W3C//DTD XHTML+RDFa 1.1//EN",
-			"-//W3C//DTD XHTML+RDFa 1.0//EN",
-			"-//W3C//DTD XHTML 1.0 Strict//EN",
-			"-//W3C//DTD XHTML 1.0 Transitional//EN",
-			"-//W3C//DTD XHTML 1.1//EN"
-			]
-	sids = ["http://www.w3.org/MarkUp/DTD/xhtml-rdfa-2.dtd",
-			"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd",
-			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd",
-			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
-			"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
-			]
 	if incoming_language == HostLanguage.xhtml :
 		try :
 			# There may not be any doctype set in the first place...
 			publicId = dom.doctype.publicId
 			systemId = dom.doctype.systemId
-			if publicId in pids and systemId in sids :
-				return HostLanguage.xhtml
+
+			if (publicId, systemId) in _XHTML_1_0 :
+				return (HostLanguage.xhtml,"1.0")
+			elif (publicId, systemId) in _XHTML_1_1 :
+				return (HostLanguage.xhtml,"1.1")
+			elif (publicId, systemId) in _XHTML :
+				return (HostLanguage.xhtml, rdfa_version)
 			else :
-				return HostLanguage.xhtml5
+				return (HostLanguage.xhtml5, rdfa_version)
 		except :
 			# If any of those are missing, forget it...
-			return HostLanguage.xhtml5
+			return (HostLanguage.xhtml5, rdfa_version)
 	else :
-		return incoming_language
+		return (incoming_language, rdfa_version)
 
