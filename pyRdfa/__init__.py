@@ -594,6 +594,9 @@ class pyRdfa :
 					(adjusted_host_language, version) = adjust_xhtml_and_version(dom, self.options.host_language, self.rdfa_version)
 					self.options.host_language = adjusted_host_language
 					self.rdfa_version          = version
+			except ImportError :
+				msg = "HTML5 parser not available. Try installing html5lib <http://code.google.com/p/html5lib>"
+				raise ImportError(msg)
 			except Exception, e :
 				# These are various parsing exception. Per spec, this is a case when
 				# error triples MUST be returned, ie, the usage of rdfOutput (which switches between an HTML formatted
