@@ -17,8 +17,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.19 2012/06/28 11:57:37 ivan Exp $
-$Date: 2012/06/28 11:57:37 $
+$Id: state.py,v 1.21 2012/08/20 14:14:14 ivan Exp $
+$Date: 2012/08/20 14:14:14 $
 """
 import sys
 (py_v_major, py_v_minor, py_v_micro, py_v_final, py_v_serial) = sys.version_info

@@ -25,19 +25,14 @@ import sys
 if sys.version_info[1] >= 7 :
 	from collections import OrderedDict
 else :
-	from pyRdfa.extras.odict import odict as OrderedDict
+	from pyRdfaExtras.extras.odict import odict as OrderedDict
 
 from rdflib.serializer import Serializer
 from rdflib.term import URIRef, BNode, Literal
 from rdflib	import RDF  as ns_rdf
 from rdflib	import RDFS as ns_rdfs
-try :
-	# If this serializer is used within RDFLib, then we should not
-	# have the dependency on pyRdfa. That being said, not doing this
-	# is error prone until RDFa is a Rec, so try it anyway...
-	from pyRdfa	import RDFA_VOCAB
-except :
-	RDFA_VOCAB = URIRef("http://www.w3.org/ns/rdfa#usesVocabulary")
+
+RDFA_VOCAB = URIRef("http://www.w3.org/ns/rdfa#usesVocabulary")
 
 class JsonSerializer(Serializer):
 	__doc__ = __doc__

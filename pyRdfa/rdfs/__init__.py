@@ -11,7 +11,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: __init__.py,v 1.3 2012-03-23 14:06:38 ivan Exp $ $Date: 2012-03-23 14:06:38 $
+$Id: __init__.py,v 1.4 2012/08/20 13:15:28 ivan Exp $ $Date: 2012/08/20 13:15:28 $
 
 """
 
@@ -31,11 +31,11 @@ from rdflib	import Namespace
 if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import RDF  as ns_rdf
 	from rdflib	import RDFS as ns_rdfs
+	from rdflib	import Graph
 else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
-
-from pyRdfa.graph import MyGraph as Graph
+	from rdflib.Graph 	import Graph
 
 import xml.dom.minidom
 import urlparse

@@ -14,9 +14,6 @@
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
-  <!-- Home link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -351,6 +348,16 @@ from pyRdfa.transform.OpenID import OpenID_transform
 options = Options(transformers=[OpenID_transform])
 print pyRdfa(options=options).rdf_from_source('filename')
 </pre>
+  <h1 class="heading">Special Serializers</h1>
+    <p>The package relies on RDFLib. By default, it relies therefore on the
+    serializers coming with the local RDFLib distribution. However, there 
+    has been some issues with serializers, mainly on older RDFLib releases.
+    Also, some output formats, like JSON-LD, are not (yet) part of the 
+    standard RDFLib distribution.</p>
+    <p>A companion package, called pyRdfaExtras is also available for 
+    download that includes some of those extra serializers. The core 
+    package makes an attempt to use those first and, in case that package 
+    is not installed, it falls back on the core package.</p>
 
 <hr />
 <div class="fields">      <strong>Requires:</strong>
@@ -373,20 +380,6 @@ print pyRdfa(options=options).rdf_from_source('filename')
         distribution easier this module (single file) is added to the 
         package.
         </li>
-        <li>
-        <a href="http://dev.pocoo.org/hg/sandbox/raw-file/tip/odict.py" 
-        target="_top">Ordered Dictionary (odict)</a>, needed only for the 
-        JSON-LD serialization if Python 2.6 or lower is used (Python 2.7 
-        has a built in ordered list module). It is included in the 
-        distribution
-        </li>
-        <li>
-        <a href="http://undefined.org/python/#simplejson" 
-        target="_top">simplejson package by Bob Ippolito</a>, needed only 
-        for the JSON-LD serailization if Python 2.5 or lower is used 
-        (Python 2.6 has a json implementation included in the 
-        distribution).
-        </li>
       </ul>
       <p><strong>Organization:</strong>
         <a href="http://www.w3.org" target="_top">World Wide Web 
@@ -402,7 +395,7 @@ print pyRdfa(options=options).rdf_from_source('filename')
         target="_top">W3C&#174; SOFTWARE NOTICE AND LICENSE</a>
       </p>
       <p><strong>Version:</strong>
-        3.4.1
+        3.4.2
       </p>
       <p><strong>Contact:</strong>
         Ivan Herman, ivan@w3.org
@@ -428,7 +421,6 @@ print pyRdfa(options=options).rdf_from_source('filename')
   <ul class="nomargin">
     <li> <strong class="uidlink"><a href="pyRdfa.embeddedRDF-module.html">pyRdfa.embeddedRDF</a></strong>: <em class="summary">Extracting possible embedded RDF/XML content from the file and 
         parse it separately into the Graph.</em>    </li>
-    <li> <strong class="uidlink"><a href="pyRdfa.graph-module.html">pyRdfa.graph</a></strong>: <em class="summary">Shell around RDLib's Graph</em>    </li>
     <li> <strong class="uidlink"><a href="pyRdfa.host-module.html">pyRdfa.host</a></strong>: <em class="summary">RDFa Host package</em>
     <ul>
     <li> <strong class="uidlink"><a href="pyRdfa.host.atom-module.html">pyRdfa.host.atom</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt;</em>    </li>
@@ -1015,7 +1007,7 @@ ference) \'%s\'; ignored'"><code class="variable-quote">'</code><code class="var
   <span title="rdflib.Namespace">Namespace</span>,
   <span title="rdflib.RDFS.RDFSNS">ns_rdfs</span>,
   <span title="rdflib.RDF.RDFNS">ns_rdf</span>,
-  <a href="pyRdfa.graph.MyGraph-class.html" title="pyRdfa.graph.MyGraph">Graph</a>,
+  <span title="rdflib.Graph.Graph">Graph</span>,
   <span title="pyRdfa.extras.httpheader.acceptable_content_type">acceptable_content_type</span>,
   <span title="pyRdfa.extras.httpheader.content_type">content_type</span>,
   <span title="xml">xml</span>,
@@ -1033,7 +1025,6 @@ ference) \'%s\'; ignored'"><code class="variable-quote">'</code><code class="var
   <span title="pyRdfa.host.content_to_host_language">content_to_host_language</span>,
   <a href="pyRdfa.embeddedRDF-module.html" title="pyRdfa.embeddedRDF">embeddedRDF</a>,
   <span title="pyRdfa.extras">extras</span>,
-  <a href="pyRdfa.graph-module.html" title="pyRdfa.graph">graph</a>,
   <a href="pyRdfa.host-module.html" title="pyRdfa.host">host</a>,
   <a href="pyRdfa.options-module.html" title="pyRdfa.options">options</a>,
   <a href="pyRdfa.parse-module.html" title="pyRdfa.parse">parse</a>,
@@ -2004,9 +1995,6 @@ iteral')
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
-  <!-- Home link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -2026,7 +2014,7 @@ iteral')
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jun 28 13:41:59 2012
+    Generated by Epydoc 3.0.1 on Mon Aug 20 15:17:17 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

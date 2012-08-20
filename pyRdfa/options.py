@@ -11,7 +11,7 @@ U{W3C SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/
 """
 
 """
-$Id: options.py,v 1.15 2012/06/11 10:05:50 ivan Exp $ $Date: 2012/06/11 10:05:50 $
+$Id: options.py,v 1.16 2012/08/20 14:14:14 ivan Exp $ $Date: 2012/08/20 14:14:14 $
 """
 
 import sys, datetime
@@ -141,27 +141,31 @@ class Options :
 	
 	@ivar content_type: the content type of the host file. Default is None
 	@type content_type: string (logically: an enumeration)
+	
+	@ivar add_informational_messages: whether informational messages should also be added to the processor graph, or only errors and warnings
 	"""
-	def __init__(self, output_default_graph   = True,
-					   output_processor_graph = False,
-					   space_preserve         = True,
-					   transformers           = [],
-					   embedded_rdf           = True,
-					   vocab_expansion        = False,
-					   vocab_cache            = True,
-					   vocab_cache_report     = False,
-					   refresh_vocab_cache    = False) :
-		self.space_preserve 		= space_preserve
-		self.transformers   		= transformers
-		self.processor_graph  		= ProcessorGraph() 
-		self.output_default_graph	= output_default_graph
-		self.output_processor_graph	= output_processor_graph
-		self.host_language 			= HostLanguage.rdfa_core
-		self.vocab_cache_report		= vocab_cache_report
-		self.refresh_vocab_cache	= refresh_vocab_cache
-		self.embedded_rdf			= embedded_rdf
-		self.vocab_expansion		= vocab_expansion
-		self.vocab_cache			= vocab_cache
+	def __init__(self, output_default_graph       = True,
+					   output_processor_graph     = False,
+					   space_preserve             = True,
+					   transformers               = [],
+					   embedded_rdf               = True,
+					   vocab_expansion            = False,
+					   vocab_cache                = True,
+					   vocab_cache_report         = False,
+					   refresh_vocab_cache        = False,
+					   add_informational_messages = False) :
+		self.space_preserve 		    = space_preserve
+		self.transformers   		    = transformers
+		self.processor_graph  		    = ProcessorGraph() 
+		self.output_default_graph	    = output_default_graph
+		self.output_processor_graph	    = output_processor_graph
+		self.host_language 			    = HostLanguage.rdfa_core
+		self.vocab_cache_report		    = vocab_cache_report
+		self.refresh_vocab_cache	    = refresh_vocab_cache
+		self.embedded_rdf			    = embedded_rdf
+		self.vocab_expansion		    = vocab_expansion
+		self.vocab_cache			    = vocab_cache
+		self.add_informational_messages = add_informational_messages
 			
 	def set_host_language(self, content_type) :
 		"""
@@ -220,7 +224,10 @@ class Options :
 		@keyword buggy_value: a special case when a 'term' is not recognized; no information is generated for that case if the value is part of the 'usual' XHTML terms, because almost all RDFa file contains some of those and that would pollute the output
 		@type buggy_value: String
 		"""
-		return self.processor_graph.add_triples(txt, RDFA_Info, info_type, context, node)
+		if self.add_informational_messages :
+			return self.processor_graph.add_triples(txt, RDFA_Info, info_type, context, node)
+		else :
+			return
 
 	def add_error(self, txt, err_type=None, context=None, node=None, buggy_value=None) :
 		"""Add an error  to the processor graph.

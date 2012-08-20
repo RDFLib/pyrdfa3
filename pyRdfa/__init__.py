@@ -141,14 +141,19 @@ The user of the package may refer add these transformers to L{Options} instance.
  from pyRdfa.transform.OpenID import OpenID_transform
  options = Options(transformers=[OpenID_transform])
  print pyRdfa(options=options).rdf_from_source('filename')
+ 
+Special Serializers
+===================
+
+The package relies on RDFLib. By default, it relies therefore on the serializers coming with the local RDFLib distribution. However, there has been some issues with serializers, mainly on older RDFLib releases. Also, some output formats, like JSON-LD, are not (yet) part of the standard RDFLib distribution.
+
+A companion package, called pyRdfaExtras is also available for download that includes some of those extra serializers. The core package makes an attempt to use those first and, in case that package is not installed, it falls back on the core package.
 
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up; 2.7 is preferred
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
 @requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the package.
-@requires: U{Ordered Dictionary (odict)<http://dev.pocoo.org/hg/sandbox/raw-file/tip/odict.py>}, needed only for the JSON-LD serialization if Python 2.6 or lower is used (Python 2.7 has a built in ordered list module). It is included in the distribution
-@requires: U{simplejson package by Bob Ippolito<http://undefined.org/python/#simplejson>}, needed only for the JSON-LD serailization if Python 2.5 or lower is used (Python 2.6 has a json implementation included in the distribution). 
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -160,7 +165,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
 """
 
-__version__ = "3.4.1"
+__version__ = "3.4.2"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -176,11 +181,12 @@ from rdflib	import Namespace
 if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import RDF  as ns_rdf
 	from rdflib	import RDFS as ns_rdfs
+	from rdflib	import Graph
 else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
+	from rdflib.Graph import Graph
 
-from pyRdfa.graph import MyGraph as Graph
 from pyRdfa.extras.httpheader import acceptable_content_type, content_type
 
 import xml.dom.minidom
@@ -628,8 +634,16 @@ class pyRdfa :
 		@type rdfOutput: boolean
 		@return: a serialized RDF Graph
 		@rtype: string
-		"""		
-		graph = Graph()
+		"""
+		# This is better because it gives access to the various, non-standard serializations
+		# If it does not work because the extra are not installed, fall back to the standard
+		# rdlib distribution...
+		try :
+			from pyRdfaExtras import MyGraph
+			graph = MyGraph()
+		except :
+			graph = Graph()
+
 		graph.bind("xsd", Namespace(u'http://www.w3.org/2001/XMLSchema#'))
 		# the value of rdfOutput determines the reaction on exceptions...
 		for name in names :
