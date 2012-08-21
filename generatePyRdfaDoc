@@ -1,0 +1,2 @@
+#!/bin/sh
+epydoc -v --show-imports -o Doc-pyRdfa --css epydoc.css --exclude=pyRdfa.extras.* --exclude=pyRdfaExtras.serializers.* --exclude=pyRdfaExtras.extras.* pyRdfa pyRdfaExtras

@@ -29,15 +29,10 @@ L{pyRdfa class<pyRdfa.pyRdfa>} for further possible entry points details.
 
 There is also, as part of this module, a L{separate entry for CGI calls<processURI>}.
 
-Return formats
---------------
+Return (serialization) formats
+------------------------------
 
-By default, the output format for the graph is RDF/XML. At present, the following formats are also available (with the corresponding key to be used in the package entry points):
-
- - "xml": U{RDF/XML<http://www.w3.org/TR/rdf-syntax-grammar/>}
- - "turtle": U{Turtle<http://www.w3.org/TR/turtle/>} (default)
- - "nt": U{N-triple<http://www.w3.org/TR/rdf-testcases/#ntriples>}
- - "json": U{JSON-LD<http://json-ld.org/spec/latest/json-ld-syntax/>}
+The package relies on RDFLib. By default, it relies therefore on the serializers coming with the local RDFLib distribution. However, there has been some issues with serializers of older RDFLib releases; also, some output formats, like JSON-LD, are not (yet) part of the standard RDFLib distribution. A companion package, called pyRdfaExtras, is part of the download, and it includes some of those extra serializers. The extra format (not part of the RDFLib core) is U{JSON-LD<http://json-ld.org/spec/latest/json-ld-syntax/>}, whose 'key' is 'json', when used in the 'parse' method of an RDFLib graph.
 
 Options
 =======
@@ -142,12 +137,6 @@ The user of the package may refer add these transformers to L{Options} instance.
  options = Options(transformers=[OpenID_transform])
  print pyRdfa(options=options).rdf_from_source('filename')
  
-Special Serializers
-===================
-
-The package relies on RDFLib. By default, it relies therefore on the serializers coming with the local RDFLib distribution. However, there has been some issues with serializers, mainly on older RDFLib releases. Also, some output formats, like JSON-LD, are not (yet) part of the standard RDFLib distribution.
-
-A companion package, called pyRdfaExtras is also available for download that includes some of those extra serializers. The core package makes an attempt to use those first and, in case that package is not installed, it falls back on the core package.
 
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up; 2.7 is preferred
@@ -163,6 +152,10 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var CACHE_DIR_VAR: Environment variable used to define cache directories for RDFa vocabularies in case the default setting does not work or is not appropriate. 
 @var rdfa_current_version: Current "official" version of RDFa that this package implements by default. This can be changed at the invocation of the package
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
+"""
+
+"""
+ $Id: __init__.py,v 1.82 2012/08/21 10:28:50 ivan Exp $
 """
 
 __version__ = "3.4.2"
