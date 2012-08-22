@@ -296,6 +296,7 @@ class ExecutionContext :
 			Semantic Web URI-s, so this is checked, too
 			@param base: base URI string
 			@param v: local part
+			@param check: whether the URI should be checked against the list of 'existing' URI schemes
 			@return: an RDFLib URIRef instance
 			"""
 			# UGLY!!! There is a bug for a corner case in python version <= 2.5.X
