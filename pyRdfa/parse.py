@@ -300,7 +300,7 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 				graph.add( (state.get_list_origin(), prop, ns_rdf["nil"]) )
 			else :
 				heads = [ BNode() for r in vals ] + [ ns_rdf["nil"] ]
-				for i in xrange(0, len(vals)) :
+				for i in range(0, len(vals)) :
 					graph.add( (heads[i], ns_rdf["first"], vals[i]) )
 					graph.add( (heads[i], ns_rdf["rest"],  heads[i+1]) )
 				# Anchor the list

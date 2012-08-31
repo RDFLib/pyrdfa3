@@ -26,7 +26,12 @@ $Date: 2012/05/21 15:27:07 $
 import re, sys
 import xml.dom.minidom
 import random
-import urlparse, urllib2
+
+if sys.version_info[0] >= 3 :
+	from urllib.parse import urlsplit
+else :	
+	from urlparse import urlsplit
+
 
 import rdflib
 from rdflib	import URIRef
@@ -112,9 +117,9 @@ class InitialContext :
 		if state.rdfa_version < "1.1" or top_level == False :
 			return
 		
-		from initialcontext		import initial_context    as context_data
-		from host 				import initial_contexts   as context_ids
-		from host				import default_vocabulary
+		from pyRdfa.initialcontext		import initial_context    as context_data
+		from pyRdfa.host 				import initial_contexts   as context_ids
+		from pyRdfa.host				import default_vocabulary
 
 		for id in context_ids[state.options.host_language] :
 			# This gives the id of a initial context, valid for this media type:
@@ -352,7 +357,7 @@ class TermOrCurie :
 				if s.find(c) != -1 : return False
 			return True
 		# Creating an artificial http URI to fool the urlparse module...
-		scheme, netloc, url, query, fragment = urlparse.urlsplit('http:' + val)
+		scheme, netloc, url, query, fragment = urlsplit('http:' + val)
 		if netloc != "" and self.state.rdfa_version >= "1.1" :
 			self.state.options.add_warning(err_absolute_reference % (netloc, val), UnresolvableReference, node=self.state.node.nodeName)
 			return False

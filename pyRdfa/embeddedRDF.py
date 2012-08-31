@@ -10,7 +10,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @version: $Id: embeddedRDF.py,v 1.14 2012/05/18 15:31:13 ivan Exp $
 """
 
-from StringIO	  import StringIO
+# Python 3 foolproof way...
+try :
+	from io import StringIO
+except :
+	from StringIO import StringIO
+
 from pyRdfa.host  import HostLanguage, accept_embedded_rdf_xml, accept_embedded_turtle
 from pyRdfa.utils import return_XML
 import re, sys

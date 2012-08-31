@@ -11,6 +11,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 import os, sys, datetime, re
 
+PY3 = (sys.version_info[0] >= 3)
+
 import rdflib
 from rdflib	import URIRef
 from rdflib	import Literal
@@ -24,8 +26,6 @@ else :
 	from rdflib.RDFS	import RDFSNS as ns_rdfs
 	from rdflib.RDF		import RDFNS  as ns_rdf
 	from rdflib.Graph 	import Graph
-
-import urllib, urlparse, urllib2
 
 from pyRdfa			import HTTPError, RDFaError
 from pyRdfa.host 	import MediaTypes, HostLanguage
@@ -49,7 +49,11 @@ xml_application_media_type = re.compile("application/[a-zA-Z0-9]+\+xml")
 from pyRdfa.utils import URIOpener
 
 #===========================================================================================
-import cPickle as pickle
+if PY3 :
+	import pickle
+else :
+	import cPickle as pickle
+
 # Protocol to be used for pickle files. 0 is good for debug, it stores the data in ASCII; 1 is better for deployment,
 # it stores data in binary format. Care should be taken for consistency; when changing from 0 to 1 or back, all
 # cached data should be removed/regenerated, otherwise mess may occur...
@@ -137,7 +141,7 @@ class CachedVocabIndex :
 		if not os.path.isdir(self.app_data_dir) :
 			try :
 				os.mkdir(self.app_data_dir)
-			except Exception, e:
+			except Exception :
 				(type,value,traceback) = sys.exc_info()
 				if self.report: options.add_info("Could not create the vocab cache area %s" % value, VocabCachingInfo)
 				return
@@ -162,8 +166,9 @@ class CachedVocabIndex :
 				# This is then put into a pickle file to put the stake in the ground...
 				try :
 					_dump(self.indeces, self.index_fname)
-				except Exception, e:
-					if self.report: options.add_info("Could not create the vocabulary index %s" % e.msg, VocabCachingInfo)
+				except Exception :
+					(type,value,traceback) = sys.exc_info()
+					if self.report: options.add_info("Could not create the vocabulary index %s" % value, VocabCachingInfo)
 			else :
 				if self.report: options.add_info("Vocabulary cache directory is not writeable", VocabCachingInfo)				
 				self.cache_writeable	= False	
@@ -179,7 +184,7 @@ class CachedVocabIndex :
 		self.indeces[uri] = vocab_reference		
 		try :
 			_dump(self.indeces, self.index_fname)
-		except Exception, e:
+		except Exception :
 			(type,value,traceback) = sys.exc_info()
 			if self.report: self.options.add_info("Could not store the cache index %s" % value, VocabCachingInfo)
 			
@@ -249,7 +254,7 @@ class CachedVocab(CachedVocabIndex) :
 			CachedVocabIndex.__init__(self, options)
 			vocab_reference 	= self.get_ref(URI)
 			self.caching 		= True
-		except Exception, e :
+		except Exception :
 			# what this means is that the caching becomes impossible through some system error...
 			(type,value,traceback) = sys.exc_info()
 			if self.report: options.add_info("Could not access the vocabulary cache area %s" % value, VocabCachingInfo, URI)
@@ -276,7 +281,7 @@ class CachedVocab(CachedVocabIndex) :
 				fname = os.path.join(self.app_data_dir, self.filename)
 				try :
 					self.graph = _load(fname)
-				except Exception, e :
+				except Exception :
 					# what this means is that the caching becomes impossible VocabCachingInfo
 					(type,value,traceback) = sys.exc_info()
 					sys.excepthook(type,value,traceback)
@@ -297,7 +302,7 @@ class CachedVocab(CachedVocabIndex) :
 					try :
 						self.graph = _load(fname)
 						self.expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-					except Exception, e :
+					except Exception :
 						# what this means is that the caching becomes impossible VocabCachingInfo
 						(type,value,traceback) = sys.exc_info()
 						sys.excepthook(type,value,traceback)
@@ -322,7 +327,7 @@ class CachedVocab(CachedVocabIndex) :
 		fname = os.path.join(self.app_data_dir, self.filename)
 		try :
 			_dump(self.graph, fname)
-		except Exception, e :
+		except Exception :
 			(type,value,traceback) = sys.exc_info()
 			if self.report : self.options.add_info("Could not write cache file %s (%s)", (fname,value), VocabCachingInfo, self.uri)
 		# Update the index
@@ -340,11 +345,11 @@ def offline_cache_generation(args) :
 			self.vocab_cache_report = True
 
 		def pr(self, wae, txt, warning_type, context) :
-			print "===="
-			if warning_type != None : print warning_type
-			print wae + ": " + txt
-			if context != None: print context
-			print "===="
+			print( "====" )
+			if warning_type != None : print( warning_type )
+			print( wae + ": " + txt )
+			if context != None: print( context )
+			print( "====" )
 			
 		def add_warning(self, txt, warning_type=None, context=None) :
 			"""Add a warning to the processor graph.
@@ -378,16 +383,13 @@ def offline_cache_generation(args) :
 			
 	for uri in args :
 		# This should write the cache
-		print ">>>>> Writing Cache <<<<<"
+		print( ">>>>> Writing Cache <<<<<" )
 		writ = CachedVocab(uri,options = LocalOption(),report = True)
 		# Now read it back and print the content for tracing
-		print ">>>>> Reading Cache <<<<<"
+		print( ">>>>> Reading Cache <<<<<" )
 		rd = CachedVocab(uri,options = LocalOption(),report = True)
-		print "URI: " + uri
-		print "default vocab: " + rd.vocabulary
-		print "terms: ",
-		print rd.terms
-		print "prefixes: ",
-		print rd.ns
+		print( "URI: " + uri )
+		print( "default vocab: " + rd.vocabulary )
+		print( "terms: %s prefixes: %s" % (rd.terms,rd.ns) )
 
 	

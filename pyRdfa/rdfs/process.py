@@ -12,12 +12,7 @@ $Id: process.py,v 1.7 2012-03-23 14:06:38 ivan Exp $ $Date: 2012-03-23 14:06:38 
 
 """
 
-__version__ = "3.0.2"
-__author__  = 'Ivan Herman'
-__contact__ = 'Ivan Herman, ivan@w3.org'
-__license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
-
-import sys, StringIO
+import sys
 import os
 
 import rdflib
@@ -82,13 +77,15 @@ def return_graph(uri, options, newCache = False) :
 	try :
 		content = URIOpener(uri,
 							{'Accept' : 'text/html;q=0.8, application/xhtml+xml;q=0.8, text/turtle;q=1.0, application/rdf+xml;q=0.9'})
-	except HTTPError, e :
-		return_to_cache(e.msg)
+	except HTTPError :
+		(type,value,traceback) = sys.exc_info()
+		return_to_cache(value)
 		return (None,None)
-	except RDFaError, e :
-		return_to_cache(e.msg)
+	except RDFaError :
+		(type,value,traceback) = sys.exc_info()
+		return_to_cache(value)
 		return (None,None)
-	except Exception, e :
+	except Exception :
 		(type,value,traceback) = sys.exc_info()
 		return_to_cache(value)
 		return (None,None)

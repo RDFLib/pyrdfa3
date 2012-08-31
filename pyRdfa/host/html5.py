@@ -15,6 +15,12 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 $Id: html5.py,v 1.10 2012/06/28 11:58:14 ivan Exp $
 $Date: 2012/06/28 11:58:14 $
 """
+try :
+	from functools import reduce
+except :
+	# Not important. This import is necessary in Python 3 only and the newer versions of Python 2.X it is there
+	# for a forward compatibility with Python 3
+	pass
 
 # The handling of datatime is a little bit more complex... better put this in a separate function for a better management
 from datetime import datetime

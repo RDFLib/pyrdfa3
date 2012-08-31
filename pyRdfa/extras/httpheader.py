@@ -75,11 +75,14 @@
   Note: I have made a small modification on the regexp for internet date, 
   to make it more liberal (ie, accept a time zone string of the form +0000)
   Ivan Herman <http://www.ivan-herman.net>, March 2011.
+  
+  Have added statements to make it (hopefully) Python 3 compatible.
+  Ivan Herman <http://www.ivan-herman.net>, August 2012.
 """
 
 __author__ = "Deron Meranda <http://deron.meranda.us/>"
-__date__ = "2011-03-08"
-__version__ = "1.01"
+__date__ = "2012-08-31"
+__version__ = "1.02"
 __credits__ = """Copyright (c) 2005 Deron E. Meranda <http://deron.meranda.us/>
 Licensed under GNU LGPL 2.1 or later.  See <http://www.fsf.org/>.
 
@@ -104,6 +107,9 @@ LWS = ' \t\n\r'  # linear white space
 CRLF = '\r\n'
 DIGIT = '0123456789'
 HEX = '0123456789ABCDEFabcdef'
+
+import sys
+PY3 = (sys.version_info[0] >= 3)
 
 # Try to get a set/frozenset implementation if possible
 try:
@@ -131,7 +137,10 @@ except NameError:
 
 def _is_string( obj ):
     """Returns True if the object is a string or unicode type."""
-    return isinstance(obj,str) or isinstance(obj,unicode)
+    if PY3 :
+        return isinstance(obj,str)
+    else :
+        return isinstance(obj,str) or isinstance(obj,unicode)
 
 
 def http_datetime( dt=None ):
@@ -501,10 +510,9 @@ def _test_comments():
     def _testrm( a, b, collapse ):
         b2 = remove_comments( a, collapse )
         if b != b2:
-            print 'Comment test failed:'
-            print '   remove_comments( %s, collapse_spaces=%s ) -> %s' \
-                  % (repr(a), repr(collapse), repr(b2))
-            print '   expected %s' % repr(b)
+            print( 'Comment test failed:' )
+            print( '   remove_comments( %s, collapse_spaces=%s ) -> %s' % (repr(a), repr(collapse), repr(b2)) )
+            print( '   expected %s' % repr(b) )
             return 1
         return 0
     failures = 0
@@ -1341,14 +1349,17 @@ class content_type(object):
         """String value."""
         s = '%s/%s' % (self.major, self.minor)
         if self.parmdict:
-            extra = '; '.join([ '%s=%s' % (a[0],quote_string(a[1],False)) \
-                                for a in self.parmdict.items()])
+            extra = '; '.join([ '%s=%s' % (a[0],quote_string(a[1],False)) for a in self.parmdict.items()])
             s += '; ' + extra
         return s
 
     def __unicode__(self):
         """Unicode string value."""
-        return unicode(self.__str__())
+        # In Python 3 this is probably unnecessary in general, this is just to avoid possible syntax issues. I.H.
+        if PY3 :
+            return str(self.__str__())
+        else :
+            return unicode(self.__str__())
 
     def __repr__(self):
         """Python representation of this object."""
@@ -1766,7 +1777,11 @@ class language_tag(object):
 
     def __unicode__(self):
         """The unicode string form of this language tag."""
-        return unicode(self.__str__())
+        # Probably unnecessary in Python 3
+        if PY3 :
+            return str(self.__str__())
+        else :
+            return unicode(self.__str__())
 
     def __repr__(self):
         """The python representation of this language tag."""

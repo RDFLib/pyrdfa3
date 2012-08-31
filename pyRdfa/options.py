@@ -67,6 +67,12 @@ class ProcessorGraph :
 		@return: the bnode that serves as a subject for the errors. The caller may add additional information
 		@rtype: BNode
 		"""
+		# Python 3 foolproof way
+		try :
+			is_context_string = isinstance(context, basestring)
+		except :
+			is_context_string = isinstance(context, str)
+		
 		bnode = BNode()
 		
 		if node != None:
@@ -82,7 +88,7 @@ class ProcessorGraph :
 			self.graph.add((bnode, ns_rdf["type"], info_class))
 		self.graph.add((bnode, ns_dc["description"], Literal(full_msg)))
 		self.graph.add((bnode, ns_dc["date"], Literal(datetime.datetime.utcnow().isoformat(),datatype=ns_xsd["dateTime"])))
-		if context and (isinstance(context,URIRef) or isinstance(context, basestring)):
+		if context and (isinstance(context,URIRef) or is_context_string):
 			htbnode = BNode()
 			self.graph.add( (bnode,   ns_rdfa["context"],htbnode) )
 			self.graph.add( (htbnode, ns_rdf["type"], ns_ht["Request"]) )

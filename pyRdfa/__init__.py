@@ -158,12 +158,19 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
  $Id: __init__.py,v 1.82 2012/08/21 10:28:50 ivan Exp $
 """
 
-__version__ = "3.4.2"
+__version__ = "3.4.3"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
-__license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
+__license__ = 'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
 
-import sys, StringIO
+import sys
+PY3 = (sys.version_info[0] >= 3)
+
+if PY3 :
+	from io import StringIO
+else :
+	from StringIO import StringIO
+
 import os
 
 import rdflib
@@ -183,7 +190,11 @@ else :
 from pyRdfa.extras.httpheader import acceptable_content_type, content_type
 
 import xml.dom.minidom
-import urlparse
+
+if PY3 :
+	from urllib.parse import urlparse
+else :
+	from urlparse import urlparse
 
 # Namespace, in the RDFLib sense, for the rdfa vocabulary
 ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
@@ -192,7 +203,7 @@ ns_rdfa		= Namespace("http://www.w3.org/ns/rdfa#")
 RDFA_VOCAB  = ns_rdfa["usesVocabulary"]
 
 # Namespace, in the RDFLib sense, for the XSD Datatypes
-ns_xsd		= Namespace(u'http://www.w3.org/2001/XMLSchema#')
+ns_xsd		= Namespace('http://www.w3.org/2001/XMLSchema#')
 
 # Namespace, in the RDFLib sense, for the distiller vocabulary, used as part of the processor graph
 ns_distill	= Namespace("http://www.w3.org/2007/08/pyRdfa/vocab#")
@@ -396,10 +407,17 @@ class pyRdfa :
 		@return: a file like object if opening "name" is possible and successful, "name" otherwise
 		"""
 		try :
-			if isinstance(name, basestring) :
+			# Python 2 branch
+			isstring = isinstance(name, basestring)
+		except :
+			# Python 3 branch
+			isstring = isinstance(name, str)
+
+		try :
+			if isstring :
 				# check if this is a URI, ie, if there is a valid 'scheme' part
 				# otherwise it is considered to be a simple file
-				if urlparse.urlparse(name)[0] != "" :
+				if urlparse(name)[0] != "" :
 					url_request 	  = URIOpener(name)
 					self.base 		  = url_request.location
 					if self.media_type == "" :
@@ -429,8 +447,8 @@ class pyRdfa :
 					return file(name)
 			else :
 				return name
-		except HTTPError, h :
-			raise h
+		except HTTPError :
+			raise sys.exc_info()[1]
 		except :
 			(type, value, traceback) = sys.exc_info()
 			raise FailedSource(value)
@@ -528,25 +546,36 @@ class pyRdfa :
 					tog.bind(k,ns)
 			options.reset_processor_graph()
 			return tog		
+
+		# Separating this for a forward Python 3 compatibility
+		try :
+			# Python 2 branch
+			isstring = isinstance(name, basestring)
+		except :
+			# Python 3 branch
+			isstring = isinstance(name, str)
 		
 		try :
 			# First, open the source... Possible HTTP errors are returned as error triples
 			input = None
 			try :
 				input = self._get_input(name)
-			except FailedSource, f :
+			except FailedSource :
+				f = sys.exc_info()[1]
 				self.http_status = 400
 				if not rdfOutput : raise f
 				err = self.options.add_error(f.msg, FileReferenceError, name)
 				self.options.processor_graph.add_http_context(err, 400)
 				return copyErrors(graph, self.options)
-			except HTTPError, h:
+			except HTTPError :
+				h = sys.exc_info()[1]
 				self.http_status = h.http_code
 				if not rdfOutput : raise h
 				err = self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg), HTError, name)
 				self.options.processor_graph.add_http_context(err, h.http_code)
 				return copyErrors(graph, self.options)
-			except Exception, e :
+			except Exception :
+				e = sys.exc_info()[1]
 				self.http_status = 500
 				# Something nasty happened:-(
 				if not rdfOutput : raise e
@@ -574,7 +603,7 @@ class pyRdfa :
 						dom = parser.parse(input)
 						
 					try :
-						if isinstance(name, basestring) :
+						if isstring :
 							input.close()
 							input = self._get_input(name)
 						else :
@@ -596,7 +625,8 @@ class pyRdfa :
 			except ImportError :
 				msg = "HTML5 parser not available. Try installing html5lib <http://code.google.com/p/html5lib>"
 				raise ImportError(msg)
-			except Exception, e :
+			except Exception :
+				e = sys.exc_info()[1]
 				# These are various parsing exception. Per spec, this is a case when
 				# error triples MUST be returned, ie, the usage of rdfOutput (which switches between an HTML formatted
 				# return page or a graph with error triples) does not apply
@@ -607,13 +637,16 @@ class pyRdfa :
 
 			# If we got here, we have a DOM tree to operate on...	
 			return self.graph_from_DOM(dom, graph, pgraph)
-		except Exception, e :
+		except Exception :
 			# Something nasty happened during the generation of the graph...
 			(a,b,c) = sys.exc_info()
 			sys.excepthook(a,b,c)
-			self.http_status = 500
-			if not rdfOutput : raise e
-			err = self.options.add_error(str(e), context = name)
+			if isinstance(b, ImportError) :
+				self.http_status = None
+			else :
+				self.http_status = 500
+			if not rdfOutput : raise b
+			err = self.options.add_error(str(b), context = name)
 			self.options.processor_graph.add_http_context(err, 500)
 			return copyErrors(graph, self.options)
 	
@@ -637,7 +670,7 @@ class pyRdfa :
 		except :
 			graph = Graph()
 
-		graph.bind("xsd", Namespace(u'http://www.w3.org/2001/XMLSchema#'))
+		graph.bind("xsd", Namespace('http://www.w3.org/2001/XMLSchema#'))
 		# the value of rdfOutput determines the reaction on exceptions...
 		for name in names :
 			self.graph_from_source(name, graph, rdfOutput)
@@ -683,10 +716,10 @@ def processURI(uri, outputFormat, form={}) :
 	"""
 	def _get_option(param, compare_value, default) :
 		param_old = param.replace('_','-')
-		if param in form.keys() :
+		if param in list(form.keys()) :
 			val = form.getfirst(param).lower()
 			return val == compare_value
-		elif param_old in form.keys() :
+		elif param_old in list(form.keys()) :
 			# this is to ensure the old style parameters are still valid...
 			# in the old days I used '-' in the parameters, the standard favours '_'
 			val = form.getfirst(param_old).lower()
@@ -698,14 +731,13 @@ def processURI(uri, outputFormat, form={}) :
 		input	= form["uploaded"].file
 		base	= ""
 	elif uri == "text:" :
-		import StringIO
-		input	= StringIO.StringIO(form.getfirst("text"))
+		input	= StringIO(form.getfirst("text"))
 		base	= ""
 	else :
 		input	= uri
 		base	= uri
 		
-	if "rdfa_version" in form.keys() :
+	if "rdfa_version" in list(form.keys()) :
 		rdfa_version = form.getfirst("rdfa_version")
 	else :
 		rdfa_version = None
@@ -714,7 +746,7 @@ def processURI(uri, outputFormat, form={}) :
 	# Host language: HTML, XHTML, or XML
 	# Note that these options should be used for the upload and inline version only in case of a form
 	# for real uris the returned content type should be used
-	if "host_language" in form.keys() :
+	if "host_language" in list(form.keys()) :
 		if form.getfirst("host_language").lower() == "xhtml" :
 			media_type = MediaTypes.xhtml
 		elif form.getfirst("host_language").lower() == "html" :
@@ -730,26 +762,26 @@ def processURI(uri, outputFormat, form={}) :
 		
 	transformers = []
 	
-	if "rdfa_lite" in form.keys() and form.getfirst("rdfa_lite").lower() == "true" :
+	if "rdfa_lite" in list(form.keys()) and form.getfirst("rdfa_lite").lower() == "true" :
 		from pyRdfa.transform.lite import lite_prune
 		transformers.append(lite_prune)
 
 	# The code below is left for backward compatibility only. In fact, these options are not exposed any more,
 	# they are not really in use
-	if "extras" in form.keys() and form.getfirst("extras").lower() == "true" :
+	if "extras" in list(form.keys()) and form.getfirst("extras").lower() == "true" :
 		from pyRdfa.transform.metaname              	import meta_transform
 		from pyRdfa.transform.OpenID                	import OpenID_transform
 		from pyRdfa.transform.DublinCore            	import DC_transform
 		for t in [OpenID_transform, DC_transform, meta_transform] :
 			transformers.append(t)
 	else :
-		if "extra-meta" in form.keys() and form.getfirst("extra-meta").lower() == "true" :
+		if "extra-meta" in list(form.keys()) and form.getfirst("extra-meta").lower() == "true" :
 			from pyRdfa.transform.metaname import meta_transform
 			transformers.append(meta_transform)
-		if "extra-openid" in form.keys() and form.getfirst("extra-openid").lower() == "true" :
+		if "extra-openid" in list(form.keys()) and form.getfirst("extra-openid").lower() == "true" :
 			from pyRdfa.transform.OpenID import OpenID_transform
 			transformers.append(OpenID_transform)
-		if "extra-dc" in form.keys() and form.getfirst("extra-dc").lower() == "true" :
+		if "extra-dc" in list(form.keys()) and form.getfirst("extra-dc").lower() == "true" :
 			from pyRdfa.transform.DublinCore import DC_transform
 			transformers.append(DC_transform)
 
@@ -761,9 +793,9 @@ def processURI(uri, outputFormat, form={}) :
 	# On the other hand, the RDFa 1.1 doc clearly refers to 'rdfagraph' as the standard
 	# key.
 	a = None
-	if "graph" in form.keys() :
+	if "graph" in list(form.keys()) :
 		a = form.getfirst("graph").lower()
-	elif "rdfagraph" in form.keys() :
+	elif "rdfagraph" in list(form.keys()) :
 		a = form.getfirst("rdfagraph").lower()
 	if a != None :
 		if a == "processor" :
@@ -814,7 +846,7 @@ def processURI(uri, outputFormat, form={}) :
 	# This is really for testing purposes only, it is an unpublished flag to force RDF output no
 	# matter what
 	try :
-		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in form.keys()) or not htmlOutput)
+		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in list(form.keys())) or not htmlOutput)
 		if outputFormat == "n3" :
 			retval = 'Content-Type: text/rdf+n3; charset=utf-8\n'
 		elif outputFormat == "nt" or outputFormat == "turtle" :
@@ -826,7 +858,8 @@ def processURI(uri, outputFormat, form={}) :
 		retval += '\n'
 		retval += graph
 		return retval
-	except HTTPError, h :
+	except HTTPError :
+		(type,h,traceback) = sys.exc_info()
 		import cgi
 		
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s \n\n' % h.http_code
@@ -846,7 +879,6 @@ def processURI(uri, outputFormat, form={}) :
 		(type,value,traceback) = sys.exc_info()
 
 		import traceback, cgi
-		import StringIO
 
 		retval = 'Content-type: text/html; charset=utf-8\nStatus: %s\n\n' % processor.http_status
 		retval += "<html>\n"		
@@ -855,7 +887,7 @@ def processURI(uri, outputFormat, form={}) :
 		retval += "</head><body>\n"
 		retval += "<h1>Exception in distilling RDFa</h1>\n"
 		retval += "<pre>\n"
-		strio  = StringIO.StringIO()
+		strio  = StringIO()
 		traceback.print_exc(file=strio)
 		retval += strio.getvalue()
 		retval +="</pre>\n"
@@ -868,9 +900,9 @@ def processURI(uri, outputFormat, form={}) :
 			retval +="<dt>Uploaded file</dt>\n"
 		else :
 			retval +="<dt>URI received:</dt><dd><code>'%s'</code></dd>\n" % cgi.escape(uri)
-		if "host_language" in form.keys() :
+		if "host_language" in list(form.keys()) :
 			retval +="<dt>Media Type:</dt><dd>%s</dd>\n" % media_type
-		if "graph" in form.keys() :
+		if "graph" in list(form.keys()) :
 			retval +="<dt>Requested graphs:</dt><dd>%s</dd>\n" % form.getfirst("graph").lower()
 		else :
 			retval +="<dt>Requested graphs:</dt><dd>default</dd>\n"

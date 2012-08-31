@@ -52,8 +52,11 @@ from pyRdfa import err_undefined_CURIE
 
 import re
 import random
-import urlparse
-import urllib
+if py_v_major >= 3 :
+	from urllib.parse import urlparse, urlunparse, urlsplit, urljoin
+else :	
+	from urlparse import urlparse, urlunparse, urlsplit, urljoin
+
 from types import *
 
 class ListStructure :
@@ -115,8 +118,8 @@ class ExecutionContext :
 			"""
 			try :
 				# To be on the safe side:-)
-				t = urlparse.urlparse(uri)
-				return urlparse.urlunparse((t[0],t[1],t[2],t[3],t[4],""))
+				t = urlparse(uri)
+				return urlunparse((t[0],t[1],t[2],t[3],t[4],""))
 			except :
 				return uri
 			
@@ -170,9 +173,9 @@ class ExecutionContext :
 			# This value can be overwritten by a @version attribute
 			if node.hasAttribute("version") :
 				top_version = node.getAttribute("version")
-				if top_version.find("RDFa 1.0") != -1 :
+				if top_version.find("RDFa 1.0") != -1 or top_version.find("RDFa1.0") != -1 :
 					self.rdfa_version = "1.0"
-				elif top_version.find("RDFa 1.1") != -1 :
+				elif top_version.find("RDFa 1.1") != -1 or top_version.find("RDFa1.1") != -1 :
 					self.rdfa_version = "1.1"						
 			
 			# this is just to play safe. I believe this should actually not happen...
@@ -208,7 +211,7 @@ class ExecutionContext :
 								
 		#-----------------------------------------------------------------
 		# this will be used repeatedly, better store it once and for all...		
-		self.parsedBase = urlparse.urlsplit(self.base)
+		self.parsedBase = urlsplit(self.base)
 
 		#-----------------------------------------------------------------
 		# generate and store the local CURIE handling class instance
@@ -284,7 +287,7 @@ class ExecutionContext :
 			"""
 			from pyRdfa	import uri_schemes
 			val = uri.strip()
-			if check and urlparse.urlsplit(val)[0] not in uri_schemes :
+			if check and urlsplit(val)[0] not in uri_schemes :
 				self.options.add_warning(err_URI_scheme % val.strip(), node=self.node.nodeName)
 			return URIRef(val)
 
@@ -300,11 +303,11 @@ class ExecutionContext :
 			@return: an RDFLib URIRef instance
 			"""
 			# UGLY!!! There is a bug for a corner case in python version <= 2.5.X
-			if len(v) > 0 and v[0] == '?' and py_v_minor <= 5 :
+			if len(v) > 0 and v[0] == '?' and (py_v_major < 3 and py_v_minor <= 5) :
 				return create_URIRef(base+v, check)
 			####
 			
-			joined = urlparse.urljoin(base, v)
+			joined = urljoin(base, v)
 			try :
 				if v[-1] != joined[-1] and (v[-1] == "#" or v[-1] == "?") :
 					return create_URIRef(joined + v[-1], check)
@@ -325,7 +328,7 @@ class ExecutionContext :
 			# the ':' _does_ appear in the URI but not in a scheme position is taken
 			# care of properly...
 			
-			key = urlparse.urlsplit(val)[0]
+			key = urlsplit(val)[0]
 			if key == "" :
 				# relative URI, to be combined with local file name:
 				return join(self.base, val, check = False)
@@ -374,7 +377,7 @@ class ExecutionContext :
 					return self._URI(val)
 			else :
 				# there is an unlikely case where the retval is actually a URIRef with a relative URI. Better filter that one out
-				if isinstance(retval, BNode) == False and urlparse.urlsplit(str(retval))[0] == "" :
+				if isinstance(retval, BNode) == False and urlsplit(str(retval))[0] == "" :
 					# yep, there is something wrong, a new URIRef has to be created:
 					return URIRef(self.base+str(retval))
 				else :
@@ -399,7 +402,7 @@ class ExecutionContext :
 		if val == "" :
 			return None
 		
-		from termorcurie import ncname, termname
+		from pyRdfa.termorcurie import ncname, termname
 		if termname.match(val) :
 			# This is a term, must be handled as such...			
 			retval = self.term_or_curie.term_to_URI(val)
@@ -415,7 +418,7 @@ class ExecutionContext :
 				return retval
 			elif self.rdfa_version >= "1.1" :
 				# See if it is an absolute URI
-				scheme = urlparse.urlsplit(val)[0]
+				scheme = urlsplit(val)[0]
 				if scheme == "" :
 					# bug; there should be no relative URIs here
 					self.options.add_warning(err_non_legal_CURIE_ref % val, UnresolvablePrefix, node=self.node.nodeName)
@@ -503,7 +506,7 @@ class ExecutionContext :
 		Return the list of property values in the list structure
 		@return: list of URIRef
 		"""
-		return self.list_mapping.mapping.keys()
+		return list(self.list_mapping.mapping.keys())
 		
 	def get_list_value(self,prop) :
 		"""

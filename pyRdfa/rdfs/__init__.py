@@ -15,12 +15,7 @@ $Id: __init__.py,v 1.4 2012/08/20 13:15:28 ivan Exp $ $Date: 2012/08/20 13:15:28
 
 """
 
-__version__ = "3.0.2"
-__author__  = 'Ivan Herman'
-__contact__ = 'Ivan Herman, ivan@w3.org'
-__license__ = u'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
-
-import sys, StringIO
+import sys
 import os
 
 import rdflib
@@ -37,8 +32,6 @@ else :
 	from rdflib.RDF		import RDFNS  as ns_rdf
 	from rdflib.Graph 	import Graph
 
-import xml.dom.minidom
-import urlparse
 from pyRdfa import RDFaError, pyRdfaError
 from pyRdfa import ns_rdfa, ns_xsd, ns_distill
 

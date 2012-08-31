@@ -17,7 +17,20 @@ $Id: utils.py,v 1.8 2012/05/17 15:02:48 ivan Exp $
 $Date: 2012/05/17 15:02:48 $
 """
 import os, os.path, sys, imp, datetime
-import urllib, urlparse, urllib2
+
+# Python 3 vs. 2 switch
+if sys.version_info[0] >= 3 :
+	from urllib.request import Request, urlopen
+	from urllib.parse   import urljoin, quote
+	from http.server    import BaseHTTPRequestHandler
+	from urllib.error   import HTTPError as urllib_HTTPError
+else :
+	from urllib2        import Request, urlopen
+	from urllib2        import HTTPError as urllib_HTTPError
+	from urlparse       import urljoin
+	from urllib         import quote
+	from BaseHTTPServer import BaseHTTPRequestHandler
+
 from pyRdfa.extras.httpheader import content_type, parse_http_datetime
 
 import rdflib
@@ -61,14 +74,14 @@ class URIOpener :
 		"""		
 		try :
 			# Note the removal of the fragment ID. This is necessary, per the HTTP spec
-			req = urllib2.Request(url=name.split('#')[0])
+			req = Request(url=name.split('#')[0])
 
 			for key in additional_headers :
 				req.add_header(key, additional_headers[key])
 			if 'Accept' not in additional_headers :
 				req.add_header('Accept', 'text/html, application/xhtml+xml')
 				
-			self.data		= urllib2.urlopen(req)
+			self.data		= urlopen(req)
 			self.headers	= self.data.info()
 			
 			if URIOpener.CONTENT_TYPE in self.headers :
@@ -92,7 +105,7 @@ class URIOpener :
 						break
 			
 			if URIOpener.CONTENT_LOCATION in self.headers :
-				self.location = urlparse.urljoin(self.data.geturl(),self.headers[URIOpener.CONTENT_LOCATION])
+				self.location = urljoin(self.data.geturl(),self.headers[URIOpener.CONTENT_LOCATION])
 			else :
 				self.location = name
 			
@@ -114,12 +127,13 @@ class URIOpener :
 					# The last modified date format was wrong, sorry, forget it...
 					pass
 				
-		except urllib2.HTTPError, e :
+		except urllib_HTTPError :
+			e = sys.exc_info()[1]
 			from pyRdfa import HTTPError
-			import BaseHTTPServer
-			msg = BaseHTTPServer.BaseHTTPRequestHandler.responses[e.code]
+			msg = BaseHTTPRequestHandler.responses[e.code]
 			raise HTTPError('%s' % msg[1], e.code)
-		except Exception, e :
+		except Exception :
+			e = sys.exc_info()[1]
 			from pyRdfa import RDFaError
 			raise RDFaError('%s' % e)
 
@@ -146,7 +160,7 @@ def quote_URI(uri, options = None) :
 			if options != None :
 				options.add_warning(err_unusual_char_in_URI % suri)
 			break
-	return urllib.quote(suri, _unquotedChars)
+	return quote(suri, _unquotedChars)
 	
 #########################################################################################################
 	
@@ -155,7 +169,7 @@ def create_file_name(uri) :
 	Create a suitable file name from an (absolute) URI. Used, eg, for the generation of a file name for a cached vocabulary file.
 	"""
 	suri = uri.strip()
-	final_uri = urllib.quote(suri,_unquotedChars)
+	final_uri = quote(suri,_unquotedChars)
 	# Remove some potentially dangereous characters
 	return final_uri.replace(' ','_').replace('%','_').replace('-','_').replace('+','_').replace('/','_').replace('?','_').replace(':','_').replace('=','_').replace('#','_')
 
@@ -234,13 +248,7 @@ def dump(node) :
 
 	@param node: DOM node
 	"""
-	print node.toprettyxml(indent="", newl="")
+	print( node.toprettyxml(indent="", newl="") )
 	
-	
-	
-##################
-# Testing
-if __name__ == '__main__':
-	u = URIOpener("http://www.ivan-herman.net/foaf.html")
-	print u.charset
+
 	
