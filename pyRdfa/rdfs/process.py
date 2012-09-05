@@ -271,7 +271,7 @@ def process_rdfa_sem(graph, options) :
 	from pyRdfa import RDFA_VOCAB
 	for ((s,p,v)) in graph.triples((None,RDFA_VOCAB,None)) :
 		vocabs.add((str(v)))
-		
+
 	if len(vocabs) >= 0 :
 		# 2. get all the vocab graphs
 		vocab_graph = Graph()
