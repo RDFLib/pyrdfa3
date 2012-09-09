@@ -7,7 +7,7 @@ Run the pyRdfa package locally, ie, on a local file
 # You may want to adapt this to your environment...
 import sys, getopt, platform
 
-sys.path.insert(0,"/Users/ivan/W3C/dev/2004/PythonLib-IH/rdfa-1.1")
+sys.path.insert(0,"/Users/ivan/Library/Python")
 
 from pyRdfa                        import pyRdfa
 from pyRdfa.transform.metaname     import meta_transform
