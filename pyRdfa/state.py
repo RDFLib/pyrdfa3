@@ -17,8 +17,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: state.py,v 1.21 2012/08/20 14:14:14 ivan Exp $
-$Date: 2012/08/20 14:14:14 $
+$Id: state.py,v 1.22 2012/10/10 15:19:43 ivan Exp $
+$Date: 2012/10/10 15:19:43 $
 """
 import sys
 (py_v_major, py_v_minor, py_v_micro, py_v_final, py_v_serial) = sys.version_info
@@ -50,14 +50,10 @@ from . import err_undefined_terms
 from . import err_non_legal_CURIE_ref				
 from . import err_undefined_CURIE					
 
-import re
-import random
 if py_v_major >= 3 :
 	from urllib.parse import urlparse, urlunparse, urlsplit, urljoin
 else :	
 	from urlparse import urlparse, urlunparse, urlsplit, urljoin
-
-from types import *
 
 class ListStructure :
 	"""Special class to handle the C{@inlist} type structures in RDFa 1.1; stores the "origin", i.e,
@@ -475,7 +471,7 @@ class ExecutionContext :
 		"""
 		if len(args) == 0 :
 			return None
-		if isinstance(args[0], TupleType) or isinstance(args[0], ListType) :
+		if isinstance(args[0], tuple) or isinstance(args[0], list) :
 			rargs = args[0]
 		else :
 			rargs = args
