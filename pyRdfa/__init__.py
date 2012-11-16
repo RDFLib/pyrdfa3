@@ -155,7 +155,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
- $Id: __init__.py,v 1.82 2012/08/21 10:28:50 ivan Exp $
+ $Id: __init__.py,v 1.83 2012/11/16 17:51:53 ivan Exp $
 """
 
 __version__ = "3.4.3"

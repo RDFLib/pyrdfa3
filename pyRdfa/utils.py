@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.8 2012/05/17 15:02:48 ivan Exp $
-$Date: 2012/05/17 15:02:48 $
+$Id: utils.py,v 1.9 2012/11/16 17:51:53 ivan Exp $
+$Date: 2012/11/16 17:51:53 $
 """
 import os, os.path, sys, imp, datetime
 

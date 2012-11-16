@@ -15,8 +15,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.17 2012/06/12 11:47:28 ivan Exp $
-$Date: 2012/06/12 11:47:28 $
+$Id: parse.py,v 1.18 2012/11/16 17:51:53 ivan Exp $
+$Date: 2012/11/16 17:51:53 $
 """
 
 import sys
