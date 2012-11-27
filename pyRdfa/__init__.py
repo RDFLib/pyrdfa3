@@ -155,7 +155,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
- $Id: __init__.py,v 1.83 2012/11/16 17:51:53 ivan Exp $
+ $Id: __init__.py,v 1.84 2012-11-27 14:18:46 ivan Exp $
 """
 
 __version__ = "3.4.3"
@@ -854,7 +854,7 @@ def processURI(uri, outputFormat, form={}) :
 		elif outputFormat == "nt" or outputFormat == "turtle" :
 			retval = 'Content-Type: text/turtle; charset=utf-8\n'
 		elif outputFormat == "json-ld" or outputFormat == "json" :
-			retval = 'Content-Type: application/json; charset=utf-8\n'
+			retval = 'Content-Type: application/ld+json; charset=utf-8\n'
 		else :
 			retval = 'Content-Type: application/rdf+xml; charset=utf-8\n'
 		retval += '\n'
