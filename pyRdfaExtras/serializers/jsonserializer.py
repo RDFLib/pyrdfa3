@@ -16,9 +16,8 @@
 #along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 # Modified by Ivan Herman, 2012, to produce a JSON-LD serialization: http://json-ld.org/spec/latest/json-ld-syntax
-
 """
-
+ $Id: jsonserializer.py,v 1.4 2012-12-05 19:18:17 ivan Exp $
 """
 import sys
 
@@ -189,7 +188,8 @@ class JsonSerializer(Serializer):
 				if p not in predicate_handled :
 					typ = OrderedDict()
 					typ['@type'] = '@id'
-					context[p] = typ
+					cp = self.prefix_map.shrink(p)
+					context[cp if cp != None else p] = typ
 					
 			# Context is done
 			_json_obj["@context"] = context
