@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.10 2012/06/28 11:58:14 ivan Exp $
-$Date: 2012/06/28 11:58:14 $
+$Id: html5.py,v 1.11 2012-12-12 16:33:30 ivan Exp $
+$Date: 2012-12-12 16:33:30 $
 """
 try :
 	from functools import reduce

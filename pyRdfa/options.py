@@ -159,7 +159,8 @@ class Options :
 					   vocab_cache                = True,
 					   vocab_cache_report         = False,
 					   refresh_vocab_cache        = False,
-					   add_informational_messages = False) :
+					   add_informational_messages = False,
+					   experimental_features      = False) :
 		self.space_preserve 		    = space_preserve
 		self.transformers   		    = transformers
 		self.processor_graph  		    = ProcessorGraph() 
@@ -172,6 +173,7 @@ class Options :
 		self.vocab_expansion		    = vocab_expansion
 		self.vocab_cache			    = vocab_cache
 		self.add_informational_messages = add_informational_messages
+		self.experimental_features      = experimental_features
 			
 	def set_host_language(self, content_type) :
 		"""

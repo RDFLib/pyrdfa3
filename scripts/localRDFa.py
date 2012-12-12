@@ -116,7 +116,8 @@ options = Options(output_default_graph = output_default_graph,
 				  vocab_expansion = vocab_expansion,
 				  vocab_cache = vocab_cache,
 				  vocab_cache_report = vocab_cache_report,
-				  refresh_vocab_cache = refresh_vocab_cache
+				  refresh_vocab_cache = refresh_vocab_cache,
+				  experimental_features = True
 )
 
 processor = pyRdfa(options, base)

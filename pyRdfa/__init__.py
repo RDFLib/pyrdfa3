@@ -506,6 +506,11 @@ class pyRdfa :
 		if self.options.vocab_expansion :
 			from .rdfs.process import process_rdfa_sem
 			process_rdfa_sem(default_graph, self.options)
+
+		# Experimental feature: prototype
+		if self.options.experimental_features :
+			from transform.prototype import handle_prototypes
+			handle_prototypes(default_graph)
 	
 		# What should be returned depends on the way the options have been set up
 		if self.options.output_default_graph :
