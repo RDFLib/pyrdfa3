@@ -155,7 +155,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
- $Id: __init__.py,v 1.84 2012-11-27 14:18:46 ivan Exp $
+ $Id: __init__.py,v 1.87 2012-12-26 12:30:39 ivan Exp $
 """
 
 __version__ = "3.4.3"
@@ -433,7 +433,6 @@ class pyRdfa :
 						self.required_base = name
 					return url_request.data
 				else :
-					self.base = name
 					# Creating a File URI for this thing
 					if self.required_base == None :
 						self.required_base = "file://" + os.path.join(os.getcwd(),name)
@@ -488,7 +487,8 @@ class pyRdfa :
 		
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
-		state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
+		state = ExecutionContext(topElement, default_graph, base=self.required_base if self.required_base != None else "", options=self.options, rdfa_version=self.rdfa_version)
+		#state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
 
 		# Perform the built-in and external transformations on the HTML tree. 
 		for trans in self.options.transformers + builtInTransformers :
@@ -496,7 +496,7 @@ class pyRdfa :
 		
 		# This may have changed if the state setting detected an explicit version information:
 		self.rdfa_version = state.rdfa_version
-				
+
 		# The top level subject starts with the current document; this
 		# is used by the recursion
 		# this function is the real workhorse
