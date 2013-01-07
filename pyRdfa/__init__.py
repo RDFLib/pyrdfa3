@@ -155,7 +155,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
- $Id: __init__.py,v 1.87 2012-12-26 12:30:39 ivan Exp $
+ $Id: __init__.py,v 1.88 2013-01-07 12:46:43 ivan Exp $
 """
 
 __version__ = "3.4.3"
@@ -488,7 +488,6 @@ class pyRdfa :
 		# Create the initial state. This takes care of things
 		# like base, top level namespace settings, etc.
 		state = ExecutionContext(topElement, default_graph, base=self.required_base if self.required_base != None else "", options=self.options, rdfa_version=self.rdfa_version)
-		#state = ExecutionContext(topElement, default_graph, base=self.base, options=self.options, rdfa_version=self.rdfa_version)
 
 		# Perform the built-in and external transformations on the HTML tree. 
 		for trans in self.options.transformers + builtInTransformers :
@@ -771,9 +770,7 @@ def processURI(uri, outputFormat, form={}) :
 		
 	transformers = []
 	
-	if "rdfa_lite" in list(form.keys()) and form.getfirst("rdfa_lite").lower() == "true" :
-		from .transform.lite import lite_prune
-		transformers.append(lite_prune)
+	check_lite = "rdfa_lite" in list(form.keys()) and form.getfirst("rdfa_lite").lower() == "true"
 
 	# The code below is left for backward compatibility only. In fact, these options are not exposed any more,
 	# they are not really in use
@@ -829,7 +826,8 @@ def processURI(uri, outputFormat, form={}) :
 					  vocab_cache_report     = vocab_cache_report,
 					  refresh_vocab_cache    = refresh_vocab_cache,
 					  vocab_expansion        = vocab_expansion,
-					  embedded_rdf           = embedded_rdf
+					  embedded_rdf           = embedded_rdf,
+					  check_lite             = check_lite
 					  )
 	processor = pyRdfa(options = options, base = base, media_type = media_type, rdfa_version = rdfa_version)
 

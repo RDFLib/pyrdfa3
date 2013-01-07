@@ -13,7 +13,6 @@ from pyRdfa                        import pyRdfa
 from pyRdfa.transform.metaname     import meta_transform
 from pyRdfa.transform.OpenID       import OpenID_transform
 from pyRdfa.transform.DublinCore   import DC_transform
-from pyRdfa.transform.lite         import lite_prune
 from pyRdfa.options                import Options
 
 extraTransformers = [
@@ -64,6 +63,7 @@ refresh_vocab_cache    = False
 vocab_expansion        = False
 vocab_cache            = True
 embedded_rdf           = True
+check_lite             = False
 
 try :
 	opts, value = getopt.getopt(sys.argv[1:],"vxetjnpzsb:g:ryl",['graph='])
@@ -85,7 +85,7 @@ try :
 		elif o == "-s" :
 			space_preserve = False
 		elif o == "-l" :
-			extras.append(lite_prune)
+			check_lite = True
 		elif o == "-r" :
 			vocab_cache_report = True			
 		elif o == "-v" :
@@ -117,6 +117,7 @@ options = Options(output_default_graph = output_default_graph,
 				  vocab_cache = vocab_cache,
 				  vocab_cache_report = vocab_cache_report,
 				  refresh_vocab_cache = refresh_vocab_cache,
+				  check_lite = check_lite,
 				  experimental_features = True
 )
 

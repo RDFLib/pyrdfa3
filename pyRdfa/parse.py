@@ -15,15 +15,15 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: parse.py,v 1.18 2012/11/16 17:51:53 ivan Exp $
-$Date: 2012/11/16 17:51:53 $
+$Id: parse.py,v 1.19 2013-01-07 12:46:43 ivan Exp $
+$Date: 2013-01-07 12:46:43 $
 """
 
 import sys
 
 from .state   		import ExecutionContext
 from .property 		import ProcessProperty
-from .embeddedRDF	 	import handle_embeddedRDF
+from .embeddedRDF	import handle_embeddedRDF
 from .host			import HostLanguage, host_dom_transforms
 
 import rdflib
@@ -95,10 +95,19 @@ def _parse_1_1(node, graph, parent_object, incoming_state, parent_incomplete_tri
 		else :
 			return None
 
+	def lite_check() :
+		if state.options.check_lite and state.options.host_language in [ HostLanguage.html5, HostLanguage.xhtml5, HostLanguage.xhtml ] :
+			if node.tagName == "link" and node.hasAttribute("rel") and state.term_or_curie.CURIE_to_URI(node.getAttribute("rel")) != None :
+				state.options.add_warning("In RDFa Lite, attribute @rel in <link> is only used in non-RDFa way (consider using @property)", node=node)
+
 	# Update the state. This means, for example, the possible local settings of
 	# namespaces and lang
 	state = None
 	state = ExecutionContext(node, graph, inherited_state=incoming_state)
+
+	#---------------------------------------------------------------------------------
+	# Extra warning check on RDFa Lite
+	lite_check()
 	
 	#---------------------------------------------------------------------------------
 	# Handling the role attribute is pretty much orthogonal to everything else...
