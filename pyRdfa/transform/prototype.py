@@ -8,20 +8,20 @@ based on triples using the rdfa:Prototype and rdfa:ref class and property, respe
 @license: This software is available for use under the
 U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">}
 @contact: Ivan Herman, ivan@w3.org
-@version: $Id: lite.py,v 1.9 2012/06/26 13:29:58 ivan Exp $
-$Date: 2012/06/26 13:29:58 $
+@version: $Id: prototype.py,v 1.1 2013-01-18 09:41:49 ivan Exp $
+$Date: 2013-01-18 09:41:49 $
 """
 import rdflib
 from rdflib	import Namespace
 if rdflib.__version__ >= "3.0.0" :
 	from rdflib	import RDF  as ns_rdf
 else :
-	from rdflib.RDF	  import RDFNS  as ns_rdf
+	from rdflib.RDF	import RDFNS  as ns_rdf
 
 from .. import ns_rdfa
 
-Prototype = ns_rdfa["Prototype"]
-pref      = ns_rdfa["ref"]
+Prototype = ns_rdfa["Pattern"]
+pref      = ns_rdfa["copy"]
 
 def handle_prototypes(graph) :
 	to_remove = set()
