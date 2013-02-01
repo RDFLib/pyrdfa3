@@ -19,8 +19,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: termorcurie.py,v 1.10 2012/11/16 17:51:53 ivan Exp $
-$Date: 2012/11/16 17:51:53 $
+$Id: termorcurie.py,v 1.11 2013-02-01 10:11:28 ivan Exp $
+$Date: 2013-02-01 10:11:28 $
 """
 
 import re, sys
@@ -210,11 +210,16 @@ class TermOrCurie :
 			if default_vocab.vocabulary :
 				self.default_term_uri = default_vocab.vocabulary
 				
-			# see if there is local vocab
-			def_term_uri = self.state.getURI("vocab")
-			if def_term_uri :			
-				self.default_term_uri = def_term_uri
-				self.graph.add((URIRef(self.state.base),RDFA_VOCAB,URIRef(def_term_uri)))
+			# see if there is local vocab that would override previous settings
+			# However, care should be taken with the vocab="" value that should not become a URI...
+			# Indeed, this value is used to 'vipe out', ie, get back to the default vocabulary...
+			if self.state.node.hasAttribute("vocab") and self.state.node.getAttribute("vocab") == "" :
+				self.default_term_uri = default_vocab.vocabulary
+			else :
+				def_term_uri = self.state.getURI("vocab")
+				if def_term_uri and def_term_uri != "" :			
+					self.default_term_uri = def_term_uri
+					self.graph.add((URIRef(self.state.base),RDFA_VOCAB,URIRef(def_term_uri)))
 		else :
 			self.default_term_uri = None
 		
