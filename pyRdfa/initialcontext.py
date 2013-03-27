@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: initialcontext.py,v 1.10 2013-01-07 12:46:43 ivan Exp $
-$Date: 2013-01-07 12:46:43 $
+$Id: initialcontext.py,v 1.11 2013-03-27 15:21:42 ivan Exp $
+$Date: 2013-03-27 15:21:42 $
 """
 
 class Wrapper :
@@ -56,6 +56,8 @@ initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
 	'skosxl'	: 'http://www.w3.org/2008/05/skos-xl#',
 	'schema'	: 'http://schema.org/',
 	'ma'		: 'http://www.w3.org/ns/ma-ont#',
+	'sd'        : 'http://www.w3.org/ns/sparql-service-description#',
+	'prov'      : 'http://www.w3.org/ns/prov#',
 }
 
 initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].terms = {
