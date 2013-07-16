@@ -1,3 +1,11 @@
+
+***
+*** Warning (2013-07-16): the latest version of the html5lib package has a bug.
+*** This bug manifests itself if the source HTML file contains non-ASCII Unicode characters
+*** Until the bug is handled, users should use the older, 0.95 version. It can be downloaded
+*** at https://code.google.com/p/html5lib/downloads/detail?name=html5lib-0.95.tar.gz
+***
+
 pyRdfa distiller/parser library. The distribution contains:
 
 - ./pyRdfa: the Python library. You should copy the directory
@@ -21,7 +29,7 @@ Each of those libraries must be installed separately. Exception is RDFLib that s
 
 The package primarily depends on:
  - RDFLib<http://rdflib.net>. Version 3.2.0 or higher is strongly recommended.
- - html5lib<http://code.google.com/p/html5lib/> (in the additional packages folder)
+ - html5lib<https://github.com/html5lib/html5lib-python> 
  - simplejson<http://undefined.org/python/#simplejson>  (in the additional packages folder), needed if the JSON serialization is used and if the underlying python version is 2.5 or lower
  - isodate<http://hg.proclos.com/isodate> (in the additional packages folder) which, in some cases, is missing and RDFLib complains (?)
    
