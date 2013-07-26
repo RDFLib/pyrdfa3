@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.9 2012/11/16 17:51:53 ivan Exp $
-$Date: 2012/11/16 17:51:53 $
+$Id: utils.py,v 1.10 2013-07-26 12:35:51 ivan Exp $
+$Date: 2013-07-26 12:35:51 $
 """
 import os, os.path, sys, imp, datetime
 
@@ -237,8 +237,11 @@ def return_XML(state, inode, base = True, xmlns = True) :
 		else :
 			if not node.getAttribute("xml:lang") :
 				node.setAttribute("xml:lang", state.lang)
-	
-	return node.toxml()
+	if sys.version_info[0] >= 3 :
+		return node.toxml()
+	else :
+		q = node.toxml(encoding='utf-8')
+		return unicode(q, encoding='utf-8')
 
 #########################################################################################################
 

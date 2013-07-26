@@ -15,11 +15,11 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: property.py,v 1.12 2012/11/16 17:51:53 ivan Exp $
-$Date: 2012/11/16 17:51:53 $
+$Id: property.py,v 1.13 2013-07-26 12:35:51 ivan Exp $
+$Date: 2013-07-26 12:35:51 $
 """
 
-import re
+import re, sys
 
 import rdflib
 from rdflib	import BNode
@@ -121,9 +121,17 @@ class ProcessProperty :
 				# see if there *is* a datatype (even if it is empty!)
 				if dtset :
 					if datatype == XMLLiteral :
-						object = Literal(self._get_XML_literal(self.node), datatype=XMLLiteral)
+						litval = self._get_XML_literal(self.node)
+						object = Literal(litval,datatype=XMLLiteral)
 					elif datatype == HTMLLiteral :
-						object = Literal(self._get_HTML_literal(self.node), datatype=HTMLLiteral)						
+						# I am not sure why this hack is necessary, but otherwise an encoding error occurs
+						# In Python3 all this should become moot, due to the unicode everywhere approach...
+						if sys.version_info[0] >= 3 :
+							object = Literal(self._get_HTML_literal(self.node), datatype=HTMLLiteral)
+						else :
+							litval = self._get_HTML_literal(self.node)
+							o = Literal(litval, datatype=XMLLiteral)
+							object = Literal(o, datatype=HTMLLiteral)					
 					else :
 						object = self._create_Literal(self._get_literal(self.node), datatype=datatype, lang=lang)
 				else :
@@ -171,14 +179,23 @@ class ProcessProperty :
 			# The value of datatype has been set, and the keyword paramaters take care of the rest
 		else :
 			# see if there *is* a datatype (even if it is empty!)
+			print dtset
 			if dtset :
 				# yep. The Literal content is the pure text part of the current element:
 				# We have to check whether the specified datatype is, in fact, an
 				# explicit XML Literal
 				if datatype == XMLLiteral :
-					object = Literal(self._get_XML_literal(self.node),datatype=XMLLiteral)
+					litval = self._get_XML_literal(self.node)
+					object = Literal(litval,datatype=XMLLiteral)
 				elif datatype == HTMLLiteral :
-						object = Literal(self._get_HTML_literal(self.node), datatype=HTMLLiteral)						
+					# I am not sure why this hack is necessary, but otherwise an encoding error occurs
+					# In Python3 all this should become moot, due to the unicode everywhere approach...
+					if sys.version_info[0] >= 3 :
+						object = Literal(self._get_HTML_literal(self.node), datatype=HTMLLiteral)
+					else :
+						litval = self._get_HTML_literal(self.node)
+						o = Literal(litval, datatype=XMLLiteral)	
+						object = Literal(o, datatype=HTMLLiteral)					
 				else :
 					object = self._create_Literal(self._get_literal(self.node), datatype=datatype, lang=lang)
 			else :
@@ -265,7 +282,7 @@ class ProcessProperty :
 			elif node.nodeType == node.ELEMENT_NODE :
 				rc = rc + return_XML(self.state, node, base = False, xmlns = False )
 		return rc
-	# end getXMLLiteral
+	# end getHTMLLLiteral
 	
 	def _create_Literal(self, val, datatype = '', lang = '') :
 		"""
