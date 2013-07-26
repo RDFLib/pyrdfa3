@@ -179,7 +179,6 @@ class ProcessProperty :
 			# The value of datatype has been set, and the keyword paramaters take care of the rest
 		else :
 			# see if there *is* a datatype (even if it is empty!)
-			print dtset
 			if dtset :
 				# yep. The Literal content is the pure text part of the current element:
 				# We have to check whether the specified datatype is, in fact, an
