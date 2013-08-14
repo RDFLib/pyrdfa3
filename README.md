@@ -1,8 +1,5 @@
-pyRDFA
+PyRDFA
 ======
-
-Warnings
---------
 
 # WARNING: DEPRECATED Package
 
@@ -19,8 +16,8 @@ be incorporated in the RDFLib version only.
 2013-08-13
 
 
-## Usage Warning
-
+Usage Warning
+-------------
 
 Warning (2013-07-16): the latest version of the html5lib package has a bug.
 This bug manifests itself if the source HTML file contains non-ASCII Unicode characters
@@ -35,7 +32,7 @@ pyRdfa distiller/parser library. The distribution contains:
 - ./pyRdfa: the Python library. You should copy the directory
   somewhere into your PYTHONPATH. Alternatively, you can also run the
 
-    python setup.py install
+    `python setup.py install`
 
   script in the directory.
 
@@ -52,20 +49,20 @@ pyRdfa distiller/parser library. The distribution contains:
 Each of those libraries must be installed separately. Exception is RDFLib that should be installed directly from the server
 
 The package primarily depends on:
- - RDFLib<http://rdflib.net>. Version 3.2.0 or higher is strongly recommended.
- - html5lib<https://github.com/html5lib/html5lib-python> 
- - simplejson<http://undefined.org/python/#simplejson>  (in the additional packages folder), needed if the JSON serialization is used and if the underlying python version is 2.5 or lower
- - isodate<http://hg.proclos.com/isodate> (in the additional packages folder) which, in some cases, is missing and RDFLib complains (?)
+ - RDFLib: <http://rdflib.net>. Version 3.2.0 or higher is strongly recommended.
+ - html5lib: <https://github.com/html5lib/html5lib-python> 
+ - simplejson: <http://undefined.org/python/#simplejson>  (in the additional packages folder), needed if the JSON serialization is used and if the underlying python version is 2.5 or lower
+ - isodate: <http://hg.proclos.com/isodate> (in the additional packages folder) which, in some cases, is missing and RDFLib complains (?)
    
 The package has been tested on Python version 2.5 and higher. Python 2.6 or higher is strongly recommended. The package has been adapted to Python 3, though not yet thoroughly tested, because the html5lib does not have yet a Python 3 version.
 
 For the details on RDFa 1.1, see:
 
-http://www.w3.org/TR/rdfa-core
-http://www.w3.org/TR/rdfa-lite/
-http://www.w3.org/TR/xhtml-rdfa/
-http://www.w3.org/TR/rdfa-in-html/
+- <http://www.w3.org/TR/rdfa-core>
+- <http://www.w3.org/TR/rdfa-lite/>
+- <http://www.w3.org/TR/xhtml-rdfa/>
+- <http://www.w3.org/TR/rdfa-in-html/>
 
 possibly:
 
-http://www.w3.org/TR/rdfa-primer/
+- <http://www.w3.org/TR/rdfa-primer/>
