@@ -26,6 +26,9 @@ _xml_serializer_name	= "my-rdfxml"
 _turtle_serializer_name	= "my-turtle"
 _json_serializer_name	= "my-json-ld"
 
+# import rdflib_jsonld
+# from rdflib_jsonld.serializer import JsonLDSerializer
+
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -81,8 +84,11 @@ class MyGraph(Graph) :
 		if not MyGraph.json_serializer_registered :
 			from rdflib.plugin import register
 			from rdflib.serializer import Serializer
-			register(_json_serializer_name, Serializer,
-					 "pyRdfaExtras.serializers.jsonserializer", "JsonSerializer")
+			try :
+				from rdflib_jsonld.serializer import JsonLDSerializer
+				register(_json_serializer_name, Serializer,"rdflib_jsonld.serializer", "JsonLDSerializer")
+			except :
+				register(_json_serializer_name, Serializer,"pyRdfaExtras.serializers.jsonserializer", "JsonSerializer")
 			MyGraph.json_serializer_registered = True
 
 	def _register_XML_serializer_2(self) :
@@ -130,7 +136,7 @@ class MyGraph(Graph) :
 				# I do not have the patience of working out why that is so.
 				self._register_JSON_serializer_3()
 				stream = StringIO()
-				Graph.serialize(self, format=_json_serializer_name, destination = stream)
+				Graph.serialize(self, format=_json_serializer_name, destination = stream, auto_compact = True, indent = 4)
 				return stream.getvalue()
 			elif format == "nt" :
 				return Graph.serialize(self, format="nt")

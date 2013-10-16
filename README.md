@@ -53,6 +53,8 @@ The package primarily depends on:
  - html5lib: <https://github.com/html5lib/html5lib-python> 
  - simplejson: <http://undefined.org/python/#simplejson>  (in the additional packages folder), needed if the JSON serialization is used and if the underlying python version is 2.5 or lower
  - isodate: <http://hg.proclos.com/isodate> (in the additional packages folder) which, in some cases, is missing and RDFLib complains (?)
+
+At the moment, the JSON-LD serialization depends on an external JSON-LD serializer. The package comes with a simple one, but if Niklas Lindström's rdflib_jsonld package is available, then this will be used. The former is not really maintained; the latter is in github: ,https://github.com/RDFLib/rdflib-jsonld>. Note that, eventually, this serializer will find its way to the core RDFLib distribution.
    
 The package has been tested on Python version 2.5 and higher. Python 2.6 or higher is strongly recommended. The package has been adapted to Python 3, though not yet thoroughly tested, because the html5lib does not have yet a Python 3 version.
 
