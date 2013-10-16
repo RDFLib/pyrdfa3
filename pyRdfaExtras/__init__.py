@@ -11,7 +11,7 @@ Wrapper around RDFLib's Graph object to provide additional or replacement serial
 """
 
 """
-$Id: __init__.py,v 1.3 2012/08/20 13:17:05 ivan Exp $ $Date: 2012/08/20 13:17:05 $
+$Id: __init__.py,v 1.4 2013-10-16 11:49:32 ivan Exp $ $Date: 2013-10-16 11:49:32 $
 
 """
 
