@@ -155,7 +155,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
- $Id: __init__.py,v 1.91 2013-10-16 11:48:54 ivan Exp $
+ $Id: __init__.py,v 1.92 2014-02-20 14:57:09 ivan Exp $
 """
 
 __version__ = "3.4.3"
@@ -449,6 +449,8 @@ class pyRdfa :
 				return name
 		except HTTPError :
 			raise sys.exc_info()[1]
+		except RDFaError, e :
+			raise e
 		except :
 			(type, value, traceback) = sys.exc_info()
 			raise FailedSource(value)
@@ -569,11 +571,11 @@ class pyRdfa :
 			input = None
 			try :
 				input = self._get_input(name)
-			except FailedSource :
+			except FailedSource,ex :
 				f = sys.exc_info()[1]
 				self.http_status = 400
 				if not rdfOutput : raise f
-				err = self.options.add_error(f.msg, FileReferenceError, name)
+				err = self.options.add_error(ex.msg, FileReferenceError, name)
 				self.options.processor_graph.add_http_context(err, 400)
 				return copyErrors(graph, self.options)
 			except HTTPError :
@@ -582,6 +584,14 @@ class pyRdfa :
 				if not rdfOutput : raise h
 				err = self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg), HTError, name)
 				self.options.processor_graph.add_http_context(err, h.http_code)
+				return copyErrors(graph, self.options)
+			except RDFaError, ex:
+				e = sys.exc_info()[1]
+				self.http_status = 500
+				# Something nasty happened:-(
+				if not rdfOutput : raise Exception(ex.msg)
+				err = self.options.add_error(str(ex.msg), context = name)
+				self.options.processor_graph.add_http_context(err, 500)
 				return copyErrors(graph, self.options)
 			except Exception :
 				e = sys.exc_info()[1]

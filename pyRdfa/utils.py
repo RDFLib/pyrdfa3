@@ -13,19 +13,31 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.10 2013-07-26 12:35:51 ivan Exp $
-$Date: 2013-07-26 12:35:51 $
+$Id: utils.py,v 1.15 2014-02-21 16:12:43 ivan Exp $
+$Date: 2014-02-21 16:12:43 $
 """
-import os, os.path, sys, imp, datetime
+import os, os.path, sys, imp, datetime, socket
 
 # Python 3 vs. 2 switch
 if sys.version_info[0] >= 3 :
-	from urllib.request import Request, urlopen
+	if socket.getfqdn().endswith('.w3.org'):
+		import checkremote
+		url_opener = checkremote.safe_url_opener
+	else :
+		import urllib.request
+		url_opener = urllib.request.build_opener()
+	from urllib.request import Request
 	from urllib.parse   import urljoin, quote
 	from http.server    import BaseHTTPRequestHandler
 	from urllib.error   import HTTPError as urllib_HTTPError
 else :
-	from urllib2        import Request, urlopen
+	if socket.getfqdn().endswith('.w3.org'):
+		import checkremote
+		url_opener = checkremote.safe_url_opener
+	else :
+		import urllib2
+		url_opener = urllib2.build_opener()
+	from urllib2        import Request
 	from urllib2        import HTTPError as urllib_HTTPError
 	from urlparse       import urljoin
 	from urllib         import quote
@@ -81,7 +93,7 @@ class URIOpener :
 			if 'Accept' not in additional_headers :
 				req.add_header('Accept', 'text/html, application/xhtml+xml')
 				
-			self.data		= urlopen(req)
+			self.data		= url_opener.open(req)
 			self.headers	= self.data.info()
 			
 			if URIOpener.CONTENT_TYPE in self.headers :
