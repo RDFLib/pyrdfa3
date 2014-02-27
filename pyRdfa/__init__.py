@@ -141,7 +141,7 @@ The user of the package may refer add these transformers to L{Options} instance.
 @summary: RDFa parser (distiller)
 @requires: Python version 2.5 or up; 2.7 is preferred
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred.
-@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing.
+@requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing (note that version 1.0b1 and 1.0b2 should be avoided, it may lead to unicode encoding problems)
 @requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the package.
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
