@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: initialcontext.py,v 1.12 2014-01-17 12:02:51 ivan Exp $
-$Date: 2014-01-17 12:02:51 $
+$Id: initialcontext.py,v 1.13 2014-07-08 10:38:58 ivan Exp $
+$Date: 2014-07-08 10:38:58 $
 """
 
 class Wrapper :
@@ -26,7 +26,7 @@ initial_context = {
 }
 
 initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
-	'cat'		: 'http://www.w3.org/ns/dcat#',
+	'dcat'		: 'http://www.w3.org/ns/dcat#',
     'qb'		: 'http://purl.org/linked-data/cube#',
     'org'		: 'http://www.w3.org/ns/org#',
 	'owl'		: 'http://www.w3.org/2002/07/owl#',
