@@ -12,8 +12,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: html5.py,v 1.14 2013-03-01 12:29:24 ivan Exp $
-$Date: 2013-03-01 12:29:24 $
+$Id: html5.py,v 1.15 2014-11-04 13:18:48 ivan Exp $
+$Date: 2014-11-04 13:18:48 $
 """
 try :
 	from functools import reduce
@@ -82,7 +82,7 @@ def _format_test(string) :
 			
 	# Now come the special cases:-(
 	# Check first for the duration stuff, that is the nastiest.
-	if len(string) > 2 and string[0] == 'P' or (string [0] == '-' and string[1] == 'P') :
+	if len(string) > 2 and (string[0] == 'P' or (string [0] == '-' and string[1] == 'P')) :
 		# this is meant to be a duration type
 		# first of all, get rid of the leading '-' and check again
 		if string[0] == '-' :
