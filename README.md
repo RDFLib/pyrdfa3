@@ -1,17 +1,14 @@
 PyRDFA
 ======
 
-# WARNING: DEPRECATED Package
-
-New users should not use this package for RDFa 1.1 processing. RDFa parsing has
+New users may choose not to use this package for RDFa 1.1 processing; instead RDFa parsing has
 been added to the latest release of the core RDFLib package as a parser, using the same
 code as in this package. For most users this package is of a historical interest only,
 except for those who have incorporated this version as part of their application workflow
 and do not want to change the full workflow. 
  
 Bugs in processing RDFa 1.1 will be taken care of both in this package and in the
-version in RDFLib. Possible radical changes in the form of new functionalities may
-be incorporated in the RDFLib version only.
+version in RDFLib. 
 
 2013-08-13
 
