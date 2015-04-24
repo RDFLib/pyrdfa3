@@ -78,9 +78,10 @@ class URIOpener :
 			if socket.getfqdn().endswith('.w3.org'):
 				import checkremote
 				checkremote.check_url_safety(url)
-			import requests
-			additional_headers['Accept'] = 'text/html, application/xhtml+xml'
+			if 'Accept' not in additional_headers:
+				additional_headers['Accept'] = 'text/html, application/xhtml+xml'
 				
+			import requests
 			self.data	= requests.get(url, headers=additional_headers)
 			self.headers	= self.data.headers
 			
