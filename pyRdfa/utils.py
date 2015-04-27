@@ -20,23 +20,11 @@ import os, os.path, sys, imp, datetime, socket
 
 # Python 3 vs. 2 switch
 if sys.version_info[0] >= 3 :
-	if socket.getfqdn().endswith('.w3.org'):
-		import checkremote
-		url_opener = checkremote.safe_url_opener
-	else :
-		import urllib.request
-		url_opener = urllib.request.build_opener()
 	from urllib.request import Request
 	from urllib.parse   import urljoin, quote
 	from http.server    import BaseHTTPRequestHandler
 	from urllib.error   import HTTPError as urllib_HTTPError
 else :
-	if socket.getfqdn().endswith('.w3.org'):
-		import checkremote
-		url_opener = checkremote.safe_url_opener
-	else :
-		import urllib2
-		url_opener = urllib2.build_opener()
 	from urllib2        import Request
 	from urllib2        import HTTPError as urllib_HTTPError
 	from urlparse       import urljoin
@@ -86,15 +74,16 @@ class URIOpener :
 		"""		
 		try :
 			# Note the removal of the fragment ID. This is necessary, per the HTTP spec
-			req = Request(url=name.split('#')[0])
-
-			for key in additional_headers :
-				req.add_header(key, additional_headers[key])
-			if 'Accept' not in additional_headers :
-				req.add_header('Accept', 'text/html, application/xhtml+xml')
+			url = name.split('#')[0]
+			if socket.getfqdn().endswith('.w3.org'):
+				import checkremote
+				checkremote.check_url_safety(url)
+			if 'Accept' not in additional_headers:
+				additional_headers['Accept'] = 'text/html, application/xhtml+xml'
 				
-			self.data		= url_opener.open(req)
-			self.headers	= self.data.info()
+			import requests
+			self.data	= requests.get(url, headers=additional_headers)
+			self.headers	= self.data.headers
 			
 			if URIOpener.CONTENT_TYPE in self.headers :
 				# The call below will remove the possible media type parameters, like charset settings
@@ -117,7 +106,7 @@ class URIOpener :
 						break
 			
 			if URIOpener.CONTENT_LOCATION in self.headers :
-				self.location = urljoin(self.data.geturl(),self.headers[URIOpener.CONTENT_LOCATION])
+				self.location = urljoin(self.data.url,self.headers[URIOpener.CONTENT_LOCATION])
 			else :
 				self.location = name
 			
