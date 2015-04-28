@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: utils.py,v 1.15 2014-02-21 16:12:43 ivan Exp $
-$Date: 2014-02-21 16:12:43 $
+$Id: utils.py,v 1.16 2015/04/27 09:18:25 ivan Exp $
+$Date: 2015/04/27 09:18:25 $
 """
 import os, os.path, sys, imp, datetime, socket
 
@@ -82,8 +82,9 @@ class URIOpener :
 				additional_headers['Accept'] = 'text/html, application/xhtml+xml'
 				
 			import requests
-			self.data	= requests.get(url, headers=additional_headers)
-			self.headers	= self.data.headers
+			r = requests.get(url, headers=additional_headers)
+			self.data	= r.content
+			self.headers	= r.headers
 			
 			if URIOpener.CONTENT_TYPE in self.headers :
 				# The call below will remove the possible media type parameters, like charset settings
@@ -106,7 +107,7 @@ class URIOpener :
 						break
 			
 			if URIOpener.CONTENT_LOCATION in self.headers :
-				self.location = urljoin(self.data.url,self.headers[URIOpener.CONTENT_LOCATION])
+				self.location = urljoin(r.url,self.headers[URIOpener.CONTENT_LOCATION])
 			else :
 				self.location = name
 			
