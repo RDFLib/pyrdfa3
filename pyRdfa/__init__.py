@@ -630,13 +630,15 @@ class pyRdfa :
 						from .host import adjust_html_version
 						self.rdfa_version = adjust_html_version(input, self.rdfa_version)
 					except :
-						# if anyting goes wrong, it is not really important; rdfa version stays what it was...
+						# if anything goes wrong, it is not really important; rdfa version stays what it was...
 						pass
 
 				else :
-					# in other cases an XML parser has to be used
 					from .host import adjust_xhtml_and_version
-					parse = xml.dom.minidom.parseString
+					if isinstance(input, StringIO) or isinstance(input, file):
+						parse = xml.dom.minidom.parse
+					else:
+						parse = xml.dom.minidom.parseString
 					dom = parse(input)
 					(adjusted_host_language, version) = adjust_xhtml_and_version(dom, self.options.host_language, self.rdfa_version)
 					self.options.host_language = adjusted_host_language
