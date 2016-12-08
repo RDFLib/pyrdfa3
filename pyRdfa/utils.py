@@ -82,7 +82,9 @@ class URIOpener :
 				additional_headers['Accept'] = 'text/html, application/xhtml+xml'
 				
 			import requests
-			r = requests.get(url, headers=additional_headers)
+			# Switching off the verification is not cool. But, at least for now, too many
+			# sites still go wrong because the cerficates are not o.k. with request...
+			r = requests.get(url, headers=additional_headers, verify=False)
 			self.data	= r.content
 			self.headers	= r.headers
 			
