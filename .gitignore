@@ -1,3 +1,5 @@
 *.pyc
 Additional_Packages
 
+.vscode
+tags
