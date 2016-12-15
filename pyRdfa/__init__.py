@@ -574,14 +574,14 @@ class pyRdfa :
 			except FailedSource as ex :
 				f = sys.exc_info()[1]
 				self.http_status = 400
-				if not rdfOutput : raise f
+				if not rdfOutput : raise Exception(ex.msg)
 				err = self.options.add_error(ex.msg, FileReferenceError, name)
 				self.options.processor_graph.add_http_context(err, 400)
 				return copyErrors(graph, self.options)
-			except HTTPError :
+			except HTTPError as ex :
 				h = sys.exc_info()[1]
 				self.http_status = h.http_code
-				if not rdfOutput : raise h
+				if not rdfOutput : raise Exception(ex.msg)
 				err = self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg), HTError, name)
 				self.options.processor_graph.add_http_context(err, h.http_code)
 				return copyErrors(graph, self.options)
@@ -593,11 +593,11 @@ class pyRdfa :
 				err = self.options.add_error(str(ex.msg), context = name)
 				self.options.processor_graph.add_http_context(err, 500)
 				return copyErrors(graph, self.options)
-			except Exception :
+			except Exception as ex :
 				e = sys.exc_info()[1]
 				self.http_status = 500
 				# Something nasty happened:-(
-				if not rdfOutput : raise e
+				if not rdfOutput : raise ex
 				err = self.options.add_error(str(e), context = name)
 				self.options.processor_graph.add_http_context(err, 500)
 				return copyErrors(graph, self.options)
