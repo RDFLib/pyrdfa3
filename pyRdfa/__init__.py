@@ -449,7 +449,7 @@ class pyRdfa :
 				return name
 		except HTTPError :
 			raise sys.exc_info()[1]
-		except RDFaError, e :
+		except RDFaError as e :
 			raise e
 		except :
 			(type, value, traceback) = sys.exc_info()
@@ -555,7 +555,7 @@ class pyRdfa :
 				for k,ns in options.processor_graph.graph.namespaces() :
 					tog.bind(k,ns)
 					if pgraph != None : pgraph.bind(k,ns)
- 			options.reset_processor_graph()
+			options.reset_processor_graph()
 			return tog
 
 		# Separating this for a forward Python 3 compatibility
@@ -571,7 +571,7 @@ class pyRdfa :
 			input = None
 			try :
 				input = self._get_input(name)
-			except FailedSource,ex :
+			except FailedSource as ex :
 				f = sys.exc_info()[1]
 				self.http_status = 400
 				if not rdfOutput : raise f
@@ -585,7 +585,7 @@ class pyRdfa :
 				err = self.options.add_error("HTTP Error: %s (%s)" % (h.http_code,h.msg), HTError, name)
 				self.options.processor_graph.add_http_context(err, h.http_code)
 				return copyErrors(graph, self.options)
-			except RDFaError, ex:
+			except RDFaError as ex:
 				e = sys.exc_info()[1]
 				self.http_status = 500
 				# Something nasty happened:-(
