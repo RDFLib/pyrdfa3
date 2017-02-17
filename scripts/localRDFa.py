@@ -40,6 +40,7 @@ where:
   -v: perform vocabulary expansion (default: False)
   -g: value can be 'output', 'processor', 'output,processor' or 'processor,output'; controls which graphs are returned
   -e: embedded (in a <script> element) Turtle content or RDF/XML (in its own namespace) _not_ parsed and added to the output graph (default:True, i.e., parsed)
+  -w: value is a filename, to be used instead of the default standard error for logging errors, warnings, etc.
 
 'Filename' can be a local file name or a URI. In case there is no filename, stdin is used.
 
