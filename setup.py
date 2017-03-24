@@ -1,4 +1,10 @@
-from distutils.core import setup
+from setuptools import setup
+
+install_requires=[
+    "rdflib",
+    "html5lib<=0.95",
+]
+
 setup(name="pyRdfa",
       description="pyRdfa Libray",
       version="3.4.3",
@@ -6,6 +12,7 @@ setup(name="pyRdfa",
       author_email="ivan@w3.org",
       maintainer="Ivan Herman",
       maintainer_email="ivan@w3.org",
+      install_requires=install_requires,
       packages=['pyRdfa',
 				'pyRdfa.transform',
 				'pyRdfa.extras',
