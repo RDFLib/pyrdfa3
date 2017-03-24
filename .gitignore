@@ -3,3 +3,4 @@ Additional_Packages
 
 .vscode
 tags
+*.egg-info/
