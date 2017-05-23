@@ -13,8 +13,8 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 """
 
 """
-$Id: initialcontext.py,v 1.14 2016/02/06 14:03:48 ivan Exp $
-$Date: 2016/02/06 14:03:48 $
+$Id: initialcontext.py,v 1.15 2017/01/10 14:04:41 ivan Exp $
+$Date: 2017/01/10 14:04:41 $
 """
 
 class Wrapper :
@@ -26,8 +26,11 @@ initial_context = {
 }
 
 initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
+	'as'		: 'https://www.w3.org/ns/activitystreams#',
 	'csvw'		: 'http://www.w3.org/ns/csvw#',
 	'dcat'		: 'http://www.w3.org/ns/dcat#',
+	'dqv'		: 'http://www.w3.org/ns/dqv#',
+	'duv'		: 'https://www.w3.org/TR/vocab-duv#',
     'qb'		: 'http://purl.org/linked-data/cube#',
     'org'		: 'http://www.w3.org/ns/org#',
 	'owl'		: 'http://www.w3.org/2002/07/owl#',
@@ -35,6 +38,8 @@ initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
 	'ctag'		: 'http://commontag.org/ns#',
 	'cc'		: 'http://creativecommons.org/ns#',
 	'grddl'		: 'http://www.w3.org/2003/g/data-view#',
+	'ldp'		: 'http://www.w3.org/ns/ldp#',
+	'oa'		: 'http://www.w3.org/ns/oa#',
 	'rif'		: 'http://www.w3.org/2007/rif#',
 	'sioc'		: 'http://rdfs.org/sioc/ns#',
 	'skos'		: 'http://www.w3.org/2004/02/skos/core#',
