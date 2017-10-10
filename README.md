@@ -1,3 +1,8 @@
+Note: the development and maintenance of this package has been stalled for a long time. I have moved on from this project to radically different areas. I would be pleased if somebody decided to pick it up and develop it further if problems arise…
+
+---
+
+
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.14547.svg)](http://dx.doi.org/10.5281/zenodo.14547)
 
 PyRDFA
