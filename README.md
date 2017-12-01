@@ -20,14 +20,6 @@ version in RDFLib.
 2013-08-13
 
 
-Usage Warning
--------------
-
-Warning (2013-07-16): the latest version of the html5lib package has a bug.
-This bug manifests itself if the source HTML file contains non-ASCII Unicode characters
-Until the bug is handled, users should use the older, 0.95 version. It can be downloaded
-at <https://code.google.com/p/html5lib/downloads/detail?name=html5lib-0.95.tar.gz>
-
 What is it
 ----------
 
