@@ -2,7 +2,7 @@ from setuptools import setup
 
 install_requires=[
     "rdflib",
-    "html5lib<=0.95",
+    "html5lib",
 ]
 
 setup(name="pyRdfa",
