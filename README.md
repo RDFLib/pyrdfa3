@@ -1,23 +1,15 @@
 Note: the development and maintenance of this package has been stalled for a long time. I have moved on from this project to radically different areas. I would be pleased if somebody decided to pick it up and develop it further if problems arise…
 
----
+Historically, the core of this repository content was part to the core RDFLib package as a parser, i.e., it could be used without further ado. However, this setup created some problems and, in 2018, it was decided to remove it from the core distribution of RDFLib, starting with version 5.0.0. Users wishing to use this parser should import _both_ rdflib and pyrdfa3 before using the parser, ie, before invoking `graph.parse( ..., format='rdfa')`. The package can also be used as a standalone tool, in the documentation; this is maintained to secure that deployed applications would not break.
 
+2013-10-29
+
+---
 
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.14547.svg)](http://dx.doi.org/10.5281/zenodo.14547)
 
 PyRDFA
 ======
-
-New users may choose not to use this package for RDFa 1.1 processing; instead RDFa parsing has
-been added to the latest release of the core RDFLib package as a parser, using the same
-code as in this package. For most users this package is of a historical interest only,
-except for those who have incorporated this version as part of their application workflow
-and do not want to change the full workflow. 
- 
-Bugs in processing RDFa 1.1 will be taken care of both in this package and in the
-version in RDFLib. 
-
-2013-08-13
 
 
 What is it
