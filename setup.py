@@ -5,9 +5,9 @@ install_requires=[
     "html5lib",
 ]
 
-setup(name="pyRdfa",
+setup(name="pyRdfa3",
       description="pyRdfa Libray",
-      version="3.4.3",
+      version="3.5.0",
       author="Ivan Herman",
       author_email="ivan@w3.org",
       maintainer="Ivan Herman",
