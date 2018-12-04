@@ -68,8 +68,8 @@
         Ivan Herman, ivan@w3.org
       </p>
       <p><strong>Version:</strong>
-        $Id: lite.py,v 1.9 2012/06/26 13:29:58 ivan Exp $ $Date: 2012/06/26
-        13:29:58 $
+        $Id: lite.py,v 1.11 2013-09-26 16:37:54 ivan Exp $ $Date: 
+        2013-09-26 16:37:54 $
       </p>
 </div><!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
@@ -129,17 +129,27 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="pyRdfa.transform.lite-module.html#non_lite_attributes" class="summary-name">non_lite_attributes</a> = <code title="['about', 'inlist', 'datatype', 'rev', 'rel']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">about</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">inlist</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">datatype</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rev</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
+        <a href="pyRdfa.transform.lite-module.html#non_lite_attributes" class="summary-name">non_lite_attributes</a> = <code title="['about', 'inlist', 'datatype', 'rev', 'rel', 'content']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">about</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">inlist</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">datatype</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rev</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="None">None</code>
+        <a name="non_lite_attributes_html"></a><span class="summary-name">non_lite_attributes_html</span> = <code title="['about', 'inlist', 'datatype', 'rev']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">about</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">inlist</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">datatype</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rev</code><code class="variable-quote">'</code><code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'pyRdfa.transform'"><code class="variable-quote">'</code><code class="variable-string">pyRdfa.transform</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
+<p class="indent-wrapped-lines"><b>Imports:</b>
+  <a href="pyRdfa.host.HostLanguage-class.html" title="pyRdfa.host.HostLanguage">HostLanguage</a>
+</p><br />
 <!-- ==================== FUNCTION DETAILS ==================== -->
 <a name="section-FunctionDetails"></a>
 <table class="details" border="1" cellpadding="3"
@@ -223,7 +233,7 @@
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">about</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">inlist</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">datatype</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rev</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rel</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">about</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">inlist</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">datatype</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rev</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">rel</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">content</code><code class="variable-quote">'</code><code class="variable-group">]</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -253,7 +263,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Aug 21 12:28:34 2012
+    Generated by Epydoc 3.0.1 on Tue Dec  4 17:36:20 2018
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

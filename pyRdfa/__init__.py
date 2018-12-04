@@ -34,6 +34,8 @@ Return (serialization) formats
 
 The package relies on RDFLib. By default, it relies therefore on the serializers coming with the local RDFLib distribution. However, there has been some issues with serializers of older RDFLib releases; also, some output formats, like JSON-LD, are not (yet) part of the standard RDFLib distribution. A companion package, called pyRdfaExtras, is part of the download, and it includes some of those extra serializers. The extra format (not part of the RDFLib core) is U{JSON-LD<http://json-ld.org/spec/latest/json-ld-syntax/>}, whose 'key' is 'json', when used in the 'parse' method of an RDFLib graph.
 
+(Note in 2018: the bugs that needed pyRdfaExtras are gone with the RDFLib versions, and the json-ld serializer and parser can be U{downloaded from github<https://github.com/RDFLib/rdflib-jsonld>} (or installed via pip). This means that importing pyRdfaExtras is done only when running older (i.e., 2.X.X) RDFLib versions and can be safely ignored these days.)  
+
 Options
 =======
 
@@ -68,7 +70,7 @@ possible host languages:
 
 If local files are used, pyRdfa makes a guess on the content type based on the file name suffix: C{.html} is for HTML5, C{.xhtml} for XHTML1, C{.svg} for SVG, anything else is considered to be general XML. Finally, the content type may be set by the caller when initializing the L{pyRdfa class<pyRdfa.pyRdfa>}.
 
-Beyond the differences described in the RDFa specification, the main difference is the parser used to parse the source. In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; for all other cases the simple XML parser, part of the core Python environment, is used. This may be significant in the case of erronuous sources: indeed, the HTML5 parser may do adjustments on
+Beyond the differences described in the RDFa specification, the main difference is the parser used to parse the source. In the case of HTML5, pyRdfa uses an U{HTML5 parser<http://code.google.com/p/html5lib/>}; for all other cases the simple XML parser, part of the core Python environment, is used. This may be significant in the case of erroneous sources: indeed, the HTML5 parser may do adjustments on
 the DOM tree before handing it over to the distiller. Furthermore, SVG is also recognized as a type that allows embedded RDF in the form of RDF/XML.
 
 See the variables in the L{host} module if a new host language is added to the system. The current host language information is available for transformers via the option argument, too, and can be used to control the effect of the transformer.
@@ -125,7 +127,7 @@ A transformer is a function with three arguments:
  - C{options}: the current L{Options} instance
  - C{state}: the current L{ExecutionContext} instance, corresponding to the top level DOM Tree element
 
-The function may perform any type of change on the DOM tree; the typical behaviour is to add or remove attributes on specific elements. Some transformations are included in the package and can be used as examples; see the L{transform} module of the distribution. These are:
+The function may perform any type of change on the DOM tree; the typical behavior is to add or remove attributes on specific elements. Some transformations are included in the package and can be used as examples; see the L{transform} module of the distribution. These are:
 
  - The C{@name} attribute of the C{meta} element is copied into a C{@property} attribute of the same element
  - Interpreting the 'openid' references in the header. See L{transform.OpenID} for further details.
@@ -152,10 +154,6 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var CACHE_DIR_VAR: Environment variable used to define cache directories for RDFa vocabularies in case the default setting does not work or is not appropriate.
 @var rdfa_current_version: Current "official" version of RDFa that this package implements by default. This can be changed at the invocation of the package
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
-"""
-
-"""
- $Id: __init__.py,v 1.94 2016/12/15 11:01:43 ivan Exp $
 """
 
 __version__ = "3.4.3"
@@ -710,7 +708,7 @@ class pyRdfa :
 		Extract and RDF graph from an RDFa source and serialize it in one graph. The source is parsed, the RDF
 		extracted, and serialization is done in the specified format.
 		@param name: a URI, a file name, or a file-like object
-		@keyword outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml", "pretty-xml", "json" or "json-ld". "turtle" and "n3", "xml" and "pretty-xml", and "json" and "json-ld" are synonyms, respectively. Note that the JSON-LD serialization works with RDFLib 3.* only.
+		@keyword outputFormat: serialization format. Can be one of "turtle", "n3", "xml", "pretty-xml", "nt". "xml", "pretty-xml", or "json-ld". "turtle" and "n3", or "xml" and "pretty-xml" are synonyms, respectively. Note that the JSON-LD serialization works with RDFLib 3.* only.
 		@keyword rdfOutput: controls what happens in case an exception is raised. If the value is False, the caller is responsible handling it; otherwise a graph is returned with an error message included in the processor graph
 		@type rdfOutput: boolean
 		@return: a serialized RDF Graph

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>pyRdfa.rdflibparsers.RDFaParser</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="pyRdfa-module.html">Package&nbsp;pyRdfa</a> ::
+        <a href="pyRdfa.rdflibparsers-module.html">Module&nbsp;rdflibparsers</a> ::
+        Class&nbsp;RDFaParser
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="pyRdfa.rdflibparsers.RDFaParser-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RDFaParser</h1><p class="nomargin-top"><span class="codelink"><a href="pyRdfa.rdflibparsers-pysrc.html#RDFaParser">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+          object --+    
+                   |    
+rdflib.parser.Parser --+
+                       |
+                      <strong class="uidshort">RDFaParser</strong>
+</pre>
+
+<hr />
+<p>Wrapper around the RDFa 1.1 parser. For further details on the RDFa 
+  1.1 processing, see the relevant W3C documents at 
+  http://www.w3.org/TR/#tr_RDFa. RDFa 1.1 is defined for XHTML, HTML5, SVG 
+  and, in general, for any XML language.</p>
+  <p>Note that the parser can also handle RDFa 1.0 if the extra parameter 
+  is used and/or the input source uses RDFa 1.0 specific @version or 
+  DTD-s.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="pyRdfa.rdflibparsers.RDFaParser-class.html#parse" class="summary-sig-name">parse</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">source</span>,
+        <span class="summary-sig-arg">graph</span>,
+        <span class="summary-sig-arg">pgraph</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">media_type</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">rdfa_version</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">embedded_rdf</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">space_preserve</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">vocab_expansion</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">vocab_cache</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">refresh_vocab_cache</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">vocab_cache_report</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">check_lite</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.rdflibparsers-pysrc.html#RDFaParser.parse">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_process"></a><span class="summary-sig-name">_process</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">graph</span>,
+        <span class="summary-sig-arg">pgraph</span>,
+        <span class="summary-sig-arg">baseURI</span>,
+        <span class="summary-sig-arg">orig_source</span>,
+        <span class="summary-sig-arg">media_type</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">rdfa_version</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">embedded_rdf</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">space_preserve</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">vocab_expansion</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">vocab_cache</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">vocab_cache_report</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">refresh_vocab_cache</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">check_lite</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pyRdfa.rdflibparsers-pysrc.html#RDFaParser._process">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>rdflib.parser.Parser</code></b>:
+      <code>__init__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="parse"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">parse</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">source</span>,
+        <span class="sig-arg">graph</span>,
+        <span class="sig-arg">pgraph</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">media_type</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">rdfa_version</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">embedded_rdf</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">space_preserve</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">vocab_expansion</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">vocab_cache</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">refresh_vocab_cache</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">vocab_cache_report</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">check_lite</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="pyRdfa.rdflibparsers-pysrc.html#RDFaParser.parse">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>source</code></strong> (InputSource class instance) - one of the input sources that the RDFLib package defined</li>
+        <li><strong class="pname"><code>graph</code></strong> (RDFLib Graph) - target graph for the triples; output graph, in RDFa spec. 
+          parlance</li>
+        <li><strong class="pname"><code>pgraph</code></strong> (RDFLib Graph) - target for error and warning triples; processor graph, in RDFa 
+          spec. parlance. If set to None, these triples are ignored</li>
+        <li><strong class="pname"><code>media_type</code></strong> (string) - explicit setting of the preferred media type (a.k.a. content 
+          type) of the the RDFa source. None means the content type of the 
+          HTTP result is used, or a guess is made based on the suffix of a 
+          file</li>
+        <li><strong class="pname"><code>rdfa_version</code></strong> (string) - 1.0 or 1.1. If the value is &quot;&quot;, then, by default, 1.1 
+          is used unless the source has explicit signals to use 1.0 (e.g., 
+          using a @version attribute, using a DTD set up for 1.0, etc)</li>
+        <li><strong class="pname"><code>embedded_rdf</code></strong> (Boolean) - some formats allow embedding RDF in other formats: (X)HTML can 
+          contain turtle in a special &lt;script&gt; element, SVG can have 
+          RDF/XML embedded in a &lt;metadata&gt; element. This flag 
+          controls whether those triples should be interpreted and added to
+          the output graph. Some languages (e.g., SVG) require this, and 
+          the flag is ignored.</li>
+        <li><strong class="pname"><code>space_preserve</code></strong> (Boolean) - by default, space in the HTML source must be preserved in the 
+          generated literal; this behavior can be switched off</li>
+        <li><strong class="pname"><code>vocab_expansion</code></strong> (Boolean) - whether the RDFa @vocab attribute should also mean vocabulary 
+          expansion (see the RDFa 1.1 spec for further details)</li>
+        <li><strong class="pname"><code>vocab_cache</code></strong> - in case vocab expansion is used, whether the expansion data 
+          (i.e., vocabulary) should be cached locally. This requires the 
+          ability for the local application to write on the local file 
+          system</li>
+        <li><strong class="pname"><code>vocab_cache_report</code></strong> (Boolean) - whether the details of vocabulary file caching process should be 
+          reported in the processor graph as information (mainly useful for
+          debug)</li>
+        <li><strong class="pname"><code>refresh_vocab_cache</code></strong> (Boolean) - whether the caching checks of vocabs should be by-passed, ie, if 
+          caches should be re-generated regardless of the stored date 
+          (important for vocab development)</li>
+        <li><strong class="pname"><code>check_lite</code></strong> (Boolean) - generate extra warnings in case the input source is not RDFa 1.1 
+          check_lite</li>
+        <li><strong class="pname"><code>vocab_chache</code></strong> (Boolean)</li>
+    </ul></dd>
+    <dt>Overrides:
+        rdflib.parser.Parser.parse
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Tue Dec  4 17:36:20 2018
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

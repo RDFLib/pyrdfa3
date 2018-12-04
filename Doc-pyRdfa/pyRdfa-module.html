@@ -109,6 +109,13 @@ graph = pyRdfa().graph_from_source('filename')
       <a href="http://json-ld.org/spec/latest/json-ld-syntax/" 
       target="_top">JSON-LD</a>, whose 'key' is 'json', when used in the 
       'parse' method of an RDFLib graph.</p>
+      <p>(Note in 2018: the bugs that needed pyRdfaExtras are gone with the
+      RDFLib versions, and the json-ld serializer and parser can be <a 
+      href="https://github.com/RDFLib/rdflib-jsonld" 
+      target="_top">downloaded from github</a> (or installed via pip). This
+      means that importing pyRdfaExtras is done only when running older 
+      (i.e., 2.X.X) RDFLib versions and can be safely ignored these 
+      days.)</p>
   <h1 class="heading">Options</h1>
     <p>The package also implements some optional features that are not part
     of the RDFa recommendations. At the moment these are:</p>
@@ -191,7 +198,7 @@ print pyRdfa(options=options).rdf_from_source('filename')
     HTML5, pyRdfa uses an <a href="http://code.google.com/p/html5lib/" 
     target="_top">HTML5 parser</a>; for all other cases the simple XML 
     parser, part of the core Python environment, is used. This may be 
-    significant in the case of erronuous sources: indeed, the HTML5 parser 
+    significant in the case of erroneous sources: indeed, the HTML5 parser 
     may do adjustments on the DOM tree before handing it over to the 
     distiller. Furthermore, SVG is also recognized as a type that allows 
     embedded RDF in the form of RDF/XML.</p>
@@ -303,7 +310,7 @@ print pyRdfa(options=options).rdf_from_source('filename')
       </li>
     </ul>
     <p>The function may perform any type of change on the DOM tree; the 
-    typical behaviour is to add or remove attributes on specific elements. 
+    typical behavior is to add or remove attributes on specific elements. 
     Some transformations are included in the package and can be used as 
     examples; see the <a href="pyRdfa.transform-module.html" 
     class="link">transform</a> module of the distribution. These are:</p>
@@ -347,7 +354,9 @@ print pyRdfa(options=options).rdf_from_source('filename')
         </li>
         <li>
         <a href="http://code.google.com/p/html5lib/" 
-        target="_top">html5lib</a> for the HTML5 parsing.
+        target="_top">html5lib</a> for the HTML5 parsing (note that version
+        1.0b1 and 1.0b2 should be avoided, it may lead to unicode encoding 
+        problems)
         </li>
         <li>
         <a href="http://deron.meranda.us/python/httpheader/" 
@@ -371,7 +380,7 @@ print pyRdfa(options=options).rdf_from_source('filename')
         target="_top">W3C&#174; SOFTWARE NOTICE AND LICENSE</a>
       </p>
       <p><strong>Version:</strong>
-        3.4.2
+        3.4.3
       </p>
       <p><strong>Contact:</strong>
         Ivan Herman, ivan@w3.org
@@ -397,7 +406,6 @@ print pyRdfa(options=options).rdf_from_source('filename')
   <ul class="nomargin">
     <li> <strong class="uidlink"><a href="pyRdfa.embeddedRDF-module.html">pyRdfa.embeddedRDF</a></strong>: <em class="summary">Extracting possible embedded RDF/XML content from the file and 
         parse it separately into the Graph.</em>    </li>
-    <li> <strong class="uidlink"><a href="pyRdfa.graph-module.html">pyRdfa.graph</a></strong>: <em class="summary">Shell around RDLib's Graph</em>    </li>
     <li> <strong class="uidlink"><a href="pyRdfa.host-module.html">pyRdfa.host</a></strong>: <em class="summary">RDFa Host package</em>
     <ul>
     <li> <strong class="uidlink"><a href="pyRdfa.host.atom-module.html">pyRdfa.host.atom</a></strong>: <em class="summary">Add a top &quot;about&quot; to &lt;head&gt; and &lt;body&gt;</em>    </li>
@@ -408,6 +416,8 @@ print pyRdfa(options=options).rdf_from_source('filename')
     <li> <strong class="uidlink"><a href="pyRdfa.options-module.html">pyRdfa.options</a></strong>: <em class="summary">RDFa parser (distiller)</em>    </li>
     <li> <strong class="uidlink"><a href="pyRdfa.parse-module.html">pyRdfa.parse</a></strong>: <em class="summary">RDFa core parser processing step</em>    </li>
     <li> <strong class="uidlink"><a href="pyRdfa.property-module.html">pyRdfa.property</a></strong>: <em class="summary">RDFa Literal generation</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.rdflibparsers-module.html">pyRdfa.rdflibparsers</a></strong>: <em class="summary">Extraction parsers for structured data embedded into HTML or XML 
+        files.</em>    </li>
     <li> <strong class="uidlink"><a href="pyRdfa.rdfs-module.html">pyRdfa.rdfs</a></strong>: <em class="summary">Separate module to handle vocabulary expansions.</em>
     <ul>
     <li> <strong class="uidlink"><a href="pyRdfa.rdfs.cache-module.html">pyRdfa.rdfs.cache</a></strong>: <em class="summary">RDFa parser (distiller)</em>    </li>
@@ -424,6 +434,7 @@ print pyRdfa(options=options).rdf_from_source('filename')
     <li> <strong class="uidlink"><a href="pyRdfa.transform.metaname-module.html">pyRdfa.transform.metaname</a></strong>: <em class="summary">Simple transfomer: <code>meta</code> element is extended with a 
         <code>property</code> attribute, with a copy of the 
         <code>name</code> attribute values.</em>    </li>
+    <li> <strong class="uidlink"><a href="pyRdfa.transform.prototype-module.html">pyRdfa.transform.prototype</a></strong>: <em class="summary">Encoding of the RDFa prototype vocabulary behavior.</em>    </li>
     </ul>
     </li>
     <li> <strong class="uidlink"><a href="pyRdfa.utils-module.html">pyRdfa.utils</a></strong>: <em class="summary">Various utilities for pyRdfa.</em>    </li>
@@ -565,8 +576,22 @@ print pyRdfa(options=options).rdf_from_source('filename')
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="pyRdfa-module.html#__license__" class="summary-name">__license__</a> = <code title="u'W3C&#174; SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal\
-/2002/copyright-software-20021231'"><code class="variable-quote">u'</code><code class="variable-string">W3C&#174; SOFTWARE NOTICE AND LICENSE, http://www.w</code><code class="variable-ellipsis">...</code></code>
+        <a href="pyRdfa-module.html#__license__" class="summary-name">__license__</a> = <code title="'W3C\xc2\xae SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium\
+/Legal/2002/copyright-software-20021231'"><code class="variable-quote">'</code><code class="variable-string">W3C\xc2\xae SOFTWARE NOTICE AND LICENSE, http:/</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="name"></a><span class="summary-name">name</span> = <code title="'pyRdfa3'"><code class="variable-quote">'</code><code class="variable-string">pyRdfa3</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="PY3"></a><span class="summary-name">PY3</span> = <code title="False">False</code>
     </td>
   </tr>
 <tr>
@@ -636,15 +661,14 @@ print pyRdfa(options=options).rdf_from_source('filename')
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="pyRdfa-module.html#UnresolvablePrefix" class="summary-name">UnresolvablePrefix</a> = <code title="rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIEPrefix')">rdflib.term.URIRef(u'http://www.w3.org/ns<code class="variable-ellipsis">...</code></code>
+        <a href="pyRdfa-module.html#UnresolvablePrefix" class="summary-name">UnresolvablePrefix</a> = <code title="rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIE')">rdflib.term.URIRef(u'http://www.w3.org/ns<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="pyRdfa-module.html#UnresolvableReference" class="summary-name">UnresolvableReference</a> = <code title="rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIEReferenc\
-e')">rdflib.term.URIRef(u'http://www.w3.org<code class="variable-ellipsis">...</code></code>
+        <a href="pyRdfa-module.html#UnresolvableReference" class="summary-name">UnresolvableReference</a> = <code title="rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIE')">rdflib.term.URIRef(u'http://www.w3.org<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -659,6 +683,13 @@ e')">rdflib.term.URIRef(u'http://www.w3.org<code class="variable-ellipsis">...</
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="pyRdfa-module.html#VocabReferenceError" class="summary-name">VocabReferenceError</a> = <code title="rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#VocabReferenceError')">rdflib.term.URIRef(u'http://www.w3.org/n<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pyRdfa-module.html#PrefixRedefinitionWarning" class="summary-name">PrefixRedefinitionWarning</a> = <code title="rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#PrefixRedefinition')">rdflib.term.URIRef(u'http://www.w3<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -860,6 +891,14 @@ ference) \'%s\'; ignored'"><code class="variable-quote">'</code><code class="var
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
+        <a href="pyRdfa-module.html#err_prefix_redefinition" class="summary-name">err_prefix_redefinition</a> = <code title="'Prefix \'%s\' (defined in the initial RDFa context or in an ancestor)\
+ is redefined'"><code class="variable-quote">'</code><code class="variable-string">Prefix \'%s\' (defined in the initi</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
         <a href="pyRdfa-module.html#err_unusual_char_in_URI" class="summary-name">err_unusual_char_in_URI</a> = <code title="'Unusual character in uri: %s; possible error?'"><code class="variable-quote">'</code><code class="variable-string">Unusual character in uri: %s; possi</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -975,8 +1014,10 @@ ference) \'%s\'; ignored'"><code class="variable-quote">'</code><code class="var
 </table>
 <p class="indent-wrapped-lines"><b>Imports:</b>
   <span title="sys">sys</span>,
-  <span title="StringIO">StringIO</span>,
+  <span title="StringIO.StringIO">StringIO</span>,
   <span title="os">os</span>,
+  <span title="xml">xml</span>,
+  <span title="urlparse.urlparse">urlparse</span>,
   <span title="rdflib">rdflib</span>,
   <span title="rdflib.URIRef">URIRef</span>,
   <span title="rdflib.Literal">Literal</span>,
@@ -987,8 +1028,7 @@ ference) \'%s\'; ignored'"><code class="variable-quote">'</code><code class="var
   <span title="rdflib.Graph.Graph">Graph</span>,
   <span title="pyRdfa.extras.httpheader.acceptable_content_type">acceptable_content_type</span>,
   <span title="pyRdfa.extras.httpheader.content_type">content_type</span>,
-  <span title="xml">xml</span>,
-  <span title="urlparse">urlparse</span>,
+  <a href="pyRdfa.transform.prototype-module.html#handle_prototypes" title="pyRdfa.transform.prototype.handle_prototypes">handle_prototypes</a>,
   <a href="pyRdfa.state.ExecutionContext-class.html" title="pyRdfa.state.ExecutionContext">ExecutionContext</a>,
   <a href="pyRdfa.parse-module.html#parse_one_node" title="pyRdfa.parse.parse_one_node">parse_one_node</a>,
   <a href="pyRdfa.options.Options-class.html" title="pyRdfa.options.Options">Options</a>,
@@ -1150,8 +1190,8 @@ ference) \'%s\'; ignored'"><code class="variable-quote">'</code><code class="var
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-quote">u'</code><code class="variable-string">W3C&#174; SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string">/2002/copyright-software-20021231</code><code class="variable-quote">'</code>
+<code class="variable-quote">'</code><code class="variable-string">W3C\xc2\xae SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">/Legal/2002/copyright-software-20021231</code><code class="variable-quote">'</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -1277,7 +1317,7 @@ rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#DocumentError')
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIEPrefix')
+rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIE')
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -1295,8 +1335,7 @@ rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIEPrefix')
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIEReferenc<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-e')
+rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedCURIE')
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -1333,6 +1372,24 @@ rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#UnresolvedTerm')
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
 rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#VocabReferenceError')
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="PrefixRedefinitionWarning"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">PrefixRedefinitionWarning</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+rdflib.term.URIRef(u'http://www.w3.org/ns/rdfa#PrefixRedefinition')
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -1772,6 +1829,25 @@ iteral')
   </dl>
 </td></tr></table>
 </div>
+<a name="err_prefix_redefinition"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">err_prefix_redefinition</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">Prefix \'%s\' (defined in the initial RDFa context or in an ancestor)</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string"> is redefined</code><code class="variable-quote">'</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="err_unusual_char_in_URI"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1991,7 +2067,7 @@ iteral')
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Aug 21 12:28:34 2012
+    Generated by Epydoc 3.0.1 on Tue Dec  4 17:36:20 2018
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
