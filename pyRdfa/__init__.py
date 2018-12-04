@@ -687,11 +687,16 @@ class pyRdfa :
 		# This is better because it gives access to the various, non-standard serializations
 		# If it does not work because the extra are not installed, fall back to the standard
 		# rdlib distribution...
-		try :
-			from pyRdfaExtras import MyGraph
-			graph = MyGraph()
-		except :
+
+		if rdflib.__version__ >= "3.0.0" :
 			graph = Graph()
+		else :
+			# We may need the extra utilities for older rdflib versions...
+			try :
+				from pyRdfaExtras import MyGraph
+				graph = MyGraph()
+			except :
+				graph = Graph()
 
 		# graph.bind("xsd", Namespace('http://www.w3.org/2001/XMLSchema#'))
 		# the value of rdfOutput determines the reaction on exceptions...
