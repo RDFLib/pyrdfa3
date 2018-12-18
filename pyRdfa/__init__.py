@@ -444,7 +444,7 @@ class pyRdfa :
 								self.charset = 'utf-8'
 								break
 						self.options.set_host_language(self.media_type)
-					return file(name)
+					return open(name)
 			else :
 				return name
 		except HTTPError :
