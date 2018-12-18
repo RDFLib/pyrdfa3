@@ -7,7 +7,7 @@ install_requires=[
 
 setup(name="pyRdfa3",
       description="pyRdfa Libray",
-      version="3.5.0",
+      version="3.5.1",
       author="Ivan Herman",
       author_email="ivan@w3.org",
       maintainer="Ivan Herman",

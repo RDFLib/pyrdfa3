@@ -4,7 +4,7 @@ Historically, the core of this repository content was part to the core RDFLib pa
 
 The package can be downloaded from [PyPI](https://pypi.org/project/pyRdfa3/) via `pip install pyRdfa3`.
 
-2013-10-30
+2013-12-18
 
 ---
 
