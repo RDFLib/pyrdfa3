@@ -7,7 +7,7 @@ install_requires=[
 
 setup(name="pyRdfa3",
       description="pyRdfa Libray",
-      version="3.5.1",
+      version="3.5.2",
       author="Ivan Herman",
       author_email="ivan@w3.org",
       maintainer="Ivan Herman",
@@ -32,7 +32,6 @@ setup(name="pyRdfa3",
             'hturtle = pyRdfa.rdflibparsers:HTurtleParser'
             'html = pyRdfa.rdflibparsers:StructuredDataParser'
             'html/text = pyRdfa.rdflibparsers:StructuredDataParser'
-
         ],
     }
 

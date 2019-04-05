@@ -70,6 +70,7 @@ initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].ns = {
 	'ma'		: 'http://www.w3.org/ns/ma-ont#',
 	'sd'        : 'http://www.w3.org/ns/sparql-service-description#',
 	'prov'      : 'http://www.w3.org/ns/prov#',
+	'odrl'      : 'http://www.w3.org/ns/odrl/2/'
 }
 
 initial_context["http://www.w3.org/2011/rdfa-context/rdfa-1.1"].terms = {
