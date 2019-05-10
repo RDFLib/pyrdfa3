@@ -156,7 +156,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
 """
 
-__version__ = "3.5.2"
+__version__ = "3.5.3"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = 'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
