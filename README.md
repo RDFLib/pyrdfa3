@@ -1,12 +1,5 @@
-Note: the development and maintenance of this package has been stalled for a long time. I have moved on from this project to radically different areas. I would be pleased if somebody decided to pick it up and develop it further if problems arise…
-
-Historically, the core of this repository content was part to the core RDFLib package as a parser, i.e., it could be used without further ado. However, this setup created some problems and, in 2018, it was decided to remove it from the core distribution of RDFLib, starting with version 5.0.0. Users wishing to use this parser should import _both_ rdflib and pyrdfa3 before using the parser, ie, before invoking `graph.parse( ..., format='rdfa')`. The package can also be used as a standalone tool, in the documentation; this is maintained to secure that deployed applications would not break.
 
 The package can be downloaded from [PyPI](https://pypi.org/project/pyRdfa3/) via `pip install pyRdfa3`.
-
-2013-12-18
-
----
 
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.14547.svg)](http://dx.doi.org/10.5281/zenodo.14547)
 
