@@ -16,7 +16,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 $Id: utils.py,v 1.18 2016/12/08 10:13:34 ivan Exp $
 $Date: 2016/12/08 10:13:34 $
 """
-import os, os.path, sys, imp, datetime, socket
+import os, os.path, sys, datetime, socket
 
 # Python 3 vs. 2 switch
 if sys.version_info[0] >= 3 :
