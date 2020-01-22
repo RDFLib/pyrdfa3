@@ -141,7 +141,7 @@ The user of the package may refer add these transformers to L{Options} instance.
 
 
 @summary: RDFa parser (distiller)
-@requires: Python version 2.5 or up; 2.7 is preferred
+@requires: Python version 2.8 or python 3.8 or up
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing (note that version 1.0b1 and 1.0b2 should be avoided, it may lead to unicode encoding problems)
 @requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the package.
@@ -156,7 +156,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
 """
 
-__version__ = "3.5.3"
+__version__ = "4.0.0"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = 'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
