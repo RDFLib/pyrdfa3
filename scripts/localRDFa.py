@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Run the pyRdfa package locally, ie, on a local file
@@ -49,7 +49,7 @@ The -g option may be unnecessary, the script tries to make a guess based on a de
 """
 
 def usage() :
-	print usageText % sys.argv[0]
+	print(usageText % sys.argv[0])
 
 format                 = "turtle"
 extras                 = []
@@ -133,6 +133,8 @@ options = Options(output_default_graph = output_default_graph,
 
 processor = pyRdfa(options, base)
 if len(value) >= 1 :
-	print processor.rdf_from_sources(value, outputFormat = format, rdfOutput = rdfOutput)
+	print(processor.rdf_from_sources(value, outputFormat = format, rdfOutput = rdfOutput))
 else :
-	print processor.rdf_from_source(sys.stdin, outputFormat = format, rdfOutput = rdfOutput)
+	print(processor.rdf_from_source(sys.stdin, outputFormat = format, rdfOutput = rdfOutput))
+
+

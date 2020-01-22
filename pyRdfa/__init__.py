@@ -312,7 +312,7 @@ rdfa_current_version    = "1.1"
 
 # This comes from wikipedia
 registered_iana_schemes = [
-	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","dns","fax","file", "ftp","geo","go",
+	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","did","dns","fax","file", "ftp","geo","go",
 	"gopher","h323","http","https","iax","icap","im","imap","info","ipp","iris","ldap", "lsid",
 	"mailto","mid","modem","msrp","msrps", "mtqp", "mupdate","news","nfs","nntp","opaquelocktoken",
 	"pop","pres", "prospero","rstp","rsync", "service","shttp","sieve","sip","sips", "sms", "snmp", "soap", "tag",
@@ -614,7 +614,12 @@ class pyRdfa :
 					if self.charset :
 						# This means the HTTP header has provided a charset, or the
 						# file is a local file when we suppose it to be a utf-8
-						dom = parser.parse(input, override_encoding=self.charset)
+						#
+						# 2020-01-20, Ivan Herman
+						#   for some reasons the python3 version ran into a problem with this html5lib call
+						#   the override_encoding argument was not accepted.
+						# dom = parser.parse(input, override_encoding=self.charset)
+						dom = parser.parse(input)
 					else :
 						# No charset set. The HTMLLib parser tries to sniff into the
 						# the file to find a meta header for the charset; if that
@@ -700,8 +705,14 @@ class pyRdfa :
 		# the value of rdfOutput determines the reaction on exceptions...
 		for name in names :
 			self.graph_from_source(name, graph, rdfOutput)
+
 		retval = graph.serialize(format=outputFormat)
-		return retval
+		# Stupid difference between python2 and python3...
+		if PY3 :
+			return str(graph.serialize(format=outputFormat), encoding='utf-8')
+		else :
+			return graph.serialize(format=outputFormat)
+
 
 	def rdf_from_source(self, name, outputFormat = "turtle", rdfOutput = False) :
 		"""
