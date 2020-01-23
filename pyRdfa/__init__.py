@@ -706,7 +706,6 @@ class pyRdfa :
 		for name in names :
 			self.graph_from_source(name, graph, rdfOutput)
 
-		retval = graph.serialize(format=outputFormat)
 		# Stupid difference between python2 and python3...
 		if PY3 :
 			return str(graph.serialize(format=outputFormat), encoding='utf-8')
