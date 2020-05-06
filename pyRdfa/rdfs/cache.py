@@ -52,7 +52,7 @@ from ..utils import URIOpener
 if PY3 :
 	import pickle
 else :
-	import cPickle as pickle
+	import pickle as pickle
 
 # Protocol to be used for pickle files. 0 is good for debug, it stores the data in ASCII; 1 is better for deployment,
 # it stores data in binary format. Care should be taken for consistency; when changing from 0 to 1 or back, all
@@ -347,7 +347,7 @@ def offline_cache_generation(args) :
 		def pr(self, wae, txt, warning_type, context) :
 			print( "====" )
 			if warning_type != None : print( warning_type )
-			print( wae + ": " + txt )
+			print(( wae + ": " + txt ))
 			if context != None: print( context )
 			print( "====" )
 			
@@ -388,8 +388,8 @@ def offline_cache_generation(args) :
 		# Now read it back and print the content for tracing
 		print( ">>>>> Reading Cache <<<<<" )
 		rd = CachedVocab(uri,options = LocalOption(),report = True)
-		print( "URI: " + uri )
-		print( "default vocab: " + rd.vocabulary )
-		print( "terms: %s prefixes: %s" % (rd.terms,rd.ns) )
+		print(( "URI: " + uri ))
+		print(( "default vocab: " + rd.vocabulary ))
+		print(( "terms: %s prefixes: %s" % (rd.terms,rd.ns) ))
 
 	

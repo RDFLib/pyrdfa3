@@ -22,7 +22,7 @@ __version__ = "3.0"
 import cgi
 import cgitb; cgitb.enable()
 import sys, os
-import StringIO
+import io
 #cgi.print_environ()
 
 if sys.platform == "darwin" :
@@ -50,53 +50,53 @@ elif "text" in form and form["text"].value != None and len(form["text"].value.st
 	uri  = "text:"
 else :
 	if not "uri" in form :
-		print 'Content-type: text/html; charset=utf-8'
-		print 'Status: 400 Invalid Input'
-		print
-		print "<html>"
-		print "<head>"
-		print "<title>Error in RDFa processing</title>"
-		print "</head><body>"
-		print "<h1>Error in distilling RDFa</h1>"
-		print "No URI has been specified"
-		print "</body>"
-		print "</html>"
+		print('Content-type: text/html; charset=utf-8')
+		print('Status: 400 Invalid Input')
+		print()
+		print("<html>")
+		print("<head>")
+		print("<title>Error in RDFa processing</title>")
+		print("</head><body>")
+		print("<h1>Error in distilling RDFa</h1>")
+		print("No URI has been specified")
+		print("</body>")
+		print("</html>")
 		sys.exit(1)
 
 	try :
 		#uri = form["uri"].value
 		uri = form.getfirst("uri")
 	except :
-		print 'Content-type: text/html; charset=utf-8'
-		print 'Status: 400 Invalid Input'
-		print
-		print "<html>"
-		print "<head>"
-		print "<title>Error in RDFa processing</title>"
-		print "</head><body>"
-		print "<h1>Error in distilling RDFa</h1>"
-		print "No URI has been specified"
-		print "</body>"
-		print "</html>"
+		print('Content-type: text/html; charset=utf-8')
+		print('Status: 400 Invalid Input')
+		print()
+		print("<html>")
+		print("<head>")
+		print("<title>Error in RDFa processing</title>")
+		print("</head><body>")
+		print("<h1>Error in distilling RDFa</h1>")
+		print("No URI has been specified")
+		print("</body>")
+		print("</html>")
 		sys.exit(1)
 
 if "validate" in form  :
 	from rdfavalidator import validateURI
-	print 'Content-Type: text/html; charset=utf-8'
-	print
-	print validateURI(uri, form)
+	print('Content-Type: text/html; charset=utf-8')
+	print()
+	print(validateURI(uri, form))
 else :
 	# Thanks to Sergio and Diego for the idea and code for the referer branch
 	if uri == "referer" :
 		uri    = os.getenv('HTTP_REFERER')
 		newuri = "http://www.w3.org/2012/pyRdfa/extract?uri=" + uri
-		print "Status: 302 Moved"
-		print "Location: " + newuri
-		print
+		print("Status: 302 Moved")
+		print("Location: " + newuri)
+		print()
 	else :
-		if "format" in form.keys() :
+		if "format" in list(form.keys()) :
 			format = form.getfirst("format")
 		else :
 			format = "turtle"
 		retval = processURI(uri, format, form)
-		print retval
+		print(retval)

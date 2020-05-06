@@ -30,9 +30,9 @@ _json_serializer_name	= "my-json-ld"
 # from rdflib_jsonld.serializer import JsonLDSerializer
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 
 	
 #########################################################################################################

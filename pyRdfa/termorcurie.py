@@ -30,7 +30,7 @@ import random
 if sys.version_info[0] >= 3 :
 	from urllib.parse import urlsplit
 else :	
-	from urlparse import urlsplit
+	from urllib.parse import urlsplit
 
 
 import rdflib

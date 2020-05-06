@@ -14,7 +14,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 try :
 	from io import StringIO
 except :
-	from StringIO import StringIO
+	from io import StringIO
 
 from .host  import HostLanguage, accept_embedded_rdf_xml, accept_embedded_turtle
 from .utils import return_XML

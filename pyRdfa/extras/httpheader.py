@@ -140,7 +140,7 @@ def _is_string( obj ):
     if PY3 :
         return isinstance(obj,str)
     else :
-        return isinstance(obj,str) or isinstance(obj,unicode)
+        return isinstance(obj,str) or isinstance(obj,str)
 
 
 def http_datetime( dt=None ):
@@ -511,8 +511,8 @@ def _test_comments():
         b2 = remove_comments( a, collapse )
         if b != b2:
             print( 'Comment test failed:' )
-            print( '   remove_comments( %s, collapse_spaces=%s ) -> %s' % (repr(a), repr(collapse), repr(b2)) )
-            print( '   expected %s' % repr(b) )
+            print(( '   remove_comments( %s, collapse_spaces=%s ) -> %s' % (repr(a), repr(collapse), repr(b2)) ))
+            print(( '   expected %s' % repr(b) ))
             return 1
         return 0
     failures = 0
@@ -1349,7 +1349,7 @@ class content_type(object):
         """String value."""
         s = '%s/%s' % (self.major, self.minor)
         if self.parmdict:
-            extra = '; '.join([ '%s=%s' % (a[0],quote_string(a[1],False)) for a in self.parmdict.items()])
+            extra = '; '.join([ '%s=%s' % (a[0],quote_string(a[1],False)) for a in list(self.parmdict.items())])
             s += '; ' + extra
         return s
 
@@ -1359,7 +1359,7 @@ class content_type(object):
         if PY3 :
             return str(self.__str__())
         else :
-            return unicode(self.__str__())
+            return str(self.__str__())
 
     def __repr__(self):
         """Python representation of this object."""
@@ -1522,7 +1522,7 @@ def acceptable_content_type( accept_header, content_types, ignore_wildcard=True 
                 elif client_ct.minor == server_ct.minor: # something/something is a 3
                     matchlen = 3
                     # must make sure all the parms match too
-                    for pname, pval in client_ct.parmdict.items():
+                    for pname, pval in list(client_ct.parmdict.items()):
                         sval = server_ct.parmdict.get(pname)
                         if pname == 'charset':
                             # special case for charset to match aliases
@@ -1781,7 +1781,7 @@ class language_tag(object):
         if PY3 :
             return str(self.__str__())
         else :
-            return unicode(self.__str__())
+            return str(self.__str__())
 
     def __repr__(self):
         """The python representation of this language tag."""

@@ -5,7 +5,7 @@ original version had some bugs (in defining prefixes), and the overall output lo
 
 """
 
-import urlparse
+import urllib.parse
 from xml.sax.saxutils 			import escape, quoteattr
 
 from rdflib.BNode 				import BNode

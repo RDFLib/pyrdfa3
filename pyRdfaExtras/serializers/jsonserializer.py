@@ -110,7 +110,7 @@ class JsonSerializer(Serializer):
 		self._rdfa_vocabulary_usage()
 
 		# Fill in the content of the json objects 
-		for s in self.all_subjects.keys() :
+		for s in list(self.all_subjects.keys()) :
 			# List headers are treated specially
 			if s in self.lists : continue
 
@@ -172,7 +172,7 @@ class JsonSerializer(Serializer):
 				
 			# Add the context for predicates that originate from an RDFa @vocab construct			
 			# If the predicate has been identified as producing URI references only, that is taken care of here
-			for k,v in self.vocabulary_terms.items() :
+			for k,v in list(self.vocabulary_terms.items()) :
 				predicate_handled.add(v)
 				if v in self.uri_predicates :
 					typ = OrderedDict()
@@ -199,7 +199,7 @@ class JsonSerializer(Serializer):
 		# case the special JSON-LD "@graph" keyword has to be used as a key
 		if len(self.top_subjects) == 1 :
 			subj = self.all_subjects[self.top_subjects.pop()]
-			for k in subj.keys() :
+			for k in list(subj.keys()) :
 				_json_obj[k] = subj[k]
 		elif len(self.top_subjects) > 1 :
 			_json_obj["@graph"] = [ self.all_subjects[s] for s in self.top_subjects ]
@@ -250,7 +250,7 @@ class JsonSerializer(Serializer):
 					break
 			return retval
 		
-		for s in self.all_subjects.keys() :
+		for s in list(self.all_subjects.keys()) :
 			# See if this is a possible list in the first place
 			if self.graph.value(s, ns_rdf["first"]) != None and self.graph.value(s, ns_rdf["rest"]) != None :
 				if len([p for p,x,y in self.graph.triples((None,ns_rdf["rest"],s))]) == 0 :
@@ -389,12 +389,12 @@ class PrefixMap(dict):
 		
 	def shrink(self, uriref):
 		"Returns a CURIE or None."
-		for pfx, ns in self.iteritems():
+		for pfx, ns in self.items():
 			if ns not in self.vocab_uris and uriref.startswith(ns):
 				self.used_keys.add(pfx)
 				return '%s:%s' % (pfx, uriref.replace(ns,'',1))
 		if self.parent:
-			for pfx, ns in self.parent.iteritems():
+			for pfx, ns in self.parent.items():
 				if ns not in self.vocab_uris and uriref.startswith(ns):
 					self[pfx] = ns
 					self.used_keys.add(pfx)

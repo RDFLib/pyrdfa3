@@ -72,7 +72,7 @@ class ProcessorGraph :
 		self.graph.bind("xsd",     ns_xsd)
 		# Python 3 foolproof way
 		try :
-			is_context_string = isinstance(context, basestring)
+			is_context_string = isinstance(context, str)
 		except :
 			is_context_string = isinstance(context, str)
 		

@@ -1,4 +1,4 @@
-from __future__ import generators
+
 
 from rdflib.plugins.serializers.xmlwriter import XMLWriter
 
@@ -34,7 +34,7 @@ class XMLSerializer(Serializer):
             assert bindings["rdf"]==RDFNS
         else:
             bindings["rdf"] = RDFNS
-        for prefix, namespace in bindings.iteritems():
+        for prefix, namespace in bindings.items():
             yield prefix, namespace
 
 
@@ -159,7 +159,7 @@ class PrettyXMLSerializer(Serializer):
         writer.push(RDF.RDF)
         if "xml_base" in args:
             writer.attribute(XMLBASE, args["xml_base"])
-        writer.namespaces(namespaces.iteritems())
+        writer.namespaces(iter(namespaces.items()))
 
         # Write out subjects that can not be inline
         for subject in store.subjects():

@@ -4,3 +4,6 @@ Additional_Packages
 .vscode
 tags
 *.egg-info/
+
+build/
+dist/
