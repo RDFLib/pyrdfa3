@@ -30,10 +30,6 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 
 """
 
-"""
-$Id: __init__.py,v 1.21 2013-10-16 11:49:11 ivan Exp $
-$Date: 2013-10-16 11:49:11 $
-"""
 __version__ = "3.0"
 
 from .atom  import atom_add_entry_type
