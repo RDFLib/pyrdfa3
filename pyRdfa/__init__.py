@@ -141,7 +141,7 @@ The user of the package may refer add these transformers to L{Options} instance.
 
 
 @summary: RDFa parser (distiller)
-@requires: Python version 2.5 or up; 2.7 is preferred
+@requires: Python version 2.7 or python 3.8 or up
 @requires: U{RDFLib<http://rdflib.net>}; version 3.X is preferred.
 @requires: U{html5lib<http://code.google.com/p/html5lib/>} for the HTML5 parsing (note that version 1.0b1 and 1.0b2 should be avoided, it may lead to unicode encoding problems)
 @requires: U{httpheader<http://deron.meranda.us/python/httpheader/>}; however, a small modification had to make on the original file, so for this reason and to make distribution easier this module (single file) is added to the package.
@@ -156,7 +156,7 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 @var uri_schemes: List of registered (or widely used) URI schemes; used for warnings...
 """
 
-__version__ = "3.5.3"
+__version__ = "4.0.0"
 __author__  = 'Ivan Herman'
 __contact__ = 'Ivan Herman, ivan@w3.org'
 __license__ = 'W3C® SOFTWARE NOTICE AND LICENSE, http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231'
@@ -312,7 +312,7 @@ rdfa_current_version    = "1.1"
 
 # This comes from wikipedia
 registered_iana_schemes = [
-	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","dns","fax","file", "ftp","geo","go",
+	"aaa","aaas","acap","cap","cid","crid","data","dav","dict","did","dns","fax","file", "ftp","geo","go",
 	"gopher","h323","http","https","iax","icap","im","imap","info","ipp","iris","ldap", "lsid",
 	"mailto","mid","modem","msrp","msrps", "mtqp", "mupdate","news","nfs","nntp","opaquelocktoken",
 	"pop","pres", "prospero","rstp","rsync", "service","shttp","sieve","sip","sips", "sms", "snmp", "soap", "tag",
@@ -614,7 +614,12 @@ class pyRdfa :
 					if self.charset :
 						# This means the HTTP header has provided a charset, or the
 						# file is a local file when we suppose it to be a utf-8
-						dom = parser.parse(input, override_encoding=self.charset)
+						#
+						# 2020-01-20, Ivan Herman
+						#   for some reasons the python3 version ran into a problem with this html5lib call
+						#   the override_encoding argument was not accepted.
+						# dom = parser.parse(input, override_encoding=self.charset)
+						dom = parser.parse(input)
 					else :
 						# No charset set. The HTMLLib parser tries to sniff into the
 						# the file to find a meta header for the charset; if that
@@ -700,8 +705,13 @@ class pyRdfa :
 		# the value of rdfOutput determines the reaction on exceptions...
 		for name in names :
 			self.graph_from_source(name, graph, rdfOutput)
-		retval = graph.serialize(format=outputFormat)
-		return retval
+
+		# Stupid difference between python2 and python3...
+		if PY3 :
+			return str(graph.serialize(format=outputFormat), encoding='utf-8')
+		else :
+			return graph.serialize(format=outputFormat)
+
 
 	def rdf_from_source(self, name, outputFormat = "turtle", rdfOutput = False) :
 		"""

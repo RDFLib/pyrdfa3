@@ -7,7 +7,8 @@ This module may have to be modified if a new host language is added to the syste
 
 
 @summary: RDFa Host package
-@requires: U{RDFLib package<http://rdflib.net>}
+@requires: U{RDFLib package<http://rdflib.net>} version 5 or higher
+@requires: Python version 2.7 or 3.8 or higher
 @organization: U{World Wide Web Consortium<http://www.w3.org>}
 @author: U{Ivan Herman<a href="http://www.w3.org/People/Ivan/">}
 @license: This software is available for use under the
@@ -29,10 +30,6 @@ U{W3C® SOFTWARE NOTICE AND LICENSE<href="http://www.w3.org/Consortium/Legal/200
 
 """
 
-"""
-$Id: __init__.py,v 1.21 2013-10-16 11:49:11 ivan Exp $
-$Date: 2013-10-16 11:49:11 $
-"""
 __version__ = "3.0"
 
 from .atom  import atom_add_entry_type
