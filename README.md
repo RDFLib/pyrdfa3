@@ -39,7 +39,7 @@ The package primarily depends on:
 
 At the moment, the JSON-LD serialization depends on an external JSON-LD serializer. The package comes with a simple one, but if Niklas Lindström's rdflib_jsonld package is available, then this will be used. The former is not really maintained; the latter is in github: https://github.com/RDFLib/rdflib-jsonld. Note that, eventually, this serializer will find its way to the core RDFLib distribution.
    
-The package has been tested on Python version 2.5 and higher. Python 2.6 or higher is strongly recommended. The package has been adapted to Python 3, though not yet thoroughly tested, because the html5lib does not have yet a Python 3 version.
+The package has been tested on Python version 2.6 and higher and has been adapted to Python 3.
 
 For the details on RDFa 1.1, see:
 
