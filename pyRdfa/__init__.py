@@ -640,10 +640,10 @@ class pyRdfa :
 
 				else :
 					from .host import adjust_xhtml_and_version
-					if isinstance(input, StringIO) or isinstance(input, file):
-						parse = xml.dom.minidom.parse
-					else:
+					if isinstance(input, str):
 						parse = xml.dom.minidom.parseString
+					else:
+						parse = xml.dom.minidom.parse
 					dom = parse(input)
 					(adjusted_host_language, version) = adjust_xhtml_and_version(dom, self.options.host_language, self.rdfa_version)
 					self.options.host_language = adjusted_host_language
