@@ -640,7 +640,7 @@ class pyRdfa :
 
 				else :
 					from .host import adjust_xhtml_and_version
-					if isinstance(input, StringIO) or isinstance(input, file):
+					if (PY3 and isinstance(input, str)) or (isinstance(input, StringIO) or isinstance(input, file)) :
 						parse = xml.dom.minidom.parse
 					else:
 						parse = xml.dom.minidom.parseString
