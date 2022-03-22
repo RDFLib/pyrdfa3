@@ -3,6 +3,9 @@ The package can be downloaded from [PyPI](https://pypi.org/project/pyRdfa3/) via
 
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.14547.svg)](http://dx.doi.org/10.5281/zenodo.14547)
 
+> **Note:** since I retired a few months ago I do not really maintain this package any more. I would be more than happy if an interested party was interested to take over...
+
+
 PyRDFA
 ======
 
