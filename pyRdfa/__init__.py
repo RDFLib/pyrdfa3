@@ -455,6 +455,16 @@ class pyRdfa :
 			(type, value, traceback) = sys.exc_info()
 			raise FailedSource(value)
 
+	@staticmethod
+	def _validate_output_format(outputFormat):
+		"""
+		Malicious actors may create XSS style issues by using an illegal output format... better be careful
+		"""
+		# protection against possible malicious URL call
+		if outputFormat not in ["turtle", "n3", "xml", "pretty-xml", "nt", "json-ld"] :
+			outputFormat = "turtle"
+		return outputFormat
+		
 	####################################################################################################################
 	# Externally used methods
 	#
@@ -687,10 +697,12 @@ class pyRdfa :
 		@return: a serialized RDF Graph
 		@rtype: string
 		"""
+		# protection against possible malicious URL call
+		outputFormat = pyRdfa._validate_output_format(outputFormat);
+
 		# This is better because it gives access to the various, non-standard serializations
 		# If it does not work because the extra are not installed, fall back to the standard
 		# rdlib distribution...
-
 		if rdflib.__version__ >= "3.0.0" :
 			graph = Graph()
 		else :
@@ -881,7 +893,7 @@ def processURI(uri, outputFormat, form={}) :
 	# This is really for testing purposes only, it is an unpublished flag to force RDF output no
 	# matter what
 	try :
-		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in list(form.keys())) or not htmlOutput)
+		outputFormat = pyRdfa._validate_output_format(outputFormat);
 		if outputFormat == "n3" :
 			retval = 'Content-Type: text/rdf+n3; charset=utf-8\n'
 		elif outputFormat == "nt" or outputFormat == "turtle" :
@@ -890,6 +902,7 @@ def processURI(uri, outputFormat, form={}) :
 			retval = 'Content-Type: application/ld+json; charset=utf-8\n'
 		else :
 			retval = 'Content-Type: application/rdf+xml; charset=utf-8\n'
+		graph = processor.rdf_from_source(input, outputFormat, rdfOutput = ("forceRDFOutput" in list(form.keys())) or not htmlOutput)
 		retval += '\n'
 		retval += graph
 		return retval
@@ -936,13 +949,13 @@ def processURI(uri, outputFormat, form={}) :
 		else :
 			retval +="<dt>URI received:</dt><dd><code>'%s'</code></dd>\n" % cgi.escape(uri)
 		if "host_language" in list(form.keys()) :
-			retval +="<dt>Media Type:</dt><dd>%s</dd>\n" % media_type
+			retval +="<dt>Media Type:</dt><dd>%s</dd>\n" % cgi.escape(media_type)
 		if "graph" in list(form.keys()) :
-			retval +="<dt>Requested graphs:</dt><dd>%s</dd>\n" % form.getfirst("graph").lower()
+			retval +="<dt>Requested graphs:</dt><dd>%s</dd>\n" % cgi.escape(form.getfirst("graph").lower())
 		else :
 			retval +="<dt>Requested graphs:</dt><dd>default</dd>\n"
 		retval +="<dt>Output serialization format:</dt><dd> %s</dd>\n" % outputFormat
-		if "space_preserve" in form : retval +="<dt>Space preserve:</dt><dd> %s</dd>\n" % form["space_preserve"].value
+		if "space_preserve" in form : retval +="<dt>Space preserve:</dt><dd> %s</dd>\n" % cgi.escape(form["space_preserve"].value)
 		retval +="</dl>\n"
 		retval +="</body>\n"
 		retval +="</html>\n"
