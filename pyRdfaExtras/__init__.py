@@ -30,11 +30,13 @@ _json_serializer_name	= "my-json-ld"
 # from rdflib_jsonld.serializer import JsonLDSerializer
 
 try:
-    from cStringIO import StringIO
+	from cStringIO import StringIO
 except ImportError:
-    from StringIO import StringIO
+	if rdflib.__version__ >= "3.0.0" :
+		from io import StringIO
+	else :
+		from StringIO import StringIO
 
-	
 #########################################################################################################
 class MyGraph(Graph) :
 	"""
