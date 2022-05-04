@@ -216,7 +216,7 @@ class PrettyXMLSerializer(Serializer):
                 #Ivan
                 #if subj_as_obj_more_than(1):
                     #writer.attribute(RDF.nodeID, fix(subject))
-	            writer.attribute(RDF.nodeID, fix(subject))
+                writer.attribute(RDF.nodeID, fix(subject))
             else:
                 writer.attribute(RDF.about, self.relativize(subject))
             if (subject, None, None) in store:
